@@ -153,25 +153,62 @@
     </div>
   </div>
 
+  <!-- THÔNG BÁO CHUNG THEO THEME PASTEL SKY BLUE -->
+  <div id="notice-modal" class="hidden fixed inset-0 z-[110] flex items-center justify-center p-4 conflict-backdrop" role="dialog" aria-modal="true" aria-labelledby="notice-title">
+    <div class="conflict-card w-full max-w-md overflow-hidden rounded-2xl">
+      <div class="flex items-start gap-3 p-5 sm:p-6">
+        <div class="conflict-icon flex h-11 w-11 shrink-0 items-center justify-center rounded-xl">
+          <i id="notice-icon" data-lucide="info" class="h-6 w-6"></i>
+        </div>
+        <div class="min-w-0 flex-1">
+          <h2 id="notice-title" class="text-lg font-bold text-slate-800">Thông báo</h2>
+          <p id="notice-message" class="mt-2 text-sm leading-6 text-slate-600"></p>
+        </div>
+      </div>
+      <div class="flex justify-end border-t border-sky-100 bg-slate-50/80 p-4 sm:px-6">
+        <button id="notice-ok" type="button" class="rounded-xl bg-sky-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-sky-700">Đã hiểu</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const TEACHER_PIN = "0208";
     let isTeacherUnlocked = false;
+
+    function showNotice(message, title = "Thông báo", icon = "info") {
+      const modal = document.getElementById("notice-modal");
+      document.getElementById("notice-title").textContent = title;
+      document.getElementById("notice-message").textContent = message;
+      document.getElementById("notice-icon").setAttribute("data-lucide", icon);
+      modal.classList.remove("hidden");
+      if (window.lucide) window.lucide.createIcons();
+      const ok = document.getElementById("notice-ok");
+      const close = () => {
+        modal.classList.add("hidden");
+        ok.removeEventListener("click", close);
+        document.removeEventListener("keydown", onKey);
+      };
+      const onKey = (event) => { if (event.key === "Escape" || event.key === "Enter") close(); };
+      ok.addEventListener("click", close);
+      document.addEventListener("keydown", onKey);
+      ok.focus();
+    }
 
     function toggleGlobalTeacherMode() {
       if (isTeacherUnlocked) {
         isTeacherUnlocked = false;
         document.getElementById('global-lock-icon').setAttribute('data-lucide', 'lock');
         document.querySelectorAll('.teacher-feature').forEach(el => el.classList.add('hidden'));
-        alert("Đã khóa chế độ chỉnh sửa.");
+        showNotice("Đã khóa chế độ chỉnh sửa.", "Đã khóa", "lock");
       } else {
         const pin = prompt("Nhập mã PIN Giáo viên:");
         if (pin === TEACHER_PIN) {
           isTeacherUnlocked = true;
           document.getElementById('global-lock-icon').setAttribute('data-lucide', 'unlock');
           document.querySelectorAll('.teacher-feature').forEach(el => el.classList.remove('hidden'));
-          alert("Đã mở khóa tính năng chỉnh sửa!");
+          showNotice("Đã mở khóa tính năng chỉnh sửa!", "Đã mở khóa", "unlock");
         } else if (pin !== null) {
-          alert("Mã PIN không đúng!");
+          showNotice("Mã PIN không đúng!", "Không thể mở khóa", "shield-alert");
         }
       }
       lucide.createIcons();
@@ -235,7 +272,7 @@
     function goToCurrentWeek() { currentViewingWeek = ACTUAL_CURRENT_WEEK; updateWeekUI(); renderTable(); }
 
     function copyToNextWeek() {
-      if (!isTeacherUnlocked) return alert("Vui lòng mở khóa Giáo viên (Icon ổ khóa góc dưới phải)!");
+      if (!isTeacherUnlocked) return showNotice("Vui lòng mở khóa Giáo viên bằng biểu tượng ổ khóa ở góc dưới bên phải.", "Cần mở khóa", "lock-keyhole");
       const nextWeekNum = currentViewingWeek + 1;
       if (confirm(`Chép toàn bộ lịch sang Week ${nextWeekNum}?`)) {
         allWeeksSchedule[nextWeekNum] = JSON.parse(JSON.stringify(getCurrentWeekSchedule()));
@@ -244,7 +281,7 @@
     }
 
     function editClassNameInline(rowIndex) {
-      if (!isTeacherUnlocked) return alert("Vui lòng mở khóa Giáo viên (Icon ổ khóa góc dưới phải) để sửa tên!");
+      if (!isTeacherUnlocked) return showNotice("Vui lòng mở khóa Giáo viên bằng biểu tượng ổ khóa ở góc dưới bên phải để sửa tên lớp.", "Cần mở khóa", "lock-keyhole");
       const schedule = getCurrentWeekSchedule();
       const row = schedule[rowIndex];
       if (row.isSpecial) return;
@@ -404,7 +441,7 @@
     }
 
     function makeCellEditable(rowIndex, dayIndex) {
-      if (!isTeacherUnlocked) return alert('Vui lòng mở khóa Giáo viên để chỉnh sửa giờ học!');
+      if (!isTeacherUnlocked) return showNotice("Vui lòng mở khóa Giáo viên để chỉnh sửa giờ học.", "Cần mở khóa", "lock-keyhole");
       const cell = document.getElementById(`cell-${rowIndex}-${dayIndex}`);
       if (!cell || cell.querySelector('input')) return;
       const schedule = getCurrentWeekSchedule();
@@ -435,7 +472,7 @@
         const parsed = proposed ? parseTimeRange(proposed) : null;
         if (proposed && !parsed) {
           isFinished = true;
-          alert('Giờ chưa đúng định dạng. Vui lòng nhập HH:MM - HH:MM (ví dụ 13:00 - 14:30).');
+          showNotice("Giờ chưa đúng định dạng. Vui lòng nhập HH:MM - HH:MM (ví dụ 13:00 - 14:30).", "Giờ chưa hợp lệ", "clock-alert");
           renderTable();
           return;
         }
