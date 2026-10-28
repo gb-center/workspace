@@ -1002,7 +1002,7 @@
 
         const isInactive = !row.isSpecial && row.active === false;
         const isArchived = !row.isSpecial && row.archived === true;
-        html += `<tr class="${isArchived ? 'bg-violet-50/80 opacity-75' : isInactive ? 'bg-slate-100/80 opacity-70' : isFree ? 'bg-sky-50/20' : isBlocked ? 'bg-slate-50' : 'hover:bg-slate-50/60'} transition">
+        html += `<tr class="${isArchived ? 'bg-violet-50/80 opacity-75' : isInactive ? 'bg-slate-100/80 opacity-70' : isFree ? 'free-row' : isBlocked ? 'blocked-row' : 'hover:bg-slate-50/60'} ${isFree ? 'free-row' : ''} ${isBlocked ? 'blocked-row' : ''} transition">
           <td class="p-2 pl-3.5 sticky-col bg-white border-r border-slate-200">
             <div class="flex items-center justify-between gap-1 min-w-0">
               <span class="font-bold whitespace-nowrap truncate min-w-0 text-slate-800 cursor-pointer hover:text-sky-700 transition ${isArchived ? 'line-through text-violet-700' : isInactive ? 'line-through text-slate-500' : isFree ? 'text-sky-700' : isBlocked ? 'text-rose-600' : ''}" onclick="editClassNameInline(${rowIndex})">${row.name}${isArchived ? ' <span class=\"ml-1 inline-block rounded bg-violet-100 px-1.5 py-0.5 text-[9px] font-semibold not-italic no-underline\">ARCHIVED</span>' : isInactive ? ' <span class=\"ml-1 inline-block rounded bg-slate-200 px-1.5 py-0.5 text-[9px] font-semibold not-italic no-underline\">INACTIVE</span>' : ''}</span>
@@ -1025,7 +1025,7 @@
             html += `<td class="free-time-cell p-2 text-center border-r border-slate-100 align-top leading-snug ${cellHighlightClass}">`;
             html += freeRanges.length
               ? `<div class="flex flex-col items-center justify-start gap-1 pt-0">${freeRanges.map(range => `<span class="free-time-range inline-block whitespace-nowrap text-xs">${range}</span>`).join("")}</div>`
-              : `<span class="text-xs font-semibold text-slate-500 whitespace-nowrap">Full lịch</span>`;
+              : `<span class="full-schedule-label text-xs font-semibold whitespace-nowrap">Full lịch</span>`;
             html += `</td>`;
           } else {
             const timeVal = row.schedule[day] || "";
