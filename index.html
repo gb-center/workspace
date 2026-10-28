@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Thời Khóa Biểu Tuần</title>
+  <title>Classroom | Lịch tổng quan</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -17,227 +17,116 @@
     ::-webkit-scrollbar-track { background: #f8fafc; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     .sticky-col { position: sticky; left: 0; z-index: 20; }
-    
-    .today-highlight-header {
-      background-color: #ecfdf5 !important;
-      border-left: 2px solid #10b981 !important;
-      border-right: 2px solid #10b981 !important;
-    }
-    .today-highlight-cell {
-      background-color: #f0fdf4 !important;
-      border-left: 2px solid #a7f3d0 !important;
-      border-right: 2px solid #a7f3d0 !important;
-    }
+    .today-highlight-header { background-color: #e0f2fe !important; border-left: 2px solid #38bdf8 !important; border-right: 2px solid #38bdf8 !important; }
+    .today-highlight-cell { background-color: #f0f9ff !important; border-left: 2px solid #bae6fd !important; border-right: 2px solid #bae6fd !important; }
   </style>
+
+  <style id="lms-design-system">
+    :root{color-scheme:light;--lms-accent:#0284c7;--lms-accent-dark:#075985;--lms-border:#dbeafe;--lms-muted:#64748b;--lms-bg:#f3f9ff}
+    body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--lms-bg);color:#172033;letter-spacing:-.01em}
+    button,a,input,select,textarea{transition:background-color .16s ease,border-color .16s ease,box-shadow .16s ease}
+    input:focus,select:focus,textarea:focus{outline:none;box-shadow:0 0 0 3px rgba(14,165,233,.16);border-color:#0ea5e9!important}
+    .rounded-2xl{border-radius:1rem}
+    ::selection{background:#e0f2fe;color:#075985}
+    ::-webkit-scrollbar{width:7px;height:7px}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:10px}
+  </style>
+
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col relative">
 
   <!-- NÚT KHÓA BẢO MẬT GIÁO VIÊN -->
   <button onclick="toggleGlobalTeacherMode()" id="global-lock-btn" 
-          class="fixed bottom-6 right-6 p-3 bg-slate-800 hover:bg-slate-900 text-white rounded-full transition-all z-50 shadow-lg flex items-center justify-center opacity-30 hover:opacity-100" 
-          title="Mở khóa Giáo viên">
+          class="fixed bottom-6 right-6 p-3 bg-sky-800 hover:bg-sky-900 text-white rounded-full transition-all z-50 shadow-lg flex items-center justify-center opacity-30 hover:opacity-100" 
+          title="Mở khóa Giáo viên (0208)">
     <i data-lucide="lock" class="w-5 h-5" id="global-lock-icon"></i>
   </button>
 
-  <!-- HEADER -->
   <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs">
     <div class="max-w-[1700px] mx-auto px-4 py-2 flex flex-wrap items-center justify-between gap-3">
-      
       <div class="flex items-center gap-3">
-        <div class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white">
-          <i data-lucide="calendar" class="w-4 h-4"></i>
-        </div>
-        
+        <div class="w-8 h-8 rounded-lg bg-sky-600 flex items-center justify-center text-white"><i data-lucide="calendar" class="w-4 h-4"></i></div>
         <div class="flex items-center gap-2">
           <h1 class="text-sm font-bold text-slate-900" id="header-week-label">Week 08</h1>
-          <span id="current-week-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-            Tuần này
-          </span>
+          <span id="current-week-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-100 text-sky-800">Tuần này</span>
           <span class="text-xs text-slate-400">|</span>
           <p class="text-xs text-slate-500 font-medium" id="header-date-range">26.10 – 01.11</p>
         </div>
-
         <div class="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 ml-1">
-          <button onclick="changeWeek(-1)" class="p-1 hover:bg-white rounded transition text-slate-600" title="Tuần trước">
-            <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
-          </button>
-          <button onclick="goToCurrentWeek()" class="px-2 py-0.5 text-xs font-semibold text-slate-700 hover:bg-white rounded transition">
-            Hiện tại
-          </button>
-          <button onclick="changeWeek(1)" class="p-1 hover:bg-white rounded transition text-slate-600" title="Tuần sau">
-            <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-          </button>
+          <button onclick="changeWeek(-1)" class="p-1 hover:bg-white rounded transition text-slate-600"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></button>
+          <button onclick="goToCurrentWeek()" class="px-2 py-0.5 text-xs font-semibold text-slate-700 hover:bg-white rounded transition">Hiện tại</button>
+          <button onclick="changeWeek(1)" class="p-1 hover:bg-white rounded transition text-slate-600"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
         </div>
-
-        <!-- NÚT NHÂN BẢN TOÀN BỘ LỊCH SANG TUẦN SAU -->
-        <button onclick="copyToNextWeek()" class="teacher-feature hidden flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition border border-emerald-200" title="Sao chép toàn bộ lịch tuần này sang tuần sau">
-          <i data-lucide="copy" class="w-3.5 h-3.5 text-emerald-600"></i>
-          <span>Nhân bản sang tuần sau</span>
+        <button onclick="copyToNextWeek()" class="teacher-feature hidden items-center gap-1 px-2.5 py-1 text-xs font-semibold text-sky-800 bg-sky-50 hover:bg-sky-100 rounded-lg transition border border-sky-200">
+          <i data-lucide="copy" class="w-3.5 h-3.5 text-sky-600"></i><span>Nhân bản sang tuần sau</span>
         </button>
       </div>
 
       <div class="flex items-center gap-2">
         <div class="relative">
           <i data-lucide="search" class="w-3.5 h-3.5 absolute left-2.5 top-2 text-slate-400"></i>
-          <input type="text" id="search-input" oninput="renderTable()" placeholder="Tìm lớp..." 
-                 class="pl-8 pr-2.5 py-1 text-xs bg-slate-100 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500 w-36 sm:w-44">
+          <input type="text" id="search-input" oninput="renderTable()" placeholder="Tìm lớp..." class="pl-8 pr-2.5 py-1 text-xs bg-slate-100 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-sky-500 w-36 sm:w-44">
         </div>
-
-        <button onclick="addNewClass()" class="teacher-feature hidden flex items-center gap-1 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border border-slate-300 transition">
-          <i data-lucide="plus" class="w-3.5 h-3.5 text-emerald-600"></i>
-          <span>Thêm lớp</span>
+        <button onclick="addNewClass()" class="teacher-feature hidden items-center gap-1 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border border-slate-300 transition">
+          <i data-lucide="plus" class="w-3.5 h-3.5 text-sky-600"></i><span>Thêm lớp</span>
         </button>
-
-        <button onclick="openSheetModal()" class="teacher-feature hidden flex items-center gap-1 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border border-slate-300 transition">
-          <i data-lucide="sheet" class="w-3.5 h-3.5 text-emerald-700"></i>
-          <span>Google Sheet</span>
+        <button onclick="openSheetModal()" class="teacher-feature hidden items-center gap-1 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border border-slate-300 transition">
+          <i data-lucide="sheet" class="w-3.5 h-3.5 text-sky-700"></i><span>Google Sheet</span>
         </button>
-
-        <button onclick="exportCSV()" class="p-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg border border-slate-300 transition" title="Tải CSV">
-          <i data-lucide="download" class="w-3.5 h-3.5"></i>
-        </button>
+        <button onclick="exportCSV()" class="p-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg border border-slate-300 transition"><i data-lucide="download" class="w-3.5 h-3.5"></i></button>
       </div>
-
     </div>
   </header>
 
-  <!-- BẢNG LỊCH CHÍNH -->
   <main class="flex-1 max-w-[1700px] w-full mx-auto p-3 overflow-hidden flex flex-col">
     <div class="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden flex flex-col flex-1">
-      
       <div class="overflow-x-auto overflow-y-auto max-h-[calc(100vh-100px)]">
         <table class="w-full border-collapse text-left min-w-[1050px] table-fixed">
-          
           <thead>
-            <tr class="bg-[#3d6856] text-white">
-              <th class="p-2 text-xs font-bold uppercase tracking-wider sticky-col bg-[#3d6856] w-48 border-r border-[#4c7c68]">
-                CLASS
-              </th>
-              <th colspan="7" class="p-1.5 text-center text-xs font-semibold tracking-wide border-b border-[#4c7c68]">
-                <div class="inline-flex items-center gap-2 px-3 py-0.5 bg-[#325647] rounded-full">
-                  <i data-lucide="calendar-days" class="w-3.5 h-3.5 text-emerald-300"></i>
-                  <span id="banner-week-title">Week 08 • 26.10–01.11</span>
+            <tr class="bg-[#285f83] text-white">
+              <th class="p-2 text-xs font-bold uppercase tracking-wider sticky-col bg-[#285f83] w-48 border-r border-[#3b789f]">CLASS</th>
+              <th colspan="7" class="p-1.5 text-center text-xs font-semibold tracking-wide border-b border-[#3b789f]">
+                <div class="inline-flex items-center gap-2 px-3 py-0.5 bg-[#1d4f70] rounded-full">
+                  <i data-lucide="calendar-days" class="w-3.5 h-3.5 text-sky-300"></i><span id="banner-week-title">Week 08 • 26.10–01.11</span>
                 </div>
               </th>
             </tr>
-
             <tr class="bg-slate-100 border-b border-slate-200 text-slate-700 text-xs font-medium">
               <th class="p-1.5 sticky-col bg-slate-100 border-r border-slate-200 text-center text-slate-400 font-normal w-48"></th>
-              <th id="th-day-0" class="p-1.5 text-center border-r border-slate-200 transition-colors">
-                <div class="font-bold text-slate-900 flex items-center justify-center gap-1">
-                  <span>Mon</span><span class="today-tag hidden text-[9px] bg-emerald-600 text-white px-1 rounded">Nay</span>
-                </div>
-                <div class="text-[11px] text-slate-500" id="date-label-0">26/10</div>
-              </th>
-              <th id="th-day-1" class="p-1.5 text-center border-r border-slate-200 transition-colors">
-                <div class="font-bold text-slate-900 flex items-center justify-center gap-1">
-                  <span>Tue</span><span class="today-tag hidden text-[9px] bg-emerald-600 text-white px-1 rounded">Nay</span>
-                </div>
-                <div class="text-[11px] text-slate-500" id="date-label-1">27/10</div>
-              </th>
-              <th id="th-day-2" class="p-1.5 text-center border-r border-slate-200 transition-colors">
-                <div class="font-bold text-slate-900 flex items-center justify-center gap-1">
-                  <span>Wed</span><span class="today-tag hidden text-[9px] bg-emerald-600 text-white px-1 rounded">Nay</span>
-                </div>
-                <div class="text-[11px] text-slate-500" id="date-label-2">28/10</div>
-              </th>
-              <th id="th-day-3" class="p-1.5 text-center border-r border-slate-200 transition-colors">
-                <div class="font-bold text-slate-900 flex items-center justify-center gap-1">
-                  <span>Thu</span><span class="today-tag hidden text-[9px] bg-emerald-600 text-white px-1 rounded">Nay</span>
-                </div>
-                <div class="text-[11px] text-slate-500" id="date-label-3">29/10</div>
-              </th>
-              <th id="th-day-4" class="p-1.5 text-center border-r border-slate-200 transition-colors">
-                <div class="font-bold text-slate-900 flex items-center justify-center gap-1">
-                  <span>Fri</span><span class="today-tag hidden text-[9px] bg-emerald-600 text-white px-1 rounded">Nay</span>
-                </div>
-                <div class="text-[11px] text-slate-500" id="date-label-4">30/10</div>
-              </th>
-              <th id="th-day-5" class="p-1.5 text-center border-r border-slate-200 transition-colors">
-                <div class="font-bold text-slate-900 flex items-center justify-center gap-1">
-                  <span>Sat</span><span class="today-tag hidden text-[9px] bg-emerald-600 text-white px-1 rounded">Nay</span>
-                </div>
-                <div class="text-[11px] text-slate-500" id="date-label-5">31/10</div>
-              </th>
-              <th id="th-day-6" class="p-1.5 text-center transition-colors">
-                <div class="font-bold text-slate-900 flex items-center justify-center gap-1">
-                  <span>Sun</span><span class="today-tag hidden text-[9px] bg-emerald-600 text-white px-1 rounded">Nay</span>
-                </div>
-                <div class="text-[11px] text-slate-500" id="date-label-6">01/11</div>
-              </th>
+              <th id="th-day-0" class="p-1.5 text-center border-r border-slate-200 transition-colors"><div class="font-bold text-slate-900 flex items-center justify-center gap-1"><span>Mon</span><span class="today-tag hidden text-[9px] bg-sky-600 text-white px-1 rounded">Nay</span></div><div class="text-[11px] text-slate-500" id="date-label-0">26/10</div></th>
+              <th id="th-day-1" class="p-1.5 text-center border-r border-slate-200 transition-colors"><div class="font-bold text-slate-900 flex items-center justify-center gap-1"><span>Tue</span><span class="today-tag hidden text-[9px] bg-sky-600 text-white px-1 rounded">Nay</span></div><div class="text-[11px] text-slate-500" id="date-label-1">27/10</div></th>
+              <th id="th-day-2" class="p-1.5 text-center border-r border-slate-200 transition-colors"><div class="font-bold text-slate-900 flex items-center justify-center gap-1"><span>Wed</span><span class="today-tag hidden text-[9px] bg-sky-600 text-white px-1 rounded">Nay</span></div><div class="text-[11px] text-slate-500" id="date-label-2">28/10</div></th>
+              <th id="th-day-3" class="p-1.5 text-center border-r border-slate-200 transition-colors"><div class="font-bold text-slate-900 flex items-center justify-center gap-1"><span>Thu</span><span class="today-tag hidden text-[9px] bg-sky-600 text-white px-1 rounded">Nay</span></div><div class="text-[11px] text-slate-500" id="date-label-3">29/10</div></th>
+              <th id="th-day-4" class="p-1.5 text-center border-r border-slate-200 transition-colors"><div class="font-bold text-slate-900 flex items-center justify-center gap-1"><span>Fri</span><span class="today-tag hidden text-[9px] bg-sky-600 text-white px-1 rounded">Nay</span></div><div class="text-[11px] text-slate-500" id="date-label-4">30/10</div></th>
+              <th id="th-day-5" class="p-1.5 text-center border-r border-slate-200 transition-colors"><div class="font-bold text-slate-900 flex items-center justify-center gap-1"><span>Sat</span><span class="today-tag hidden text-[9px] bg-sky-600 text-white px-1 rounded">Nay</span></div><div class="text-[11px] text-slate-500" id="date-label-5">31/10</div></th>
+              <th id="th-day-6" class="p-1.5 text-center transition-colors"><div class="font-bold text-slate-900 flex items-center justify-center gap-1"><span>Sun</span><span class="today-tag hidden text-[9px] bg-sky-600 text-white px-1 rounded">Nay</span></div><div class="text-[11px] text-slate-500" id="date-label-6">01/11</div></th>
             </tr>
           </thead>
-
           <tbody id="timetable-body" class="divide-y divide-slate-200 text-xs"></tbody>
-
         </table>
       </div>
-
     </div>
   </main>
 
-  <!-- MODAL BÁO TRÙNG LỊCH -->
-  <div id="conflict-confirm-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-xl max-w-sm w-full border border-rose-200 overflow-hidden">
-      <div class="bg-rose-50 px-4 py-3 border-b border-rose-100 flex items-center gap-2">
-        <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-600"></i>
-        <h3 class="font-bold text-slate-900 text-xs">Trùng lịch học</h3>
-      </div>
-      <div class="p-4 space-y-3">
-        <div class="bg-slate-50 p-2 rounded border border-slate-200 text-xs">
-          <div class="font-semibold text-slate-800" id="conflict-new-time">-</div>
-        </div>
-        <div class="space-y-1" id="conflict-details-list"></div>
-      </div>
-      <div class="bg-slate-50 px-4 py-2.5 border-t border-slate-100 flex items-center justify-end gap-2">
-        <button onclick="handleConflictChoice(false)" class="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 rounded-lg">
-          Hủy
-        </button>
-        <button onclick="handleConflictChoice(true)" class="px-3 py-1.5 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-lg shadow-xs">
-          Chấp nhận trùng
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL LINK LỚP -->
   <div id="link-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-4 border border-slate-200">
       <div class="flex items-center justify-between pb-2 mb-3 border-b border-slate-100">
         <h4 class="font-bold text-xs text-slate-800 flex items-center gap-1.5">
-          <i data-lucide="link" class="w-3.5 h-3.5 text-emerald-600"></i>
-          <span id="modal-class-title">Link lớp</span>
+          <i data-lucide="link" class="w-3.5 h-3.5 text-sky-600"></i><span id="modal-class-title">Link lớp</span>
         </h4>
         <button onclick="closeLinkModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-4 h-4"></i></button>
       </div>
       <div class="space-y-2">
-        <input type="text" id="modal-class-name" placeholder="Tên lớp..." class="w-full text-xs px-2.5 py-1.5 border rounded-lg focus:ring-1 focus:ring-emerald-500 outline-none">
-        <input type="text" id="modal-class-url" placeholder="class.html?class=... hoặc link riêng" class="w-full text-xs px-2.5 py-1.5 border rounded-lg focus:ring-1 focus:ring-emerald-500 outline-none">
+        <input type="text" id="modal-class-name" placeholder="Tên lớp..." class="w-full text-xs px-2.5 py-1.5 border rounded-lg focus:ring-1 focus:ring-sky-500 outline-none">
+        <input type="text" id="modal-class-url" placeholder="VD: ac01.html hoặc link riêng" class="w-full text-xs px-2.5 py-1.5 border rounded-lg focus:ring-1 focus:ring-sky-500 outline-none">
       </div>
       <div class="flex justify-end gap-2 mt-3">
         <button onclick="closeLinkModal()" class="px-2.5 py-1 text-xs text-slate-500 hover:bg-slate-100 rounded-lg">Đóng</button>
-        <button onclick="saveClassLink()" class="px-3 py-1 text-xs font-semibold bg-emerald-600 text-white rounded-lg">Lưu</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL GOOGLE SHEET -->
-  <div id="sheet-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-4 border border-slate-200 text-xs">
-      <div class="flex items-center justify-between pb-2 mb-3 border-b border-slate-100 font-bold">
-        <span>Đồng bộ Google Sheet</span>
-        <button onclick="closeSheetModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-4 h-4"></i></button>
-      </div>
-      <input type="url" id="sheet-csv-url" placeholder="Dán link Google Sheet hoặc link CSV..." class="w-full p-2 border rounded-lg mb-3 outline-none focus:ring-1 focus:ring-emerald-500">
-      <div class="flex justify-end gap-2">
-        <button onclick="closeSheetModal()" class="px-2.5 py-1 text-slate-500 hover:bg-slate-100 rounded-lg">Hủy</button>
-        <button onclick="syncFromGoogleSheet()" class="px-3 py-1 font-semibold bg-emerald-600 text-white rounded-lg">Đồng bộ</button>
+        <button onclick="saveClassLink()" class="px-3 py-1 text-xs font-semibold bg-sky-600 text-white rounded-lg">Lưu</button>
       </div>
     </div>
   </div>
 
   <script>
-    // --- 1. MẬT KHẨU & KHÓA GIÁO VIÊN ---
     const TEACHER_PIN = "0208";
     let isTeacherUnlocked = false;
 
@@ -264,289 +153,101 @@
     const initialWeek7Data = [
       { id: "free", name: "Lịch rảnh", isSpecial: true, type: "free", schedule: ["", "", "", "", "", "", ""] },
       { id: "blocked", name: "Blocked", isSpecial: true, type: "blocked", schedule: ["07:00 - 22:30", "08:00 - 17:00", "08:00 - 17:00", "08:00 - 17:00", "08:00 - 19:00", "20:30 - 22:00", "18:00 - 22:30"] },
-      { id: "c1", name: "AC07", schedule: ["", "", "", "", "", "13:00 - 14:30", "16:00 - 17:30"] },
-      { id: "c2", name: "AC08", schedule: ["", "", "", "", "", "13:00 - 14:30", "16:00 - 17:30"] },
-      { id: "c3", name: "AC08. HUY", schedule: ["", "", "19:00 - 20:30", "", "", "13:00 - 14:30", ""] },
-      { id: "c4", name: "AC09", schedule: ["", "", "", "", "", "14:30 - 16:00", "14:30 - 16:00"] },
-      { id: "c5", name: "AC10.01", schedule: ["", "", "", "", "19:30 - 21:00", "11:30 - 13:00", "11:30 - 13:00"] },
-      { id: "c6", name: "AC10.02", schedule: ["", "", "", "", "19:30 - 21:00", "16:00 - 17:30", "11:30 - 13:00"] },
-      { id: "c7", name: "AC11", schedule: ["", "", "", "", "", "10:00 - 11:30", "10:00 - 11:30"] },
-      { id: "c8", name: "AC12", schedule: ["", "", "", "", "", "19:00 - 20:30", "13:00 - 14:30"] },
-      { id: "c9", name: "IE01. TRÂM VY", schedule: ["", "", "", "", "", "17:30 - 19:00", "08:30 - 10:00"] },
-      { id: "c10", name: "IE01. HÀO KHANH", schedule: ["", "07:00 - 08:00", "", "07:00 - 08:00", "", "07:00 - 08:30", ""] },
-      { id: "c11", name: "IE01. TRUNG", schedule: ["", "20:30 - 22:00", "17:15 - 18:45", "", "07:00 - 08:00", "", ""] },
-      { id: "c12", name: "IE02. LONG", schedule: ["", "19:00 - 20:30", "20:30 - 22:00", "19:00 - 20:30", "", "", ""] },
-      { id: "c13", name: "GT01. BOO", schedule: ["", "22:00 - 23:30", "", "", "", "", ""] },
-      { id: "c14", name: "GT02. KIỆT", schedule: ["", "17:15 - 18:45", "", "17:15 - 18:45", "", "", ""] },
-      { id: "c15", name: "TO01. VỸ", schedule: ["", "", "", "21:00 - 22:30", "", "08:30 - 10:00", ""] }
+      { id: "c1", name: "AC07", schedule: ["", "", "", "", "", "13:00 - 14:30", "16:00 - 17:30"] }
     ];
 
-    const BASE_WEEK_NUM = 7;
-    const BASE_MONDAY = new Date(2026, 9, 19); 
+    const BASE_WEEK_NUM = 1;
+    const BASE_MONDAY = new Date(2026, 8, 7); // Week 01 starts Monday 07/09/2026 
 
     function getActualCurrentWeek() {
       const now = new Date();
       const day = (now.getDay() + 6) % 7;
       const currentMonday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - day);
-      const diffTime = currentMonday.getTime() - BASE_MONDAY.getTime();
-      const diffWeeks = Math.round(diffTime / (7 * 24 * 60 * 60 * 1000));
+      const diffWeeks = Math.round((currentMonday.getTime() - BASE_MONDAY.getTime()) / (7 * 24 * 60 * 60 * 1000));
       return BASE_WEEK_NUM + diffWeeks;
     }
 
     const ACTUAL_CURRENT_WEEK = getActualCurrentWeek();
     let currentViewingWeek = ACTUAL_CURRENT_WEEK;
+    let allWeeksSchedule = {}, acceptedConflicts = new Set(), pendingConflict = null, selectedEditingClassId = null;
 
-    let allWeeksSchedule = {};
-    let acceptedConflicts = new Set();
-    let pendingConflict = null;
-    let selectedEditingClassId = null;
-
-    const savedStore = localStorage.getItem("all_weeks_schedule_data");
-    if (savedStore) {
-      try { allWeeksSchedule = JSON.parse(savedStore); } catch(e){}
-    }
-    if (!allWeeksSchedule[7]) {
-      allWeeksSchedule[7] = JSON.parse(JSON.stringify(initialWeek7Data));
-    }
-
-    const savedAccepted = localStorage.getItem("schedule_accepted_conflicts");
-    if (savedAccepted) {
-      try { acceptedConflicts = new Set(JSON.parse(savedAccepted)); } catch(e){}
-    }
+    try {
+      const savedStore = localStorage.getItem("all_weeks_schedule_data");
+      if (savedStore) allWeeksSchedule = JSON.parse(savedStore);
+    } catch(e){}
+    if (!allWeeksSchedule[7]) allWeeksSchedule[7] = JSON.parse(JSON.stringify(initialWeek7Data));
+    // Give every class a stable ID once; IDs stay unchanged when a class is renamed.
+    function makeId(prefix) { return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,7)}`; }
+    function slugName(name) { return String(name || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
+    Object.values(allWeeksSchedule).forEach(week => (week || []).forEach(row => {
+      if (!row.isSpecial && !row.id) row.id = makeId('CLS');
+      // Replace legacy auto-generated per-class pages with the new shared class template.
+      if (!row.isSpecial && row.url && row.url === `${slugName(row.name)}.html`) row.url = '';
+    }));
+    if (Object.values(allWeeksSchedule).some(week => (week || []).some(row => !row.isSpecial && row.id))) localStorage.setItem('all_weeks_schedule_data', JSON.stringify(allWeeksSchedule));
 
     function getCurrentWeekSchedule() {
       if (!allWeeksSchedule[currentViewingWeek]) {
-        allWeeksSchedule[currentViewingWeek] = initialWeek7Data.map(r => ({
-          ...r,
-          schedule: r.type === "blocked" ? [...r.schedule] : ["", "", "", "", "", "", ""]
-        }));
+        allWeeksSchedule[currentViewingWeek] = initialWeek7Data.map(r => ({ ...r, schedule: r.type === "blocked" ? [...r.schedule] : ["", "", "", "", "", "", ""] }));
       }
       return allWeeksSchedule[currentViewingWeek];
     }
 
     function persist() {
       localStorage.setItem("all_weeks_schedule_data", JSON.stringify(allWeeksSchedule));
-      localStorage.setItem("schedule_accepted_conflicts", JSON.stringify([...acceptedConflicts]));
     }
 
     function getWeekDateRange(weekNum) {
       const diffWeeks = weekNum - BASE_WEEK_NUM;
       const monday = new Date(BASE_MONDAY);
       monday.setDate(monday.getDate() + (diffWeeks * 7));
-
-      const days = [];
-      for (let i = 0; i < 7; i++) {
-        const d = new Date(monday);
-        d.setDate(d.getDate() + i);
-        days.push(d);
-      }
-      return days;
+      return Array.from({length: 7}, (_, i) => { const d = new Date(monday); d.setDate(d.getDate() + i); return d; });
     }
 
-    function changeWeek(step) {
-      currentViewingWeek += step;
-      if (currentViewingWeek < 1) currentViewingWeek = 1;
-      updateWeekUI();
-      renderTable();
-    }
-
-    function goToCurrentWeek() {
-      currentViewingWeek = ACTUAL_CURRENT_WEEK;
-      updateWeekUI();
-      renderTable();
-    }
+    function changeWeek(step) { currentViewingWeek += step; if (currentViewingWeek < 1) currentViewingWeek = 1; updateWeekUI(); renderTable(); }
+    function goToCurrentWeek() { currentViewingWeek = ACTUAL_CURRENT_WEEK; updateWeekUI(); renderTable(); }
 
     function copyToNextWeek() {
-      if (!isTeacherUnlocked) return alert("Vui lòng mở khóa Giáo viên!");
-      const currentSchedule = getCurrentWeekSchedule();
+      if (!isTeacherUnlocked) return alert("Vui lòng mở khóa Giáo viên (Icon ổ khóa góc dưới phải)!");
       const nextWeekNum = currentViewingWeek + 1;
-
-      if (confirm(`Bạn có chắc muốn sao chép toàn bộ lịch từ Week ${currentViewingWeek} sang Week ${nextWeekNum}?`)) {
-        allWeeksSchedule[nextWeekNum] = JSON.parse(JSON.stringify(currentSchedule));
-        persist();
-        changeWeek(1);
-        alert(`Đã sao chép toàn bộ lịch sang Week ${nextWeekNum}!`);
+      if (confirm(`Chép toàn bộ lịch sang Week ${nextWeekNum}?`)) {
+        allWeeksSchedule[nextWeekNum] = JSON.parse(JSON.stringify(getCurrentWeekSchedule()));
+        persist(); changeWeek(1);
       }
     }
 
     function editClassNameInline(rowIndex) {
-      if (!isTeacherUnlocked) return alert("Vui lòng mở khóa Giáo viên để đổi tên lớp!");
+      if (!isTeacherUnlocked) return alert("Vui lòng mở khóa Giáo viên (Icon ổ khóa góc dưới phải) để sửa tên!");
       const schedule = getCurrentWeekSchedule();
       const row = schedule[rowIndex];
       if (row.isSpecial) return;
-
       const newName = prompt("Nhập tên mới cho lớp:", row.name);
       if (newName && newName.trim() && newName.trim() !== row.name) {
         row.name = newName.trim();
-        const safeName = row.name.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/[^a-z0-9]/g, '-');
-        row.url = `${safeName}.html`;
-        persist();
-        renderTable();
-      }
-    }
-
-    // THÊM TÍNH NĂNG XÓA LỚP Ở ĐÂY
-    function deleteClass(id) {
-      if (!isTeacherUnlocked) return;
-      const schedule = getCurrentWeekSchedule();
-      const rowIndex = schedule.findIndex(r => r.id === id);
-      if (rowIndex > -1) {
-        if (confirm(`Bạn có chắc chắn muốn xóa lớp "${schedule[rowIndex].name}" không? Hành động này không thể hoàn tác.`)) {
-          schedule.splice(rowIndex, 1);
-          persist();
-          renderTable();
-        }
+        persist(); renderTable();
       }
     }
 
     function updateWeekUI() {
       const weekDays = getWeekDateRange(currentViewingWeek);
-      const mon = weekDays[0];
-      const sun = weekDays[6];
-
       const pad = (n) => n.toString().padStart(2, '0');
-      const dateRangeStr = `${pad(mon.getDate())}.${pad(mon.getMonth()+1)} – ${pad(sun.getDate())}.${pad(sun.getMonth()+1)}`;
+      const dateRangeStr = `${pad(weekDays[0].getDate())}.${pad(weekDays[0].getMonth()+1)} – ${pad(weekDays[6].getDate())}.${pad(weekDays[6].getMonth()+1)}`;
       const weekTitle = `Week ${pad(currentViewingWeek)}`;
 
       document.getElementById("header-week-label").textContent = weekTitle;
       document.getElementById("header-date-range").textContent = dateRangeStr;
       document.getElementById("banner-week-title").textContent = `${weekTitle} • ${dateRangeStr}`;
-
-      const badge = document.getElementById("current-week-badge");
-      if (currentViewingWeek === ACTUAL_CURRENT_WEEK) {
-        badge.classList.remove("hidden");
-      } else {
-        badge.classList.add("hidden");
-      }
+      document.getElementById("current-week-badge").classList.toggle("hidden", currentViewingWeek !== ACTUAL_CURRENT_WEEK);
 
       const today = new Date();
-      for (let i = 0; i < 7; i++) {
-        const d = weekDays[i];
+      weekDays.forEach((d, i) => {
         document.getElementById(`date-label-${i}`).textContent = `${pad(d.getDate())}/${pad(d.getMonth()+1)}`;
-        
         const thEl = document.getElementById(`th-day-${i}`);
-        const todayTag = thEl.querySelector(".today-tag");
-
-        const isToday = (
-          d.getDate() === today.getDate() &&
-          d.getMonth() === today.getMonth() &&
-          d.getFullYear() === today.getFullYear()
-        );
-
-        if (isToday) {
-          thEl.classList.add("today-highlight-header");
-          if (todayTag) todayTag.classList.remove("hidden");
-        } else {
-          thEl.classList.remove("today-highlight-header");
-          if (todayTag) todayTag.classList.add("hidden");
-        }
-      }
-    }
-
-    // CÁC HÀM XỬ LÝ TRÙNG LỊCH BỊ THIẾU TRONG BẢN RÚT GỌN TRƯỚC
-    function parseTimeToMinutes(t) {
-      if (!t) return null;
-      const parts = t.trim().split(":");
-      if (parts.length !== 2) return null;
-      return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
-    }
-
-    function parseRange(str) {
-      if (!str || !str.includes("-")) return null;
-      const [startStr, endStr] = str.split("-");
-      const start = parseTimeToMinutes(startStr);
-      const end = parseTimeToMinutes(endStr);
-      if (start !== null && end !== null && end > start) {
-        return { start, end, raw: str.trim() };
-      }
-      return null;
-    }
-
-    function formatMinutes(min) {
-      const h = Math.floor(min / 60).toString().padStart(2, '0');
-      const m = (min % 60).toString().padStart(2, '0');
-      return `${h}:${m}`;
-    }
-
-    function findConflictsForSlot(targetRowIndex, dayIndex, timeRangeStr) {
-      const schedule = getCurrentWeekSchedule();
-      const targetRange = parseRange(timeRangeStr);
-      if (!targetRange) return [];
-
-      const conflicts = [];
-      const blockedIndex = schedule.findIndex(r => r.id === "blocked");
-      const startIndex = blockedIndex !== -1 ? blockedIndex : 1;
-
-      for (let r = startIndex; r < schedule.length; r++) {
-        if (r === targetRowIndex) continue;
-        const otherTime = schedule[r].schedule[dayIndex];
-        const otherRange = parseRange(otherTime);
-
-        if (otherRange) {
-          if (targetRange.start < otherRange.end && targetRange.end > otherRange.start) {
-            conflicts.push({
-              className: schedule[r].name,
-              time: otherTime
-            });
-          }
-        }
-      }
-      return conflicts;
-    }
-
-    function calculateAvailableSlots(dayIndex) {
-      const schedule = getCurrentWeekSchedule();
-      const busyRanges = [];
-      const blockedIndex = schedule.findIndex(r => r.id === "blocked");
-      const startIndex = blockedIndex !== -1 ? blockedIndex : 1;
-
-      for (let r = startIndex; r < schedule.length; r++) {
-        const val = schedule[r].schedule[dayIndex];
-        const range = parseRange(val);
-        if (range) busyRanges.push(range);
-      }
-
-      const DAY_START = 420;  // 07:00
-      const DAY_END = 1350;  // 22:30
-
-      if (busyRanges.length === 0) {
-        return `<span class="text-emerald-700 font-medium">07:00 - 22:30</span>`;
-      }
-
-      busyRanges.sort((a, b) => a.start - b.start);
-      const merged = [busyRanges[0]];
-      for (let i = 1; i < busyRanges.length; i++) {
-        const last = merged[merged.length - 1];
-        const curr = busyRanges[i];
-        if (curr.start <= last.end) {
-          last.end = Math.max(last.end, curr.end);
-        } else {
-          merged.push(curr);
-        }
-      }
-
-      const freeSlots = [];
-      let pointer = DAY_START;
-
-      merged.forEach(b => {
-        const bStart = Math.min(Math.max(b.start, DAY_START), DAY_END);
-        const bEnd = Math.min(Math.max(b.end, DAY_START), DAY_END);
-
-        if (bStart > pointer && (bStart - pointer) >= 30) {
-          freeSlots.push(`${formatMinutes(pointer)} - ${formatMinutes(bStart)}`);
-        }
-        pointer = Math.max(pointer, bEnd);
+        const isToday = d.getDate() === today.getDate() && d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
+        thEl.classList.toggle("today-highlight-header", isToday);
+        const tag = thEl.querySelector(".today-tag");
+        if (tag) tag.classList.toggle("hidden", !isToday);
       });
-
-      if (DAY_END > pointer && (DAY_END - pointer) >= 30) {
-        freeSlots.push(`${formatMinutes(pointer)} - ${formatMinutes(DAY_END)}`);
-      }
-
-      if (freeSlots.length === 0) {
-        return `<span class="text-rose-600 font-bold">Full lịch rồi T.T</span>`;
-      }
-
-      return freeSlots.map(s => `<span class="inline-block text-emerald-800 font-medium py-0.5">${s}</span>`).join("<br>");
     }
 
     function renderTable() {
@@ -555,261 +256,92 @@
       const filter = document.getElementById("search-input").value.toLowerCase().trim();
       const weekDays = getWeekDateRange(currentViewingWeek);
       const today = new Date();
-
       let html = "";
 
       schedule.forEach((row, rowIndex) => {
         if (filter && !row.isSpecial && !row.name.toLowerCase().includes(filter)) return;
-
-        const isFree = row.type === "free";
-        const isBlocked = row.type === "blocked";
+        const isFree = row.type === "free", isBlocked = row.type === "blocked";
+        
         let targetUrl = row.url;
-        if (!targetUrl && !row.isSpecial) {
-           const safeName = row.name.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/[^a-z0-9]/g, '-');
-           targetUrl = `${safeName}.html`;
-        }
+        if (!targetUrl && !row.isSpecial) targetUrl = `class.html?classId=${encodeURIComponent(row.id)}&class=${encodeURIComponent(row.name)}`;
 
-        html += `<tr class="${isFree ? 'bg-emerald-50/20' : isBlocked ? 'bg-slate-50' : 'hover:bg-slate-50/60'} transition">`;
-
-        // CỘT CLASS VỚI TÍNH NĂNG NHẤP VÀO ĐỔI TÊN LỚP VÀ NÚT XÓA LỚP
-        html += `
+        html += `<tr class="${isFree ? 'bg-sky-50/20' : isBlocked ? 'bg-slate-50' : 'hover:bg-slate-50/60'} transition">
           <td class="p-2 pl-3.5 sticky-col bg-white border-r border-slate-200">
             <div class="flex items-center justify-between gap-1">
-              <span class="font-bold text-slate-800 cursor-pointer hover:text-emerald-700 transition ${isFree ? 'text-emerald-700' : isBlocked ? 'text-rose-600' : ''}"
-                    title="${!row.isSpecial ? 'Nhấp để đổi tên lớp' : ''}"
-                    onclick="editClassNameInline(${rowIndex})">
-                ${row.name}
-              </span>
+              <span class="font-bold text-slate-800 cursor-pointer hover:text-sky-700 transition ${isFree ? 'text-sky-700' : isBlocked ? 'text-rose-600' : ''}" onclick="editClassNameInline(${rowIndex})">${row.name}</span>
               ${!row.isSpecial ? `
                 <div class="flex items-center gap-0.5">
-                  <a href="${targetUrl}" target="_blank" title="Mở trang của ${row.name}" class="p-1 rounded text-emerald-600 hover:bg-emerald-100 transition">
-                    <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                  </a>
-                  <button onclick="openLinkModal('${row.id}')" title="Chỉnh link lớp" class="teacher-feature hidden p-1 rounded text-slate-400 hover:bg-slate-100 hover:text-slate-700">
-                    <i data-lucide="settings" class="w-3.5 h-3.5"></i>
-                  </button>
-                  <button onclick="deleteClass('${row.id}')" title="Xóa lớp" class="teacher-feature hidden p-1 rounded text-slate-400 hover:bg-rose-100 hover:text-rose-600 transition">
-                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                  </button>
+                  <a href="${targetUrl}" target="_blank" class="p-1 rounded text-sky-600 hover:bg-sky-100 transition"><i data-lucide="external-link" class="w-3.5 h-3.5"></i></a>
+                  <button onclick="openLinkModal('${row.id}')" class="teacher-feature hidden p-1 rounded text-slate-400 hover:bg-slate-100 hover:text-slate-700"><i data-lucide="settings" class="w-3.5 h-3.5"></i></button>
                 </div>
               ` : ''}
             </div>
-          </td>
-        `;
+          </td>`;
 
         for (let day = 0; day < 7; day++) {
-          const d = weekDays[day];
-          const isToday = (
-            d.getDate() === today.getDate() &&
-            d.getMonth() === today.getMonth() &&
-            d.getFullYear() === today.getFullYear()
-          );
-
+          const isToday = weekDays[day].getDate() === today.getDate() && weekDays[day].getMonth() === today.getMonth() && weekDays[day].getFullYear() === today.getFullYear();
           const cellHighlightClass = isToday ? "today-highlight-cell" : "";
-
+          
           if (isFree) {
-            html += `
-              <td class="p-2 text-center border-r border-slate-100 align-middle leading-snug ${cellHighlightClass}">
-                ${calculateAvailableSlots(day)}
-              </td>
-            `;
+            html += `<td class="p-2 text-center border-r border-slate-100 align-middle leading-snug ${cellHighlightClass}">-</td>`;
           } else {
             const timeVal = row.schedule[day] || "";
-            const conflictKey = `w${currentViewingWeek}-${rowIndex}-${day}-${timeVal}`;
-            const isAccepted = acceptedConflicts.has(conflictKey);
-
-            html += `
-              <td class="p-1 text-center border-r border-slate-100 align-middle ${cellHighlightClass}" 
-                  id="cell-${rowIndex}-${day}" onclick="makeCellEditable(${rowIndex}, ${day})">
-            `;
-
+            html += `<td class="p-1 text-center border-r border-slate-100 align-middle ${cellHighlightClass}" id="cell-${rowIndex}-${day}" onclick="makeCellEditable(${rowIndex}, ${day})">`;
             if (!timeVal) {
               html += `<div class="h-7 flex items-center justify-center text-slate-300 hover:bg-slate-100 rounded cursor-pointer transition">-</div>`;
-            } else if (isBlocked) {
-              html += `<div class="p-1 rounded text-xs cursor-pointer text-slate-500 bg-slate-100 border border-slate-200">${timeVal}</div>`;
             } else {
-              const badgeStyle = getBadgeColor(timeVal, isAccepted);
-              html += `
-                <div class="p-1 rounded border text-xs cursor-pointer transition ${badgeStyle}">
-                  <div class="font-semibold">${timeVal}</div>
-                </div>
-              `;
+              html += `<div class="p-1 rounded border text-xs cursor-pointer transition bg-sky-50 text-sky-900 border-sky-200"><div class="font-semibold">${timeVal}</div></div>`;
             }
-
             html += `</td>`;
           }
         }
-
         html += `</tr>`;
       });
-
       tbody.innerHTML = html;
       lucide.createIcons();
-      // Đảm bảo nút edit lớp hiển thị nếu đang mở khóa
-      if(!isTeacherUnlocked) {
-        document.querySelectorAll('.teacher-feature').forEach(el => el.classList.add('hidden'));
-      } else {
-        document.querySelectorAll('.teacher-feature').forEach(el => el.classList.remove('hidden'));
-      }
-    }
-
-    function getBadgeColor(val, isAccepted) {
-      if (isAccepted) return "bg-amber-50 text-amber-900 border-amber-300";
-      const range = parseRange(val);
-      if (!range) return "bg-slate-50 text-slate-700 border-slate-200";
-      const hour = Math.floor(range.start / 60);
-      if (hour < 12) return "bg-amber-50 text-amber-900 border-amber-200";
-      if (hour < 18) return "bg-sky-50 text-sky-900 border-sky-200";
-      return "bg-emerald-50 text-emerald-900 border-emerald-200";
+      // Ensure gears respect current lock state after re-render
+      if(!isTeacherUnlocked) document.querySelectorAll('.teacher-feature').forEach(el => el.classList.add('hidden'));
     }
 
     function makeCellEditable(rowIndex, dayIndex) {
       if (!isTeacherUnlocked) return alert("Vui lòng mở khóa Giáo viên để chỉnh sửa giờ học!");
       const cell = document.getElementById(`cell-${rowIndex}-${dayIndex}`);
       if (!cell || cell.querySelector('input')) return;
-
       const schedule = getCurrentWeekSchedule();
       const currentVal = schedule[rowIndex].schedule[dayIndex] || "";
 
       const input = document.createElement('input');
-      input.type = 'text';
-      input.value = currentVal;
-      input.placeholder = 'HH:MM - HH:MM';
-      input.className = 'w-full text-center text-xs py-1 px-1 bg-white border border-emerald-500 rounded outline-none shadow-xs';
-
-      cell.innerHTML = '';
-      cell.appendChild(input);
-      input.focus();
-      input.select();
+      input.type = 'text'; input.value = currentVal; input.placeholder = 'HH:MM - HH:MM';
+      input.className = 'w-full text-center text-xs py-1 px-1 bg-white border border-sky-500 rounded outline-none shadow-xs';
+      cell.innerHTML = ''; cell.appendChild(input); input.focus(); input.select();
 
       let isFinished = false;
-
       function finishEdit() {
-        if (isFinished) return;
-        isFinished = true;
-        handleInlineSave(rowIndex, dayIndex, input.value.trim(), currentVal);
+        if (isFinished) return; isFinished = true;
+        schedule[rowIndex].schedule[dayIndex] = input.value.trim();
+        persist(); renderTable();
       }
-
       input.addEventListener('blur', finishEdit);
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          input.blur();
-        } else if (e.key === 'Escape') {
-          isFinished = true;
-          renderTable();
-        }
-      });
-    }
-
-    function handleInlineSave(rowIndex, dayIndex, newVal, oldVal) {
-      const schedule = getCurrentWeekSchedule();
-
-      if (!newVal) {
-        schedule[rowIndex].schedule[dayIndex] = "";
-        persist();
-        renderTable();
-        return;
-      }
-
-      if (newVal === oldVal) {
-        renderTable();
-        return;
-      }
-
-      const parsed = parseRange(newVal);
-      if (!parsed) {
-        alert("Khung giờ không hợp lệ! Vui lòng nhập dạng: 13:00 - 14:30");
-        renderTable();
-        return;
-      }
-
-      const conflicts = findConflictsForSlot(rowIndex, dayIndex, newVal);
-
-      if (conflicts.length > 0) {
-        pendingConflict = {
-          rowIndex,
-          dayIndex,
-          newTime: newVal,
-          conflicts,
-          oldVal
-        };
-        showConflictModal(pendingConflict);
-      } else {
-        schedule[rowIndex].schedule[dayIndex] = newVal;
-        persist();
-        renderTable();
-      }
-    }
-
-    function showConflictModal(data) {
-      const schedule = getCurrentWeekSchedule();
-      const row = schedule[data.rowIndex];
-
-      document.getElementById("conflict-new-time").innerHTML = `
-        <span class="text-emerald-700">${row.name}</span>: ${data.newTime}
-      `;
-
-      const listContainer = document.getElementById("conflict-details-list");
-      listContainer.innerHTML = data.conflicts.map(c => `
-        <div class="flex items-center justify-between p-1.5 rounded bg-rose-50 border border-rose-100 text-rose-900 text-xs">
-          <span>Trùng với <strong>${c.className}</strong></span>
-          <span class="font-semibold">${c.time}</span>
-        </div>
-      `).join("");
-
-      document.getElementById("conflict-confirm-modal").classList.remove("hidden");
-    }
-
-    function handleConflictChoice(accepted) {
-      document.getElementById("conflict-confirm-modal").classList.add("hidden");
-      if (!pendingConflict) return;
-
-      const { rowIndex, dayIndex, newTime, oldVal } = pendingConflict;
-      const schedule = getCurrentWeekSchedule();
-
-      if (accepted) {
-        schedule[rowIndex].schedule[dayIndex] = newTime;
-        acceptedConflicts.add(`w${currentViewingWeek}-${rowIndex}-${dayIndex}-${newTime}`);
-        persist();
-        renderTable();
-      } else {
-        schedule[rowIndex].schedule[dayIndex] = oldVal;
-        persist();
-        renderTable();
-        setTimeout(() => {
-          makeCellEditable(rowIndex, dayIndex);
-        }, 50);
-      }
-
-      pendingConflict = null;
+      input.addEventListener('keydown', (e) => { if (e.key === 'Enter') input.blur(); else if (e.key === 'Escape') { isFinished = true; renderTable(); } });
     }
 
     function openLinkModal(id) {
       if (!isTeacherUnlocked) return;
       selectedEditingClassId = id;
-      const schedule = getCurrentWeekSchedule();
-      const row = schedule.find(r => r.id === id);
+      const row = getCurrentWeekSchedule().find(r => r.id === id);
       if (!row) return;
-      document.getElementById("modal-class-title").textContent = `Link: ${row.name}`;
       document.getElementById("modal-class-name").value = row.name;
-      
       const safeName = row.name.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/[^a-z0-9]/g, '-');
-      document.getElementById("modal-class-url").value = row.url || `${safeName}.html`;
+      document.getElementById("modal-class-url").value = row.url || `class.html?classId=${encodeURIComponent(row.id)}&class=${encodeURIComponent(row.name)}`;
       document.getElementById("link-modal").classList.remove("hidden");
     }
-    
-    function closeLinkModal() {
-      document.getElementById("link-modal").classList.add("hidden");
-    }
-    
+    function closeLinkModal() { document.getElementById("link-modal").classList.add("hidden"); }
     function saveClassLink() {
-      const schedule = getCurrentWeekSchedule();
-      const row = schedule.find(r => r.id === selectedEditingClassId);
+      const row = getCurrentWeekSchedule().find(r => r.id === selectedEditingClassId);
       if (row) {
         row.name = document.getElementById("modal-class-name").value.trim() || row.name;
         row.url = document.getElementById("modal-class-url").value.trim();
-        persist();
-        renderTable();
+        persist(); renderTable();
       }
       closeLinkModal();
     }
@@ -818,143 +350,15 @@
       if (!isTeacherUnlocked) return;
       const name = prompt("Tên lớp mới:");
       if (name && name.trim()) {
-        const schedule = getCurrentWeekSchedule();
         const safeName = name.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/[^a-z0-9]/g, '-');
-        schedule.push({
-          id: "class_" + Date.now(),
-          name: name.trim(),
-          url: `${safeName}.html`,
-          schedule: ["", "", "", "", "", "", ""]
+        getCurrentWeekSchedule().push({
+          id: makeId("CLS"), name: name.trim(), url: "", schedule: ["", "", "", "", "", "", ""]
         });
-        persist();
-        renderTable();
+        persist(); renderTable();
       }
     }
 
-    function openSheetModal() { 
-      if (!isTeacherUnlocked) return;
-      document.getElementById("sheet-modal").classList.remove("hidden"); 
-    }
-    function closeSheetModal() { document.getElementById("sheet-modal").classList.add("hidden"); }
-
-    async function syncFromGoogleSheet() {
-      let rawUrl = document.getElementById("sheet-csv-url").value.trim();
-      if (!rawUrl) return alert("Vui lòng dán link Google Sheet!");
-
-      if (rawUrl.includes("/edit")) {
-        const match = rawUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
-        if (match && match[1]) {
-          const sheetId = match[1];
-          const gidMatch = rawUrl.match(/gid=([0-9]+)/);
-          const gid = gidMatch ? gidMatch[1] : "0";
-          rawUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
-        }
-      }
-
-      const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(rawUrl);
-
-      try {
-        let res;
-        try {
-          res = await fetch(rawUrl);
-          if (!res.ok) throw new Error();
-        } catch (e) {
-          res = await fetch(proxyUrl);
-        }
-
-        const text = await res.text();
-        if (!text || text.includes("<!DOCTYPE html>")) {
-          throw new Error("Không thể trích xuất dữ liệu.");
-        }
-
-        const lines = text.split(/\r?\n/).filter(line => line.trim().length > 0);
-        const parseCSVLine = (line) => {
-          const result = [];
-          let current = '';
-          let inQuotes = false;
-          for (let i = 0; i < line.length; i++) {
-            const char = line[i];
-            if (char === '"') {
-              inQuotes = !inQuotes;
-            } else if (char === ',' && !inQuotes) {
-              result.push(current.trim());
-              current = '';
-            } else {
-              current += char;
-            }
-          }
-          result.push(current.trim());
-          return result;
-        };
-
-        const newRows = [];
-        let startIndex = -1;
-
-        lines.forEach((l, idx) => {
-          const cols = parseCSVLine(l);
-          const col0 = (cols[0] || '').toLowerCase();
-          if (startIndex === -1 && (col0.includes('class') || col0.includes('lịch rảnh'))) {
-            startIndex = col0.includes('class') ? idx + 1 : idx;
-          }
-        });
-
-        if (startIndex === -1) startIndex = 0;
-
-        for (let i = startIndex; i < lines.length; i++) {
-          const cols = parseCSVLine(lines[i]);
-          const name = (cols[0] || "").replace(/^"|"$/g, '').trim();
-          if (!name || name.toUpperCase() === "CLASS") continue;
-
-          const isFree = name.toLowerCase().includes("rảnh");
-          const isBlocked = name.toLowerCase().includes("blocked");
-          const safeName = name.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/[^a-z0-9]/g, '-');
-
-          newRows.push({
-            id: isFree ? "free" : isBlocked ? "blocked" : "row_" + i,
-            name: name,
-            isSpecial: isFree || isBlocked,
-            type: isFree ? "free" : isBlocked ? "blocked" : "class",
-            url: isFree || isBlocked ? "" : `${safeName}.html`,
-            schedule: [
-              (cols[1] || "").replace(/^"|"$/g, '').trim(),
-              (cols[2] || "").replace(/^"|"$/g, '').trim(),
-              (cols[3] || "").replace(/^"|"$/g, '').trim(),
-              (cols[4] || "").replace(/^"|"$/g, '').trim(),
-              (cols[5] || "").replace(/^"|"$/g, '').trim(),
-              (cols[6] || "").replace(/^"|"$/g, '').trim(),
-              (cols[7] || "").replace(/^"|"$/g, '').trim()
-            ]
-          });
-        }
-
-        if (newRows.length > 0) {
-          allWeeksSchedule[currentViewingWeek] = newRows;
-          persist();
-          renderTable();
-          closeSheetModal();
-          alert("Đồng bộ thành công!");
-        } else {
-          alert("Không tìm thấy dữ liệu lớp phù hợp.");
-        }
-      } catch (e) {
-        alert("Lỗi khi tải Sheet! Hãy đảm bảo link Google Sheet đã bật chế độ 'Bất kỳ ai có liên kết đều có thể xem'.");
-      }
-    }
-
-    function exportCSV() {
-      const schedule = getCurrentWeekSchedule();
-      let csv = "data:text/csv;charset=utf-8,CLASS,Mon,Tue,Wed,Thu,Fri,Sat,Sun\n";
-      schedule.forEach(r => {
-        csv += `"${r.name}",` + r.schedule.map(s => `"${s}"`).join(",") + "\n";
-      });
-      const link = document.createElement("a");
-      link.href = encodeURI(csv);
-      link.download = `ThoiKhoaBieu_Week${currentViewingWeek}.csv`;
-      link.click();
-    }
-
-    updateWeekUI();
-    renderTable();
+    updateWeekUI(); renderTable();
   </script>
 </body>
 </html>
