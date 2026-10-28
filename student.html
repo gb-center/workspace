@@ -291,6 +291,8 @@ function themedPinNotice(message, title='Thông báo'){
     const targetStudentId = urlParams.get('studentId') || '';
     const driveLinkFromUrl = urlParams.get('drive') || '';
     const meetLinkFromUrl = urlParams.get('meet') || '';
+    let weekLinksFromUrl = {};
+    try { weekLinksFromUrl = JSON.parse(urlParams.get('weekLinks') || '{}') || {}; } catch (e) { weekLinksFromUrl = {}; }
 
     let path = decodeURI(window.location.pathname);
     if (path.endsWith('/')) path = path.slice(0, -1);
@@ -394,8 +396,11 @@ function themedPinNotice(message, title='Thông báo'){
       try {
         const allWeeks = JSON.parse(localStorage.getItem('all_weeks_schedule_data') || '{}');
         const statusData = JSON.parse(localStorage.getItem(`class_${classStorageId}_session_statuses`) || '{}');
-        const linksData = JSON.parse(localStorage.getItem(`class_${classStorageId}_week_links`) || '{}');
-        const weeks = Object.keys(allWeeks).map(Number).filter(n=>Number.isFinite(n) && n>0).sort((a,b)=>b-a);
+        const localLinksData = JSON.parse(localStorage.getItem(`class_${classStorageId}_week_links`) || '{}');
+        // Prefer URL data when available: localStorage is not shared across a teacher's and student's devices.
+        const linksData = Object.keys(weekLinksFromUrl).length ? weekLinksFromUrl : localLinksData;
+        const weekNumsFromLinks = Object.keys(linksData).map(k => Number(String(k).replace(/^W/i, ''))).filter(n=>Number.isFinite(n) && n>0);
+        const weeks = [...new Set([...Object.keys(allWeeks).map(Number).filter(n=>Number.isFinite(n) && n>0), ...weekNumsFromLinks])].sort((a,b)=>b-a);
         return {allWeeks,statusData,linksData,weeks};
       } catch(e) { return {allWeeks:{},statusData:{},linksData:{},weeks:[]}; }
     }
@@ -413,6 +418,8 @@ function themedPinNotice(message, title='Thông báo'){
       } else {
         select.innerHTML = available.map(n=>`<option value="${n}">Tuần ${String(n).padStart(2,'0')}</option>`).join('');
       }
+      // The options are sorted newest-first, so explicitly select the real current week.
+      select.value = String(currentNum);
       if (!select.dataset.bound) {
         select.addEventListener('change', renderStudentSelectedWeek);
         select.dataset.bound='1';
@@ -474,9 +481,11 @@ function themedPinNotice(message, title='Thông báo'){
       const linksBox = document.getElementById('student-week-links-inline');
       if (linksBox) {
         const items = [];
-        const arr = Array.isArray(links.lesson) ? links.lesson : (links.lesson ? [{name:'Bài học',url:links.lesson}] : []);
-        const hw = Array.isArray(links.hw) ? links.hw : (links.hw ? [{name:'Bài tập',url:links.hw}] : []);
-        [...arr.map(x=>({...x,type:'Bài học'})),...hw.map(x=>({...x,type:'Bài tập'}))].forEach(x=>{if(x.url)items.push(`<a class="text-xs text-sky-700 underline" target="_blank" rel="noopener" href="${studentEsc(x.url)}">${studentEsc(x.name||x.type)}</a>`);});
+        const lessonSource = links.lessons ?? links.lesson ?? [];
+        const homeworkSource = links.homeworks ?? links.hw ?? [];
+        const arr = Array.isArray(lessonSource) ? lessonSource : (lessonSource ? [{name:'Bài học',url:lessonSource}] : []);
+        const hw = Array.isArray(homeworkSource) ? homeworkSource : (homeworkSource ? [{name:'Bài tập',url:homeworkSource}] : []);
+        [...arr.map(x=>({...x,type:'Bài học'})),...hw.map(x=>({...x,type:'Bài tập'}))].forEach(x=>{if(x.url)items.push(`<a class="text-xs text-sky-700 underline" target="_blank" rel="noopener" href="${studentEsc(x.url)}">${studentEsc(x.title||x.name||x.type)}</a>`);});
         linksBox.innerHTML = items.length ? items.join('<span class="text-slate-300 mx-2">·</span>') : '<span class="text-xs text-slate-400">Chưa có link học liệu cho tuần này.</span>';
       }
     }
@@ -493,9 +502,14 @@ function themedPinNotice(message, title='Thông báo'){
       });
     }
 
-    const classLinks = JSON.parse(localStorage.getItem(`class_${classStorageId}_week_links`) || '{}')[currentWeekKey] || {};
-    document.getElementById("btn-class-lesson").href = classLinks.lesson || "#";
-    document.getElementById("btn-class-hw").href = classLinks.hw || "#";
+    const localClassLinks = JSON.parse(localStorage.getItem(`class_${classStorageId}_week_links`) || '{}');
+    const classLinks = (Object.keys(weekLinksFromUrl).length ? weekLinksFromUrl : localClassLinks)[currentWeekKey] || {};
+    function firstLinkUrl(value) {
+      if (Array.isArray(value)) return (value.find(x => x && x.url) || {}).url || '#';
+      return value && typeof value === 'object' ? (value.url || '#') : (value || '#');
+    }
+    document.getElementById("btn-class-lesson").href = firstLinkUrl(classLinks.lessons ?? classLinks.lesson);
+    document.getElementById("btn-class-hw").href = firstLinkUrl(classLinks.homeworks ?? classLinks.hw);
 
     const attKey = `class_${classStorageId}_att_${currentWeekKey}`;
     document.getElementById("attendance-summary").textContent = (JSON.parse(localStorage.getItem(attKey) || '{}')[studentStorageId] !== false) ? "Chuyên cần: Chưa có dữ liệu" : "Chuyên cần: Vắng";

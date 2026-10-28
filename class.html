@@ -476,7 +476,18 @@ function themedPinNotice(message, title='Thông báo'){
         if (typeof entry === 'string') { students[index] = { id: studentId, name }; saveStudents(students); }
         const isPresent = attendance[studentId] !== false;
         const overrideUrl = localStorage.getItem(getStorageKey(`student_url_${studentId}`));
-        const studentUrl = overrideUrl || `student.html?classId=${encodeURIComponent(targetClassId)}&class=${encodeURIComponent(targetClassName)}&studentId=${encodeURIComponent(studentId)}&student=${encodeURIComponent(name)}&drive=${encodeURIComponent(localStorage.getItem(getStorageKey('drive_link')) || 'https://drive.google.com')}&meet=${encodeURIComponent(localStorage.getItem(getStorageKey('meet_link')) || 'https://meet.google.com')}`;
+        // Đính kèm học liệu của lớp vào URL để hồ sơ học viên vẫn xem được khi mở trên thiết bị khác.
+        const allClassWeekLinks = JSON.parse(localStorage.getItem(getStorageKey('week_links')) || '{}');
+        const studentUrlParams = new URLSearchParams({
+          classId: targetClassId,
+          class: targetClassName,
+          studentId,
+          student: name,
+          drive: localStorage.getItem(getStorageKey('drive_link')) || 'https://drive.google.com',
+          meet: localStorage.getItem(getStorageKey('meet_link')) || 'https://meet.google.com',
+          weekLinks: JSON.stringify(allClassWeekLinks)
+        });
+        const studentUrl = overrideUrl || `student.html?${studentUrlParams.toString()}`;
 
         return `
           <tr class="hover:bg-slate-50 transition">
