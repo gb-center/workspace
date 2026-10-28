@@ -303,6 +303,36 @@
       if(!isTeacherUnlocked) document.querySelectorAll('.teacher-feature').forEach(el => el.classList.add('hidden'));
     }
 
+    // Parse a time range such as "13:00 - 14:30" into minutes after midnight.
+    function parseTimeRange(value) {
+      const m = String(value || "").trim().match(/^(\d{1,2}):(\d{2})\s*[-–—至到]+\s*(\d{1,2}):(\d{2})$/);
+      if (!m) return null;
+      const sh = Number(m[1]), sm = Number(m[2]), eh = Number(m[3]), em = Number(m[4]);
+      if (sh > 23 || eh > 24 || sm > 59 || em > 59 || (eh === 24 && em !== 0)) return null;
+      const start = sh * 60 + sm, end = eh * 60 + em;
+      if (end <= start) return null;
+      return { start, end };
+    }
+
+    function findScheduleConflicts(rowIndex, dayIndex, proposedValue) {
+      const schedule = getCurrentWeekSchedule();
+      const target = schedule[rowIndex];
+      const proposed = parseTimeRange(proposedValue);
+      if (!target || !proposed) return [];
+      const conflicts = [];
+      schedule.forEach((other, otherIndex) => {
+        if (otherIndex === rowIndex || other.type === "free" || other.isSpecial && other.type !== "blocked") return;
+        const otherValue = String((other.schedule || [])[dayIndex] || "").trim();
+        const range = parseTimeRange(otherValue);
+        if (!range) return;
+        // A conflict exists when the two time intervals overlap.
+        if (proposed.start < range.end && range.start < proposed.end) {
+          conflicts.push({ name: other.name || "Lớp khác", time: otherValue });
+        }
+      });
+      return conflicts;
+    }
+
     function makeCellEditable(rowIndex, dayIndex) {
       if (!isTeacherUnlocked) return alert("Vui lòng mở khóa Giáo viên để chỉnh sửa giờ học!");
       const cell = document.getElementById(`cell-${rowIndex}-${dayIndex}`);
@@ -317,8 +347,21 @@
 
       let isFinished = false;
       function finishEdit() {
-        if (isFinished) return; isFinished = true;
-        schedule[rowIndex].schedule[dayIndex] = input.value.trim();
+        if (isFinished) return;
+        const proposed = input.value.trim();
+        const parsed = parseTimeRange(proposed);
+        if (proposed && !parsed) {
+          alert("Giờ chưa đúng định dạng. Vui lòng nhập HH:MM - HH:MM (ví dụ 13:00 - 14:30).");
+          isFinished = true; renderTable(); return;
+        }
+        const conflicts = proposed ? findScheduleConflicts(rowIndex, dayIndex, proposed) : [];
+        if (conflicts.length) {
+          const details = conflicts.map(c => `• ${c.name}: ${c.time}`).join("\n");
+          const keep = confirm(`⚠️ PHÁT HIỆN TRÙNG LỊCH!\n\n${schedule[rowIndex].name} (${proposed}) bị trùng với:\n${details}\n\nBạn có muốn vẫn lưu khung giờ này không?`);
+          if (!keep) { isFinished = true; renderTable(); return; }
+        }
+        isFinished = true;
+        schedule[rowIndex].schedule[dayIndex] = proposed;
         persist(); renderTable();
       }
       input.addEventListener('blur', finishEdit);
