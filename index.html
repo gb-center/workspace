@@ -185,7 +185,46 @@
     .toolbar-action, .toolbar-action .toolbar-action-label { transition: none !important; }
   }
 </style>
-\n</head>
+\n
+<style id="toolbar-height-match-search">
+  /* Use the search field as the single source of truth for toolbar control height. */
+  #search-input {
+    height: 2.45rem !important;
+    min-height: 2.45rem !important;
+    box-sizing: border-box !important;
+  }
+  .toolbar-action,
+  #status-filter,
+  #class-sort,
+  header button[onclick="exportCSV()"] {
+    height: 2.45rem !important;
+    min-height: 2.45rem !important;
+    box-sizing: border-box !important;
+    align-self: center !important;
+  }
+  .toolbar-action {
+    width: 2.45rem !important;
+    min-width: 2.45rem !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+  }
+  .toolbar-action:hover,
+  .toolbar-action:focus-visible {
+    width: auto !important;
+    max-width: 15rem !important;
+  }
+  .toolbar-action > svg,
+  .toolbar-action > i {
+    flex: 0 0 1.25rem !important;
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+  }
+</style>
+
+</head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col relative">
 
   <!-- NÚT KHÓA BẢO MẬT GIÁO VIÊN -->
