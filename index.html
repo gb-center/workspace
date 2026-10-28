@@ -713,6 +713,44 @@
       });
     }
 
+    // Calculate free intervals in the working window (07:00–22:30),
+    // excluding Blocked periods and active class lessons for each weekday.
+    function calculateFreeTimeForDay(dayIndex) {
+      const schedule = getCurrentWeekSchedule();
+      const windowStart = 7 * 60;
+      const windowEnd = 22 * 60 + 30;
+      const busy = [];
+
+      schedule.forEach(row => {
+        if (row.type === "free" || row.active === false || row.archived === true) return;
+        const range = parseTimeRange((row.schedule || [])[dayIndex]);
+        if (!range) return;
+        const start = Math.max(windowStart, range.start);
+        const end = Math.min(windowEnd, range.end);
+        if (end > start) busy.push({ start, end });
+      });
+
+      busy.sort((a, b) => a.start - b.start || a.end - b.end);
+      const merged = [];
+      busy.forEach(range => {
+        const last = merged[merged.length - 1];
+        if (last && range.start <= last.end) last.end = Math.max(last.end, range.end);
+        else merged.push({ ...range });
+      });
+
+      const free = [];
+      let cursor = windowStart;
+      merged.forEach(range => {
+        if (range.start > cursor) free.push({ start: cursor, end: range.start });
+        cursor = Math.max(cursor, range.end);
+      });
+      if (cursor < windowEnd) free.push({ start: cursor, end: windowEnd });
+
+      const format = minutes => `${String(Math.floor(minutes / 60)).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`;
+      return free.filter(range => range.end - range.start >= 30)
+        .map(range => `${format(range.start)} - ${format(range.end)}`);
+    }
+
     function renderTable() {
       const schedule = getCurrentWeekSchedule();
       const tbody = document.getElementById("timetable-body");
@@ -783,7 +821,12 @@
           const cellHighlightClass = isToday ? "today-highlight-cell" : "";
           
           if (isFree) {
-            html += `<td class="p-2 text-center border-r border-slate-100 align-middle leading-snug ${cellHighlightClass}">-</td>`;
+            const freeRanges = calculateFreeTimeForDay(day);
+            html += `<td class="p-2 text-center border-r border-slate-100 align-middle leading-snug ${cellHighlightClass}">`;
+            html += freeRanges.length
+              ? `<div class="flex flex-col items-center gap-1">${freeRanges.map(range => `<span class="inline-block whitespace-nowrap rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-800">${range}</span>`).join("")}</div>`
+              : `<span class="text-slate-300">—</span>`;
+            html += `</td>`;
           } else {
             const timeVal = row.schedule[day] || "";
             html += `<td class="p-1 text-center whitespace-nowrap border-r border-slate-100 align-middle ${cellHighlightClass}" id="cell-${rowIndex}-${day}" onclick="makeCellEditable(${rowIndex}, ${day})">`;
