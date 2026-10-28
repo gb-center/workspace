@@ -195,6 +195,19 @@
     }
     if (!targetClass) targetClass = folderName ? folderName.toUpperCase().replace(/-/g, ' ') : "CHƯA RÕ LỚP";
 
+    const STUDENT_REGISTRY_KEY = 'lms_students_registry_v1';
+    function getSharedStudent() {
+      try {
+        const records = JSON.parse(localStorage.getItem(STUDENT_REGISTRY_KEY) || '[]');
+        return records.find(s => String(s.id) === String(targetStudentId)) || records.find(s => s.name === targetStudent && String(s.classId) === String(targetClassId)) || null;
+      } catch(e) { return null; }
+    }
+    let sharedStudent = getSharedStudent();
+    if (sharedStudent) {
+      targetStudent = sharedStudent.name || targetStudent;
+      targetClass = sharedStudent.className || targetClass;
+    }
+
     // Keep the return link connected to the exact class and student context.
     const backToClassLink = document.getElementById('btn-back-to-class');
     backToClassLink.href = `class.html?classId=${encodeURIComponent(targetClassId || '')}&class=${encodeURIComponent(targetClass)}`;
@@ -212,6 +225,16 @@
     }
     updateAvatar(targetStudent);
     nameInput.addEventListener('input', () => { targetStudent = nameInput.value; updateAvatar(targetStudent); document.title = `Hồ Sơ: ${targetStudent}`; });
+    nameInput.addEventListener('change', () => {
+      if (!isTeacherUnlocked) { nameInput.value = targetStudent; return; }
+      const newName = nameInput.value.trim(); if (!newName) { nameInput.value = targetStudent; return; }
+      try {
+        const records = JSON.parse(localStorage.getItem(STUDENT_REGISTRY_KEY) || '[]');
+        const record = records.find(s => String(s.id) === String(targetStudentId));
+        if (record) { record.name = newName; record.className = targetClass; localStorage.setItem(STUDENT_REGISTRY_KEY, JSON.stringify(records)); }
+        targetStudent = newName; updateAvatar(newName);
+      } catch(e) {}
+    });
 
     function getWeekKey(d = new Date()) {
       const anchor = new Date(2026, 8, 7); const date = new Date(d.getFullYear(), d.getMonth(), d.getDate());

@@ -122,8 +122,7 @@
       <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 gap-3 mb-4">
         <div><h3 class="font-bold text-slate-900 text-sm flex items-center gap-2"><i data-lucide="users" class="w-4 h-4 text-sky-600"></i><span>Danh Sách Học Sinh</span></h3></div>
         <div class="teacher-feature hidden items-center gap-2">
-          <input type="text" id="input-new-student" placeholder="Nhập tên học sinh mới..." class="text-xs p-2 bg-slate-50 border border-slate-200 rounded-lg w-48">
-          <button id="btn-add-student" class="px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-lg flex items-center gap-1"><i data-lucide="user-plus" class="w-3.5 h-3.5"></i><span>Thêm</span></button>
+          <a href="student-list.html" class="px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-lg flex items-center gap-1"><i data-lucide="users" class="w-3.5 h-3.5"></i><span>Quản lý học viên</span></a>
         </div>
       </div>
       <div class="overflow-x-auto">
@@ -269,8 +268,31 @@
     nameInput.addEventListener("keydown", (e) => { if (e.key === "Enter") nameInput.blur(); });
     nameInput.addEventListener("blur", () => { if (nameInput.value.trim() && nameInput.value.trim() !== targetClassName) updateTitleUI(nameInput.value.trim()); });
 
-    function getStudents() { return JSON.parse(localStorage.getItem(getStorageKey("students")) || '[]'); }
-    function saveStudents(list) { localStorage.setItem(getStorageKey("students"), JSON.stringify(list)); }
+    const STUDENT_REGISTRY_KEY = 'lms_students_registry_v1';
+    function readStudentRegistry() { try { return JSON.parse(localStorage.getItem(STUDENT_REGISTRY_KEY) || '[]'); } catch(e) { return []; } }
+    function writeStudentRegistry(list) { localStorage.setItem(STUDENT_REGISTRY_KEY, JSON.stringify(list)); }
+    function getStudents() {
+      let registry = readStudentRegistry();
+      // One-time migration: import any legacy class-local student names into the shared registry.
+      const migrationKey = 'lms_student_registry_migrated_' + targetClassId;
+      if (!localStorage.getItem(migrationKey)) {
+        let legacy = [];
+        try { legacy = JSON.parse(localStorage.getItem(getStorageKey('students')) || '[]'); } catch(e) {}
+        legacy.forEach(entry => {
+          const name = typeof entry === 'string' ? entry.trim() : String(entry?.name || '').trim();
+          if (!name) return;
+          let found = registry.find(s => s.classId === targetClassId && s.name.toLowerCase() === name.toLowerCase());
+          if (!found) registry.push({ id: (typeof entry === 'object' && entry.id) ? entry.id : makeId('STU'), name, classId: targetClassId, className: targetClassName, active: true, createdAt: new Date().toISOString() });
+        });
+        writeStudentRegistry(registry); localStorage.setItem(migrationKey, '1');
+      }
+      return registry.filter(s => String(s.classId) === String(targetClassId) && s.active !== false);
+    }
+    function saveStudents(list) {
+      const registry = readStudentRegistry().filter(s => String(s.classId) !== String(targetClassId));
+      list.forEach(s => registry.push({ ...s, classId: targetClassId, className: targetClassName, active: s.active !== false }));
+      writeStudentRegistry(registry);
+    }
     function getSessionStatuses() { return JSON.parse(localStorage.getItem(getStorageKey("session_statuses")) || '{}'); }
     function saveSessionStatuses(data) { localStorage.setItem(getStorageKey("session_statuses"), JSON.stringify(data)); }
     function getWeekLinks(weekKey) { return JSON.parse(localStorage.getItem(getStorageKey("week_links")) || '{}')[weekKey] || { lesson: '', hw: '' }; }
@@ -414,18 +436,12 @@
 
     window.removeStudent = function(idx) {
       if (!isTeacherUnlocked) return;
-      const s = getStudents(); const entry = s[idx]; const name = typeof entry === 'string' ? entry : entry.name;
-      if (confirm(`Xóa học sinh "${name}" khỏi danh sách lớp?`)) { s.splice(idx, 1); saveStudents(s); renderStudents(); }
+      const students = getStudents(); const entry = students[idx]; if (!entry) return;
+      if (!confirm(`Gỡ "${entry.name}" khỏi lớp này? Hồ sơ học viên vẫn được giữ trong Student List.`)) return;
+      const registry = readStudentRegistry(); const record = registry.find(s => String(s.id) === String(entry.id));
+      if (record) { record.classId = ''; record.className = ''; record.active = true; writeStudentRegistry(registry); }
+      renderStudents();
     };
-
-    document.getElementById("btn-add-student").addEventListener("click", () => {
-      const name = document.getElementById("input-new-student").value.trim();
-      if (!name) return;
-      const s = getStudents();
-      if (s.some(entry => (typeof entry === 'string' ? entry : entry.name).trim().toLowerCase() === name.toLowerCase())) return alert("Học viên này đã có trong danh sách!");
-      const studentId = getStudentId(name);
-      s.push({ id: studentId, name }); saveStudents(s); document.getElementById("input-new-student").value = ""; renderStudents();
-    });
 
     document.getElementById("btn-prev-week").addEventListener("click", () => { currentWeekOffset--; renderAll(); });
     document.getElementById("btn-next-week").addEventListener("click", () => { currentWeekOffset++; renderAll(); });
