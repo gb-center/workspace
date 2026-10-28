@@ -171,6 +171,24 @@
     </div>
   </div>
 
+  <!-- HỘP THOẠI NHẬP LIỆU / XÁC NHẬN ĐỒNG BỘ THEME -->
+  <div id="action-modal" class="hidden fixed inset-0 z-[120] flex items-center justify-center p-4 conflict-backdrop" role="dialog" aria-modal="true" aria-labelledby="action-title">
+    <div class="conflict-card w-full max-w-md overflow-hidden rounded-2xl">
+      <div class="flex items-start gap-3 p-5 sm:p-6">
+        <div class="conflict-icon flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"><i id="action-icon" data-lucide="info" class="h-6 w-6"></i></div>
+        <div class="min-w-0 flex-1 w-full">
+          <h2 id="action-title" class="text-lg font-bold text-slate-800">Xác nhận</h2>
+          <p id="action-message" class="mt-2 text-sm leading-6 text-slate-600"></p>
+          <input id="action-input" class="hidden mt-3 w-full rounded-xl border border-sky-200 bg-white px-3 py-2.5 text-sm text-slate-700 focus:border-sky-400 focus:outline-none focus:ring-4 focus:ring-sky-100" />
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 border-t border-sky-100 bg-slate-50/80 p-4 sm:px-6">
+        <button id="action-cancel" type="button" class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-100">Hủy</button>
+        <button id="action-ok" type="button" class="rounded-xl bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-sky-700">Xác nhận</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const TEACHER_PIN = "0208";
     let isTeacherUnlocked = false;
@@ -194,14 +212,52 @@
       ok.focus();
     }
 
-    function toggleGlobalTeacherMode() {
+    function themedAction({title="Xác nhận", message="", icon="info", input=false, inputType="text", placeholder="", value="", confirmText="Xác nhận", cancelText="Hủy", showCancel=true} = {}) {
+      return new Promise(resolve => {
+        const modal = document.getElementById("action-modal");
+        const titleEl = document.getElementById("action-title");
+        const messageEl = document.getElementById("action-message");
+        const iconEl = document.getElementById("action-icon");
+        const inputEl = document.getElementById("action-input");
+        const ok = document.getElementById("action-ok");
+        const cancel = document.getElementById("action-cancel");
+        titleEl.textContent = title; messageEl.textContent = message;
+        iconEl.setAttribute("data-lucide", icon);
+        inputEl.classList.toggle("hidden", !input);
+        inputEl.type = inputType; inputEl.placeholder = placeholder; inputEl.value = value;
+        ok.textContent = confirmText; cancel.textContent = cancelText;
+        cancel.classList.toggle("hidden", !showCancel);
+        modal.classList.remove("hidden");
+        if (window.lucide) window.lucide.createIcons();
+        let finished = false;
+        const cleanup = result => {
+          if (finished) return; finished = true;
+          modal.classList.add("hidden"); ok.removeEventListener("click", onOk);
+          cancel.removeEventListener("click", onCancel); document.removeEventListener("keydown", onKey);
+          resolve(result);
+        };
+        const onOk = () => cleanup(input ? inputEl.value : true);
+        const onCancel = () => cleanup(null);
+        const onKey = e => { if (e.key === "Escape") cleanup(null); if (e.key === "Enter") { e.preventDefault(); cleanup(input ? inputEl.value : true); } };
+        ok.addEventListener("click", onOk); cancel.addEventListener("click", onCancel); document.addEventListener("keydown", onKey);
+        (input ? inputEl : ok).focus();
+      });
+    }
+    function themedPrompt(message, value="", options={}) {
+      return themedAction({title: options.title || "Nhập thông tin", message, icon: options.icon || "pencil", input:true, inputType: options.inputType || "text", placeholder: options.placeholder || "", value, confirmText: options.confirmText || "Lưu"});
+    }
+    function themedConfirm(message, options={}) {
+      return themedAction({title: options.title || "Xác nhận", message, icon: options.icon || "circle-help", confirmText: options.confirmText || "Đồng ý", cancelText: options.cancelText || "Hủy"});
+    }
+
+    async function toggleGlobalTeacherMode() {
       if (isTeacherUnlocked) {
         isTeacherUnlocked = false;
         document.getElementById('global-lock-icon').setAttribute('data-lucide', 'lock');
         document.querySelectorAll('.teacher-feature').forEach(el => el.classList.add('hidden'));
         showNotice("Đã khóa chế độ chỉnh sửa.", "Đã khóa", "lock");
       } else {
-        const pin = prompt("Nhập mã PIN Giáo viên:");
+        const pin = await themedPrompt("Nhập mã PIN Giáo viên để mở khóa chỉnh sửa.", "", {title:"Mở khóa Giáo viên", icon:"lock-keyhole", inputType:"password", placeholder:"Mã PIN", confirmText:"Mở khóa"});
         if (pin === TEACHER_PIN) {
           isTeacherUnlocked = true;
           document.getElementById('global-lock-icon').setAttribute('data-lucide', 'unlock');
@@ -271,21 +327,21 @@
     function changeWeek(step) { currentViewingWeek += step; if (currentViewingWeek < 1) currentViewingWeek = 1; updateWeekUI(); renderTable(); }
     function goToCurrentWeek() { currentViewingWeek = ACTUAL_CURRENT_WEEK; updateWeekUI(); renderTable(); }
 
-    function copyToNextWeek() {
+    async function copyToNextWeek() {
       if (!isTeacherUnlocked) return showNotice("Vui lòng mở khóa Giáo viên bằng biểu tượng ổ khóa ở góc dưới bên phải.", "Cần mở khóa", "lock-keyhole");
       const nextWeekNum = currentViewingWeek + 1;
-      if (confirm(`Chép toàn bộ lịch sang Week ${nextWeekNum}?`)) {
+      if (await themedConfirm(`Chép toàn bộ lịch sang Week ${nextWeekNum}?`, {title:"Nhân bản lịch", icon:"copy", confirmText:"Nhân bản"})) {
         allWeeksSchedule[nextWeekNum] = JSON.parse(JSON.stringify(getCurrentWeekSchedule()));
         persist(); changeWeek(1);
       }
     }
 
-    function editClassNameInline(rowIndex) {
+    async function editClassNameInline(rowIndex) {
       if (!isTeacherUnlocked) return showNotice("Vui lòng mở khóa Giáo viên bằng biểu tượng ổ khóa ở góc dưới bên phải để sửa tên lớp.", "Cần mở khóa", "lock-keyhole");
       const schedule = getCurrentWeekSchedule();
       const row = schedule[rowIndex];
       if (row.isSpecial) return;
-      const newName = prompt("Nhập tên mới cho lớp:", row.name);
+      const newName = await themedPrompt("Nhập tên mới cho lớp:", row.name, {title:"Đổi tên lớp", icon:"pencil", confirmText:"Lưu tên"});
       if (newName && newName.trim() && newName.trim() !== row.name) {
         row.name = newName.trim();
         persist(); renderTable();
@@ -525,9 +581,9 @@
       closeLinkModal();
     }
 
-    function addNewClass() {
+    async function addNewClass() {
       if (!isTeacherUnlocked) return;
-      const name = prompt("Tên lớp mới:");
+      const name = await themedPrompt("Nhập tên lớp muốn thêm vào thời khóa biểu.", "", {title:"Thêm lớp mới", icon:"plus-circle", placeholder:"Tên lớp", confirmText:"Thêm lớp"});
       if (name && name.trim()) {
         const safeName = name.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/[^a-z0-9]/g, '-');
         getCurrentWeekSchedule().push({
