@@ -21,6 +21,20 @@
     ::-webkit-scrollbar{width:7px;height:7px}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:10px}
   </style>
 
+
+<style id="lms-full-width-responsive">
+  html, body { width:100%; max-width:100%; }
+  body { overflow-x:hidden; }
+  main, header > div, body > div { box-sizing:border-box; }
+  img, video, canvas, iframe { max-width:100%; }
+  input, select, textarea { max-width:100%; min-width:0; }
+  table { max-width:100%; }
+  @media (max-width: 640px) {
+    .overflow-x-auto { -webkit-overflow-scrolling:touch; }
+    header .min-w-\[140px\] { min-width:0; }
+    body { padding-left:0; padding-right:0; }
+  }
+</style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col relative">
 
@@ -32,7 +46,7 @@
   </button>
 
   <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
-    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="w-full max-w-none mx-auto px-3 sm:px-5 lg:px-7 py-3 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <a href="index.html" class="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-slate-800 transition flex items-center gap-1 text-xs font-semibold">
           <i data-lucide="arrow-left" class="w-4 h-4"></i><span>Lịch tổng quan</span>
@@ -53,7 +67,7 @@
     </div>
   </header>
 
-  <main class="flex-1 max-w-5xl w-full mx-auto p-4 sm:p-6 space-y-6">
+  <main class="flex-1 w-full max-w-none mx-auto px-3 sm:px-5 lg:px-7 py-4 sm:py-6 space-y-6">
     <div class="bg-gradient-to-r from-[#285f83] to-[#244a66] rounded-2xl p-6 text-white shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div class="flex-1">
         <div class="flex items-center gap-2">
@@ -96,19 +110,19 @@
     <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-5">
       <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2 mb-3"><i data-lucide="book-open" class="w-4 h-4 text-sky-600"></i><span>Học Liệu & Bài Tập Trong Tuần</span></h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2">
-          <div class="flex items-center justify-between">
+        <div class="p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3">
+          <div class="flex items-center justify-between gap-2">
             <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5"><i data-lucide="presentation" class="w-4 h-4 text-sky-600"></i>Bài học tuần</span>
-            <a id="link-lesson-btn" href="#" target="_blank" class="hidden text-xs text-sky-600 hover:underline font-semibold flex items-center gap-1"><span>Mở bài</span> <i data-lucide="external-link" class="w-3 h-3"></i></a>
+            <button type="button" id="add-lesson-link" class="teacher-feature hidden items-center gap-1 rounded-lg bg-sky-100 hover:bg-sky-200 px-2.5 py-1.5 text-xs font-bold text-sky-800" title="Thêm bài học"><i data-lucide="plus" class="w-3.5 h-3.5"></i> Thêm</button>
           </div>
-          <input type="text" id="input-lesson-link" placeholder="Dán link Google Slides..." class="teacher-feature hidden w-full text-xs p-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-sky-500">
+          <div id="lesson-links-list" class="space-y-2"></div>
         </div>
-        <div class="p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2">
-          <div class="flex items-center justify-between">
+        <div class="p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3">
+          <div class="flex items-center justify-between gap-2">
             <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5"><i data-lucide="file-check-2" class="w-4 h-4 text-sky-600"></i>Bài tập (Homework)</span>
-            <a id="link-hw-btn" href="#" target="_blank" class="hidden text-xs text-sky-600 hover:underline font-semibold flex items-center gap-1"><span>Mở bài</span> <i data-lucide="external-link" class="w-3 h-3"></i></a>
+            <button type="button" id="add-hw-link" class="teacher-feature hidden items-center gap-1 rounded-lg bg-sky-100 hover:bg-sky-200 px-2.5 py-1.5 text-xs font-bold text-sky-800" title="Thêm bài tập"><i data-lucide="plus" class="w-3.5 h-3.5"></i> Thêm</button>
           </div>
-          <input type="text" id="input-hw-link" placeholder="Dán link Google Form..." class="teacher-feature hidden w-full text-xs p-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-sky-500">
+          <div id="hw-links-list" class="space-y-2"></div>
         </div>
       </div>
       <div class="teacher-feature hidden mt-3 justify-end">
@@ -393,25 +407,43 @@ function themedPinNotice(message, title='Thông báo'){
       const statuses = getSessionStatuses(); if (val) statuses[sessionKey] = val; else delete statuses[sessionKey]; saveSessionStatuses(statuses); renderSchedule();
     };
 
+    function normalizeLinkItems(value) {
+      if (Array.isArray(value)) return value.map(v => typeof v === 'string' ? { title: '', url: v } : { title: v.title || '', url: v.url || '' });
+      return value ? [{ title: '', url: value }] : [];
+    }
+    function renderLinkItems(containerId, values, kind) {
+      const container = document.getElementById(containerId);
+      const items = normalizeLinkItems(values);
+      if (!items.length) items.push({ title: '', url: '' });
+      container.innerHTML = items.map((item, i) => {
+        const title = String(item.title || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+        const url = String(item.url || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+        const placeholder = kind === 'lesson' ? 'Tên bài học (không bắt buộc)' : 'Tên bài tập (không bắt buộc)';
+        const urlPlaceholder = kind === 'lesson' ? 'Dán link Google Slides...' : 'Dán link Google Form...';
+        const safeUrl = /^https?:\/\//i.test(item.url || '') ? item.url : '#';
+        return `<div class="link-item-row space-y-1.5" data-kind="${kind}"><div class="flex gap-2"><input data-field="title" value="${title}" placeholder="${placeholder}" class="teacher-feature hidden min-w-0 flex-1 text-xs p-2.5 bg-white border border-slate-200 rounded-lg"><input data-field="url" value="${url}" placeholder="${urlPlaceholder}" class="teacher-feature hidden min-w-0 flex-1 text-xs p-2.5 bg-white border border-slate-200 rounded-lg"><button type="button" class="teacher-feature hidden remove-link-row shrink-0 rounded-lg border border-slate-200 bg-white px-2 text-slate-500 hover:bg-rose-50 hover:text-rose-600" title="Xóa dòng"><i data-lucide="x" class="w-4 h-4"></i></button></div><div class="link-public-view ${item.url ? '' : 'hidden'}"><a href="${safeUrl}" target="_blank" rel="noopener" class="text-xs text-sky-700 hover:underline font-semibold inline-flex items-center gap-1">${title || (kind === 'lesson' ? `Mở bài học ${i+1}` : `Mở bài tập ${i+1}`)} <i data-lucide="external-link" class="w-3 h-3"></i></a></div></div>`;
+      }).join('');
+      container.querySelectorAll('.remove-link-row').forEach(btn => btn.addEventListener('click', () => { btn.closest('.link-item-row').remove(); if (!container.querySelector('.link-item-row')) renderLinkItems(containerId, [], kind); }));
+      if (window.lucide) lucide.createIcons();
+    }
+    function collectLinkItems(containerId) {
+      return [...document.querySelectorAll(`#${containerId} .link-item-row`)].map(row => ({ title: row.querySelector('[data-field="title"]').value.trim(), url: row.querySelector('[data-field="url"]').value.trim() })).filter(item => item.title || item.url);
+    }
     function renderWeekLinks() {
       const weekDates = getWeekDates(currentWeekOffset);
-      const weekKey = getLmsWeekKey(weekDates[0]);
-      const links = getWeekLinks(weekKey);
-
-      document.getElementById("input-lesson-link").value = links.lesson || "";
-      document.getElementById("input-hw-link").value = links.hw || "";
-      document.getElementById("link-lesson-btn").href = links.lesson || "#";
-      document.getElementById("link-lesson-btn").classList.toggle("hidden", !links.lesson);
-      document.getElementById("link-hw-btn").href = links.hw || "#";
-      document.getElementById("link-hw-btn").classList.toggle("hidden", !links.hw);
+      const links = getWeekLinks(getLmsWeekKey(weekDates[0]));
+      renderLinkItems('lesson-links-list', links.lessons || links.lesson, 'lesson');
+      renderLinkItems('hw-links-list', links.homeworks || links.hw, 'hw');
+      if (typeof isTeacherUnlocked !== 'undefined' && isTeacherUnlocked) {
+        document.querySelectorAll('#lesson-links-list input, #lesson-links-list .remove-link-row, #hw-links-list input, #hw-links-list .remove-link-row').forEach(el => el.classList.remove('hidden'));
+      }
     }
-
+    document.getElementById('add-lesson-link').addEventListener('click', () => { if (!isTeacherUnlocked) return; const items = collectLinkItems('lesson-links-list'); items.push({title:'',url:''}); renderLinkItems('lesson-links-list', items, 'lesson'); document.querySelectorAll('#lesson-links-list input, #lesson-links-list .remove-link-row').forEach(el => el.classList.remove('hidden')); });
+    document.getElementById('add-hw-link').addEventListener('click', () => { if (!isTeacherUnlocked) return; const items = collectLinkItems('hw-links-list'); items.push({title:'',url:''}); renderLinkItems('hw-links-list', items, 'hw'); document.querySelectorAll('#hw-links-list input, #hw-links-list .remove-link-row').forEach(el => el.classList.remove('hidden')); });
     document.getElementById("btn-save-links").addEventListener("click", () => {
+      if (!isTeacherUnlocked) return;
       const weekDates = getWeekDates(currentWeekOffset);
-      saveWeekLinks(getLmsWeekKey(weekDates[0]), {
-        lesson: document.getElementById("input-lesson-link").value.trim(),
-        hw: document.getElementById("input-hw-link").value.trim()
-      });
+      saveWeekLinks(getLmsWeekKey(weekDates[0]), { lessons: collectLinkItems('lesson-links-list'), homeworks: collectLinkItems('hw-links-list') });
       renderWeekLinks(); alert("Đã lưu học liệu tuần thành công!");
     });
 
