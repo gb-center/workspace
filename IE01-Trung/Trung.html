@@ -22,6 +22,7 @@
 
   <div class="max-w-2xl mx-auto space-y-5">
     
+    <!-- HEADER -->
     <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex items-center justify-between">
       <div class="flex items-center gap-3 flex-1">
         <div class="w-11 h-11 rounded-xl bg-emerald-600 text-white font-bold flex items-center justify-center text-sm shadow-xs shrink-0 uppercase" id="student-avatar">MK</div>
@@ -36,60 +37,93 @@
       <a id="btn-back-to-class" href="index.html" class="text-xs text-emerald-700 font-semibold hover:underline flex items-center gap-1 shrink-0 p-1.5 hover:bg-emerald-50 rounded-lg transition"><span>Về trang lớp</span><i data-lucide="chevron-right" class="w-4 h-4"></i></a>
     </div>
 
-    <!-- KHỐI 1: HỌC LIỆU TUẦN -->
-    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-3">
-      <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
-        <h3 class="font-bold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-1.5"><i data-lucide="calendar-check" class="w-4 h-4 text-emerald-600"></i><span>Học Liệu & Bài Tập Tuần</span></h3>
-        <span class="text-[10px] text-slate-400 font-medium" id="week-label-sync">Đang đồng bộ...</span>
-      </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-        <a id="btn-class-lesson" href="#" target="_blank" class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50/50 hover:border-emerald-200 transition flex items-center justify-between group">
-          <div class="flex items-center gap-2.5"><div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0"><i data-lucide="presentation" class="w-4 h-4"></i></div>
-            <div><div class="text-xs font-bold text-slate-800 group-hover:text-emerald-700 transition">Slide / Bài học</div><div class="text-[10px] text-slate-400">Xem lý thuyết</div></div>
-          </div><i data-lucide="external-link" class="w-4 h-4 text-slate-300 group-hover:text-emerald-600 transition"></i>
-        </a>
-        <a id="btn-class-hw" href="#" target="_blank" class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-indigo-50/50 hover:border-indigo-200 transition flex items-center justify-between group">
-          <div class="flex items-center gap-2.5"><div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0"><i data-lucide="file-text" class="w-4 h-4"></i></div>
-            <div><div class="text-xs font-bold text-slate-800 group-hover:text-indigo-700 transition">Bài tập tuần</div><div class="text-[10px] text-slate-400">Xem câu hỏi & đề bài</div></div>
-          </div><i data-lucide="external-link" class="w-4 h-4 text-slate-300 group-hover:text-indigo-600 transition"></i>
-        </a>
-      </div>
-    </div>
-
-    <!-- KHỐI 2: ANSWER SHEET RIÊNG -->
+    <!-- KHỐI 1: BÀI TẬP VÀ LÀM BÀI TRỰC TIẾP -->
     <div class="bg-gradient-to-br from-emerald-800 to-[#234336] rounded-2xl p-5 text-white shadow-sm space-y-3">
       <div class="flex items-center justify-between">
-        <span class="text-[11px] font-semibold uppercase tracking-wider text-emerald-200">Answer Sheet Cá Nhân</span>
-        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/30 text-emerald-100 border border-emerald-400/30">Chấm & Nhận Xét Riêng</span>
+        <span class="text-[11px] font-semibold uppercase tracking-wider text-emerald-200">Bài tập tuần</span>
+        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/30 text-emerald-100 border border-emerald-400/30">Tự động nộp bài</span>
       </div>
-      <div><h3 class="text-lg font-bold">Nộp Bài & Trả Bài Của Em</h3></div>
-      <div class="pt-2 flex items-center gap-2">
-        <a id="btn-sheet" href="https://docs.google.com" target="_blank" class="flex-1 py-2.5 px-4 bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2">
-          <i data-lucide="file-edit" class="w-4 h-4"></i><span>Mở File Answer Sheet</span>
-        </a>
-        <button onclick="editAnswerSheetUrl()" class="teacher-feature hidden p-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl border border-white/20 transition" title="Cài đặt link Answer Sheet">
-          <i data-lucide="settings" class="w-4 h-4"></i>
+
+      <div>
+        <h3 class="text-lg font-bold" id="hw-title-display">Bài tập tuần hiện tại</h3>
+        <p class="text-xs text-emerald-100/80 mt-0.5">Nhấp nút bên dưới để mở giao diện làm bài. Em được phép nộp tối đa 02 lần.</p>
+      </div>
+
+      <div class="pt-2 flex flex-col sm:flex-row gap-2">
+        <button onclick="openSubmitModal()" id="btn-open-submit" class="flex-1 py-2.5 px-4 bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2">
+          <i data-lucide="pen-tool" class="w-4 h-4"></i><span>Làm & Nộp bài tập tuần này</span>
         </button>
+        <a id="btn-class-lesson" href="#" target="_blank" class="py-2.5 px-4 bg-white/10 hover:bg-white/20 text-white font-semibold text-xs rounded-xl border border-white/20 transition flex items-center justify-center gap-2">
+          <i data-lucide="presentation" class="w-4 h-4"></i><span>Slide bài giảng</span>
+        </a>
+      </div>
+      
+      <div class="text-right text-[10px] text-emerald-200/70" id="submission-count-text">
+        Số lần nộp: 0/2
       </div>
     </div>
 
-    <!-- KHỐI 3: BẢNG TIẾN ĐỘ GOOGLE SHEET -->
+    <!-- KHỐI 2: TIẾN ĐỘ THEO TUẦN (APPS SCRIPT) -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div>
+          <h3 class="font-bold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="bar-chart-3" class="w-4 h-4 text-emerald-600"></i><span>Tiến Độ Làm Bài & Điểm Số</span>
+          </h3>
+          <p class="text-[11px] text-slate-400 mt-0.5">Đồng bộ tự động theo thời gian thực.</p>
+        </div>
+        <button onclick="configureScriptUrl()" class="teacher-feature hidden text-xs font-semibold px-2.5 py-1 bg-slate-50 text-slate-600 hover:bg-slate-100 rounded-lg transition border border-slate-200 flex items-center gap-1">
+          <i data-lucide="settings" class="w-3.5 h-3.5"></i><span>Cài Apps Script</span>
+        </button>
+      </div>
+
+      <div class="flex items-center justify-between bg-slate-50 p-2 rounded-xl border border-slate-200">
+        <button onclick="changeProgressWeek(-1)" class="p-1.5 hover:bg-white rounded-lg text-slate-600 transition" title="Tuần trước"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+        <div class="text-center">
+          <div class="text-xs font-bold text-slate-900" id="progress-week-title">Đang tải...</div>
+          <div class="text-[10px] text-slate-500 font-medium" id="progress-week-date">...</div>
+        </div>
+        <button onclick="changeProgressWeek(1)" class="p-1.5 hover:bg-white rounded-lg text-slate-600 transition" title="Tuần sau"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+      </div>
+
+      <div id="progress-card-content" class="space-y-3">
+        <div id="progress-loading" class="py-8 text-center text-slate-400 text-xs">
+          <i data-lucide="loader" class="w-5 h-5 animate-spin mx-auto text-emerald-600 mb-1.5"></i>Đang tải dữ liệu tiến độ...
+        </div>
+
+        <div id="progress-details" class="hidden space-y-3">
+          <div class="grid grid-cols-2 gap-3">
+            <div class="p-3 bg-emerald-50/50 border border-emerald-100 rounded-xl">
+              <span class="text-[10px] uppercase font-bold text-emerald-700">Tỷ lệ hoàn thành</span>
+              <div class="text-lg font-extrabold text-emerald-900 mt-0.5" id="val-completed">0/4</div>
+            </div>
+            <div class="p-3 bg-indigo-50/50 border border-indigo-100 rounded-xl">
+              <span class="text-[10px] uppercase font-bold text-indigo-700">Kĩ năng trọng tâm</span>
+              <div class="text-xs font-bold text-indigo-950 mt-1 truncate" id="val-skill">Chưa có</div>
+            </div>
+          </div>
+          <div class="p-3.5 bg-slate-50 border border-slate-100 rounded-xl">
+            <div class="text-[11px] font-bold text-slate-700 mb-2 flex items-center justify-between">
+              <span>Điểm số & Số câu đúng:</span>
+              <span class="text-[10px] px-2 py-0.5 bg-white border border-slate-200 rounded text-slate-500 font-normal">Cập nhật bởi giáo viên</span>
+            </div>
+            <div class="text-xs font-semibold text-slate-800 bg-white p-2.5 rounded-lg border border-slate-200 shadow-2xs" id="val-scores">
+              R: 0.0 | W: 0.0 | L: 0.0 | S: 0.0
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KHỐI 3: ANSWER SHEET RIÊNG -->
     <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-3">
       <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-        <div><h3 class="font-bold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-1.5"><i data-lucide="table" class="w-4 h-4 text-emerald-600"></i><span>Tiến Độ Làm Bài & Điểm Số</span></h3></div>
-        <div class="teacher-feature hidden items-center gap-2">
-          <button onclick="configureProgressSheet()" class="text-xs font-semibold px-2.5 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg transition flex items-center gap-1 border border-emerald-200">
-            <i data-lucide="settings" class="w-3.5 h-3.5"></i><span>Cài link Sheet</span>
-          </button>
-        </div>
+        <h3 class="font-bold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-1.5"><i data-lucide="file-edit" class="w-4 h-4 text-emerald-600"></i><span>Answer Sheet Chấm Riêng</span></h3>
+        <button onclick="editAnswerSheetUrl()" class="teacher-feature hidden text-slate-400 hover:text-emerald-700 transition rounded p-1" title="Cài đặt link Answer Sheet"><i data-lucide="settings" class="w-3.5 h-3.5"></i></button>
       </div>
-      <div id="embed-sheet-wrapper" class="w-full border border-slate-200 rounded-xl overflow-hidden bg-slate-50 min-h-[320px] flex flex-col justify-center items-center">
-        <div id="embed-placeholder" class="text-center p-6 space-y-2">
-          <i data-lucide="file-spreadsheet" class="w-8 h-8 text-slate-300 mx-auto"></i>
-          <p class="text-xs text-slate-500 font-medium">Chưa liên kết với Google Sheet tiến độ.</p>
-        </div>
-        <iframe id="embed-sheet-frame" src="" class="hidden w-full h-[380px] border-0"></iframe>
-      </div>
+      <a id="btn-sheet" href="https://docs.google.com" target="_blank" class="w-full py-2.5 px-4 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-bold text-xs rounded-xl border border-emerald-200 transition flex items-center justify-center gap-2">
+        <i data-lucide="external-link" class="w-4 h-4"></i><span>Mở File Answer Sheet Của Em</span>
+      </a>
     </div>
 
     <!-- KHỐI 4: THÔNG BÁO HỌC PHÍ -->
@@ -120,7 +154,30 @@
     </div>
   </div>
 
+  <!-- MODAL NỘP BÀI -->
+  <div id="submit-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-5 sm:p-6 space-y-4 shadow-xl border border-slate-100">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center"><i data-lucide="file-check" class="w-4 h-4"></i></div>
+          <div><h4 class="font-bold text-slate-900 text-sm">Làm & Nộp Bài Tập</h4><p class="text-[11px] text-slate-400">Dữ liệu được chuyển thẳng cho Giáo viên</p></div>
+        </div>
+        <button onclick="closeSubmitModal()" class="text-slate-400 hover:text-slate-600 p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <div><label class="block font-bold text-slate-700 mb-1">Họ và tên học sinh:</label><input type="text" id="modal-student-name" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-semibold outline-none focus:border-emerald-500" readonly></div>
+        <div><label class="block font-bold text-slate-700 mb-1">Tuần làm bài:</label><input type="text" id="modal-week-name" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-600 outline-none" readonly></div>
+        <div><label class="block font-bold text-slate-700 mb-1">Link bài nộp hoặc Text câu trả lời:</label><textarea id="modal-homework-content" rows="4" placeholder="Dán link hoặc nhập câu trả lời của em tại đây..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-emerald-500"></textarea></div>
+      </div>
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+        <button onclick="closeSubmitModal()" class="px-4 py-2 text-xs font-semibold text-slate-500 hover:bg-slate-100 rounded-xl transition">Hủy</button>
+        <button id="btn-submit-hw" onclick="submitHomeworkToGoogle()" class="px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl transition flex items-center gap-1.5 shadow-xs"><i data-lucide="send" class="w-3.5 h-3.5"></i><span>Gửi bài nộp</span></button>
+      </div>
+    </div>
+  </div>
+
   <script>
+    // --- 1. MẬT KHẨU & KHÓA GIÁO VIÊN ---
     const TEACHER_PIN = "0208";
     let isTeacherUnlocked = false;
 
@@ -144,6 +201,7 @@
       lucide.createIcons();
     }
 
+    // --- 2. NHẬN DIỆN HỌC SINH ---
     const urlParams = new URLSearchParams(window.location.search);
     let targetClass = urlParams.get('class');
     let targetStudent = urlParams.get('student');
@@ -173,6 +231,7 @@
     updateAvatar(targetStudent);
     nameInput.addEventListener('input', () => { targetStudent = nameInput.value; updateAvatar(targetStudent); document.title = `Hồ Sơ: ${targetStudent}`; });
 
+    // --- 3. QUẢN LÝ TUẦN & TIẾN ĐỘ ---
     function getWeekKey(d = new Date()) {
       const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
       const dayNum = date.getUTCDay() || 7; date.setUTCDate(date.getUTCDate() + 4 - dayNum);
@@ -180,11 +239,12 @@
       return `${date.getUTCFullYear()}_W${Math.ceil((((date - yearStart) / 86400000) + 1) / 7)}`;
     }
     const currentWeekKey = getWeekKey();
-    document.getElementById("week-label-sync").textContent = `Tuần: ${currentWeekKey}`;
+    let currentProgressWeek = currentWeekKey;
 
     const classLinks = JSON.parse(localStorage.getItem(`class_${targetClass}_week_links`) || '{}')[currentWeekKey] || {};
     document.getElementById("btn-class-lesson").href = classLinks.lesson || "#";
-    document.getElementById("btn-class-hw").href = classLinks.hw || "#";
+    document.getElementById("btn-class-lesson").classList.toggle("hidden", !classLinks.lesson);
+    document.getElementById("hw-title-display").textContent = `Bài tập Tuần ${currentWeekKey.split('_W')[1] || ''}`;
 
     const attKey = `class_${targetClass}_att_${currentWeekKey}`;
     document.getElementById("attendance-summary").textContent = (JSON.parse(localStorage.getItem(attKey) || '{}')[targetStudent] !== false) ? "Chuyên cần: 100% (Có mặt)" : "Chuyên cần: Vắng";
@@ -198,22 +258,173 @@
       if (newUrl && newUrl.trim()) { localStorage.setItem(sheetKey, newUrl.trim()); document.getElementById('btn-sheet').href = newUrl.trim(); }
     }
 
-    const progressSheetKey = `student_${targetClass}_${targetStudent}_progress_sheet_url`;
-    function renderProgressSheet() {
-      const savedUrl = localStorage.getItem(progressSheetKey);
-      const frame = document.getElementById('embed-sheet-frame'), placeholder = document.getElementById('embed-placeholder');
-      if (savedUrl && savedUrl.trim()) {
-        frame.src = savedUrl.trim().includes('/edit') ? savedUrl.trim().replace(/\/edit.*$/, '/pubhtml?widget=true&headers=false') : savedUrl.trim();
-        frame.classList.remove('hidden'); placeholder.classList.add('hidden');
-      } else { frame.classList.add('hidden'); placeholder.classList.remove('hidden'); }
-    }
-    function configureProgressSheet() {
+    // --- 4. APPS SCRIPT ĐỒNG BỘ TIẾN ĐỘ ---
+    let progressData = [];
+    let currentProgressIndex = 0;
+
+    function getScriptUrl() { return localStorage.getItem("apps_script_url") || ""; }
+
+    function configureScriptUrl() {
       if (!isTeacherUnlocked) return;
-      const url = prompt("Dán link Google Sheet tiến độ:", localStorage.getItem(progressSheetKey) || "");
-      if (url !== null) { url.trim() ? localStorage.setItem(progressSheetKey, url.trim()) : localStorage.removeItem(progressSheetKey); renderProgressSheet(); }
+      const url = prompt("Dán link Web App Google Apps Script:", getScriptUrl());
+      if (url !== null) { localStorage.setItem("apps_script_url", url.trim()); loadProgressFromGoogle(); }
     }
 
-    const tuitionKey = `student_${targetClass}_${targetStudent}_tuition_m${new Date().getMonth() + 1}`;
+    async function loadProgressFromGoogle() {
+      const scriptUrl = getScriptUrl();
+      const loadingEl = document.getElementById("progress-loading");
+      const detailsEl = document.getElementById("progress-details");
+
+      if (!scriptUrl) {
+        // Mockup data nếu chưa cài link
+        progressData = [
+          { week: "Tuần 7", date: "19/10 - 25/10", skill: "Reading Practice", completed: "2/4", score: "R: 6.5 | W: 0.0 | L: 0.0 | S: 0.0" },
+          { week: `Tuần ${currentWeekKey.split('_W')[1]}`, date: "Tuần hiện tại", skill: "Writing Task 1", completed: "0/4", score: "R: 0.0 | W: 0.0 | L: 0.0 | S: 0.0" }
+        ];
+        currentProgressIndex = progressData.length - 1;
+        renderProgressWeek();
+        return;
+      }
+
+      loadingEl.classList.remove("hidden");
+      detailsEl.classList.add("hidden");
+
+      try {
+        const response = await fetch(`${scriptUrl}?sheet=${encodeURIComponent(targetStudent)}`);
+        const res = await response.json();
+        if (res.success && res.data.length > 0) {
+          progressData = res.data;
+          currentProgressIndex = progressData.length - 1;
+          renderProgressWeek();
+        } else {
+          loadingEl.innerHTML = `<span class="text-rose-500">Không tìm thấy dữ liệu cho học sinh này.</span>`;
+        }
+      } catch (err) {
+        loadingEl.innerHTML = `<span class="text-rose-500">Lỗi nạp dữ liệu từ Apps Script.</span>`;
+      }
+    }
+
+    function renderProgressWeek() {
+      if (progressData.length === 0) return;
+      const current = progressData[currentProgressIndex];
+
+      document.getElementById("progress-week-title").textContent = current.week;
+      document.getElementById("progress-week-date").textContent = current.date || "";
+      document.getElementById("val-completed").textContent = current.completed || "0/4";
+      document.getElementById("val-skill").textContent = current.skill || "Chưa cập nhật";
+      document.getElementById("val-scores").textContent = current.score || "R: 0.0 | W: 0.0 | L: 0.0 | S: 0.0";
+      document.getElementById("modal-week-name").value = current.week;
+
+      document.getElementById("progress-loading").classList.add("hidden");
+      document.getElementById("progress-details").classList.remove("hidden");
+    }
+
+    function changeProgressWeek(step) {
+      if (progressData.length === 0) return;
+      const newIndex = currentProgressIndex + step;
+      if (newIndex >= 0 && newIndex < progressData.length) {
+        currentProgressIndex = newIndex;
+        renderProgressWeek();
+      }
+    }
+
+    // --- 5. NỘP BÀI (TỐI ĐA 2 LẦN) ---
+    function getSubmissionCount() {
+      const key = `sub_${targetClass}_${targetStudent}_${currentWeekKey}`;
+      return parseInt(localStorage.getItem(key) || "0");
+    }
+
+    function updateSubmissionUI() {
+      const count = getSubmissionCount();
+      document.getElementById("submission-count-text").textContent = `Số lần nộp: ${count}/2`;
+      const btn = document.getElementById("btn-open-submit");
+      if (count >= 2) {
+        btn.disabled = true;
+        btn.classList.replace("bg-emerald-500", "bg-slate-400");
+        btn.classList.replace("hover:bg-emerald-400", "cursor-not-allowed");
+        btn.innerHTML = `<i data-lucide="lock" class="w-4 h-4"></i><span>Đã nộp bài (Hết lượt)</span>`;
+      }
+      lucide.createIcons();
+    }
+
+    function openSubmitModal() {
+      if (getSubmissionCount() >= 2) return alert("Em đã hết lượt nộp bài cho tuần này!");
+      document.getElementById("modal-student-name").value = targetStudent;
+      
+      // Lấy tên tuần từ tiến độ
+      const weekName = progressData[currentProgressIndex]?.week || `Tuần ${currentWeekKey.split('_W')[1]}`;
+      document.getElementById("modal-week-name").value = weekName;
+      
+      document.getElementById("submit-modal").classList.remove("hidden");
+    }
+
+    function closeSubmitModal() { document.getElementById("submit-modal").classList.add("hidden"); }
+
+    async function submitHomeworkToGoogle() {
+      if (getSubmissionCount() >= 2) {
+        alert("Em đã hết lượt nộp bài cho tuần này!");
+        closeSubmitModal(); return;
+      }
+
+      const content = document.getElementById("modal-homework-content").value.trim();
+      const scriptUrl = getScriptUrl();
+
+      if (!content) return alert("Vui lòng nhập nội dung hoặc link bài làm!");
+
+      const submitBtn = document.getElementById("btn-submit-hw");
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Đang gửi...";
+
+      if (!scriptUrl) {
+        // Mockup nếu chưa cài Apps Script
+        setTimeout(() => {
+          alert(`Đã nhận bài thành công!\n(Dán link Apps Script để lưu trực tiếp vào Drive).`);
+          completeSubmission();
+        }, 800);
+        return;
+      }
+
+      try {
+        const payload = {
+          studentName: targetStudent,
+          className: targetClass,
+          week: document.getElementById("modal-week-name").value,
+          content: content
+        };
+        await fetch(scriptUrl, {
+          method: "POST", mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        alert("Nộp bài thành công! Thầy/Cô đã nhận được bài của em.");
+        completeSubmission();
+      } catch (err) {
+        alert("Có lỗi khi nộp bài. Vui lòng thử lại!");
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<i data-lucide="send" class="w-3.5 h-3.5"></i> <span>Gửi bài nộp</span>`;
+        lucide.createIcons();
+      }
+    }
+
+    function completeSubmission() {
+      const key = `sub_${targetClass}_${targetStudent}_${currentWeekKey}`;
+      const newCount = getSubmissionCount() + 1;
+      localStorage.setItem(key, newCount.toString());
+      document.getElementById("modal-homework-content").value = "";
+      closeSubmitModal();
+      updateSubmissionUI();
+      
+      const submitBtn = document.getElementById("btn-submit-hw");
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = `<i data-lucide="send" class="w-3.5 h-3.5"></i> <span>Gửi bài nộp</span>`;
+      lucide.createIcons();
+    }
+
+    // --- 6. HỌC PHÍ ---
+    const currentMonth = new Date().getMonth() + 1;
+    document.getElementById("current-month-label").textContent = currentMonth < 10 ? `0${currentMonth}` : currentMonth;
+
+    const tuitionKey = `student_${targetClass}_${targetStudent}_tuition_m${currentMonth}`;
     const tData = JSON.parse(localStorage.getItem(tuitionKey) || '{"amount":"1.200.000 đ","status":"unpaid","date":""}');
     document.getElementById("input-tuition-amount").value = tData.amount;
     document.getElementById("select-tuition-status").value = tData.status;
@@ -237,7 +448,11 @@
       lockTuitionForm(); alert("Đã lưu!");
     });
 
-    renderProgressSheet(); lockTuitionForm(); lucide.createIcons();
+    // --- KHỞI CHẠY ---
+    loadProgressFromGoogle();
+    updateSubmissionUI();
+    lockTuitionForm(); 
+    lucide.createIcons();
   </script>
 </body>
 </html>

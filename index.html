@@ -385,6 +385,20 @@
       }
     }
 
+    // THÊM TÍNH NĂNG XÓA LỚP Ở ĐÂY
+    function deleteClass(id) {
+      if (!isTeacherUnlocked) return;
+      const schedule = getCurrentWeekSchedule();
+      const rowIndex = schedule.findIndex(r => r.id === id);
+      if (rowIndex > -1) {
+        if (confirm(`Bạn có chắc chắn muốn xóa lớp "${schedule[rowIndex].name}" không? Hành động này không thể hoàn tác.`)) {
+          schedule.splice(rowIndex, 1);
+          persist();
+          renderTable();
+        }
+      }
+    }
+
     function updateWeekUI() {
       const weekDays = getWeekDateRange(currentViewingWeek);
       const mon = weekDays[0];
@@ -557,7 +571,7 @@
 
         html += `<tr class="${isFree ? 'bg-emerald-50/20' : isBlocked ? 'bg-slate-50' : 'hover:bg-slate-50/60'} transition">`;
 
-        // CỘT CLASS VỚI TÍNH NĂNG NHẤP VÀO ĐỔI TÊN LỚP
+        // CỘT CLASS VỚI TÍNH NĂNG NHẤP VÀO ĐỔI TÊN LỚP VÀ NÚT XÓA LỚP
         html += `
           <td class="p-2 pl-3.5 sticky-col bg-white border-r border-slate-200">
             <div class="flex items-center justify-between gap-1">
@@ -573,6 +587,9 @@
                   </a>
                   <button onclick="openLinkModal('${row.id}')" title="Chỉnh link lớp" class="teacher-feature hidden p-1 rounded text-slate-400 hover:bg-slate-100 hover:text-slate-700">
                     <i data-lucide="settings" class="w-3.5 h-3.5"></i>
+                  </button>
+                  <button onclick="deleteClass('${row.id}')" title="Xóa lớp" class="teacher-feature hidden p-1 rounded text-slate-400 hover:bg-rose-100 hover:text-rose-600 transition">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                   </button>
                 </div>
               ` : ''}
