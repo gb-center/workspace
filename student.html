@@ -311,7 +311,9 @@
     renderResultHistory();
 
     const tuitionKey = `student_${classStorageId}_${studentStorageId}_tuition_${new Date().getFullYear()}_${String(new Date().getMonth()+1).padStart(2,"0")}`;
-    const tData = JSON.parse(localStorage.getItem(tuitionKey) || '{"amount":"1.200.000 đ","status":"unpaid","date":""}');
+    const registryTuition = sharedStudent && Number.isFinite(Number(sharedStudent.monthlyTuition)) ? Number(sharedStudent.monthlyTuition) : 1200000;
+    const defaultTuitionAmount = registryTuition.toLocaleString('vi-VN') + ' đ';
+    const tData = JSON.parse(localStorage.getItem(tuitionKey) || JSON.stringify({amount:defaultTuitionAmount,status:"unpaid",date:""}));
     document.getElementById("input-tuition-amount").value = tData.amount;
     document.getElementById("select-tuition-status").value = tData.status;
     document.getElementById("input-tuition-date").value = tData.date;
