@@ -152,6 +152,39 @@
     align-self: center;
   }
 </style>
+\n
+<style id="icon-first-toolbar-style">
+  .toolbar-action {
+    width: 2.45rem;
+    min-width: 2.45rem;
+    height: 2.45rem;
+    padding-left: .55rem !important;
+    padding-right: .55rem !important;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: width .18s ease, background-color .15s ease, border-color .15s ease !important;
+  }
+  .toolbar-action .toolbar-action-label {
+    display: inline-block;
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-width .18s ease, opacity .12s ease;
+  }
+  .toolbar-action:hover,
+  .toolbar-action:focus-visible {
+    width: auto;
+    max-width: 15rem;
+  }
+  .toolbar-action:hover .toolbar-action-label,
+  .toolbar-action:focus-visible .toolbar-action-label {
+    max-width: 12rem;
+    opacity: 1;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .toolbar-action, .toolbar-action .toolbar-action-label { transition: none !important; }
+  }
+</style>
 \n</head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col relative">
 
@@ -177,8 +210,8 @@
           <button onclick="goToCurrentWeek()" class="px-2 py-0.5 text-xs font-semibold text-slate-700 hover:bg-white rounded transition">Hiện tại</button>
           <button onclick="changeWeek(1)" class="p-1 hover:bg-white rounded transition text-slate-600"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
         </div>
-        <button onclick="copyToNextWeek()" class="teacher-feature hidden items-center gap-1 px-2.5 py-1 text-xs font-semibold text-sky-800 bg-sky-50 hover:bg-sky-100 rounded-lg transition border border-sky-200">
-          <i data-lucide="copy" class="w-3.5 h-3.5 text-sky-600"></i><span>Nhân bản sang tuần sau</span>
+        <button onclick="copyToNextWeek()" title="Nhân bản sang tuần sau" aria-label="Nhân bản sang tuần sau" class="toolbar-action teacher-feature hidden items-center justify-center gap-1 px-2.5 py-1 text-xs font-semibold text-sky-800 bg-sky-50 hover:bg-sky-100 rounded-lg transition border border-sky-200">
+          <i data-lucide="copy" class="w-4 h-4 text-sky-600"></i><span class="toolbar-action-label">Nhân bản sang tuần sau</span>
         </button>
       </div>
 
@@ -197,12 +230,12 @@
           <option value="day-asc">Ngày học gần nhất</option>
           <option value="time-asc">Giờ học sớm nhất</option>
         </select>
-        <button onclick="openHistoryModal()" title="Lịch sử thay đổi" class="teacher-feature hidden items-center gap-1 px-2.5 py-1 text-xs font-semibold text-sky-800 bg-sky-50 hover:bg-sky-100 rounded-lg border border-sky-200"><i data-lucide="history" class="w-3.5 h-3.5"></i><span>Lịch sử</span></button>
-        <button onclick="addNewClass()" class="teacher-feature hidden items-center gap-1 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border border-slate-300 transition">
-          <i data-lucide="plus" class="w-3.5 h-3.5 text-sky-600"></i><span>Thêm lớp</span>
+        <button onclick="openHistoryModal()" title="Lịch sử thay đổi" aria-label="Lịch sử thay đổi" class="toolbar-action teacher-feature hidden items-center justify-center gap-1 px-2.5 py-1 text-xs font-semibold text-sky-800 bg-sky-50 hover:bg-sky-100 rounded-lg border border-sky-200"><i data-lucide="history" class="w-4 h-4"></i><span class="toolbar-action-label">Lịch sử</span></button>
+        <button onclick="addNewClass()" title="Thêm lớp" aria-label="Thêm lớp" class="toolbar-action teacher-feature hidden items-center justify-center gap-1 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border border-slate-300 transition">
+          <i data-lucide="plus" class="w-4 h-4 text-sky-600"></i><span class="toolbar-action-label">Thêm lớp</span>
         </button>
-        <button onclick="openSheetModal()" class="teacher-feature hidden items-center gap-1 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border border-slate-300 transition">
-          <i data-lucide="sheet" class="w-3.5 h-3.5 text-sky-700"></i><span>Google Sheet</span>
+        <button onclick="openSheetModal()" title="Google Sheet" aria-label="Google Sheet" class="toolbar-action teacher-feature hidden items-center justify-center gap-1 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border border-slate-300 transition">
+          <i data-lucide="sheet" class="w-4 h-4 text-sky-700"></i><span class="toolbar-action-label">Google Sheet</span>
         </button>
         <button onclick="exportCSV()" class="p-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg border border-slate-300 transition"><i data-lucide="download" class="w-3.5 h-3.5"></i></button>
       </div>
@@ -468,10 +501,30 @@
       if (!allWeeksSchedule[currentViewingWeek]) {
         allWeeksSchedule[currentViewingWeek] = initialWeek7Data.map(r => ({ ...r, schedule: r.type === "blocked" ? [...r.schedule] : ["", "", "", "", "", "", ""] }));
       }
+      ensureClassesAcrossWeeks();
       return allWeeksSchedule[currentViewingWeek];
     }
 
+    function ensureClassesAcrossWeeks() {
+      const registry = new Map();
+      Object.values(allWeeksSchedule).forEach(week => (week || []).forEach(row => {
+        if (!row.isSpecial && row.id && !registry.has(row.id)) registry.set(row.id, row);
+      }));
+      Object.keys(allWeeksSchedule).forEach(weekKey => {
+        const week = allWeeksSchedule[weekKey] || (allWeeksSchedule[weekKey] = []);
+        registry.forEach((source, id) => {
+          if (!week.some(row => !row.isSpecial && row.id === id)) {
+            week.push({
+              ...source,
+              schedule: Array.isArray(source.schedule) ? ["", "", "", "", "", "", ""] : ["", "", "", "", "", "", ""]
+            });
+          }
+        });
+      });
+    }
+
     function persist() {
+      ensureClassesAcrossWeeks();
       localStorage.setItem("all_weeks_schedule_data", JSON.stringify(allWeeksSchedule));
     }
 
