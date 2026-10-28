@@ -471,7 +471,7 @@ function themedPinNotice(message, title='Thông báo'){
         if (typeof entry === 'string') { students[index] = { id: studentId, name }; saveStudents(students); }
         const isPresent = attendance[studentId] !== false;
         const overrideUrl = localStorage.getItem(getStorageKey(`student_url_${studentId}`));
-        const studentUrl = overrideUrl || `student.html?classId=${encodeURIComponent(targetClassId)}&class=${encodeURIComponent(targetClassName)}&studentId=${encodeURIComponent(studentId)}&student=${encodeURIComponent(name)}`;
+        const studentUrl = overrideUrl || `student.html?classId=${encodeURIComponent(targetClassId)}&class=${encodeURIComponent(targetClassName)}&studentId=${encodeURIComponent(studentId)}&student=${encodeURIComponent(name)}&drive=${encodeURIComponent(localStorage.getItem(getStorageKey('drive_link')) || 'https://drive.google.com')}&meet=${encodeURIComponent(localStorage.getItem(getStorageKey('meet_link')) || 'https://meet.google.com')}`;
 
         return `
           <tr class="hover:bg-slate-50 transition">
