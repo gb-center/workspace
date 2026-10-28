@@ -498,9 +498,15 @@
     color: #334155;
     font-weight: 600;
   }
+  /* Business-hour ranges stay neutral; only today's column gets a gold font. */
   .schedule-time-text.daytime-range {
-    background: #fef3c7 !important;
-    color: #92400e !important;
+    background: transparent !important;
+    color: #334155 !important;
+  }
+  td.today-highlight-cell .schedule-time-text,
+  td.today-highlight-cell .schedule-time-text.daytime-range {
+    background: transparent !important;
+    color: #a16207 !important;
   }
 </style>
 
