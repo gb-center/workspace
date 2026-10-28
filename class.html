@@ -153,6 +153,17 @@
         </table>
       </div>
     </div>
+
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 mt-5" id="session-history-section">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100 mb-3">
+        <div>
+          <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2"><i data-lucide="history" class="w-4 h-4 text-sky-600"></i><span>Lịch Sử Buổi Học</span></h3>
+          <p class="text-xs text-slate-500 mt-1">Xem lại các buổi học, trạng thái, bài học và bài tập của những tuần trước.</p>
+        </div>
+        <span id="history-week-count" class="text-[11px] text-slate-400"></span>
+      </div>
+      <div id="session-history-list" class="space-y-2"></div>
+    </section>
   </main>
 
   <script>
@@ -502,7 +513,59 @@ function themedPinNotice(message, title='Thông báo'){
     document.getElementById("btn-prev-week").addEventListener("click", () => { currentWeekOffset--; renderAll(); });
     document.getElementById("btn-next-week").addEventListener("click", () => { currentWeekOffset++; renderAll(); });
 
-    function renderAll() { renderSchedule(); renderWeekLinks(); renderStudents(); }
+    function escapeHistoryText(value) { return String(value || '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
+
+    function renderSessionHistory() {
+      const container = document.getElementById('session-history-list');
+      if (!container) return;
+      const now = new Date();
+      const todayMonday = getWeekDates(0)[0];
+      const currentNumber = getLmsWeekNumber(todayMonday);
+      const allWeeksData = JSON.parse(localStorage.getItem('all_weeks_schedule_data') || '{}');
+      const allLinks = JSON.parse(localStorage.getItem(getStorageKey('week_links')) || '{}');
+      const statuses = getSessionStatuses();
+      const weeks = [];
+      for (let weekNo = currentNumber; weekNo >= 1; weekNo--) {
+        const start = new Date(WEEK_ANCHOR); start.setDate(start.getDate() + (weekNo - 1) * 7);
+        const end = new Date(start); end.setDate(end.getDate() + 6);
+        if (start > now) continue;
+        const weekKey = `W${String(weekNo).padStart(2, '0')}`;
+        const weekOffset = Math.round((start - todayMonday) / (7 * 86400000));
+        const rows = allWeeksData[weekNo] || [];
+        let classRow = rows.find(r => String(r?.id) === String(targetClassId)) || rows.find(r => r?.name && r.name.toLowerCase() === targetClassName.toLowerCase());
+        const times = (classRow && Array.isArray(classRow.schedule)) ? classRow.schedule : [];
+        const linkData = allLinks[weekKey] || {};
+        const lessonItems = normalizeLinkItems(linkData.lessons || linkData.lesson).filter(x => x.url || x.title);
+        const hwItems = normalizeLinkItems(linkData.homeworks || linkData.hw).filter(x => x.url || x.title);
+        const weekStatusEntries = Object.entries(statuses).filter(([key]) => key.startsWith(`${targetClassId}_${weekKey}_d`));
+        const hasScheduled = times.some(Boolean);
+        if (!hasScheduled && !lessonItems.length && !hwItems.length && !weekStatusEntries.length) continue;
+        const dayLabels = ['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7','Chủ nhật'];
+        const dayRows = dayLabels.map((label, idx) => {
+          const d = new Date(start); d.setDate(start.getDate() + idx);
+          const time = times[idx] || '';
+          const status = statuses[`${targetClassId}_${weekKey}_d${idx}`] || '';
+          if (!time && !status) return '';
+          const statusText = ({done:'Hoàn thành',cancelled:'Hủy (còn nợ buổi)',makeup:'Đã học bù',holiday:'Nghỉ lễ'})[status] || (time ? 'Chưa cập nhật' : '');
+          const statusClass = ({done:'bg-emerald-50 text-emerald-700',cancelled:'bg-rose-50 text-rose-700',makeup:'bg-blue-50 text-blue-700',holiday:'bg-violet-50 text-violet-700'})[status] || 'bg-slate-100 text-slate-500';
+          return `<div class="flex flex-wrap items-center gap-2 rounded-lg bg-white border border-slate-100 px-3 py-2"><span class="w-16 text-xs font-semibold text-slate-700">${label}</span><span class="text-xs text-slate-400">${formatShortDate(d)}</span><span class="text-xs font-semibold text-sky-700">${escapeHistoryText(time || 'Không có lịch')}</span>${statusText ? `<span class="ml-auto rounded-full px-2 py-1 text-[10px] font-semibold ${statusClass}">${statusText}</span>` : ''}</div>`;
+        }).filter(Boolean).join('');
+        const resources = [...lessonItems.map((item,i)=>({...item, kind:'Bài học', fallback:`Bài học ${i+1}`})), ...hwItems.map((item,i)=>({...item, kind:'Bài tập', fallback:`Bài tập ${i+1}`}))];
+        const resourceHtml = resources.length ? `<div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2">${resources.map(item => `<a class="flex items-center gap-2 rounded-lg bg-sky-50/70 px-3 py-2 text-xs text-sky-800 hover:bg-sky-100" href="${/^https?:\/\//i.test(item.url) ? escapeHistoryText(item.url) : '#'}" target="_blank" rel="noopener"><i data-lucide="${item.kind === 'Bài học' ? 'presentation' : 'file-check-2'}" class="h-4 w-4 shrink-0"></i><span class="min-w-0 flex-1 truncate">${escapeHistoryText(item.title || item.fallback)}</span><span class="text-[10px] text-sky-600">${item.kind}</span></a>`).join('')}</div>` : '<p class="mt-2 text-xs text-slate-400">Tuần này chưa lưu link bài học hoặc bài tập.</p>';
+        weeks.push(`<details class="group rounded-xl border border-slate-200 bg-slate-50/60 overflow-hidden" ${weekNo === currentNumber ? 'open' : ''}><summary class="flex cursor-pointer list-none items-center gap-3 px-4 py-3 hover:bg-sky-50/70"><span class="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-sky-100 text-sky-700"><i data-lucide="calendar-days" class="h-4 w-4"></i></span><span class="min-w-0 flex-1"><span class="block text-xs font-bold text-slate-800">Tuần ${String(weekNo).padStart(2,'0')} · ${formatShortDate(start)} – ${formatShortDate(end)}</span><span class="mt-0.5 block text-[10px] text-slate-500">${times.filter(Boolean).length} buổi theo lịch · ${lessonItems.length} bài học · ${hwItems.length} bài tập</span></span><i data-lucide="chevron-down" class="h-4 w-4 text-slate-400 transition group-open:rotate-180"></i></summary><div class="space-y-2 border-t border-slate-100 p-3">${dayRows || '<p class="text-xs text-slate-400">Chưa có lịch buổi học được lưu cho tuần này.</p>'}${resourceHtml}<div class="pt-1 text-right"><button type="button" onclick="openHistoryWeek(${weekOffset})" class="inline-flex items-center gap-1 rounded-lg border border-sky-200 bg-white px-3 py-2 text-xs font-semibold text-sky-700 hover:bg-sky-50"><i data-lucide="calendar-clock" class="h-3.5 w-3.5"></i>Xem tuần này ở phía trên</button></div></div></details>`);
+      }
+      document.getElementById('history-week-count').textContent = `${weeks.length} tuần có dữ liệu`;
+      container.innerHTML = weeks.length ? weeks.join('') : '<div class="rounded-xl border border-dashed border-slate-200 p-5 text-center text-xs text-slate-400">Chưa có lịch sử buổi học hoặc học liệu được lưu cho lớp này.</div>';
+      if (window.lucide) lucide.createIcons();
+    }
+
+    window.openHistoryWeek = function(offset) {
+      currentWeekOffset = offset;
+      renderAll();
+      document.getElementById('week-indicator')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+
+    function renderAll() { renderSchedule(); renderWeekLinks(); renderStudents(); renderSessionHistory(); }
     updateTitleUI(targetClassName);
   </script>
 </body>
