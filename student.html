@@ -61,6 +61,25 @@
       <a id="btn-back-to-class" href="index.html" class="text-xs text-sky-700 font-semibold hover:underline flex items-center gap-1 shrink-0 p-1.5 hover:bg-sky-50 rounded-lg transition"><span>Về trang lớp</span><i data-lucide="chevron-right" class="w-4 h-4"></i></a>
     </div>
 
+    <!-- TÓM TẮT THÔNG TIN LỚP & BUỔI HỌC -->
+    <section class="grid grid-cols-1 sm:grid-cols-3 gap-3" aria-label="Thông tin lớp và buổi học">
+      <div class="rounded-2xl border border-sky-100 bg-sky-50 p-4">
+        <div class="text-[10px] font-bold uppercase tracking-wider text-sky-700">Lớp học</div>
+        <div id="student-class-summary" class="mt-1 text-base font-bold text-sky-900">Chưa rõ lớp</div>
+        <div class="mt-1 text-[11px] text-sky-700">Thông tin lớp hiện tại</div>
+      </div>
+      <div class="rounded-2xl border border-rose-100 bg-rose-50 p-4">
+        <div class="text-[10px] font-bold uppercase tracking-wider text-rose-700">Số buổi hủy</div>
+        <div id="student-cancelled-count" class="mt-1 text-2xl font-bold text-rose-900">—</div>
+        <div class="mt-1 text-[11px] text-rose-700">Tổng buổi được đánh dấu hủy</div>
+      </div>
+      <div class="rounded-2xl border border-amber-100 bg-amber-50 p-4">
+        <div class="text-[10px] font-bold uppercase tracking-wider text-amber-700">Số buổi nợ</div>
+        <div id="student-debt-count" class="mt-1 text-2xl font-bold text-amber-900">—</div>
+        <div class="mt-1 text-[11px] text-amber-700">Buổi hủy chưa được học bù</div>
+      </div>
+    </section>
+
     <!-- KHỐI 1: HỌC LIỆU TUẦN -->
     <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-3">
       <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
@@ -264,7 +283,7 @@ function themedPinNotice(message, title='Thông báo'){
       document.getElementById('student-avatar').textContent = initials;
     }
     updateAvatar(targetStudent);
-    nameInput.addEventListener('input', () => { targetStudent = nameInput.value; updateAvatar(targetStudent); document.title = `Hồ Sơ: ${targetStudent}`; });
+    nameInput.addEventListener('input', () => { if (!isTeacherUnlocked) { nameInput.value = targetStudent; return; } targetStudent = nameInput.value; updateAvatar(targetStudent); document.title = `Hồ Sơ: ${targetStudent}`; });
     nameInput.addEventListener('change', () => {
       if (!isTeacherUnlocked) { nameInput.value = targetStudent; return; }
       const newName = nameInput.value.trim(); if (!newName) { nameInput.value = targetStudent; return; }
@@ -287,6 +306,23 @@ function themedPinNotice(message, title='Thông báo'){
 
     const classStorageId = targetClassId || targetClass;
     const studentStorageId = targetStudentId || targetStudent;
+
+    // Class/session figures are read from the same class-specific records used by class.html.
+    function renderClassSessionSummary() {
+      document.getElementById('student-class-summary').textContent = targetClass || 'Chưa rõ lớp';
+      try {
+        const statuses = JSON.parse(localStorage.getItem(`class_${classStorageId}_session_statuses`) || '{}');
+        const values = Object.values(statuses);
+        const cancelled = values.filter(v => v === 'cancelled').length;
+        const makeup = values.filter(v => v === 'makeup').length;
+        document.getElementById('student-cancelled-count').textContent = String(cancelled);
+        document.getElementById('student-debt-count').textContent = String(Math.max(0, cancelled - makeup));
+      } catch (e) {
+        document.getElementById('student-cancelled-count').textContent = '—';
+        document.getElementById('student-debt-count').textContent = '—';
+      }
+    }
+    renderClassSessionSummary();
     const classLinks = JSON.parse(localStorage.getItem(`class_${classStorageId}_week_links`) || '{}')[currentWeekKey] || {};
     document.getElementById("btn-class-lesson").href = classLinks.lesson || "#";
     document.getElementById("btn-class-hw").href = classLinks.hw || "#";

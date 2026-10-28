@@ -39,13 +39,7 @@
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col relative">
 
   <!-- NÚT KHÓA BẢO MẬT GIÁO VIÊN -->
-  <button onclick="toggleGlobalTeacherMode()" id="global-lock-btn" 
-          class="fixed bottom-6 right-6 p-3 bg-sky-800 hover:bg-sky-900 text-white rounded-full transition-all z-50 shadow-lg flex items-center justify-center opacity-30 hover:opacity-100" 
-          title="Mở khóa Giáo viên (0208)">
-    <i data-lucide="lock" class="w-5 h-5" id="global-lock-icon"></i>
-  </button>
-
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+<header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
     <div class="w-full max-w-none mx-auto px-3 sm:px-5 lg:px-7 py-3 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <a href="index.html" class="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-slate-800 transition flex items-center gap-1 text-xs font-semibold">
@@ -194,7 +188,10 @@ function themedPinNotice(message, title='Thông báo'){
 }
 
     const TEACHER_PIN = "0208";
-    let isTeacherUnlocked = false;
+    let isTeacherUnlocked = true;
+    // These pages are teacher-only/private; no extra PIN gate is needed here.
+    document.querySelectorAll('.teacher-feature').forEach(el => el.classList.remove('hidden'));
+    document.querySelectorAll('.teacher-disabled').forEach(el => el.disabled = false);
 
     async function toggleGlobalTeacherMode() {
       if (isTeacherUnlocked) {
