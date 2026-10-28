@@ -58,7 +58,7 @@
           <div class="flex items-center gap-1.5 text-xs text-slate-500 mt-1"><i data-lucide="check-circle" class="w-3.5 h-3.5 text-sky-600"></i><span id="attendance-summary" class="font-medium">Chuyên cần: 100% (Có mặt)</span></div>
         </div>
       </div>
-      <a id="btn-back-to-class" href="index.html" class="text-xs text-sky-700 font-semibold hover:underline flex items-center gap-1 shrink-0 p-1.5 hover:bg-sky-50 rounded-lg transition"><span>Về trang lớp</span><i data-lucide="chevron-right" class="w-4 h-4"></i></a>
+
     </div>
 
     <!-- TÓM TẮT THÔNG TIN LỚP & BUỔI HỌC -->
@@ -266,11 +266,6 @@ function themedPinNotice(message, title='Thông báo'){
       targetStudent = sharedStudent.name || targetStudent;
       targetClass = sharedStudent.className || targetClass;
     }
-
-    // Keep the return link connected to the exact class and student context.
-    const backToClassLink = document.getElementById('btn-back-to-class');
-    backToClassLink.href = `class.html?classId=${encodeURIComponent(targetClassId || '')}&class=${encodeURIComponent(targetClass)}`;
-    backToClassLink.title = `Quay lại lớp ${targetClass}`;
 
     const nameInput = document.getElementById('student-name-input');
     nameInput.value = targetStudent;
