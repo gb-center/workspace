@@ -257,7 +257,7 @@
         document.querySelectorAll('.teacher-feature').forEach(el => el.classList.add('hidden'));
         showNotice("Đã khóa chế độ chỉnh sửa.", "Đã khóa", "lock");
       } else {
-        const pin = await themedPrompt("Nhập mã PIN Giáo viên để mở khóa chỉnh sửa.", "", {title:"Mở khóa Giáo viên", icon:"lock-keyhole", inputType:"password", placeholder:"Mã PIN", confirmText:"Mở khóa"});
+        const pin = await themedPrompt("", "", {title:"PIN needed", icon:"lock-keyhole", inputType:"password", placeholder:"PIN", confirmText:"Mở khóa", cancelText:"Hủy"});
         if (pin === TEACHER_PIN) {
           isTeacherUnlocked = true;
           document.getElementById('global-lock-icon').setAttribute('data-lucide', 'unlock');
