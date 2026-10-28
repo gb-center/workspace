@@ -394,6 +394,86 @@
   }
 </style>
 
+
+<style id="pixel-alignment-and-hover-polish">
+  /* Search icon: center exactly in the search field instead of using a fixed top offset. */
+  #search-input {
+    height: 2.65rem !important;
+    min-height: 2.65rem !important;
+    padding-left: 2.55rem !important;
+    box-sizing: border-box !important;
+  }
+  #search-input + svg,
+  .relative:has(#search-input) > svg,
+  .relative:has(#search-input) > i[data-lucide="search"] {
+    position: absolute !important;
+    left: .8rem !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 1.15rem !important;
+    height: 1.15rem !important;
+    display: block !important;
+    pointer-events: none !important;
+  }
+
+  /* Dropdown arrows get breathing room from the right edge. */
+  #status-filter,
+  #class-sort {
+    padding-right: 2.5rem !important;
+    background-position: right .85rem center !important;
+  }
+  select {
+    text-align: left !important;
+    text-align-last: left !important;
+  }
+
+  /* All clickable controls get a consistent, subtle hover response. */
+  button, [role="button"] {
+    transition: transform .14s ease, box-shadow .14s ease, background-color .14s ease, border-color .14s ease !important;
+  }
+  button:hover:not(:disabled), [role="button"]:hover:not([aria-disabled="true"]) {
+    transform: translateY(-1px);
+  }
+  button:active:not(:disabled), [role="button"]:active:not([aria-disabled="true"]) {
+    transform: translateY(0);
+  }
+  button:focus-visible, [role="button"]:focus-visible {
+    outline: 2px solid #7dd3fc;
+    outline-offset: 2px;
+  }
+
+  /* Consistent icon geometry and stroke across the whole page. */
+  button svg, button i[data-lucide], [role="button"] svg {
+    flex-shrink: 0;
+    vertical-align: middle;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  #link-modal .class-actions-grid button {
+    width: 2.75rem !important;
+    min-width: 2.75rem !important;
+    height: 2.75rem !important;
+    min-height: 2.75rem !important;
+  }
+
+  /* Free-time badges stay top-aligned and centered horizontally. */
+  td.free-time-cell {
+    vertical-align: top !important;
+    text-align: center !important;
+    padding-top: .45rem !important;
+  }
+  td.free-time-cell > div {
+    align-items: center !important;
+    justify-content: flex-start !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    button, [role="button"] { transition: none !important; }
+  }
+</style>
+
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col relative">
 
@@ -502,7 +582,7 @@
           <button id="class-archive-action" onclick="toggleClassArchived()" title="Archive" aria-label="Archive" class="flex items-center justify-center rounded-lg border border-violet-200 bg-violet-50 p-2.5 text-xs font-semibold text-violet-700 hover:bg-violet-100"><i data-lucide="archive" class="w-4 h-4"></i></button>
           <button onclick="deleteClass(selectedEditingClassId)" title="Xóa lớp" aria-label="Xóa lớp" class="flex items-center justify-center rounded-lg border border-rose-200 bg-rose-50 p-2.5 text-xs font-semibold text-rose-700 hover:bg-rose-100"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
         </div>
-        <p id="class-status-help" class="mt-2 text-[11px] text-slate-500">Deactivate để tạm ngưng lớp mà không xóa lịch sử.</p>
+        
       </div>
       <div class="flex justify-end gap-2 mt-3">
         <button onclick="closeLinkModal()" class="px-2.5 py-2 text-xs text-slate-500 hover:bg-slate-100 rounded-lg">Đóng</button>
@@ -899,9 +979,9 @@
           
           if (isFree) {
             const freeRanges = calculateFreeTimeForDay(day);
-            html += `<td class="p-2 text-center border-r border-slate-100 align-middle leading-snug ${cellHighlightClass}">`;
+            html += `<td class="free-time-cell p-2 text-center border-r border-slate-100 align-top leading-snug ${cellHighlightClass}">`;
             html += freeRanges.length
-              ? `<div class="flex flex-col items-center gap-1">${freeRanges.map(range => `<span class="inline-block whitespace-nowrap rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-800">${range}</span>`).join("")}</div>`
+              ? `<div class="flex flex-col items-center justify-start gap-1 pt-0">${freeRanges.map(range => `<span class="inline-block whitespace-nowrap rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-800">${range}</span>`).join("")}</div>`
               : `<span class="text-slate-300">—</span>`;
             html += `</td>`;
           } else {
