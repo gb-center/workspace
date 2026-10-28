@@ -121,12 +121,22 @@
         <button onclick="closeLinkModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-4 h-4"></i></button>
       </div>
       <div class="space-y-2">
-        <input type="text" id="modal-class-name" placeholder="Tên lớp..." class="w-full text-xs px-2.5 py-1.5 border rounded-lg focus:ring-1 focus:ring-sky-500 outline-none">
-        <input type="text" id="modal-class-url" placeholder="VD: ac01.html hoặc link riêng" class="w-full text-xs px-2.5 py-1.5 border rounded-lg focus:ring-1 focus:ring-sky-500 outline-none">
+        <label class="block text-[11px] font-semibold text-slate-500">Tên lớp</label>
+        <input type="text" id="modal-class-name" placeholder="Tên lớp..." class="w-full text-xs px-2.5 py-2 border border-sky-100 rounded-lg bg-sky-50/50 focus:ring-1 focus:ring-sky-500 outline-none">
+        <label class="block text-[11px] font-semibold text-slate-500">Link trang lớp</label>
+        <input type="text" id="modal-class-url" placeholder="class.html?classId=... hoặc link riêng" class="w-full text-xs px-2.5 py-2 border border-sky-100 rounded-lg bg-sky-50/50 focus:ring-1 focus:ring-sky-500 outline-none">
+      </div>
+      <div class="mt-4 rounded-xl border border-sky-100 bg-sky-50/60 p-3">
+        <p class="text-[11px] font-bold uppercase tracking-wide text-slate-500 mb-2">Quản lý lớp</p>
+        <div class="grid grid-cols-2 gap-2">
+          <button id="class-status-action" onclick="toggleClassActive()" class="flex items-center justify-center gap-1.5 rounded-lg border border-sky-200 bg-white px-2 py-2 text-xs font-semibold text-sky-800 hover:bg-sky-100"><i data-lucide="pause-circle" class="w-3.5 h-3.5"></i><span>Deactivate</span></button>
+          <button onclick="deleteClass(selectedEditingClassId)" class="flex items-center justify-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-2 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-100"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i><span>Xóa lớp</span></button>
+        </div>
+        <p id="class-status-help" class="mt-2 text-[11px] text-slate-500">Deactivate để tạm ngưng lớp mà không xóa lịch sử.</p>
       </div>
       <div class="flex justify-end gap-2 mt-3">
-        <button onclick="closeLinkModal()" class="px-2.5 py-1 text-xs text-slate-500 hover:bg-slate-100 rounded-lg">Đóng</button>
-        <button onclick="saveClassLink()" class="px-3 py-1 text-xs font-semibold bg-sky-600 text-white rounded-lg">Lưu</button>
+        <button onclick="closeLinkModal()" class="px-2.5 py-2 text-xs text-slate-500 hover:bg-slate-100 rounded-lg">Đóng</button>
+        <button onclick="saveClassLink()" class="px-3 py-2 text-xs font-semibold bg-sky-600 text-white rounded-lg">Lưu thay đổi</button>
       </div>
     </div>
   </div>
@@ -301,6 +311,7 @@
     function slugName(name) { return String(name || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
     Object.values(allWeeksSchedule).forEach(week => (week || []).forEach(row => {
       if (!row.isSpecial && !row.id) row.id = makeId('CLS');
+      if (!row.isSpecial && typeof row.active !== 'boolean') row.active = true;
       // Replace legacy auto-generated per-class pages with the new shared class template.
       if (!row.isSpecial && row.url && row.url === `${slugName(row.name)}.html`) row.url = '';
     }));
@@ -385,15 +396,16 @@
         let targetUrl = row.url;
         if (!targetUrl && !row.isSpecial) targetUrl = `class.html?classId=${encodeURIComponent(row.id)}&class=${encodeURIComponent(row.name)}`;
 
-        html += `<tr class="${isFree ? 'bg-sky-50/20' : isBlocked ? 'bg-slate-50' : 'hover:bg-slate-50/60'} transition">
+        const isInactive = !row.isSpecial && row.active === false;
+        html += `<tr class="${isInactive ? 'bg-slate-100/80 opacity-70' : isFree ? 'bg-sky-50/20' : isBlocked ? 'bg-slate-50' : 'hover:bg-slate-50/60'} transition">
           <td class="p-2 pl-3.5 sticky-col bg-white border-r border-slate-200">
             <div class="flex items-center justify-between gap-1">
-              <span class="font-bold text-slate-800 cursor-pointer hover:text-sky-700 transition ${isFree ? 'text-sky-700' : isBlocked ? 'text-rose-600' : ''}" onclick="editClassNameInline(${rowIndex})">${row.name}</span>
+              <span class="font-bold text-slate-800 cursor-pointer hover:text-sky-700 transition ${isInactive ? 'line-through text-slate-500' : isFree ? 'text-sky-700' : isBlocked ? 'text-rose-600' : ''}" onclick="editClassNameInline(${rowIndex})">${row.name}${isInactive ? ' <span class=\"ml-1 inline-block rounded bg-slate-200 px-1.5 py-0.5 text-[9px] font-semibold not-italic no-underline\">INACTIVE</span>' : ''}</span>
               ${!row.isSpecial ? `
                 <div class="flex items-center gap-0.5">
                   <a href="${targetUrl}" target="_blank" class="p-1 rounded text-sky-600 hover:bg-sky-100 transition"><i data-lucide="external-link" class="w-3.5 h-3.5"></i></a>
                   <button onclick="openLinkModal('${row.id}')" class="teacher-feature hidden p-1 rounded text-slate-400 hover:bg-slate-100 hover:text-slate-700"><i data-lucide="settings" class="w-3.5 h-3.5"></i></button>
-                  <button onclick="deleteClass('${row.id}')" title="Xóa lớp khỏi tuần này" aria-label="Xóa lớp" class="teacher-feature hidden p-1 rounded text-rose-500 hover:bg-rose-50 hover:text-rose-700 transition"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+
                 </div>
               ` : ''}
             </div>
@@ -420,8 +432,10 @@
       });
       tbody.innerHTML = html;
       lucide.createIcons();
-      // Ensure gears respect current lock state after re-render
-      if(!isTeacherUnlocked) document.querySelectorAll('.teacher-feature').forEach(el => el.classList.add('hidden'));
+      // Keep every teacher control (including the delete button) in sync after each re-render.
+      document.querySelectorAll('.teacher-feature').forEach(el => {
+        el.classList.toggle('hidden', !isTeacherUnlocked);
+      });
     }
 
     // Parse supported time ranges into minutes after midnight.
@@ -442,7 +456,7 @@
       if (!schedule[rowIndex] || !targetRange) return [];
       const conflicts = [];
       schedule.forEach((other, otherIndex) => {
-        if (otherIndex === rowIndex || other.type === 'free') return;
+        if (otherIndex === rowIndex || other.type === 'free' || other.active === false) return;
         const otherRangeText = String((other.schedule || [])[dayIndex] || '').trim();
         if (!otherRangeText) return;
         const otherRange = parseTimeRange(otherRangeText);
@@ -569,7 +583,19 @@
       document.getElementById("modal-class-name").value = row.name;
       const safeName = row.name.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/[^a-z0-9]/g, '-');
       document.getElementById("modal-class-url").value = row.url || `class.html?classId=${encodeURIComponent(row.id)}&class=${encodeURIComponent(row.name)}`;
+      const statusBtn = document.getElementById("class-status-action");
+      const statusHelp = document.getElementById("class-status-help");
+      if (row.active === false) {
+        statusBtn.innerHTML = '<i data-lucide="play-circle" class="w-3.5 h-3.5"></i><span>Activate</span>';
+        statusBtn.className = 'flex items-center justify-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-2 py-2 text-xs font-semibold text-emerald-700 hover:bg-emerald-100';
+        statusHelp.textContent = 'Lớp đang inactive. Activate để đưa lớp hoạt động trở lại.';
+      } else {
+        statusBtn.innerHTML = '<i data-lucide="pause-circle" class="w-3.5 h-3.5"></i><span>Deactivate</span>';
+        statusBtn.className = 'flex items-center justify-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-2 py-2 text-xs font-semibold text-amber-700 hover:bg-amber-100';
+        statusHelp.textContent = 'Deactivate để tạm ngưng lớp mà không xóa lịch sử.';
+      }
       document.getElementById("link-modal").classList.remove("hidden");
+      lucide.createIcons();
     }
     function closeLinkModal() { document.getElementById("link-modal").classList.add("hidden"); }
     function saveClassLink() {
@@ -582,20 +608,34 @@
       closeLinkModal();
     }
 
+    async function toggleClassActive() {
+      if (!isTeacherUnlocked) return showNotice("Vui lòng mở khóa chế độ Giáo viên trước khi thay đổi trạng thái lớp.", "Cần mở khóa", "lock-keyhole");
+      const row = getCurrentWeekSchedule().find(r => r.id === selectedEditingClassId && !r.isSpecial);
+      if (!row) return;
+      const nextActive = row.active === false;
+      const action = nextActive ? "Activate" : "Deactivate";
+      const ok = await themedConfirm(`${action} lớp "${row.name}"? Trạng thái sẽ được áp dụng cho các tuần có cùng mã lớp.`, {title: action + " lớp", icon: nextActive ? "play-circle" : "pause-circle", confirmText: action});
+      if (!ok) return;
+      Object.values(allWeeksSchedule).forEach(week => (week || []).forEach(item => {
+        if (item.id === selectedEditingClassId && !item.isSpecial) item.active = nextActive;
+      }));
+      persist(); renderTable();
+      openLinkModal(selectedEditingClassId);
+      showNotice(nextActive ? `Đã activate lớp "${row.name}".` : `Đã deactivate lớp "${row.name}". Lịch vẫn được giữ lại.`, nextActive ? "Đã kích hoạt lớp" : "Đã tạm ngưng lớp", nextActive ? "play-circle" : "pause-circle");
+    }
+
     async function deleteClass(id) {
       if (!isTeacherUnlocked) return showNotice("Vui lòng mở khóa chế độ Giáo viên trước khi xóa lớp.", "Cần mở khóa", "lock-keyhole");
-      const schedule = getCurrentWeekSchedule();
-      const index = schedule.findIndex(row => row.id === id && !row.isSpecial);
-      if (index < 0) return;
-      const name = schedule[index].name;
-      const confirmed = await themedConfirm(`Xóa lớp "${name}" khỏi Week ${String(currentViewingWeek).padStart(2, '0')}? Lịch của lớp trong các tuần khác sẽ được giữ nguyên.`, {
-        title: "Xóa lớp", icon: "trash-2", confirmText: "Xóa lớp"
-      });
+      const row = getCurrentWeekSchedule().find(item => item.id === id && !item.isSpecial);
+      if (!row) return;
+      const name = row.name;
+      const confirmed = await themedConfirm(`Xóa lớp "${name}" khỏi toàn bộ các tuần? Thao tác này không thể hoàn tác. Nếu chỉ muốn tạm ngưng, hãy chọn Deactivate.`, {title:"Xóa lớp", icon:"trash-2", confirmText:"Xóa vĩnh viễn"});
       if (!confirmed) return;
-      schedule.splice(index, 1);
-      persist();
-      renderTable();
-      showNotice(`Đã xóa lớp "${name}" khỏi tuần hiện tại.`, "Đã xóa lớp", "check-circle");
+      Object.keys(allWeeksSchedule).forEach(weekNum => {
+        allWeeksSchedule[weekNum] = (allWeeksSchedule[weekNum] || []).filter(item => item.id !== id || item.isSpecial);
+      });
+      persist(); closeLinkModal(); renderTable();
+      showNotice(`Đã xóa lớp "${name}" khỏi tất cả các tuần.`, "Đã xóa lớp", "check-circle");
     }
 
     async function addNewClass() {
@@ -604,7 +644,7 @@
       if (name && name.trim()) {
         const safeName = name.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/[^a-z0-9]/g, '-');
         getCurrentWeekSchedule().push({
-          id: makeId("CLS"), name: name.trim(), url: "", schedule: ["", "", "", "", "", "", ""]
+          id: makeId("CLS"), name: name.trim(), url: "", active: true, schedule: ["", "", "", "", "", "", ""]
         });
         persist(); renderTable();
       }
