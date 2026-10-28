@@ -284,6 +284,39 @@
   }
 </style>
 
+
+<style id="fixed-week-header-height">
+  /* Keep the week/date banner and weekday header at a stable height across every week. */
+  #schedule-table thead tr:first-child,
+  table thead tr:first-child {
+    height: 3.1rem !important;
+  }
+  #schedule-table thead tr:first-child th,
+  table thead tr:first-child th {
+    height: 3.1rem !important;
+    min-height: 3.1rem !important;
+    box-sizing: border-box !important;
+    vertical-align: middle !important;
+  }
+  #schedule-table thead tr:nth-child(2),
+  table thead tr:nth-child(2) {
+    height: 4.6rem !important;
+  }
+  #schedule-table thead tr:nth-child(2) th,
+  table thead tr:nth-child(2) th {
+    height: 4.6rem !important;
+    min-height: 4.6rem !important;
+    box-sizing: border-box !important;
+    vertical-align: middle !important;
+  }
+  /* Today badge takes its own row without expanding the weekday header. */
+  #schedule-table thead tr:nth-child(2) th .today-tag,
+  table thead tr:nth-child(2) th .today-tag {
+    margin-bottom: .15rem !important;
+    line-height: 1.25rem !important;
+  }
+</style>
+
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col relative">
 
