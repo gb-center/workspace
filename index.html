@@ -36,6 +36,113 @@
     @keyframes conflict-pop{from{opacity:0;transform:translateY(6px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
   </style>
 
+
+<style id="today-badge-layout-fix">
+  /* Keep the "Hôm nay" badge on its own row above the weekday/date. */
+  #timetable thead th .today-tag,
+  thead th .today-tag {
+    width: max-content !important;
+    max-width: none !important;
+    white-space: nowrap !important;
+    line-height: 1.5rem !important;
+    padding-left: .55rem !important;
+    padding-right: .55rem !important;
+    margin: 0 auto .15rem !important;
+    flex: none !important;
+    align-self: center !important;
+  }
+  thead th .today-tag:not(.hidden) {
+    display: block !important;
+  }
+  thead th .today-tag.hidden {
+    display: none !important;
+  }
+  thead th > div {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: .125rem !important;
+  }
+</style>
+
+
+<style id="toolbar-and-class-actions-polish">
+  /* Toolbar: keep all controls aligned on one horizontal center line. */
+  #search-input, #status-filter,
+  header button.teacher-feature,
+  header button[onclick="exportCSV()"] {
+    align-self: center;
+    white-space: nowrap;
+  }
+  header .flex.items-center.gap-2 {
+    align-items: center;
+  }
+  #status-filter {
+    min-height: 2.25rem;
+  }
+  header button.teacher-feature,
+  header button[onclick="exportCSV()"] {
+    min-height: 2.25rem;
+    justify-content: center;
+  }
+
+  /* Class settings: smaller, consistent icon buttons with a refined pastel treatment. */
+  #class-status-action,
+  #class-archive-action,
+  #class-modal button[onclick^="deleteClass("],
+  button[onclick="toggleClassActive()"],
+  button[onclick="toggleClassArchived()"] {
+    min-height: 2.75rem !important;
+    height: 2.75rem !important;
+    padding: .55rem !important;
+    border-radius: .8rem !important;
+    border-width: 1px !important;
+    box-shadow: none !important;
+    transition: background-color .15s ease, border-color .15s ease, transform .15s ease !important;
+  }
+  #class-status-action {
+    color: #0369a1 !important;
+    background: #eff8ff !important;
+    border-color: #cbeafe !important;
+  }
+  #class-status-action:hover {
+    background: #dff1ff !important;
+    border-color: #9bd8ff !important;
+  }
+  #class-archive-action {
+    color: #6d5bd0 !important;
+    background: #f5f3ff !important;
+    border-color: #ddd6fe !important;
+  }
+  #class-archive-action:hover {
+    background: #ede9fe !important;
+    border-color: #c4b5fd !important;
+  }
+  #class-modal button[onclick^="deleteClass("] {
+    color: #e11d48 !important;
+    background: #fff5f6 !important;
+    border-color: #fecdd3 !important;
+  }
+  #class-modal button[onclick^="deleteClass("]:hover {
+    background: #ffe4e8 !important;
+    border-color: #fda4af !important;
+  }
+  #class-status-action svg,
+  #class-archive-action svg,
+  #class-modal button[onclick^="deleteClass("] svg,
+  button[onclick="toggleClassActive()"] svg,
+  button[onclick="toggleClassArchived()"] svg {
+    width: 1.15rem !important;
+    height: 1.15rem !important;
+    stroke-width: 1.9 !important;
+  }
+  #class-status-help {
+    line-height: 1.45 !important;
+    overflow-wrap: anywhere;
+  }
+</style>
+
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col relative">
 
