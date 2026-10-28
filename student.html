@@ -48,12 +48,11 @@
   <div class="w-full max-w-none mx-auto space-y-5">
     
     <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex items-center justify-between">
-      <div class="flex items-center gap-3 flex-1">
-        <div class="w-11 h-11 rounded-xl bg-sky-600 text-white font-bold flex items-center justify-center text-sm shadow-xs shrink-0 uppercase" id="student-avatar">MK</div>
-        <div class="flex-1">
+      <div class="flex items-center gap-5 flex-1">
+        <div class="min-h-[44px] max-w-[220px] rounded-full bg-sky-100 border border-sky-200 text-sky-800 font-bold flex items-center justify-center text-center text-sm leading-tight shrink-0 px-5 py-2 break-words" id="student-avatar">AC07</div>
+        <div class="flex-1 pl-1">
           <div class="flex flex-wrap items-center gap-2">
             <input type="text" id="student-name-input" value="Nguyễn Minh Khang" class="text-base font-bold text-slate-900 bg-transparent border-b border-transparent hover:border-slate-300 focus:border-sky-500 focus:bg-slate-50 rounded px-1 -ml-1 outline-none transition max-w-[240px]" title="Nhấp vào để đổi tên học sinh">
-            <span id="student-class-badge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-800 border border-sky-200">Lớp AC07</span>
           </div>
           <div class="flex items-center gap-1.5 text-xs text-slate-500 mt-1"><i data-lucide="check-circle" class="w-3.5 h-3.5 text-sky-600"></i><span id="attendance-summary" class="font-medium">Chuyên cần: 100% (Có mặt)</span></div>
         </div>
@@ -77,6 +76,33 @@
         <div class="text-[10px] font-bold uppercase tracking-wider text-amber-700">Số buổi nợ</div>
         <div id="student-debt-count" class="mt-1 text-2xl font-bold text-amber-900">—</div>
         <div class="mt-1 text-[11px] text-amber-700">Buổi hủy chưa được học bù</div>
+      </div>
+    </section>
+
+    <!-- LỊCH HỌC & LỊCH SỬ BUỔI HỌC: dành cho học viên xem trực tiếp trong hồ sơ -->
+    <section class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4" aria-label="Lịch học và lịch sử buổi học">
+      <div class="flex items-center justify-between gap-3 border-b border-slate-100 pb-3">
+        <div>
+          <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2"><i data-lucide="calendar-days" class="w-4 h-4 text-sky-600"></i>Lịch học</h3>
+          <p class="text-xs text-slate-500 mt-1">Xem lịch trong tuần, thời gian học và trạng thái từng buổi.</p>
+        </div>
+        <select id="student-week-select" class="max-w-[160px] rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700"></select>
+      </div>
+      <div id="student-week-schedule" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+        <p class="text-xs text-slate-400">Đang tải lịch học...</p>
+      </div>
+      <div class="rounded-xl bg-sky-50/70 border border-sky-100 p-3">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-sky-800 mb-2">Học liệu của tuần đã chọn</p>
+        <div id="student-week-links-inline" class="flex flex-wrap items-center gap-y-1"><span class="text-xs text-slate-400">Đang tải học liệu...</span></div>
+      </div>
+      <div class="pt-2 border-t border-slate-100 space-y-3">
+        <div class="flex items-center justify-between gap-3">
+          <h4 class="font-bold text-slate-800 text-xs uppercase tracking-wider flex items-center gap-1.5"><i data-lucide="history" class="w-4 h-4 text-sky-600"></i>Lịch sử buổi học</h4>
+          <span id="student-history-count" class="text-[10px] text-slate-400"></span>
+        </div>
+        <div id="student-session-history" class="space-y-2">
+          <p class="text-xs text-slate-400">Chưa có dữ liệu lịch sử buổi học.</p>
+        </div>
       </div>
     </section>
 
@@ -106,7 +132,7 @@
         <span class="text-[11px] font-semibold uppercase tracking-wider text-sky-200">Answer Sheet Cá Nhân</span>
         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-sky-500/30 text-sky-100 border border-sky-400/30">Chấm & Nhận Xét Riêng</span>
       </div>
-      <div><h3 class="text-lg font-bold">Nộp Bài & Trả Bài Của Em</h3></div>
+      <div><h3 class="text-lg font-bold">Nộp Bài & Trả Bài</h3></div>
       <div class="pt-2 flex items-center gap-2">
         <a id="btn-sheet" href="https://docs.google.com" target="_blank" class="flex-1 py-2.5 px-4 bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2">
           <i data-lucide="file-edit" class="w-4 h-4"></i><span>Mở File Answer Sheet</span>
@@ -269,16 +295,13 @@ function themedPinNotice(message, title='Thông báo'){
 
     const nameInput = document.getElementById('student-name-input');
     nameInput.value = targetStudent;
-    document.getElementById('student-class-badge').textContent = `Lớp ${targetClass}`;
-    
-    function updateAvatar(name) {
-      if (!name) return;
-      const p = name.trim().split(' '); let initials = p[0].charAt(0).toUpperCase();
-      if (p.length > 1) initials += p[p.length - 1].charAt(0).toUpperCase();
-      document.getElementById('student-avatar').textContent = initials;
+    function updateAvatar(className) {
+      const avatar = document.getElementById('student-avatar');
+      avatar.textContent = className || 'CHƯA RÕ LỚP';
+      avatar.style.fontSize = (className || '').length > 10 ? '11px' : ((className || '').length > 6 ? '12px' : '14px');
     }
-    updateAvatar(targetStudent);
-    nameInput.addEventListener('input', () => { if (!isTeacherUnlocked) { nameInput.value = targetStudent; return; } targetStudent = nameInput.value; updateAvatar(targetStudent); document.title = `Hồ Sơ: ${targetStudent}`; });
+    updateAvatar(targetClass);
+    nameInput.addEventListener('input', () => { if (!isTeacherUnlocked) { nameInput.value = targetStudent; return; } targetStudent = nameInput.value; document.title = `Hồ Sơ: ${targetStudent}`; });
     nameInput.addEventListener('change', () => {
       if (!isTeacherUnlocked) { nameInput.value = targetStudent; return; }
       const newName = nameInput.value.trim(); if (!newName) { nameInput.value = targetStudent; return; }
@@ -286,7 +309,7 @@ function themedPinNotice(message, title='Thông báo'){
         const records = JSON.parse(localStorage.getItem(STUDENT_REGISTRY_KEY) || '[]');
         const record = records.find(s => String(s.id) === String(targetStudentId));
         if (record) { record.name = newName; record.className = targetClass; localStorage.setItem(STUDENT_REGISTRY_KEY, JSON.stringify(records)); }
-        targetStudent = newName; updateAvatar(newName);
+        targetStudent = newName;
       } catch(e) {}
     });
 
@@ -318,6 +341,101 @@ function themedPinNotice(message, title='Thông báo'){
       }
     }
     renderClassSessionSummary();
+
+    const studentDayNames = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ nhật"];
+    const studentWeekAnchor = new Date(2026, 8, 7);
+    function studentWeekNumber(date) {
+      const d = new Date(date.getFullYear(), date.getMonth(), date.getDate()); d.setHours(0,0,0,0);
+      const a = new Date(studentWeekAnchor); a.setHours(0,0,0,0);
+      return Math.floor((d-a)/(7*86400000))+1;
+    }
+    function studentWeekDates(weekNumber) {
+      const monday = new Date(studentWeekAnchor); monday.setDate(monday.getDate() + (weekNumber-1)*7);
+      return Array.from({length:7},(_,i)=>{const d=new Date(monday);d.setDate(d.getDate()+i);return d;});
+    }
+    function studentFmtDate(date) { return `${String(date.getDate()).padStart(2,'0')}/${String(date.getMonth()+1).padStart(2,'0')}`; }
+    function studentEsc(value) { return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
+    function getStudentClassScheduleData() {
+      try {
+        const allWeeks = JSON.parse(localStorage.getItem('all_weeks_schedule_data') || '{}');
+        const statusData = JSON.parse(localStorage.getItem(`class_${classStorageId}_session_statuses`) || '{}');
+        const linksData = JSON.parse(localStorage.getItem(`class_${classStorageId}_week_links`) || '{}');
+        const weeks = Object.keys(allWeeks).map(Number).filter(n=>Number.isFinite(n) && n>0).sort((a,b)=>b-a);
+        return {allWeeks,statusData,linksData,weeks};
+      } catch(e) { return {allWeeks:{},statusData:{},linksData:{},weeks:[]}; }
+    }
+    function studentStatusLabel(status) {
+      return ({done:'Hoàn thành',cancelled:'Đã hủy · còn nợ buổi',makeup:'Đã học bù',holiday:'Nghỉ lễ'})[status] || 'Chưa cập nhật';
+    }
+    function renderStudentSchedule() {
+      const {allWeeks,statusData,linksData,weeks} = getStudentClassScheduleData();
+      const today = new Date();
+      const currentNum = studentWeekNumber(today);
+      const select = document.getElementById('student-week-select');
+      const available = [...new Set([currentNum,...weeks])].filter(n=>n>0).sort((a,b)=>b-a);
+      if (!available.length) {
+        select.innerHTML = `<option value="${currentNum}">Tuần ${currentNum}</option>`;
+      } else {
+        select.innerHTML = available.map(n=>`<option value="${n}">Tuần ${String(n).padStart(2,'0')}</option>`).join('');
+      }
+      if (!select.dataset.bound) {
+        select.addEventListener('change', renderStudentSelectedWeek);
+        select.dataset.bound='1';
+      }
+      renderStudentSelectedWeek();
+      const history = [];
+      weeks.forEach(n=>{
+        const weekRows = allWeeks[n] || [];
+        const row = weekRows.find(r=>r && (String(r.id)===String(classStorageId) || String(r.name||'').toLowerCase()===String(targetClass).toLowerCase()));
+        if (!row) return;
+        const dates = studentWeekDates(n);
+        dates.forEach((date,idx)=>{
+          const time = Array.isArray(row.schedule) ? row.schedule[idx] : '';
+          if (!time) return;
+          const key = `${classStorageId}_W${String(n).padStart(2,'0')}_d${idx}`;
+          const status = statusData[key] || '';
+          if (date < new Date(today.getFullYear(),today.getMonth(),today.getDate()) || status) history.push({n,idx,date,time,status,links:linksData[`W${String(n).padStart(2,'0')}`]||{}});
+        });
+      });
+      history.sort((a,b)=>b.date-a.date);
+      document.getElementById('student-history-count').textContent = `${history.length} buổi`;
+      const historyEl = document.getElementById('student-session-history');
+      if (!history.length) {
+        historyEl.innerHTML = '<p class="text-xs text-slate-400">Chưa có lịch sử buổi học được lưu trên thiết bị này.</p>';
+      } else {
+        historyEl.innerHTML = history.slice(0,30).map(item=>{
+          const statusColor = item.status==='cancelled'?'bg-rose-50 text-rose-800 border-rose-100':item.status==='done'?'bg-emerald-50 text-emerald-800 border-emerald-100':item.status==='makeup'?'bg-sky-50 text-sky-800 border-sky-100':'bg-slate-50 text-slate-600 border-slate-100';
+          return `<div class="flex flex-col sm:flex-row sm:items-center gap-2 rounded-xl border border-slate-100 bg-white p-3"><div class="min-w-0 flex-1"><p class="text-xs font-bold text-slate-800">${studentDayNames[item.idx]} · ${studentFmtDate(item.date)} · Tuần ${String(item.n).padStart(2,'0')}</p><p class="text-[11px] text-slate-500 mt-1">${studentEsc(item.time)}</p></div><span class="self-start rounded-lg border px-2.5 py-1 text-[10px] font-semibold ${statusColor}">${studentStatusLabel(item.status)}</span></div>`;
+        }).join('');
+      }
+    }
+    function renderStudentSelectedWeek() {
+      const weekNum = Number(document.getElementById('student-week-select').value) || studentWeekNumber(new Date());
+      const {allWeeks,statusData,linksData} = getStudentClassScheduleData();
+      const weekKey = `W${String(weekNum).padStart(2,'0')}`;
+      const row = (allWeeks[weekNum] || []).find(r=>r && (String(r.id)===String(classStorageId) || String(r.name||'').toLowerCase()===String(targetClass).toLowerCase()));
+      const dates = studentWeekDates(weekNum);
+      const grid = document.getElementById('student-week-schedule');
+      const links = linksData[weekKey] || {};
+      grid.innerHTML = studentDayNames.map((day,idx)=>{
+        const time = row && Array.isArray(row.schedule) ? row.schedule[idx] : '';
+        const key = `${classStorageId}_${weekKey}_d${idx}`;
+        const status = statusData[key] || '';
+        const active = Boolean(time);
+        const color = status==='cancelled'?'border-rose-200 bg-rose-50':status==='done'?'border-emerald-200 bg-emerald-50':status==='makeup'?'border-sky-200 bg-sky-50':'border-slate-100 bg-slate-50';
+        return `<div class="rounded-xl border ${color} p-3 min-h-[88px]"><div class="flex items-center justify-between gap-2"><span class="text-[11px] font-bold text-slate-700">${day}</span><span class="text-[10px] text-slate-400">${studentFmtDate(dates[idx])}</span></div><p class="mt-2 text-sm font-bold ${active?'text-slate-800':'text-slate-300'}">${active?studentEsc(time):'Không có lịch'}</p>${active?`<p class="mt-1 text-[10px] font-semibold text-slate-600">${studentStatusLabel(status)}</p>`:''}</div>`;
+      }).join('');
+      const linksBox = document.getElementById('student-week-links-inline');
+      if (linksBox) {
+        const items = [];
+        const arr = Array.isArray(links.lesson) ? links.lesson : (links.lesson ? [{name:'Bài học',url:links.lesson}] : []);
+        const hw = Array.isArray(links.hw) ? links.hw : (links.hw ? [{name:'Bài tập',url:links.hw}] : []);
+        [...arr.map(x=>({...x,type:'Bài học'})),...hw.map(x=>({...x,type:'Bài tập'}))].forEach(x=>{if(x.url)items.push(`<a class="text-xs text-sky-700 underline" target="_blank" rel="noopener" href="${studentEsc(x.url)}">${studentEsc(x.name||x.type)}</a>`);});
+        linksBox.innerHTML = items.length ? items.join('<span class="text-slate-300 mx-2">·</span>') : '<span class="text-xs text-slate-400">Chưa có link học liệu cho tuần này.</span>';
+      }
+    }
+    renderStudentSchedule();
+
     const classLinks = JSON.parse(localStorage.getItem(`class_${classStorageId}_week_links`) || '{}')[currentWeekKey] || {};
     document.getElementById("btn-class-lesson").href = classLinks.lesson || "#";
     document.getElementById("btn-class-hw").href = classLinks.hw || "#";
