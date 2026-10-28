@@ -420,10 +420,8 @@
       });
       tbody.innerHTML = html;
       lucide.createIcons();
-      // Keep every teacher control (including the delete button) in sync after each re-render.
-      document.querySelectorAll('.teacher-feature').forEach(el => {
-        el.classList.toggle('hidden', !isTeacherUnlocked);
-      });
+      // Ensure gears respect current lock state after re-render
+      if(!isTeacherUnlocked) document.querySelectorAll('.teacher-feature').forEach(el => el.classList.add('hidden'));
     }
 
     // Parse supported time ranges into minutes after midnight.
