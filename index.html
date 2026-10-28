@@ -143,7 +143,16 @@
   }
 </style>
 
-</head>
+
+<style id="class-sort-style">
+  #class-sort {
+    min-height: 2.25rem;
+    max-width: 10.5rem;
+    white-space: nowrap;
+    align-self: center;
+  }
+</style>
+\n</head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col relative">
 
   <!-- NÚT KHÓA BẢO MẬT GIÁO VIÊN -->
@@ -180,6 +189,13 @@
         </div>
         <select id="status-filter" onchange="renderTable()" title="Lọc trạng thái lớp" class="teacher-feature hidden px-2 py-1 text-xs bg-sky-50 border border-sky-200 rounded-lg text-slate-700">
           <option value="active">Active</option><option value="inactive">Inactive</option><option value="archived">Archived</option><option value="all">Tất cả trạng thái</option>
+        </select>
+        <select id="class-sort" onchange="renderTable()" title="Sắp xếp lớp" class="teacher-feature hidden px-2 py-1 text-xs bg-sky-50 border border-sky-200 rounded-lg text-slate-700">
+          <option value="default">Thứ tự gốc</option>
+          <option value="name-asc">Tên lớp A–Z</option>
+          <option value="name-desc">Tên lớp Z–A</option>
+          <option value="day-asc">Ngày học gần nhất</option>
+          <option value="time-asc">Giờ học sớm nhất</option>
         </select>
         <button onclick="openHistoryModal()" title="Lịch sử thay đổi" class="teacher-feature hidden items-center gap-1 px-2.5 py-1 text-xs font-semibold text-sky-800 bg-sky-50 hover:bg-sky-100 rounded-lg border border-sky-200"><i data-lucide="history" class="w-3.5 h-3.5"></i><span>Lịch sử</span></button>
         <button onclick="addNewClass()" class="teacher-feature hidden items-center gap-1 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border border-slate-300 transition">
@@ -520,15 +536,42 @@
       const weekDays = getWeekDateRange(currentViewingWeek);
       const today = new Date();
       let html = "";
+      const sortMode = document.getElementById("class-sort")?.value || "default";
+      const visibleRows = schedule.map((row, originalIndex) => ({ row, originalIndex }))
+        .filter(({ row }) => {
+          if (filter && !row.isSpecial && !row.name.toLowerCase().includes(filter)) return false;
+          if (!row.isSpecial) {
+            const archived = row.archived === true;
+            if (statusFilter === "active" && (archived || row.active === false)) return false;
+            if (statusFilter === "inactive" && (archived || row.active !== false)) return false;
+            if (statusFilter === "archived" && !archived) return false;
+          }
+          return true;
+        });
 
-      schedule.forEach((row, rowIndex) => {
-        if (filter && !row.isSpecial && !row.name.toLowerCase().includes(filter)) return;
-        if (!row.isSpecial) {
-          const archived = row.archived === true;
-          if (statusFilter === "active" && (archived || row.active === false)) return;
-          if (statusFilter === "inactive" && (archived || row.active !== false)) return;
-          if (statusFilter === "archived" && !archived) return;
-        }
+      const specialRows = visibleRows.filter(item => item.row.isSpecial);
+      const classRows = visibleRows.filter(item => !item.row.isSpecial);
+      const getFirstDay = row => {
+        const values = Array.isArray(row.schedule) ? row.schedule : [];
+        const idx = values.findIndex(value => String(value || "").trim() !== "");
+        return idx < 0 ? 99 : idx;
+      };
+      const getFirstMinutes = row => {
+        const values = Array.isArray(row.schedule) ? row.schedule : [];
+        const allTimes = values.filter(Boolean).join(" ");
+        const match = allTimes.match(/(\d{1,2}):(\d{2})/);
+        return match ? Number(match[1]) * 60 + Number(match[2]) : 9999;
+      };
+      classRows.sort((a, b) => {
+        if (sortMode === "name-asc") return a.row.name.localeCompare(b.row.name, "vi", { sensitivity: "base", numeric: true });
+        if (sortMode === "name-desc") return b.row.name.localeCompare(a.row.name, "vi", { sensitivity: "base", numeric: true });
+        if (sortMode === "day-asc") return getFirstDay(a.row) - getFirstDay(b.row) || a.originalIndex - b.originalIndex;
+        if (sortMode === "time-asc") return getFirstMinutes(a.row) - getFirstMinutes(b.row) || a.originalIndex - b.originalIndex;
+        return a.originalIndex - b.originalIndex;
+      });
+      const rowsToRender = [...specialRows.sort((a,b) => a.originalIndex-b.originalIndex), ...classRows];
+
+      rowsToRender.forEach(({ row, originalIndex: rowIndex }) => {
         const isFree = row.type === "free", isBlocked = row.type === "blocked";
         
         let targetUrl = row.url;
