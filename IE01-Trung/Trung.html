@@ -16,7 +16,7 @@
   <!-- NÚT KHÓA BẢO MẬT GIÁO VIÊN -->
   <button onclick="toggleGlobalTeacherMode()" id="global-lock-btn" 
           class="fixed bottom-6 right-6 p-3 bg-slate-800 hover:bg-slate-900 text-white rounded-full transition-all z-50 shadow-lg flex items-center justify-center opacity-30 hover:opacity-100" 
-          title="Mở khóa Giáo viên (0208)">
+          title="Mở khóa Giáo viên">
     <i data-lucide="lock" class="w-5 h-5" id="global-lock-icon"></i>
   </button>
 
@@ -132,7 +132,7 @@
         lockTuitionForm();
         alert("Đã khóa chế độ chỉnh sửa.");
       } else {
-        const pin = prompt("Nhập mã PIN Giáo viên (0208):");
+        const pin = prompt("Nhập mã PIN Giáo viên:");
         if (pin === TEACHER_PIN) {
           isTeacherUnlocked = true;
           document.getElementById('global-lock-icon').setAttribute('data-lucide', 'unlock');
