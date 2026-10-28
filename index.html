@@ -475,13 +475,39 @@
 </style>
 
 
-<style id="free-time-outline-match">
-  /* Match free-time range chips to the exact outline treatment of normal schedule time chips. */
-  td.free-time-cell span {
-    border: 1px solid #86efac !important;
-    border-radius: .5rem !important;
+<style id="time-display-polish">
+  /* Time ranges are text-first: no pill outlines or borders. */
+  td.free-time-cell .free-time-range {
+    border: 0 !important;
+    outline: 0 !important;
     box-shadow: none !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    padding: .1rem .15rem !important;
+    color: #047857 !important;
+    font-weight: 600 !important;
   }
+  .schedule-time-text {
+    display: inline-block;
+    padding: .15rem .2rem;
+    border: 0 !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+    border-radius: .3rem;
+    background: transparent;
+    color: #334155;
+    font-weight: 600;
+  }
+  .schedule-time-text.daytime-range {
+    background: #fef3c7 !important;
+    color: #92400e !important;
+  }
+</style>
+
+
+<style id="teacher-feature-visibility-fix">
+  /* Hidden teacher-only controls must stay hidden even when toolbar styles set display:flex. */
+  .teacher-feature.hidden { display: none !important; }
 </style>
 
 </head>
@@ -992,7 +1018,7 @@
             const freeRanges = calculateFreeTimeForDay(day);
             html += `<td class="free-time-cell p-2 text-center border-r border-slate-100 align-top leading-snug ${cellHighlightClass}">`;
             html += freeRanges.length
-              ? `<div class="flex flex-col items-center justify-start gap-1 pt-0">${freeRanges.map(range => `<span class="inline-block whitespace-nowrap rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-800">${range}</span>`).join("")}</div>`
+              ? `<div class="flex flex-col items-center justify-start gap-1 pt-0">${freeRanges.map(range => `<span class="free-time-range inline-block whitespace-nowrap text-xs">${range}</span>`).join("")}</div>`
               : `<span class="text-slate-300">—</span>`;
             html += `</td>`;
           } else {
@@ -1001,7 +1027,9 @@
             if (!timeVal) {
               html += `<div class="h-7 flex items-center justify-center text-slate-300 hover:bg-slate-100 rounded cursor-pointer transition">-</div>`;
             } else {
-              html += `<div class="p-1 rounded border text-xs cursor-pointer transition bg-sky-50 text-sky-900 border-sky-200"><div class="font-semibold whitespace-nowrap">${timeVal}</div></div>`;
+              const parsedTime = parseTimeRange(timeVal);
+              const isDaytimeRange = parsedTime && parsedTime.start >= 7 * 60 && parsedTime.start < 18 * 60 && parsedTime.end <= 19 * 60;
+              html += `<div class="text-xs cursor-pointer transition"><div class="schedule-time-text whitespace-nowrap ${isDaytimeRange ? 'daytime-range' : ''}">${timeVal}</div></div>`;
             }
             html += `</td>`;
           }
