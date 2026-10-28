@@ -224,6 +224,66 @@
   }
 </style>
 
+
+<style id="header-spacing-alignment-polish">
+  /* Header: slightly taller with all controls vertically centered. */
+  header, .app-header, #app-header {
+    min-height: 4.5rem !important;
+  }
+  header .header-inner,
+  header .flex.items-center,
+  #app-header .flex.items-center {
+    align-items: center !important;
+  }
+  /* Make search, selects and icon buttons use the same control height. */
+  #search-input,
+  #status-filter,
+  #class-sort,
+  .toolbar-action,
+  header button[onclick="exportCSV()"] {
+    height: 2.65rem !important;
+    min-height: 2.65rem !important;
+    box-sizing: border-box !important;
+    align-self: center !important;
+  }
+  #search-input {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  #status-filter,
+  #class-sort {
+    padding-right: 2.15rem !important;
+    padding-left: .8rem !important;
+    background-position: right .7rem center !important;
+    background-size: 1rem !important;
+  }
+  /* Keep dropdown arrows away from the right border; normalize text alignment. */
+  select {
+    text-align: left !important;
+    text-align-last: left !important;
+  }
+  #status-filter, #class-sort {
+    border-radius: .75rem !important;
+  }
+  .toolbar-action {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  .toolbar-action > svg,
+  .toolbar-action > i {
+    flex: 0 0 1.25rem !important;
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+  }
+  /* More breathing room for the header groups while keeping content vertically centered. */
+  header .flex.items-center.gap-2 {
+    align-items: center !important;
+  }
+</style>
+
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col relative">
 
