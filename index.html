@@ -71,6 +71,10 @@
           <i data-lucide="search" class="w-3.5 h-3.5 absolute left-2.5 top-2 text-slate-400"></i>
           <input type="text" id="search-input" oninput="renderTable()" placeholder="Tìm lớp..." class="pl-8 pr-2.5 py-1 text-xs bg-slate-100 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-sky-500 w-36 sm:w-44">
         </div>
+        <select id="status-filter" onchange="renderTable()" title="Lọc trạng thái lớp" class="teacher-feature hidden px-2 py-1 text-xs bg-sky-50 border border-sky-200 rounded-lg text-slate-700">
+          <option value="active">Active</option><option value="inactive">Inactive</option><option value="archived">Archived</option><option value="all">Tất cả trạng thái</option>
+        </select>
+        <button onclick="openHistoryModal()" title="Lịch sử thay đổi" class="teacher-feature hidden items-center gap-1 px-2.5 py-1 text-xs font-semibold text-sky-800 bg-sky-50 hover:bg-sky-100 rounded-lg border border-sky-200"><i data-lucide="history" class="w-3.5 h-3.5"></i><span>Lịch sử</span></button>
         <button onclick="addNewClass()" class="teacher-feature hidden items-center gap-1 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border border-slate-300 transition">
           <i data-lucide="plus" class="w-3.5 h-3.5 text-sky-600"></i><span>Thêm lớp</span>
         </button>
@@ -130,6 +134,7 @@
         <p class="text-[11px] font-bold uppercase tracking-wide text-slate-500 mb-2">Quản lý lớp</p>
         <div class="grid grid-cols-2 gap-2">
           <button id="class-status-action" onclick="toggleClassActive()" class="flex items-center justify-center gap-1.5 rounded-lg border border-sky-200 bg-white px-2 py-2 text-xs font-semibold text-sky-800 hover:bg-sky-100"><i data-lucide="pause-circle" class="w-3.5 h-3.5"></i><span>Deactivate</span></button>
+          <button id="class-archive-action" onclick="toggleClassArchived()" class="flex items-center justify-center gap-1.5 rounded-lg border border-violet-200 bg-violet-50 px-2 py-2 text-xs font-semibold text-violet-700 hover:bg-violet-100"><i data-lucide="archive" class="w-3.5 h-3.5"></i><span>Archive</span></button>
           <button onclick="deleteClass(selectedEditingClassId)" class="flex items-center justify-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-2 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-100"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i><span>Xóa lớp</span></button>
         </div>
         <p id="class-status-help" class="mt-2 text-[11px] text-slate-500">Deactivate để tạm ngưng lớp mà không xóa lịch sử.</p>
@@ -197,6 +202,17 @@
         <button id="action-ok" type="button" class="rounded-xl bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-sky-700">Xác nhận</button>
       </div>
     </div>
+  </div>
+
+  <div id="history-modal" class="hidden fixed inset-0 z-[130] flex items-center justify-center p-4 conflict-backdrop" role="dialog" aria-modal="true" aria-labelledby="history-title">
+    <div class="w-full max-w-2xl max-h-[80vh] overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-2xl">
+      <div class="flex items-center justify-between border-b border-sky-100 bg-sky-50 px-5 py-4"><h2 id="history-title" class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="history" class="w-5 h-5 text-sky-600"></i>Lịch sử thay đổi</h2><button onclick="closeHistoryModal()" class="rounded-lg p-2 text-slate-500 hover:bg-sky-100"><i data-lucide="x" class="w-4 h-4"></i></button></div>
+      <div id="history-list" class="max-h-[60vh] overflow-y-auto p-4 space-y-2"></div>
+      <div class="flex justify-end border-t border-sky-100 p-3"><button onclick="closeHistoryModal()" class="rounded-xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700">Đóng</button></div>
+    </div>
+  </div>
+  <div id="undo-delete-toast" class="hidden fixed bottom-5 left-1/2 z-[140] -translate-x-1/2 items-center gap-3 rounded-xl border border-sky-200 bg-white px-4 py-3 shadow-xl">
+    <span id="undo-delete-message" class="text-sm text-slate-700">Đã xóa lớp.</span><button onclick="undoDeleteClass()" class="rounded-lg bg-sky-600 px-3 py-1.5 text-sm font-bold text-white hover:bg-sky-700">Hoàn tác</button><span id="undo-delete-countdown" class="text-xs text-slate-400">15s</span>
   </div>
 
   <script>
@@ -300,6 +316,13 @@
     const ACTUAL_CURRENT_WEEK = getActualCurrentWeek();
     let currentViewingWeek = ACTUAL_CURRENT_WEEK;
     let allWeeksSchedule = {}, acceptedConflicts = new Set(), pendingConflict = null, selectedEditingClassId = null;
+    let pendingDeleteSnapshot = null, pendingDeleteTimer = null, pendingDeleteCountdown = null;
+    function getHistory() { try { return JSON.parse(localStorage.getItem("lms_class_history") || "[]"); } catch(e) { return []; } }
+    function logClassChange(action, name, detail="") {
+      const history = getHistory(); history.unshift({time:new Date().toISOString(), action, name, detail, week:currentViewingWeek});
+      localStorage.setItem("lms_class_history", JSON.stringify(history.slice(0,300)));
+    }
+    function updateClassEverywhere(id, updater) { Object.values(allWeeksSchedule).forEach(week => (week || []).forEach(row => { if(row.id===id && !row.isSpecial) updater(row); })); }
 
     try {
       const savedStore = localStorage.getItem("all_weeks_schedule_data");
@@ -312,6 +335,7 @@
     Object.values(allWeeksSchedule).forEach(week => (week || []).forEach(row => {
       if (!row.isSpecial && !row.id) row.id = makeId('CLS');
       if (!row.isSpecial && typeof row.active !== 'boolean') row.active = true;
+      if (!row.isSpecial && typeof row.archived !== 'boolean') row.archived = false;
       // Replace legacy auto-generated per-class pages with the new shared class template.
       if (!row.isSpecial && row.url && row.url === `${slugName(row.name)}.html`) row.url = '';
     }));
@@ -385,22 +409,30 @@
       const schedule = getCurrentWeekSchedule();
       const tbody = document.getElementById("timetable-body");
       const filter = document.getElementById("search-input").value.toLowerCase().trim();
+      const statusFilter = document.getElementById("status-filter")?.value || "active";
       const weekDays = getWeekDateRange(currentViewingWeek);
       const today = new Date();
       let html = "";
 
       schedule.forEach((row, rowIndex) => {
         if (filter && !row.isSpecial && !row.name.toLowerCase().includes(filter)) return;
+        if (!row.isSpecial) {
+          const archived = row.archived === true;
+          if (statusFilter === "active" && (archived || row.active === false)) return;
+          if (statusFilter === "inactive" && (archived || row.active !== false)) return;
+          if (statusFilter === "archived" && !archived) return;
+        }
         const isFree = row.type === "free", isBlocked = row.type === "blocked";
         
         let targetUrl = row.url;
         if (!targetUrl && !row.isSpecial) targetUrl = `class.html?classId=${encodeURIComponent(row.id)}&class=${encodeURIComponent(row.name)}`;
 
         const isInactive = !row.isSpecial && row.active === false;
-        html += `<tr class="${isInactive ? 'bg-slate-100/80 opacity-70' : isFree ? 'bg-sky-50/20' : isBlocked ? 'bg-slate-50' : 'hover:bg-slate-50/60'} transition">
+        const isArchived = !row.isSpecial && row.archived === true;
+        html += `<tr class="${isArchived ? 'bg-violet-50/80 opacity-75' : isInactive ? 'bg-slate-100/80 opacity-70' : isFree ? 'bg-sky-50/20' : isBlocked ? 'bg-slate-50' : 'hover:bg-slate-50/60'} transition">
           <td class="p-2 pl-3.5 sticky-col bg-white border-r border-slate-200">
             <div class="flex items-center justify-between gap-1">
-              <span class="font-bold text-slate-800 cursor-pointer hover:text-sky-700 transition ${isInactive ? 'line-through text-slate-500' : isFree ? 'text-sky-700' : isBlocked ? 'text-rose-600' : ''}" onclick="editClassNameInline(${rowIndex})">${row.name}${isInactive ? ' <span class=\"ml-1 inline-block rounded bg-slate-200 px-1.5 py-0.5 text-[9px] font-semibold not-italic no-underline\">INACTIVE</span>' : ''}</span>
+              <span class="font-bold text-slate-800 cursor-pointer hover:text-sky-700 transition ${isArchived ? 'line-through text-violet-700' : isInactive ? 'line-through text-slate-500' : isFree ? 'text-sky-700' : isBlocked ? 'text-rose-600' : ''}" onclick="editClassNameInline(${rowIndex})">${row.name}${isArchived ? ' <span class=\"ml-1 inline-block rounded bg-violet-100 px-1.5 py-0.5 text-[9px] font-semibold not-italic no-underline\">ARCHIVED</span>' : isInactive ? ' <span class=\"ml-1 inline-block rounded bg-slate-200 px-1.5 py-0.5 text-[9px] font-semibold not-italic no-underline\">INACTIVE</span>' : ''}</span>
               ${!row.isSpecial ? `
                 <div class="flex items-center gap-0.5">
                   <a href="${targetUrl}" target="_blank" class="p-1 rounded text-sky-600 hover:bg-sky-100 transition"><i data-lucide="external-link" class="w-3.5 h-3.5"></i></a>
@@ -456,7 +488,7 @@
       if (!schedule[rowIndex] || !targetRange) return [];
       const conflicts = [];
       schedule.forEach((other, otherIndex) => {
-        if (otherIndex === rowIndex || other.type === 'free' || other.active === false) return;
+        if (otherIndex === rowIndex || other.type === 'free' || other.active === false || other.archived === true) return;
         const otherRangeText = String((other.schedule || [])[dayIndex] || '').trim();
         if (!otherRangeText) return;
         const otherRange = parseTimeRange(otherRangeText);
@@ -594,6 +626,9 @@
         statusBtn.className = 'flex items-center justify-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-2 py-2 text-xs font-semibold text-amber-700 hover:bg-amber-100';
         statusHelp.textContent = 'Deactivate để tạm ngưng lớp mà không xóa lịch sử.';
       }
+      const archiveBtn = document.getElementById("class-archive-action");
+      archiveBtn.innerHTML = row.archived ? '<i data-lucide="archive-restore" class="w-3.5 h-3.5"></i><span>Unarchive</span>' : '<i data-lucide="archive" class="w-3.5 h-3.5"></i><span>Archive</span>';
+      archiveBtn.className = row.archived ? 'flex items-center justify-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-2 py-2 text-xs font-semibold text-emerald-700 hover:bg-emerald-100' : 'flex items-center justify-center gap-1.5 rounded-lg border border-violet-200 bg-violet-50 px-2 py-2 text-xs font-semibold text-violet-700 hover:bg-violet-100';
       document.getElementById("link-modal").classList.remove("hidden");
       lucide.createIcons();
     }
@@ -601,8 +636,11 @@
     function saveClassLink() {
       const row = getCurrentWeekSchedule().find(r => r.id === selectedEditingClassId);
       if (row) {
-        row.name = document.getElementById("modal-class-name").value.trim() || row.name;
-        row.url = document.getElementById("modal-class-url").value.trim();
+        const oldName = row.name; const newName = document.getElementById("modal-class-name").value.trim() || row.name;
+        const newUrl = document.getElementById("modal-class-url").value.trim();
+        updateClassEverywhere(row.id, item => { item.name = newName; item.url = newUrl; });
+        if (oldName !== newName) logClassChange("Đổi tên lớp", newName, `${oldName} → ${newName}`);
+        logClassChange("Cập nhật thông tin lớp", newName, "Đã lưu tên/link lớp");
         persist(); renderTable();
       }
       closeLinkModal();
@@ -619,9 +657,37 @@
       Object.values(allWeeksSchedule).forEach(week => (week || []).forEach(item => {
         if (item.id === selectedEditingClassId && !item.isSpecial) item.active = nextActive;
       }));
+      logClassChange(nextActive ? "Activate lớp" : "Deactivate lớp", row.name, "Áp dụng cho tất cả tuần có cùng mã lớp");
       persist(); renderTable();
       openLinkModal(selectedEditingClassId);
       showNotice(nextActive ? `Đã activate lớp "${row.name}".` : `Đã deactivate lớp "${row.name}". Lịch vẫn được giữ lại.`, nextActive ? "Đã kích hoạt lớp" : "Đã tạm ngưng lớp", nextActive ? "play-circle" : "pause-circle");
+    }
+
+    async function toggleClassArchived() {
+      if (!isTeacherUnlocked) return showNotice("Vui lòng mở khóa chế độ Giáo viên trước khi lưu trữ lớp.", "Cần mở khóa", "lock-keyhole");
+      const row = getCurrentWeekSchedule().find(r => r.id === selectedEditingClassId && !r.isSpecial);
+      if (!row) return;
+      const nextArchived = !row.archived;
+      const ok = await themedConfirm(`${nextArchived ? "Lưu trữ" : "Khôi phục khỏi lưu trữ"} lớp "${row.name}"?`, {title: nextArchived ? "Lưu trữ lớp" : "Bỏ lưu trữ", icon:"archive", confirmText:nextArchived ? "Lưu trữ" : "Khôi phục"});
+      if (!ok) return;
+      updateClassEverywhere(selectedEditingClassId, item => item.archived = nextArchived);
+      logClassChange(nextArchived ? "Lưu trữ lớp" : "Bỏ lưu trữ lớp", row.name, nextArchived ? "Lớp được ẩn khỏi bộ lọc Active/Inactive" : "Lớp được khôi phục");
+      persist(); closeLinkModal(); renderTable();
+      showNotice(nextArchived ? `Đã lưu trữ lớp "${row.name}".` : `Đã khôi phục lớp "${row.name}".`, nextArchived ? "Đã lưu trữ" : "Đã khôi phục", "archive");
+    }
+    function openHistoryModal() {
+      const list = document.getElementById("history-list"), history = getHistory();
+      list.innerHTML = history.length ? history.map(item => `<div class="rounded-xl border border-sky-100 bg-sky-50/50 p-3"><div class="flex flex-wrap items-center justify-between gap-2"><span class="text-sm font-bold text-slate-800">${escapeHtml(item.action)} · ${escapeHtml(item.name || "Lớp")}</span><span class="text-[11px] text-slate-500">${new Date(item.time).toLocaleString("vi-VN")}</span></div><p class="mt-1 text-xs text-slate-600">${escapeHtml(item.detail || "")}</p><p class="mt-1 text-[10px] text-slate-400">Week ${String(item.week || "—").padStart(2,"0")}</p></div>`).join("") : '<p class="py-8 text-center text-sm text-slate-500">Chưa có lịch sử thay đổi.</p>';
+      document.getElementById("history-modal").classList.remove("hidden"); if(window.lucide) lucide.createIcons();
+    }
+    function closeHistoryModal(){ document.getElementById("history-modal").classList.add("hidden"); }
+    function escapeHtml(value){ return String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+    function undoDeleteClass() {
+      if (!pendingDeleteSnapshot) return;
+      Object.entries(pendingDeleteSnapshot).forEach(([week, rows]) => { allWeeksSchedule[week] = rows; });
+      clearTimeout(pendingDeleteTimer); clearInterval(pendingDeleteCountdown); pendingDeleteSnapshot = null;
+      document.getElementById("undo-delete-toast").classList.add("hidden");
+      persist(); renderTable(); showNotice("Đã khôi phục lớp vừa xóa.", "Đã hoàn tác", "undo-2");
     }
 
     async function deleteClass(id) {
@@ -629,13 +695,23 @@
       const row = getCurrentWeekSchedule().find(item => item.id === id && !item.isSpecial);
       if (!row) return;
       const name = row.name;
-      const confirmed = await themedConfirm(`Xóa lớp "${name}" khỏi toàn bộ các tuần? Thao tác này không thể hoàn tác. Nếu chỉ muốn tạm ngưng, hãy chọn Deactivate.`, {title:"Xóa lớp", icon:"trash-2", confirmText:"Xóa vĩnh viễn"});
+      const confirmed = await themedConfirm(`Xóa lớp "${name}" khỏi tất cả các tuần? Bạn có 15 giây để hoàn tác.`, {title:"Xóa lớp", icon:"trash-2", confirmText:"Xóa lớp"});
       if (!confirmed) return;
-      Object.keys(allWeeksSchedule).forEach(weekNum => {
-        allWeeksSchedule[weekNum] = (allWeeksSchedule[weekNum] || []).filter(item => item.id !== id || item.isSpecial);
+      if (pendingDeleteTimer) clearTimeout(pendingDeleteTimer); if (pendingDeleteCountdown) clearInterval(pendingDeleteCountdown);
+      const snapshot = {};
+      Object.entries(allWeeksSchedule).forEach(([week, rows]) => {
+        if ((rows || []).some(item => item.id === id)) snapshot[week] = JSON.parse(JSON.stringify(rows || []));
+        allWeeksSchedule[week] = (rows || []).filter(item => item.id !== id || item.isSpecial);
       });
+      pendingDeleteSnapshot = snapshot;
+      logClassChange("Xóa lớp", name, "Có thể hoàn tác trong 15 giây");
       persist(); closeLinkModal(); renderTable();
-      showNotice(`Đã xóa lớp "${name}" khỏi tất cả các tuần.`, "Đã xóa lớp", "check-circle");
+      const toast = document.getElementById("undo-delete-toast");
+      document.getElementById("undo-delete-message").textContent = `Đã xóa lớp “${name}”.`;
+      let seconds = 15; document.getElementById("undo-delete-countdown").textContent = `${seconds}s`;
+      toast.classList.remove("hidden"); toast.classList.add("flex");
+      pendingDeleteCountdown = setInterval(() => { seconds--; document.getElementById("undo-delete-countdown").textContent = `${Math.max(0,seconds)}s`; if(seconds <= 0) clearInterval(pendingDeleteCountdown); }, 1000);
+      pendingDeleteTimer = setTimeout(() => { pendingDeleteSnapshot = null; toast.classList.add("hidden"); toast.classList.remove("flex"); logClassChange("Hết thời gian khôi phục", name, "Lớp không còn trong vùng hoàn tác"); }, 15000);
     }
 
     async function addNewClass() {
@@ -646,6 +722,7 @@
         getCurrentWeekSchedule().push({
           id: makeId("CLS"), name: name.trim(), url: "", active: true, schedule: ["", "", "", "", "", "", ""]
         });
+        logClassChange("Thêm lớp", name.trim(), "Tạo lớp mới");
         persist(); renderTable();
       }
     }
