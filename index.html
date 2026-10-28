@@ -303,9 +303,10 @@
       if(!isTeacherUnlocked) document.querySelectorAll('.teacher-feature').forEach(el => el.classList.add('hidden'));
     }
 
-    // Parse a time range such as "13:00 - 14:30" into minutes after midnight.
+    // Parse supported time ranges into minutes after midnight.
     function parseTimeRange(value) {
-      const m = String(value || "").trim().match(/^(\d{1,2}):(\d{2})\s*[-–—至到]+\s*(\d{1,2}):(\d{2})$/);
+      const text = String(value || '').trim();
+      const m = text.match(/^(\d{1,2}):(\d{2})\s*(?:-|–|—|至|到)\s*(\d{1,2}):(\d{2})$/);
       if (!m) return null;
       const sh = Number(m[1]), sm = Number(m[2]), eh = Number(m[3]), em = Number(m[4]);
       if (sh > 23 || eh > 24 || sm > 59 || em > 59 || (eh === 24 && em !== 0)) return null;
@@ -316,56 +317,81 @@
 
     function findScheduleConflicts(rowIndex, dayIndex, proposedValue) {
       const schedule = getCurrentWeekSchedule();
-      const target = schedule[rowIndex];
-      const proposed = parseTimeRange(proposedValue);
-      if (!target || !proposed) return [];
+      const targetRange = parseTimeRange(proposedValue);
+      if (!schedule[rowIndex] || !targetRange) return [];
       const conflicts = [];
       schedule.forEach((other, otherIndex) => {
-        if (otherIndex === rowIndex || other.type === "free" || other.isSpecial && other.type !== "blocked") return;
-        const otherValue = String((other.schedule || [])[dayIndex] || "").trim();
-        const range = parseTimeRange(otherValue);
-        if (!range) return;
-        // A conflict exists when the two time intervals overlap.
-        if (proposed.start < range.end && range.start < proposed.end) {
-          conflicts.push({ name: other.name || "Lớp khác", time: otherValue });
+        if (otherIndex === rowIndex || other.type === 'free') return;
+        const otherRangeText = String((other.schedule || [])[dayIndex] || '').trim();
+        if (!otherRangeText) return;
+        const otherRange = parseTimeRange(otherRangeText);
+        if (!otherRange) return;
+        // Half-open interval comparison: touching endpoints (e.g. 13:00–14:00
+        // and 14:00–15:00) are not considered overlapping.
+        if (targetRange.start < otherRange.end && otherRange.start < targetRange.end) {
+          conflicts.push({ name: other.name || 'Lớp khác', time: otherRangeText });
         }
       });
       return conflicts;
     }
 
     function makeCellEditable(rowIndex, dayIndex) {
-      if (!isTeacherUnlocked) return alert("Vui lòng mở khóa Giáo viên để chỉnh sửa giờ học!");
+      if (!isTeacherUnlocked) return alert('Vui lòng mở khóa Giáo viên để chỉnh sửa giờ học!');
       const cell = document.getElementById(`cell-${rowIndex}-${dayIndex}`);
       if (!cell || cell.querySelector('input')) return;
       const schedule = getCurrentWeekSchedule();
-      const currentVal = schedule[rowIndex].schedule[dayIndex] || "";
+      const row = schedule[rowIndex];
+      if (!row) return;
+      const currentVal = (row.schedule || [])[dayIndex] || '';
 
       const input = document.createElement('input');
-      input.type = 'text'; input.value = currentVal; input.placeholder = 'HH:MM - HH:MM';
+      input.type = 'text';
+      input.value = currentVal;
+      input.placeholder = 'HH:MM - HH:MM';
+      input.setAttribute('aria-label', `Giờ học ${row.name}`);
       input.className = 'w-full text-center text-xs py-1 px-1 bg-white border border-sky-500 rounded outline-none shadow-xs';
-      cell.innerHTML = ''; cell.appendChild(input); input.focus(); input.select();
+      cell.innerHTML = '';
+      cell.appendChild(input);
+      input.focus();
+      input.select();
 
       let isFinished = false;
+      function cancelEdit() {
+        if (isFinished) return;
+        isFinished = true;
+        renderTable();
+      }
       function finishEdit() {
         if (isFinished) return;
         const proposed = input.value.trim();
-        const parsed = parseTimeRange(proposed);
+        const parsed = proposed ? parseTimeRange(proposed) : null;
         if (proposed && !parsed) {
-          alert("Giờ chưa đúng định dạng. Vui lòng nhập HH:MM - HH:MM (ví dụ 13:00 - 14:30).");
-          isFinished = true; renderTable(); return;
+          isFinished = true;
+          alert('Giờ chưa đúng định dạng. Vui lòng nhập HH:MM - HH:MM (ví dụ 13:00 - 14:30).');
+          renderTable();
+          return;
         }
         const conflicts = proposed ? findScheduleConflicts(rowIndex, dayIndex, proposed) : [];
         if (conflicts.length) {
-          const details = conflicts.map(c => `• ${c.name}: ${c.time}`).join("\n");
-          const keep = confirm(`⚠️ PHÁT HIỆN TRÙNG LỊCH!\n\n${schedule[rowIndex].name} (${proposed}) bị trùng với:\n${details}\n\nBạn có muốn vẫn lưu khung giờ này không?`);
-          if (!keep) { isFinished = true; renderTable(); return; }
+          const details = conflicts.map(c => `• ${c.name}: ${c.time}`).join('\n');
+          const keep = window.confirm(`⚠️ PHÁT HIỆN TRÙNG LỊCH!\n\n${row.name} (${proposed}) bị trùng với:\n${details}\n\nBạn có muốn vẫn lưu khung giờ này không?`);
+          if (!keep) {
+            isFinished = true;
+            renderTable();
+            return;
+          }
         }
         isFinished = true;
-        schedule[rowIndex].schedule[dayIndex] = proposed;
-        persist(); renderTable();
+        if (!Array.isArray(row.schedule)) row.schedule = ['', '', '', '', '', '', ''];
+        row.schedule[dayIndex] = proposed;
+        persist();
+        renderTable();
       }
       input.addEventListener('blur', finishEdit);
-      input.addEventListener('keydown', (e) => { if (e.key === 'Enter') input.blur(); else if (e.key === 'Escape') { isFinished = true; renderTable(); } });
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); finishEdit(); }
+        else if (e.key === 'Escape') { e.preventDefault(); cancelEdit(); }
+      });
     }
 
     function openLinkModal(id) {
