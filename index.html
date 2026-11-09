@@ -73,8 +73,9 @@
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col relative">
   <nav id="lms-nav" aria-label="Điều hướng chính">
     <div class="nav-brand"><i data-lucide="graduation-cap" style="width:26px;height:26px"></i><span>gblearning</span></div>
-    <a href="index.html" aria-current="page" aria-label="Tổng quan"><i data-lucide="layout-dashboard"></i><span>Tổng quan</span></a>
+    <a href="index.html" id="nav-home" aria-current="page" aria-label="Tổng quan"><i data-lucide="layout-dashboard"></i><span>Tổng quan</span></a>
     <a href="student-list.html" aria-label="Học viên"><i data-lucide="users"></i><span>Học viên</span></a>
+    <a href="index.html#lib" id="nav-lib" aria-label="Học liệu"><i data-lucide="library"></i><span>Học liệu</span></a>
   </nav>
 
   <header class="has-week bg-white border-b border-slate-200 sticky top-0 z-30">
@@ -96,10 +97,9 @@
   </header>
 
   <main class="flex-1 w-full max-w-none mx-auto px-3 sm:px-5 lg:px-7 py-4 sm:py-6 space-y-4">
-    <div class="tabbar" role="tablist" aria-label="Chế độ xem">
+    <div class="tabbar" id="tabbar" role="tablist" aria-label="Chế độ xem">
       <button type="button" role="tab" id="tab-schedule" data-view="schedule" aria-selected="true">Lịch tuần</button>
       <button type="button" role="tab" id="tab-mat" data-view="mat" aria-selected="false">Bài học theo tuần</button>
-      <button type="button" role="tab" id="tab-lib" data-view="lib" aria-selected="false">Học liệu</button>
     </div>
 
     <div id="view-schedule" class="space-y-4">
@@ -121,6 +121,7 @@
       <div class="flex flex-wrap gap-2">
         <button id="btn-add-class" type="button" class="btn-primary"><i data-lucide="plus" class="w-4 h-4"></i><span>Thêm lớp</span></button>
         <button id="btn-copy" type="button" class="btn-soft"><i data-lucide="copy" class="w-4 h-4"></i><span>Chép sang tuần sau</span></button>
+        <button id="btn-meet" type="button" class="btn-soft"><i data-lucide="video" class="w-4 h-4"></i><span>Link lớp online</span></button>
         <a href="student-list.html" class="btn-soft"><i data-lucide="users" class="w-4 h-4"></i><span>Quản lý học viên</span></a>
       </div>
     </section>
@@ -171,6 +172,32 @@
     <div id="page-msg" role="alert" class="text-sm text-rose-700"></div>
   </main>
 
+  <script>
+    /* Mở thẳng mục Học liệu khi vào bằng index.html#lib (tránh nhảy qua Lịch tuần) */
+    if (location.hash === '#lib') {
+      document.getElementById('view-schedule').hidden = true;
+      document.getElementById('view-lib').hidden = false;
+      document.getElementById('tabbar').style.display = 'none';
+      document.getElementById('nav-lib').setAttribute('aria-current', 'page');
+      document.getElementById('nav-home').removeAttribute('aria-current');
+    }
+  </script>
+
+  <!-- Hộp thoại: link lớp online -->
+  <div id="dlg-meet" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="dmeet-title">
+    <form class="card" novalidate>
+      <h2 id="dmeet-title">Link lớp online</h2>
+      <div class="text-sm text-slate-600">Dùng chung cho mọi lớp. Học sinh chỉ thấy nút vào lớp trước giờ học 15 phút.</div>
+      <label for="dmeet-url">Link</label>
+      <input id="dmeet-url" type="url" class="field" placeholder="https://meet.google.com/..." autocomplete="off">
+      <div class="err" id="dmeet-err" role="alert"></div>
+      <div class="acts">
+        <button type="submit" class="btn-primary">Lưu</button>
+        <button type="button" class="btn-soft" data-close>Hủy</button>
+      </div>
+    </form>
+  </div>
+
   <!-- Hộp thoại: buổi học -->
   <div id="dlg-session" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="ds-title">
     <form class="card" novalidate>
@@ -190,6 +217,11 @@
         <option value="cancel">Hủy (tính nợ)</option>
         <option value="makeup">Bù (trừ nợ)</option>
         <option value="holiday">Nghỉ lễ (không tính nợ)</option>
+      </select>
+      <label for="ds-mode">Hình thức</label>
+      <select id="ds-mode" class="field">
+        <option value="offline">Trực tiếp</option>
+        <option value="online">Online</option>
       </select>
       <label for="ds-lesson">Bài học</label>
       <input id="ds-lesson" type="text" class="field" autocomplete="off">
@@ -333,6 +365,18 @@
       const overlap = (a, b) => a.s < b.e && b.s < a.e;
 
       /* ---------- Tải dữ liệu ---------- */
+      async function loadMeet() {
+        const r = await st.c.from('app_settings').select('value').eq('key', 'online_meet_url').maybeSingle();
+        st.meet = (r.data && typeof r.data.value === 'string') ? r.data.value : '';
+      }
+      async function saveMeet(e) {
+        e.preventDefault();
+        const v = $('dmeet-url').value.trim();
+        if (v && !/^https?:\/\//i.test(v)) { $('dmeet-err').textContent = 'Link phải bắt đầu bằng https://'; return; }
+        const res = await st.c.from('app_settings').upsert({ key: 'online_meet_url', value: v });
+        if (res.error) { $('dmeet-err').textContent = LMS.friendlyError(res.error); return; }
+        st.meet = v; closeDlgs(); LMS.toast('Đã lưu link lớp online.');
+      }
       async function loadClasses() {
         const [c, cs, s] = await Promise.all([
           st.c.from('classes').select('id,class_code,class_name,is_active,group_code'),
@@ -352,7 +396,7 @@
       }
       async function loadWeek() {
         const d = weekDates(st.week);
-        const r = await st.c.from('sessions').select('id,class_id,session_no,session_date,start_time,end_time,status,lesson,note')
+        const r = await st.c.from('sessions').select('id,class_id,session_no,session_date,start_time,end_time,status,lesson,note,mode')
           .gte('session_date', ymd(d[0])).lte('session_date', ymd(d[6])).order('start_time');
         if (r.error) throw r.error;
         st.sessions = r.data || [];
@@ -438,7 +482,7 @@
             + keys.map((k, i) => {
               const ss = sessionsOf(c.id, k);
               return `<td class="day dcol d${i}${k === todayKey ? ' today' : ''}" data-class="${c.id}" data-date="${k}">` + ss.map(x =>
-                `<button type="button" class="chip ${x.status}" data-sid="${x.id}">${t5(x.start_time)} - ${t5(x.end_time)}<small>${x.status === 'cancel' ? 'Hủy' : (x.session_no ? 'Buổi ' + x.session_no : '')}${x.status === 'done' ? ' · Đã dạy' : x.status === 'makeup' ? ' · Bù' : x.status === 'holiday' ? ' · Nghỉ lễ' : ''}${x.lesson ? ' · ' + esc(x.lesson) : ''}${x.note ? ' · ' + esc(x.note) : ''}</small></button>`).join('') + '</td>';
+                `<button type="button" class="chip ${x.status}" data-sid="${x.id}">${t5(x.start_time)} - ${t5(x.end_time)}<small>${x.status === 'cancel' ? 'Hủy' : (x.session_no ? 'Buổi ' + x.session_no : '')}${x.status === 'done' ? ' · Đã dạy' : x.status === 'makeup' ? ' · Bù' : x.status === 'holiday' ? ' · Nghỉ lễ' : ''}${x.mode === 'online' ? ' · Online' : ''}${x.lesson ? ' · ' + esc(x.lesson) : ''}${x.note ? ' · ' + esc(x.note) : ''}</small></button>`).join('') + '</td>';
             }).join('') + '</tr>';
         });
         $('grid-body').innerHTML = html;
@@ -462,6 +506,8 @@
         st.view = v;
         $('view-schedule').hidden = v !== 'schedule'; $('view-mat').hidden = v !== 'mat'; $('view-lib').hidden = v !== 'lib';
         document.querySelectorAll('.tabbar [data-view]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.view === v)));
+        $('tabbar').style.display = v === 'lib' ? 'none' : '';
+        if ($('nav-lib')) { if (v === 'lib') { $('nav-lib').setAttribute('aria-current', 'page'); $('nav-home').removeAttribute('aria-current'); } else { $('nav-home').setAttribute('aria-current', 'page'); $('nav-lib').removeAttribute('aria-current'); } }
         if (v === 'lib') { try { await loadLib(); } catch (e) { $('page-msg').textContent = LMS.friendlyError(e); } }
         renderMats(); renderLib();
       }
@@ -612,13 +658,13 @@
           const s = st.sessions.find(x => x.id === Number(sid)); if (!s) return;
           $('ds-id').value = s.id; $('ds-class').value = s.class_id; $('ds-date').value = s.session_date;
           $('ds-start').value = t5(s.start_time); $('ds-end').value = t5(s.end_time); $('ds-status').value = s.status;
-          $('ds-lesson').value = s.lesson || ''; $('ds-note').value = s.note || '';
+          $('ds-lesson').value = s.lesson || ''; $('ds-note').value = s.note || ''; $('ds-mode').value = s.mode || 'offline';
           $('ds-title').textContent = 'Sửa buổi học'; $('ds-del').hidden = false;
           $('ds-info').textContent = classLabel(s.class_id) + (s.session_no ? ' · Buổi ' + s.session_no : '');
         } else {
           $('ds-id').value = ''; $('ds-class').value = classId; $('ds-date').value = date;
           $('ds-start').value = ''; $('ds-end').value = ''; $('ds-status').value = 'planned';
-          $('ds-lesson').value = ''; $('ds-note').value = '';
+          $('ds-lesson').value = ''; $('ds-note').value = ''; $('ds-mode').value = 'offline';
           $('ds-title').textContent = 'Thêm buổi học'; $('ds-del').hidden = true;
           $('ds-info').textContent = classLabel(classId);
         }
@@ -652,7 +698,7 @@
           if (cf.length && !confirm('Buổi này trùng với:\n' + cf.join('\n') + '\n\nVẫn lưu?')) return;
         }
         const payload = { class_id: classId, session_date: date, start_time: $('ds-start').value, end_time: $('ds-end').value, status,
-          lesson: $('ds-lesson').value.trim() || null, note: $('ds-note').value.trim() || null, updated_at: new Date().toISOString() };
+          mode: $('ds-mode').value, lesson: $('ds-lesson').value.trim() || null, note: $('ds-note').value.trim() || null, updated_at: new Date().toISOString() };
         st.busy = true;
         const res = id ? await st.c.from('sessions').update(payload).eq('id', Number(id)) : await st.c.from('sessions').insert(payload);
         st.busy = false;
@@ -730,7 +776,7 @@
         mine.forEach(s => {
           const di = dates.map(ymd).indexOf(s.session_date), d2 = nd[di], key = s.class_id + '|' + d2;
           if (di < 0 || have.has(key) || s.status === 'cancel') return;
-          rows.push({ class_id: s.class_id, session_date: d2, start_time: s.start_time, end_time: s.end_time, status: 'planned' });
+          rows.push({ class_id: s.class_id, session_date: d2, start_time: s.start_time, end_time: s.end_time, status: 'planned', mode: s.mode || 'offline' });
         });
         if (!rows.length) { LMS.toast('Tuần sau đã có đủ lịch.'); return; }
         const res = await st.c.from('sessions').insert(rows);
@@ -755,10 +801,13 @@
         });
         $('dlg-session').querySelector('form').addEventListener('submit', saveSession);
         $('ds-del').addEventListener('click', deleteSession);
+        $('btn-meet').addEventListener('click', () => { $('dmeet-err').textContent = ''; $('dmeet-url').value = st.meet || ''; openDlg('dlg-meet'); });
+        $('dlg-meet').querySelector('form').addEventListener('submit', saveMeet);
         $('dlg-class').querySelector('form').addEventListener('submit', saveClass);
         $('dc-del').addEventListener('click', deleteClass);
         $('dlg-blocked').querySelector('form').addEventListener('submit', saveBlocked);
         document.querySelectorAll('.tabbar [data-view]').forEach(b => b.addEventListener('click', () => setView(b.dataset.view)));
+        addEventListener('hashchange', () => setView(location.hash === '#lib' ? 'lib' : 'schedule'));
         $('btn-add-mat').addEventListener('click', () => openMat(null));
         $('view-mat').addEventListener('click', e => { const b = e.target.closest('[data-edit-mat]'); if (b) openMat(b.dataset.editMat); });
         $('view-lib').addEventListener('click', e => { const b = e.target.closest('[data-edit-mat]'); if (b) openMat(b.dataset.editMat); });
@@ -793,8 +842,9 @@
         try {
           const { client } = await LMS.requireTeacher();
           st.c = client;
-          await Promise.all([loadClasses(), loadBlocked()]);
+          await Promise.all([loadClasses(), loadBlocked(), loadMeet()]);
           await Promise.all([loadWeek(), loadMats()]); render();
+          if (location.hash === '#lib') await setView('lib');
         } catch (e) {
           $('grid-body').innerHTML = `<tr><td colspan="8" class="p-6 text-center text-rose-700 text-sm">${esc(LMS.friendlyError(e))}</td></tr>`;
         }
