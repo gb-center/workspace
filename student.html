@@ -93,6 +93,7 @@
     const dOf = k => new Date(k + 'T00:00:00');
     const dayCols = k => { const d = dOf(k); return '<strong class="c-day">' + DAY[d.getDay()] + '</strong><strong class="c-date">' + pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '</strong>'; };
     const fmtDay = k => { const d = dOf(k); return DAY[d.getDay()] + ', ' + pad(d.getDate()) + '/' + pad(d.getMonth() + 1); };
+    const PAGES = 'https://gb-center.github.io/workspace/';
     const isHttp = u => /^https?:\/\//i.test(u || '');
     function progressCard(asg) {
       const byWeek = {};
@@ -103,7 +104,7 @@
       });
       const pts = Object.keys(byWeek).sort().slice(-8).map(k => ({ k, v: Math.round(byWeek[k].reduce((x, y) => x + y, 0) / byWeek[k].length) }));
       const head = '<section class="card g-prog"><h2><i data-lucide="trending-up"></i>Tiến độ điểm</h2>';
-      if (!pts.length) return head + '<div class="text-sm text-slate-500">Chưa có điểm. Làm bài được giao để theo dõi tiến độ.</div></section>';
+      if (!pts.length) return head + '<div class="text-sm text-slate-500">Chưa có điểm. Làm bài tập online để theo dõi tiến độ.</div></section>';
       const W = 320, H = 170, L = 32, R = 16, T = 18, B = 30, iw = W - L - R, ih = H - T - B;
       const X = i => L + (pts.length === 1 ? iw / 2 : iw * i / (pts.length - 1)), Y = v => T + ih * (1 - v / 100);
       const grid = [0, 50, 100].map(v => `<line x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--t-border)" stroke-width="1"/><text x="${L - 6}" y="${Y(v) + 4}" text-anchor="end" font-size="11" fill="var(--t-muted)">${v}</text>`).join('');
@@ -174,7 +175,7 @@
         <div class="stat-grid">
           <div class="stat"><b>${done.length}</b><span>Buổi đã học</span></div>
           <div class="stat"><b>${absent}</b><span>Buổi vắng</span></div>
-          <div class="stat"><b>${asgDone}/${asgAll.length}</b><span>Bài đã làm</span></div>
+          <div class="stat"><b>${asgDone}/${asgAll.length}</b><span>Bài online đã làm</span></div>
           <div class="stat"><b>${sc.length ? Math.round(sc.reduce((x, y) => x + y, 0) / sc.length) + '%' : '–'}</b><span>Điểm lần đầu (TB)</span></div>
         </div></section>`;
 
@@ -184,13 +185,13 @@
       }).join('') : '<div class="text-sm text-slate-500">Tuần này không có buổi học.</div>'}</div></section>`;
 
       const asg = d.assignments || [];
-      html += `<section class="card g-asg"><h2><i data-lucide="pencil-line"></i>Bài được giao</h2><div class="space-y-2">${asg.length ? asg.map(a => {
+      html += `<section class="card g-asg"><h2><i data-lucide="pencil-line"></i>Bài tập online</h2><div class="space-y-2">${asg.length ? asg.map(a => {
         const due = a.due_at ? new Date(a.due_at) : null, late = due && due < now;
-        const state = a.attempts ? `Đã làm ${a.attempts} lần${a.first_score != null ? ' · Điểm lần đầu: ' + a.first_score + '/' + (a.first_total || a.question_count) : ''}` : 'Chưa làm';
+        const state = a.parts_total ? (a.parts_done ? `Đã nộp ${a.parts_done}/${a.parts_total} phần${a.first_score != null ? ' · Điểm lần đầu: ' + a.first_score + '/' + (a.first_total || a.question_count) : ''}` : 'Chưa làm') : (a.attempts ? `Đã làm ${a.attempts} lần${a.first_score != null ? ' · Điểm lần đầu: ' + a.first_score + '/' + (a.first_total || a.question_count) : ''}` : 'Chưa làm');
         return `<div class="row"><div style="flex:1 1 200px;min-width:0"><div class="font-bold text-slate-800" style="overflow-wrap:anywhere">${esc(a.name)}</div>
-          <div class="text-xs text-slate-500">${a.kind === 'lesson' ? 'Bài học' : 'Bài tập'} · ${a.question_count} câu · ${state}${due ? ' · Hạn ' + pad(due.getDate()) + '/' + pad(due.getMonth() + 1) + (late ? ' (đã quá hạn)' : '') : ''}</div></div>
-          <a class="btn-primary" href="#${encodeURIComponent(S.code)}/${encodeURIComponent(a.code)}" style="text-decoration:none">${a.attempts ? 'Làm lại' : 'Làm bài'}</a></div>`;
-      }).join('') : '<div class="text-sm text-slate-500">Chưa có bài được giao.</div>'}</div></section>`;
+          <div class="text-xs text-slate-500">${a.question_count ? a.question_count + ' câu · ' : ''}${state}${due ? ' · Hạn ' + pad(due.getDate()) + '/' + pad(due.getMonth() + 1) + (late ? ' (đã quá hạn)' : '') : ''}</div></div>
+          ${a.page_path ? `<a class="btn-primary" href="${esc(PAGES + a.page_path)}" data-code="${esc(S.code)}" style="text-decoration:none">${a.parts_total ? (a.parts_done >= a.parts_total ? 'Xem lại' : (a.parts_done ? 'Làm tiếp' : 'Làm bài')) : (a.attempts ? 'Làm lại' : 'Làm bài')}</a>` : '<span class="text-xs text-slate-400">Chưa có link</span>'}</div>`;
+      }).join('') : '<div class="text-sm text-slate-500">Chưa có bài tập online.</div>'}</div></section>`;
 
       html += progressCard(asg);
 
@@ -209,65 +210,13 @@
       (LMS.isTeacherNow ? LMS.isTeacherNow() : Promise.resolve(false)).then(ok => { const b = $('btn-class'); if (ok && b && S.data === d) { b.href = 'class.html?class=' + encodeURIComponent(cls.code); b.classList.remove('hidden'); } });
     }
 
-    /* ---------- Làm bài ---------- */
-    const letterOf = (opt, i) => { const m = /^\s*([A-Za-z])[.)]\s*/.exec(opt); return m ? m[1].toUpperCase() : String.fromCharCode(65 + i); };
-    const textOf = opt => String(opt).replace(/^\s*[A-Za-z][.)]\s*/, '');
-
-    function renderAssignment() {
-      const a = S.a; $('btn-class').classList.add('hidden'); $('btn-back').classList.remove('hidden'); $('btn-back').href = '#' + encodeURIComponent(S.code);
-      $('hello').textContent = a.name; $('hello-sub').textContent = a.student_name;
-      const qs = a.questions || [];
-      $('app').innerHTML = `<div class="narrow"><section class="card"><div class="text-xs text-slate-500 mb-1">${qs.length} câu${a.due_at ? ' · Hạn ' + new Date(a.due_at).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : ''}. Điểm chỉ tính lần làm đầu tiên; nộp muộn vẫn được nhận nhưng có đánh dấu.</div>
-        <div id="qs">${qs.map((q, i) => `<div class="qbox" data-q="${esc(q.id)}"><div class="text-sm font-bold text-slate-800 mb-2" style="overflow-wrap:anywhere">Câu ${i + 1}. ${esc(q.text)}</div>
-          ${q.type === 'mcq' && Array.isArray(q.options) ? `<div class="space-y-2">${q.options.map((o, j) => `<button type="button" class="opt" data-o="${letterOf(o, j)}" aria-pressed="false"><strong>${letterOf(o, j)}.</strong><span>${esc(textOf(o))}</span></button>`).join('')}</div>`
-            : `<input type="text" class="field w-full" data-fill autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Câu trả lời câu ${i + 1}">`}
-          <div class="fb text-sm mt-2 hidden"></div></div>`).join('')}</div>
-        <div class="flex flex-wrap items-center gap-3 mt-4"><button type="button" id="btn-submit" class="btn-primary"><i data-lucide="send" class="w-4 h-4"></i><span>Nộp bài</span></button><span id="sub-msg" class="text-sm text-rose-700" role="alert"></span></div>
-        <div id="result" class="mt-4 hidden"></div></section></div>`;
-      S.answers = {}; S.t0 = Date.now(); icons();
-    }
-
-    async function submit() {
-      if (S.busy) return;
-      const qs = S.a.questions || [], empty = qs.filter(q => !(S.answers[q.id] || '').trim()).length;
-      if (empty && !(await LMS.confirm('Còn ' + empty + ' câu chưa trả lời. Vẫn nộp bài?', { ok: 'Vẫn nộp' }))) return;
-      S.busy = true; $('btn-submit').disabled = true; $('sub-msg').textContent = '';
-      const r = await S.c.rpc('submit_assignment', { p_student_code: S.code, p_assignment_code: S.a.code, p_answers: S.answers, p_duration_seconds: Math.round((Date.now() - S.t0) / 1000) });
-      S.busy = false;
-      if (r.error) { $('btn-submit').disabled = false; $('sub-msg').textContent = errText(r.error); return; }
-      showResult(r.data);
-    }
-
-    function showResult(res) {
-      const by = {}; (res.items || []).forEach(it => { by[it.id] = it; });
-      document.querySelectorAll('#qs .qbox').forEach(box => {
-        const it = by[box.dataset.q], fb = box.querySelector('.fb'); if (!it) return;
-        box.querySelectorAll('.opt').forEach(b => { b.disabled = true; const l = b.dataset.o, ans = [].concat(it.answer).map(x => String(x).toUpperCase());
-          if (ans.includes(l)) b.classList.add('good'); else if (b.getAttribute('aria-pressed') === 'true') b.classList.add('bad'); });
-        const inp = box.querySelector('[data-fill]'); if (inp) inp.disabled = true;
-        const ans = [].concat(it.answer).join(' / ');
-        fb.className = 'fb text-sm mt-2 ' + (it.correct ? 'text-emerald-700' : 'text-rose-700');
-        fb.innerHTML = (it.correct ? '<strong>Đúng.</strong> ' : '<strong>Chưa đúng.</strong> Đáp án: ' + esc(ans) + '. ') + (it.explanation ? `<span class="text-slate-600">${esc(it.explanation)}</span>` : '');
-      });
-      $('btn-submit').classList.add('hidden');
-      const rs = $('result'); rs.classList.remove('hidden');
-      rs.innerHTML = `<div class="stat-tile" style="background:var(--t-tint)"><div class="stat-n">${res.score}/${res.total}</div>
-        <div class="stat-l">${res.counts_for_score ? 'Lần làm đầu tiên: điểm này được ghi nhận.' : 'Lần làm lại: điểm không thay đổi, bạn vẫn xem được đáp án.'}${res.is_late ? ' Nộp muộn.' : ''}</div></div>
-        <a class="btn-soft mt-3" href="#${encodeURIComponent(S.code)}" style="text-decoration:none">Về trang chính</a>`;
-      rs.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-
     /* ---------- Điều hướng bằng # ---------- */
     async function route() {
       const parts = location.hash.replace(/^#/, '').split('/').map(decodeURIComponent);
       S.code = (parts[0] || '').trim();
       if (!S.code) return showError('Thiếu mã học viên. Mở lại link giáo viên đã gửi.');
       try {
-        if (parts[1]) {
-          $('app').innerHTML = '<div class="card text-center text-sm text-slate-500">Đang tải bài...</div>';
-          const r = await S.c.rpc('student_assignment', { p_student_code: S.code, p_assignment_code: parts[1] });
-          if (r.error) throw r.error; S.a = r.data; renderAssignment();
-        } else {
+        {
           $('app').innerHTML = '<div class="card text-center text-sm text-slate-500">Đang tải...</div>';
           const r = await S.c.rpc('student_portal', { p_student_code: S.code });
           if (r.error) throw r.error; S.data = r.data; renderHome();
@@ -277,12 +226,7 @@
     }
 
     function bind() {
-      $('app').addEventListener('click', e => {
-        const o = e.target.closest('.opt');
-        if (o && !o.disabled) { const box = o.closest('.qbox'); box.querySelectorAll('.opt').forEach(b => b.setAttribute('aria-pressed', b === o ? 'true' : 'false')); S.answers[box.dataset.q] = o.dataset.o; return; }
-        if (e.target.closest('#btn-submit')) submit();
-      });
-      $('app').addEventListener('input', e => { const i = e.target.closest('[data-fill]'); if (i) S.answers[i.closest('.qbox').dataset.q] = i.value; });
+      $('app').addEventListener('click', e => { const l = e.target.closest('a[data-code]'); if (l) { try { localStorage.setItem('sc', l.dataset.code); } catch (x) { } } });
       window.addEventListener('hashchange', route);
       const sig = () => { const d = S.data; if (!d) return ''; const n = new Date(), k = ymd(n), h = pad(n.getHours()) + ':' + pad(n.getMinutes());
         return (d.sessions || []).map(s => s.mode === 'online' && s.date === k && h >= hm(toMin(s.start) - 15) && h < s.end ? 1 : 0).join(''); };
