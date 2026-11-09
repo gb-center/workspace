@@ -111,6 +111,7 @@
             <button type="button" id="add-lesson-link" class="teacher-feature hidden add-link-btn" title="Thêm bài học" aria-label="Thêm bài học"><i data-lucide="plus"></i><span class="add-link-label">Thêm</span></button>
           </div>
           <div id="lesson-links-list" class="space-y-2"></div>
+          <div id="lesson-shared" class="space-y-2"></div>
         </div>
         <div class="p-3.5 rounded-xl panel-soft space-y-3">
           <div class="flex items-center justify-between gap-2">
@@ -118,6 +119,7 @@
             <button type="button" id="add-hw-link" class="teacher-feature hidden add-link-btn" title="Thêm bài tập" aria-label="Thêm bài tập"><i data-lucide="plus"></i><span class="add-link-label">Thêm</span></button>
           </div>
           <div id="hw-links-list" class="space-y-2"></div>
+          <div id="hw-shared" class="space-y-2"></div>
         </div>
       </div>
       <div class="teacher-feature hidden mt-3 justify-end">
@@ -170,7 +172,7 @@
     const WEEK_ANCHOR = new Date(2026, 8, 7); // thứ 2 07/09/2026 = tuần 1
     const STATUS_TXT = { planned: 'Chưa cập nhật', done: 'Hoàn thành', cancel: 'Hủy (còn nợ buổi)', makeup: 'Đã học bù', holiday: 'Nghỉ lễ' };
     const STATUS_CLS = { planned: 'bg-slate-100 text-slate-500', done: 'bg-emerald-50 text-emerald-700', cancel: 'bg-rose-50 text-rose-700', makeup: 'bg-sky-50 text-sky-700', holiday: 'bg-slate-100 text-slate-600' };
-    const S = { c: null, cls: null, set: {}, students: [], sessions: [], links: {}, att: {}, offset: 0, busy: false };
+    const S = { c: null, cls: null, set: {}, students: [], sessions: [], links: {}, shared: {}, att: {}, offset: 0, busy: false };
 
     const pad = n => String(n).padStart(2, '0');
     const ymd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
@@ -201,15 +203,17 @@
       S.cls = (cl.data || []).find(c => c.class_code.toLowerCase() === low) || (cl.data || []).find(c => c.class_name.toLowerCase() === low);
       if (!S.cls) throw new Error('Lớp "' + code + '" chưa có trong hệ thống.');
       const id = S.cls.id;
-      const [st, se, ss, wl] = await Promise.all([
+      const [st, se, ss, wl, wm] = await Promise.all([
         S.c.from('students').select('id,student_name,student_code').eq('class_id', id).eq('is_active', true).order('id'),
         S.c.from('class_settings').select('drive_url,meet_url').eq('class_id', id).maybeSingle(),
         S.c.from('sessions').select('id,session_no,session_date,start_time,end_time,status,lesson,note').eq('class_id', id).order('session_date').order('start_time'),
-        S.c.from('week_links').select('week_start,lessons,homeworks').eq('class_id', id)
+        S.c.from('week_links').select('week_start,lessons,homeworks').eq('class_id', id),
+        S.c.from('week_materials').select('week_start,kind,title,url,sort_order,id').contains('class_ids', [id]).order('sort_order').order('id')
       ]);
-      [st, se, ss, wl].forEach(r => { if (r.error) throw r.error; });
+      [st, se, ss, wl, wm].forEach(r => { if (r.error) throw r.error; });
       S.students = st.data || []; S.set = se.data || {}; S.sessions = ss.data || [];
       S.links = {}; (wl.data || []).forEach(r => { S.links[r.week_start] = { lessons: r.lessons || [], homeworks: r.homeworks || [] }; });
+      S.shared = {}; (wm.data || []).forEach(r => { const w = S.shared[r.week_start] = S.shared[r.week_start] || { lessons: [], homeworks: [] }; (r.kind === 'homework' ? w.homeworks : w.lessons).push({ title: r.title, url: r.url }); });
       S.att = {};
       if (S.students.length && S.sessions.length) {
         const at = await S.c.from('attendance').select('session_id,student_id,status').in('student_id', S.students.map(x => x.id));
@@ -295,6 +299,9 @@
     function renderWeekLinks() {
       const l = S.links[weekKey()] || { lessons: [], homeworks: [] };
       fillLinks('lesson-links-list', l.lessons, 'lesson'); fillLinks('hw-links-list', l.homeworks, 'hw');
+      const sh = (S.shared || {})[weekKey()] || { lessons: [], homeworks: [] };
+      const shHtml = list => list.length ? '<p class="text-[11px] text-slate-400 pt-1">Giao từ tab Bài học theo tuần (sửa ở trang Tổng quan)</p>' + list.map(x => `<a class="flex items-center gap-2 rounded-lg bg-white border border-slate-200 px-3 py-2 text-xs text-sky-800 font-semibold" style="min-height:44px;overflow-wrap:anywhere" href="${isHttp(x.url) ? esc(x.url) : '#'}" target="_blank" rel="noopener">${esc(x.title)}</a>`).join('') : '';
+      $('lesson-shared').innerHTML = shHtml(sh.lessons); $('hw-shared').innerHTML = shHtml(sh.homeworks);
     }
     async function saveLinks() {
       const lessons = collect('lesson-links-list'), homeworks = collect('hw-links-list');
@@ -339,7 +346,8 @@
         const start = new Date(WEEK_ANCHOR); start.setDate(start.getDate() + (n - 1) * 7);
         const end = new Date(start); end.setDate(start.getDate() + 6);
         if (start > now) continue;
-        const key = ymd(start), ln = S.links[key] || { lessons: [], homeworks: [] };
+        const key = ymd(start), own = S.links[key] || { lessons: [], homeworks: [] }, shr = (S.shared || {})[key] || { lessons: [], homeworks: [] };
+        const ln = { lessons: [...(own.lessons || []), ...shr.lessons], homeworks: [...(own.homeworks || []), ...shr.homeworks] };
         const list = byWeek[n] || [], res = [...(ln.lessons || []).map((x, i) => ({ x, k: 'Bài học', f: 'Bài học ' + (i + 1) })), ...(ln.homeworks || []).map((x, i) => ({ x, k: 'Bài tập', f: 'Bài tập ' + (i + 1) }))].filter(r => r.x.url || r.x.title);
         if (!list.length && !res.length) continue;
         const rows = list.map(s => `<div class="flex flex-wrap items-center gap-2 rounded-lg bg-white border border-slate-100 px-3 py-2">

@@ -174,7 +174,7 @@
           const clsCell = cls ? `<a href="class.html?class=${encodeURIComponent(cls.class_code)}" class="text-sky-700 underline">${esc(cls.class_name)}</a>` : 'Chưa xếp lớp';
           return `<tr class="hover:bg-slate-50/60">
             <td class="cell-main py-3 px-2">
-              <div class="font-semibold text-sm text-slate-800">${esc(s.student_name)}</div>
+              <a href="student.html#${encodeURIComponent(s.student_code)}" target="_blank" rel="noopener" class="inline-flex items-center font-semibold text-sm text-sky-700 hover:underline" style="min-height:44px">${esc(s.student_name)}</a>
               <div class="code-chip mt-0.5"><span>${esc(s.student_code)}</span>
                 <button type="button" class="icon-btn" style="width:32px;height:32px" data-act="copy" data-id="${s.id}" aria-label="Sao chép mã ${esc(s.student_name)}"><i data-lucide="copy" class="w-3.5 h-3.5"></i></button>
               </div>

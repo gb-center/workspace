@@ -51,6 +51,16 @@
     .dlg .err{min-height:20px;margin-top:10px;font-size:.875rem;color:#be123c}
     .btn-danger{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:9999px;border:1px solid #fecdd3;background:#fff;color:#be123c;font-weight:700;font-size:.9375rem}
     .btn-danger:hover{background:#fff1f2}
+    .tabbar{display:flex;gap:8px;flex-wrap:wrap}
+    .tabbar button{min-height:44px;padding:0 18px;border-radius:9999px;border:1px solid var(--t-tint-2);background:#fff;color:var(--t-primary);font-weight:700;font-size:.9375rem}
+    .tabbar button[aria-selected="true"]{background:var(--t-primary);color:#fff;border-color:var(--t-primary)}
+    .pick{min-height:44px;padding:0 14px;border-radius:9999px;border:1px solid var(--t-tint-2);background:#fff;color:var(--t-primary);font-weight:700;font-size:.8125rem}
+    .pickgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+    .dlg label.pickrow{display:flex;align-items:center;gap:10px;min-height:44px;margin:0;padding:0 12px;border:1px solid var(--t-border);border-radius:12px;background:#fff;font-size:.9375rem;font-weight:600;cursor:pointer}
+    .pickrow input{width:20px;height:20px;flex:none}
+    .mat-item{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--t-border);border-radius:12px;background:#fff}
+    .mat-item a.mat-title{font-weight:700;color:var(--t-primary);overflow-wrap:anywhere}
+    .mat-item a.mat-title:hover{text-decoration:underline}
     @media (max-width:720px){
       .day-tabs{display:flex}
       #grid{min-width:0}
@@ -86,6 +96,12 @@
   </header>
 
   <main class="flex-1 w-full max-w-none mx-auto px-3 sm:px-5 lg:px-7 py-4 sm:py-6 space-y-4">
+    <div class="tabbar" role="tablist" aria-label="Chế độ xem">
+      <button type="button" role="tab" id="tab-schedule" data-view="schedule" aria-selected="true">Lịch tuần</button>
+      <button type="button" role="tab" id="tab-mat" data-view="mat" aria-selected="false">Bài học theo tuần</button>
+    </div>
+
+    <div id="view-schedule" class="space-y-4">
     <section class="flex flex-col lg:flex-row lg:items-center justify-between gap-3" aria-label="Công cụ">
       <div class="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:items-center">
         <input id="search" type="search" class="field w-full sm:w-56" placeholder="Tìm lớp" aria-label="Tìm lớp">
@@ -116,6 +132,24 @@
           <thead><tr id="grid-head"></tr></thead>
           <tbody id="grid-body"><tr><td colspan="8" class="p-6 text-center text-slate-400 text-sm">Đang tải lịch...</td></tr></tbody>
         </table>
+      </div>
+    </section>
+    </div>
+
+    <section id="view-mat" hidden class="space-y-4" aria-label="Bài học theo tuần">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <p id="mat-sub" class="text-sm text-slate-600"></p>
+        <button id="btn-add-mat" type="button" class="btn-primary"><i data-lucide="plus" class="w-4 h-4"></i><span>Thêm mục</span></button>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div class="bg-white rounded-2xl border border-slate-200 p-4">
+          <h2 class="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2"><i data-lucide="presentation" class="w-4 h-4"></i>Bài học</h2>
+          <div id="mat-lesson" class="space-y-2"></div>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200 p-4">
+          <h2 class="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2"><i data-lucide="file-check-2" class="w-4 h-4"></i>Bài về nhà</h2>
+          <div id="mat-homework" class="space-y-2"></div>
+        </div>
       </div>
     </section>
     <div id="page-msg" role="alert" class="text-sm text-rose-700"></div>
@@ -182,6 +216,32 @@
     </form>
   </div>
 
+  <!-- Hộp thoại: học liệu tuần -->
+  <div id="dlg-mat" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="dm-title">
+    <form class="card" novalidate>
+      <h2 id="dm-title">Mục học liệu</h2>
+      <input type="hidden" id="dm-id">
+      <label for="dm-kind">Loại</label>
+      <select id="dm-kind" class="field">
+        <option value="lesson">Bài học</option>
+        <option value="homework">Bài về nhà</option>
+      </select>
+      <label for="dm-name">Tên</label>
+      <input id="dm-name" type="text" class="field" autocomplete="off" required>
+      <label for="dm-url">Link</label>
+      <input id="dm-url" type="text" inputmode="url" class="field" autocomplete="off" placeholder="https://..." required>
+      <label>Giao cho lớp</label>
+      <div id="dm-quick" class="flex flex-wrap gap-2"></div>
+      <div id="dm-classes" class="pickgrid" style="margin-top:10px"></div>
+      <div class="err" id="dm-err" role="alert"></div>
+      <div class="acts">
+        <button type="submit" class="btn-primary">Lưu</button>
+        <button type="button" class="btn-soft" data-close>Hủy</button>
+        <button type="button" class="btn-danger" id="dm-del">Xóa mục</button>
+      </div>
+    </form>
+  </div>
+
   <!-- Hộp thoại: lịch bận -->
   <div id="dlg-blocked" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="db-title">
     <form class="card" novalidate>
@@ -207,7 +267,7 @@
       const BASE_MONDAY = new Date(2026, 8, 7);   // tuần 1 bắt đầu thứ 2 07/09/2026
       const STATUS_TXT = { planned: 'Chưa dạy', done: 'Đã dạy', cancel: 'Hủy', makeup: 'Bù', holiday: 'Nghỉ lễ' };
       const DEF_BLOCKED = ['07:00 - 22:30', '08:00 - 17:00', '08:00 - 17:00', '08:00 - 17:00', '08:00 - 19:00', '20:30 - 22:00', '18:00 - 22:30'];
-      const st = { c: null, classes: [], counts: {}, sessions: [], blocked: DEF_BLOCKED.slice(), week: 1, selDay: 0, busy: false };
+      const st = { c: null, classes: [], counts: {}, sessions: [], blocked: DEF_BLOCKED.slice(), week: 1, selDay: 0, busy: false, view: 'schedule', mats: [] };
 
       const pad = n => String(n).padStart(2, '0');
       const ymd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
@@ -260,7 +320,7 @@
         st.sessions = r.data || [];
       }
       async function refresh(msg) {
-        try { await loadWeek(); render(); if (msg) LMS.toast(msg); }
+        try { await Promise.all([loadWeek(), loadMats()]); render(); if (msg) LMS.toast(msg); }
         catch (e) { $('page-msg').textContent = LMS.friendlyError(e); }
       }
 
@@ -346,9 +406,100 @@
         $('grid-body').innerHTML = html;
         $('page-msg').textContent = '';
         icons();
+        renderMats();
       }
 
-      /* ---------- Hộp thoại ---------- */
+      /* ---------- Bài học theo tuần ---------- */
+      const isHttp = u => /^https?:\/\/\S+$/i.test(u || '');
+      const weekKey = () => ymd(weekDates(st.week)[0]);
+      const PROGRAM = { AC: 'Global Success', IE: 'IELTS', TO: 'TOEIC', GT: 'Speaking' };
+      const matClasses = () => st.classes.filter(c => !c.is_archived).sort((a, b) => natural(a.class_code, b.class_code));
+      async function loadMats() {
+        const r = await st.c.from('week_materials').select('id,week_start,kind,title,url,class_ids,sort_order')
+          .eq('week_start', weekKey()).order('sort_order').order('id');
+        if (r.error) throw r.error;
+        st.mats = r.data || [];
+      }
+      function setView(v) {
+        st.view = v;
+        $('view-schedule').hidden = v !== 'schedule'; $('view-mat').hidden = v !== 'mat';
+        document.querySelectorAll('.tabbar [data-view]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.view === v)));
+        renderMats();
+      }
+      function targetsText(m) {
+        const ids = m.class_ids || [], all = matClasses();
+        if (!ids.length) return '<span class="text-rose-700">Chưa giao cho lớp nào</span>';
+        const codes = ids.map(id => (st.classes.find(c => c.id === id) || {}).class_code).filter(Boolean).sort(natural);
+        if (all.length && all.every(c => ids.includes(c.id))) return 'Tất cả lớp';
+        return esc(codes.join(', '));
+      }
+      function matItem(m) {
+        return `<div class="mat-item"><div class="min-w-0 flex-1">
+          <a class="mat-title" href="${isHttp(m.url) ? esc(m.url) : '#'}" target="_blank" rel="noopener">${esc(m.title)}</a>
+          <div class="text-xs text-slate-500 mt-1">${targetsText(m)}</div></div>
+          <button type="button" class="icon-btn" data-edit-mat="${m.id}" aria-label="Sửa mục"><i data-lucide="pencil" class="w-4 h-4"></i></button></div>`;
+      }
+      function renderMats() {
+        if (st.view !== 'mat') return;
+        const d = weekDates(st.week);
+        $('mat-sub').textContent = 'Tuần ' + pad(st.week) + ' (' + pad(d[0].getDate()) + '.' + pad(d[0].getMonth() + 1) + ' – ' + pad(d[6].getDate()) + '.' + pad(d[6].getMonth() + 1) + '). Mỗi mục tự hiện ở trang lớp và trang học sinh của các lớp được chọn.';
+        [['lesson', 'mat-lesson'], ['homework', 'mat-homework']].forEach(([k, id]) => {
+          const list = st.mats.filter(m => m.kind === k);
+          $(id).innerHTML = list.length ? list.map(matItem).join('') : '<p class="text-sm text-slate-400">Chưa có mục nào.</p>';
+        });
+        icons();
+      }
+      function quickGroups() {
+        const cls = matClasses(), out = [];
+        const prog = {}, fam = {};
+        cls.forEach(c => {
+          const p = (/^[A-Za-z]+/.exec(c.class_code) || [''])[0].toUpperCase();
+          (prog[PROGRAM[p] || p] = prog[PROGRAM[p] || p] || []).push(c.id);
+          const f = c.group_code || c.class_code.split('.')[0];
+          (fam[f] = fam[f] || []).push(c.id);
+        });
+        out.push({ label: 'Tất cả lớp', ids: cls.map(c => c.id) });
+        Object.keys(prog).sort(natural).forEach(k => { if (prog[k].length > 1) out.push({ label: k, ids: prog[k] }); });
+        Object.keys(fam).sort(natural).forEach(k => { if (fam[k].length > 1) out.push({ label: k, ids: fam[k] }); });
+        return out;
+      }
+      let quick = [];
+      function openMat(id) {
+        $('dm-err').textContent = '';
+        const m = id ? st.mats.find(x => x.id === Number(id)) : null;
+        $('dm-id').value = m ? m.id : '';
+        $('dm-title').textContent = m ? 'Sửa mục học liệu' : 'Thêm mục học liệu';
+        $('dm-kind').value = m ? m.kind : 'lesson';
+        $('dm-name').value = m ? m.title : ''; $('dm-url').value = m ? m.url : '';
+        const sel = new Set(m ? m.class_ids : []);
+        const cls = matClasses(); (m ? m.class_ids : []).forEach(cid => { const c = st.classes.find(x => x.id === cid); if (c && c.is_archived) cls.push(c); });
+        $('dm-classes').innerHTML = cls.map(c => `<label class="pickrow"><input type="checkbox" value="${c.id}"${sel.has(c.id) ? ' checked' : ''}><span>${esc(c.class_code)}</span></label>`).join('');
+        quick = quickGroups();
+        $('dm-quick').innerHTML = quick.map((g, i) => `<button type="button" class="pick" data-q="${i}">${esc(g.label)}</button>`).join('') + '<button type="button" class="pick" data-q="none">Bỏ chọn</button>';
+        $('dm-del').style.display = m ? '' : 'none';
+        openDlg('dlg-mat'); $('dm-name').focus();
+      }
+      async function saveMat(ev) {
+        ev.preventDefault();
+        const err = $('dm-err'), id = Number($('dm-id').value) || null;
+        const title = $('dm-name').value.trim(), url = $('dm-url').value.trim();
+        const ids = [...document.querySelectorAll('#dm-classes input:checked')].map(i => Number(i.value));
+        if (!title) { err.textContent = 'Nhập tên mục.'; return; }
+        if (!isHttp(url)) { err.textContent = 'Link phải bắt đầu bằng http:// hoặc https://'; return; }
+        if (!ids.length) { err.textContent = 'Chọn ít nhất một lớp.'; return; }
+        const row = { week_start: weekKey(), kind: $('dm-kind').value, title, url, class_ids: ids };
+        const res = id ? await st.c.from('week_materials').update(row).eq('id', id) : await st.c.from('week_materials').insert(row);
+        if (res.error) { err.textContent = LMS.friendlyError(res.error); return; }
+        closeDlgs(); await refresh(id ? 'Đã cập nhật mục.' : 'Đã thêm mục.');
+      }
+      async function deleteMat() {
+        const id = Number($('dm-id').value); if (!id) return;
+        if (!confirm('Xóa mục này khỏi tất cả các lớp?')) return;
+        const res = await st.c.from('week_materials').delete().eq('id', id);
+        if (res.error) { $('dm-err').textContent = LMS.friendlyError(res.error); return; }
+        closeDlgs(); await refresh('Đã xóa mục.');
+      }
+
       function openDlg(id) { $(id).hidden = false; }
       function closeDlgs() { document.querySelectorAll('.dlg').forEach(d => { d.hidden = true; }); }
       const classLabel = id => { const c = st.classes.find(x => x.id === Number(id)); return c ? c.class_code : ''; };
@@ -505,6 +656,18 @@
         $('dlg-class').querySelector('form').addEventListener('submit', saveClass);
         $('dc-del').addEventListener('click', deleteClass);
         $('dlg-blocked').querySelector('form').addEventListener('submit', saveBlocked);
+        document.querySelectorAll('.tabbar [data-view]').forEach(b => b.addEventListener('click', () => setView(b.dataset.view)));
+        $('btn-add-mat').addEventListener('click', () => openMat(null));
+        $('view-mat').addEventListener('click', e => { const b = e.target.closest('[data-edit-mat]'); if (b) openMat(b.dataset.editMat); });
+        $('dlg-mat').querySelector('form').addEventListener('submit', saveMat);
+        $('dm-del').addEventListener('click', deleteMat);
+        $('dm-quick').addEventListener('click', e => {
+          const b = e.target.closest('[data-q]'); if (!b) return;
+          const boxes = document.querySelectorAll('#dm-classes input');
+          if (b.dataset.q === 'none') { boxes.forEach(x => { x.checked = false; }); return; }
+          const ids = new Set(quick[Number(b.dataset.q)].ids);
+          boxes.forEach(x => { if (ids.has(Number(x.value))) x.checked = true; });
+        });
         document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeDlgs));
         document.querySelectorAll('.dlg').forEach(d => d.addEventListener('click', e => { if (e.target === d) closeDlgs(); }));
         document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDlgs(); });
@@ -517,7 +680,7 @@
           const { client } = await LMS.requireTeacher();
           st.c = client;
           await Promise.all([loadClasses(), loadBlocked()]);
-          await loadWeek(); render();
+          await Promise.all([loadWeek(), loadMats()]); render();
         } catch (e) {
           $('grid-body').innerHTML = `<tr><td colspan="8" class="p-6 text-center text-rose-700 text-sm">${esc(LMS.friendlyError(e))}</td></tr>`;
         }
