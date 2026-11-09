@@ -231,6 +231,8 @@
       <div class="text-sm text-slate-600" id="ds-info"></div>
       <label for="ds-date">Ngày</label>
       <input id="ds-date" type="date" class="field" required>
+      <div class="text-xs text-slate-500" style="margin-top:10px">Giờ rảnh ngày này (bấm để điền giờ)</div>
+      <div id="ds-free" class="flex flex-wrap gap-2" style="margin-top:6px"></div>
       <div class="row2">
         <div><label for="ds-start">Bắt đầu</label><input id="ds-start" type="time" class="field" required></div>
         <div><label for="ds-end">Kết thúc</label><input id="ds-end" type="time" class="field" required></div>
@@ -449,10 +451,10 @@
       const classState = c => c.is_archived ? 'archived' : (c.is_active ? 'active' : 'inactive');
       const sessionsOf = (cid, date) => st.sessions.filter(s => s.class_id === cid && s.session_date === date);
 
-      function freeTimes(date, dayIdx) {
+      function freeTimes(date, dayIdx, src) {
         const W0 = 7 * 60, W1 = 22 * 60 + 30, busy = [];
         parseRanges(st.blocked[dayIdx]).forEach(r => busy.push(r));
-        st.sessions.forEach(s => {
+        (src || st.sessions).forEach(s => {
           if (s.session_date !== date || s.status === 'cancel' || s.status === 'holiday') return;
           const c = st.classes.find(x => x.id === s.class_id);
           if (!c || classState(c) !== 'active') return;
@@ -793,8 +795,23 @@
           $('ds-title').textContent = 'Thêm buổi học'; $('ds-del').hidden = true;
           $('ds-info').textContent = classLabel(classId);
         }
-        openDlg('dlg-session');
+        openDlg('dlg-session'); showFree();
         setTimeout(() => { if (!sid) $('ds-start').focus(); }, 30);
+      }
+      let freeTok = 0;
+      async function showFree() {
+        const date = $('ds-date').value, box = $('ds-free'), id = Number($('ds-id').value) || null, tok = ++freeTok;
+        if (!date) { box.innerHTML = ''; return; }
+        let list = st.sessions;
+        if (!weekDates(st.week).map(ymd).includes(date)) {
+          box.innerHTML = '<span class="text-xs text-slate-500">Đang tải giờ rảnh...</span>';
+          const r = await st.c.from('sessions').select('id,class_id,session_date,start_time,end_time,status').eq('session_date', date);
+          if (tok !== freeTok) return;
+          if (r.error) { box.innerHTML = ''; return; }
+          list = r.data || [];
+        }
+        const f = freeTimes(date, (new Date(date + 'T00:00:00').getDay() + 6) % 7, list.filter(x => x.id !== id));
+        box.innerHTML = f.length ? f.map(x => `<button type="button" class="pick" data-free="${x}">${x}</button>`).join('') : '<span class="text-xs text-slate-500">Không còn khung rảnh từ 1 giờ trở lên.</span>';
       }
 
       function conflictsFor(classId, date, a, b, ignoreId) {
@@ -926,6 +943,12 @@
         });
         $('dlg-session').querySelector('form').addEventListener('submit', saveSession);
         $('ds-del').addEventListener('click', deleteSession);
+        $('ds-date').addEventListener('change', showFree);
+        $('ds-free').addEventListener('click', e => {
+          const b = e.target.closest('[data-free]'); if (!b) return;
+          const [a, z] = b.dataset.free.split(' - ').map(toMin);
+          $('ds-start').value = fmt(a); $('ds-end').value = fmt(Math.min(z, a + 90));
+        });
         $('btn-meet').addEventListener('click', () => { $('dmeet-err').textContent = ''; $('dmeet-url').value = st.meet || ''; openDlg('dlg-meet'); });
         $('dlg-meet').querySelector('form').addEventListener('submit', saveMeet);
         $('dlg-class').querySelector('form').addEventListener('submit', saveClass);
