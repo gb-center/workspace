@@ -35,7 +35,9 @@
     #grid tr.dim .c-name,#grid tr.dim td.day{opacity:.55}
     .chip{display:block;width:100%;text-align:center;margin-bottom:4px;padding:6px 8px;border-radius:12px;border:1px solid var(--t-tint-2);background:var(--t-tint);color:var(--t-ink);font-size:.8125rem;font-weight:600;line-height:1.25;min-height:44px}
     .chip small{display:block;font-weight:500;color:var(--t-muted);font-size:.75rem}
-    .chip.done,.chip.makeup{background:#fff}
+    .chip.offline{background:#e0f2fe;border-color:#bae6fd;color:#075985}
+    .chip.online{background:#ffedd5;border-color:#fed7aa;color:#9a3412}
+    .chip.offline small,.chip.online small{color:inherit;opacity:.8}
     .chip.holiday{background:#fff;color:var(--t-muted);text-decoration:line-through}
     .chip.holiday small{text-decoration:none}
     .chip.cancel{background:#fff;color:#be123c;border-color:#fecdd3;text-decoration:line-through}
@@ -164,6 +166,13 @@
       </div>
     </section>
     <section id="view-lib" hidden class="space-y-4" aria-label="Học liệu tổng hợp">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <p class="text-sm text-slate-600">Gồm học liệu theo tuần và bài tập online của mọi tuần.</p>
+        <div class="flex flex-wrap gap-2">
+          <button id="btn-asg-lib" type="button" class="btn-soft"><i data-lucide="send" class="w-4 h-4"></i><span>Giao bài online</span></button>
+          <button id="btn-add-lib" type="button" class="btn-primary"><i data-lucide="plus" class="w-4 h-4"></i><span>Thêm học liệu</span></button>
+        </div>
+      </div>
       <div class="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:items-center">
         <input id="lib-search" type="search" class="field w-full sm:w-64" placeholder="Tìm theo tên" aria-label="Tìm học liệu">
         <select id="lib-class" class="field w-full sm:w-48" aria-label="Lọc theo lớp"></select>
@@ -171,6 +180,16 @@
           <option value="">Tất cả loại</option>
           <option value="lesson">Bài học</option>
           <option value="homework">Bài về nhà</option>
+          <option value="asg">Bài tập online</option>
+        </select>
+        <select id="lib-skill" class="field w-full sm:w-44" aria-label="Lọc theo kỹ năng">
+          <option value="">Mọi kỹ năng</option>
+          <option value="reading">Reading</option>
+          <option value="listening">Listening</option>
+          <option value="writing">Writing</option>
+          <option value="speaking">Speaking</option>
+          <option value="grammar">Grammar</option>
+          <option value="vocabulary">Vocabulary</option>
         </select>
       </div>
       <div id="lib-list" class="space-y-4"></div>
@@ -274,16 +293,30 @@
   <div id="dlg-mat" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="dm-title">
     <form class="card" novalidate>
       <h2 id="dm-title">Mục học liệu</h2>
-      <input type="hidden" id="dm-id"><input type="hidden" id="dm-week">
-      <label for="dm-kind">Loại</label>
-      <select id="dm-kind" class="field">
-        <option value="lesson">Bài học</option>
-        <option value="homework">Bài về nhà</option>
+      <input type="hidden" id="dm-id">
+      <div class="row2">
+        <div><label for="dm-week">Tuần</label><select id="dm-week" class="field"></select></div>
+        <div><label for="dm-kind">Loại</label>
+          <select id="dm-kind" class="field">
+            <option value="lesson">Bài học</option>
+            <option value="homework">Bài về nhà</option>
+          </select></div>
+      </div>
+      <label for="dm-skill">Kỹ năng (không bắt buộc)</label>
+      <select id="dm-skill" class="field">
+        <option value="">Không phân loại</option>
+        <option value="reading">Reading</option>
+        <option value="listening">Listening</option>
+        <option value="writing">Writing</option>
+        <option value="speaking">Speaking</option>
+        <option value="grammar">Grammar</option>
+        <option value="vocabulary">Vocabulary</option>
       </select>
       <label for="dm-name">Tên</label>
       <input id="dm-name" type="text" class="field" autocomplete="off" required>
       <label for="dm-url">Link</label>
       <input id="dm-url" type="text" inputmode="url" class="field" autocomplete="off" placeholder="https://..." required>
+      <div id="dm-suggest" style="margin-top:8px"></div>
       <label>Giao cho lớp</label>
       <div id="dm-quick" class="flex flex-wrap gap-2"></div>
       <div id="dm-classes" class="pickgrid" style="margin-top:10px"></div>
@@ -343,7 +376,7 @@
       const BASE_MONDAY = new Date(2026, 8, 7);   // tuần 1 bắt đầu thứ 2 07/09/2026
       const STATUS_TXT = { planned: 'Chưa dạy', done: 'Đã dạy', cancel: 'Hủy', makeup: 'Bù', holiday: 'Nghỉ lễ' };
       const DEF_BLOCKED = ['07:00 - 22:30', '08:00 - 17:00', '08:00 - 17:00', '08:00 - 17:00', '08:00 - 19:00', '20:30 - 22:00', '18:00 - 22:30'];
-      const st = { c: null, classes: [], counts: {}, sessions: [], blocked: DEF_BLOCKED.slice(), week: 1, selDay: 0, busy: false, view: 'schedule', mats: [], lib: [] };
+      const st = { c: null, classes: [], counts: {}, sessions: [], blocked: DEF_BLOCKED.slice(), week: 1, selDay: 0, busy: false, view: 'schedule', mats: [], lib: [], libAsg: [] };
 
       const pad = n => String(n).padStart(2, '0');
       const ymd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
@@ -461,7 +494,7 @@
         $('week-label').textContent = 'Tuần ' + pad(st.week);
         $('week-badge').classList.toggle('hidden', st.week !== NOW_WEEK);
         $('week-range').textContent = pad(dates[0].getDate()) + '.' + pad(dates[0].getMonth() + 1) + ' – ' + pad(dates[6].getDate()) + '.' + pad(dates[6].getMonth() + 1) + '.' + dates[6].getFullYear();
-        $('grid').dataset.day = String(st.selDay);
+        headState(); $('grid').dataset.day = String(st.selDay);
 
         $('day-tabs').innerHTML = DAY.map((n, i) => `<button type="button" data-day="${i}" aria-pressed="${i === st.selDay}">${i === 6 ? 'CN' : 'T' + (i + 2)} ${pad(dates[i].getDate())}/${pad(dates[i].getMonth() + 1)}</button>`).join('');
         $('grid-head').innerHTML = '<th class="c-name">Lớp</th>' + DAY.map((n, i) =>
@@ -488,7 +521,7 @@
             + keys.map((k, i) => {
               const ss = sessionsOf(c.id, k);
               return `<td class="day dcol d${i}${k === todayKey ? ' today' : ''}" data-class="${c.id}" data-date="${k}">` + ss.map(x =>
-                `<button type="button" class="chip ${x.status}" data-sid="${x.id}">${t5(x.start_time)} - ${t5(x.end_time)}<small>${[x.status === 'cancel' ? 'Hủy' : '', x.status === 'done' ? 'Đã dạy' : x.status === 'makeup' ? 'Bù' : x.status === 'holiday' ? 'Nghỉ lễ' : '', x.mode === 'online' ? 'Online' : '', x.lesson ? esc(x.lesson) : '', x.note ? esc(x.note) : ''].filter(Boolean).join(' · ')}</small></button>`).join('') + '</td>';
+                `<button type="button" class="chip ${x.mode === 'online' ? 'online' : 'offline'} ${x.status}" data-sid="${x.id}">${t5(x.start_time)} - ${t5(x.end_time)}<small>${[x.status === 'cancel' ? 'Hủy' : '', x.status === 'done' ? 'Đã dạy' : x.status === 'makeup' ? 'Bù' : x.status === 'holiday' ? 'Nghỉ lễ' : '', x.lesson ? esc(x.lesson) : '', x.note ? esc(x.note) : ''].filter(Boolean).join(' · ')}</small></button>`).join('') + '</td>';
             }).join('') + '</tr>';
         });
         $('grid-body').innerHTML = html;
@@ -506,7 +539,7 @@
       const PROGRAM = { AC: 'Global Success', IE: 'IELTS', TO: 'TOEIC', GT: 'Speaking' };
       const matClasses = () => st.classes.filter(c => !c.is_archived).sort((a, b) => natural(a.class_code, b.class_code));
       async function loadMats() {
-        const r = await st.c.from('week_materials').select('id,week_start,kind,title,url,class_ids,sort_order')
+        const r = await st.c.from('week_materials').select('id,week_start,kind,skill,title,url,class_ids,sort_order')
           .eq('week_start', weekKey()).order('sort_order').order('id');
         if (r.error) throw r.error;
         st.mats = r.data || [];
@@ -517,32 +550,60 @@
         document.querySelectorAll('.tabbar [data-view]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.view === v)));
         $('tabbar').style.display = v === 'lib' ? 'none' : '';
         if ($('nav-lib')) { if (v === 'lib') { $('nav-lib').setAttribute('aria-current', 'page'); $('nav-home').removeAttribute('aria-current'); } else { $('nav-home').setAttribute('aria-current', 'page'); $('nav-lib').removeAttribute('aria-current'); } }
-        if (v === 'lib') { try { await loadLib(); } catch (e) { $('page-msg').textContent = LMS.friendlyError(e); } }
-        renderMats(); renderLib();
+        if (v === 'lib') { try { await loadLib(); } catch (e) { $('page-msg').textContent = LMS.friendlyError(e); } headState(); renderLib(); }
+        else render();
       }
-      async function loadLib() {
-        const r = await st.c.from('week_materials').select('id,week_start,kind,title,url,class_ids,sort_order')
-          .order('week_start', { ascending: false }).order('sort_order').order('id');
-        if (r.error) throw r.error;
-        st.lib = r.data || [];
+      function headState() {
+        const lib = st.view === 'lib';
+        ['btn-prev', 'btn-today', 'btn-next'].forEach(id => { $(id).style.display = lib ? 'none' : ''; });
+        if (lib) { $('week-label').textContent = 'Học liệu'; $('week-badge').classList.add('hidden'); $('week-range').textContent = 'Mọi tuần, mới nhất trước'; }
       }
+      const SKILL = { reading: 'Reading', listening: 'Listening', writing: 'Writing', speaking: 'Speaking', grammar: 'Grammar', vocabulary: 'Vocabulary' };
+      const kindText = m => (m.kind === 'homework' ? 'Bài về nhà' : 'Bài học') + (m.skill && SKILL[m.skill] ? ' · ' + SKILL[m.skill] : '');
+      const toMon = k => { if (!k) return ''; const [y, m, d] = k.split('-').map(Number), dt = new Date(y, m - 1, d); dt.setDate(dt.getDate() - (dt.getDay() + 6) % 7); return ymd(dt); };
       const weekNoOf = key => { const [y, m, d] = key.split('-').map(Number); return 1 + Math.round((new Date(y, m - 1, d) - BASE_MONDAY) / (7 * 864e5)); };
+      async function loadLib() {
+        const [r, a, ac] = await Promise.all([
+          st.c.from('week_materials').select('id,week_start,kind,skill,title,url,class_ids,sort_order').order('week_start', { ascending: false }).order('sort_order').order('id'),
+          st.c.from('assignments').select('id,assignment_code,assignment_name,week_start,due_at').eq('is_active', true),
+          st.c.from('assignment_classes').select('assignment_id,class_id,week_start,due_at').eq('is_active', true)
+        ]);
+        if (r.error) throw r.error; if (a.error) throw a.error; if (ac.error) throw ac.error;
+        st.lib = r.data || [];
+        const am = {}; (a.data || []).forEach(x => { am[x.id] = x; });
+        const g = {};
+        (ac.data || []).forEach(row => {
+          const x = am[row.assignment_id]; if (!x) return;
+          const wk = toMon(row.week_start || x.week_start), key = x.id + '|' + wk;
+          (g[key] = g[key] || { kind: 'asg', code: x.assignment_code, title: x.assignment_name || x.assignment_code, week_start: wk, due_at: row.due_at || x.due_at, class_ids: [] }).class_ids.push(row.class_id);
+        });
+        st.libAsg = Object.keys(g).map(k => g[k]);
+      }
       function renderLib() {
         if (st.view !== 'lib') return;
         const sel = $('lib-class'), cur = sel.value;
         sel.innerHTML = '<option value="">Tất cả lớp</option>' + matClasses().map(c => `<option value="${c.id}">${esc(c.class_code)}</option>`).join('');
         sel.value = cur;
         const q = $('lib-search').value.trim().toLowerCase(), cid = Number(sel.value) || 0, kind = $('lib-kind').value;
-        const list = st.lib.filter(m => (!q || m.title.toLowerCase().includes(q)) && (!cid || (m.class_ids || []).includes(cid)) && (!kind || m.kind === kind));
-        const byWeek = {}; list.forEach(m => { (byWeek[m.week_start] = byWeek[m.week_start] || []).push(m); });
+        const list = st.lib.concat(st.libAsg).filter(m => (!q || m.title.toLowerCase().includes(q)) && (!cid || (m.class_ids || []).includes(cid)) && (!kind || m.kind === kind) && (!$('lib-skill').value || m.skill === $('lib-skill').value));
+        const byWeek = {}; list.forEach(m => { const k = m.week_start || ''; (byWeek[k] = byWeek[k] || []).push(m); });
         const keys = Object.keys(byWeek).sort().reverse();
         $('lib-list').innerHTML = keys.length ? keys.map(k => {
-          const n = weekNoOf(k), d = weekDates(n);
-          return `<div class="bg-white rounded-2xl border border-slate-200 p-4"><h2 class="text-sm font-bold text-slate-900 mb-3">Tuần ${pad(n)} <span class="font-normal text-slate-500">(${pad(d[0].getDate())}.${pad(d[0].getMonth() + 1)} – ${pad(d[6].getDate())}.${pad(d[6].getMonth() + 1)})</span></h2>
-            <div class="space-y-2">${byWeek[k].map(m => `<div class="mat-item"><div class="min-w-0 flex-1">
-              <a class="mat-title" href="${isHttp(m.url) ? esc(m.url) : '#'}" target="_blank" rel="noopener">${esc(m.title)}</a>
-              <div class="text-xs text-slate-500 mt-1">${m.kind === 'homework' ? 'Bài về nhà' : 'Bài học'} · ${targetsText(m)}</div></div>
-              <button type="button" class="icon-btn" data-edit-mat="${m.id}" aria-label="Sửa mục"><i data-lucide="pencil" class="w-4 h-4"></i></button></div>`).join('')}</div></div>`;
+          let head = 'Chưa gán tuần';
+          if (k) { const n = weekNoOf(k), d = weekDates(n); head = `Tuần ${pad(n)} <span class="font-normal text-slate-500">(${pad(d[0].getDate())}.${pad(d[0].getMonth() + 1)} – ${pad(d[6].getDate())}.${pad(d[6].getMonth() + 1)})</span>`; }
+          return `<div class="bg-white rounded-2xl border border-slate-200 p-4"><h2 class="text-sm font-bold text-slate-900 mb-3">${head}</h2>
+            <div class="space-y-2">${byWeek[k].map(m => {
+              if (m.kind === 'asg') {
+                const due = m.due_at ? new Date(m.due_at) : null;
+                return `<div class="mat-item"><div class="min-w-0 flex-1"><div style="font-weight:700;color:var(--t-primary);overflow-wrap:anywhere">${esc(m.title)}</div>
+                  <div class="text-xs text-slate-500 mt-1">Bài tập online${due ? ' · Hạn ' + pad(due.getDate()) + '/' + pad(due.getMonth() + 1) : ''} · ${targetsText(m)}</div></div>
+                  <button type="button" class="icon-btn" data-edit-asg="${esc(m.code)}" aria-label="Giao lại bài"><i data-lucide="send" class="w-4 h-4"></i></button></div>`;
+              }
+              return `<div class="mat-item"><div class="min-w-0 flex-1">
+                <a class="mat-title" href="${isHttp(m.url) ? esc(m.url) : '#'}" target="_blank" rel="noopener">${esc(m.title)}</a>
+                <div class="text-xs text-slate-500 mt-1">${kindText(m)} · ${targetsText(m)}</div></div>
+                <button type="button" class="icon-btn" data-edit-mat="${m.id}" aria-label="Sửa mục"><i data-lucide="pencil" class="w-4 h-4"></i></button></div>`;
+            }).join('')}</div></div>`;
         }).join('') : '<p class="text-sm text-slate-400">Chưa có học liệu nào.</p>';
         icons();
       }
@@ -584,30 +645,84 @@
         return out;
       }
       let quick = [];
+      const PROG_DIR = { AC: 'gs', IE: 'ielts', TO: 'toeic', GT: 'gt' };
+      let sugUrl = '';
+      function weekOptions(sel) {
+        const last = Math.max(NOW_WEEK + 8, sel ? weekNoOf(sel) : 0), out = [];
+        for (let n = 1; n <= last; n++) { const d = weekDates(n); out.push(`<option value="${ymd(d[0])}">Tuần ${pad(n)} (${pad(d[0].getDate())}.${pad(d[0].getMonth() + 1)} – ${pad(d[6].getDate())}.${pad(d[6].getMonth() + 1)})</option>`); }
+        return out.join('');
+      }
+      function suggestUrl() {
+        const codes = [...document.querySelectorAll('#dm-classes input:checked')].map(i => classLabel(i.value)).filter(Boolean);
+        if (!codes.length) return { msg: 'Chọn lớp để có đường dẫn gợi ý.' };
+        const progs = new Set(codes.map(c => PROG_DIR[(/^[A-Za-z]+/.exec(c) || [''])[0].toUpperCase()] || ''));
+        if (progs.size !== 1 || progs.has('')) return { msg: 'Đường dẫn gợi ý cần các lớp cùng một chương trình.' };
+        const name = LMS.slug($('dm-name').value);
+        if (!name) return { msg: 'Nhập tên để có đường dẫn gợi ý.' };
+        const prog = [...progs][0]; let pre = '';
+        if (prog === 'gs') {
+          const g = [...new Set(codes.map(c => (/^[A-Za-z]+(\d{1,2})/.exec(c) || [])[1]).filter(Boolean).map(Number))].sort((a, b) => a - b);
+          pre = g.length ? 'gs' + g.join('-') + '-' : 'gs-';
+        }
+        const file = (pre && name.indexOf(pre) === 0 ? '' : pre) + name + '.html';
+        return { url: LMS.siteBase + 'hoc-lieu/' + prog + '/w' + pad(weekNoOf($('dm-week').value)) + '/' + file };
+      }
+      function updateSuggest() {
+        const s = suggestUrl(); sugUrl = s.url || '';
+        $('dm-suggest').innerHTML = s.url
+          ? `<div class="text-xs text-slate-500 mb-1">Đường dẫn gợi ý (nếu bài nằm trên GitHub Pages)</div><div class="flex items-center gap-2"><code style="flex:1;min-width:0;overflow-wrap:anywhere;font-size:.75rem;background:var(--t-soft);border:1px solid var(--t-border);border-radius:8px;padding:8px 10px">${esc(s.url)}</code><button type="button" class="pick" data-sug="copy" aria-label="Chép đường dẫn"><i data-lucide="copy" class="w-4 h-4"></i></button><button type="button" class="pick" data-sug="use">Dùng</button></div>`
+          : `<div class="text-xs text-slate-500">${esc(s.msg)}</div>`;
+        icons();
+      }
+      async function checkLink(u) {
+        const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 8000);
+        try {
+          try {
+            const r = await fetch(u, { signal: ctl.signal, cache: 'no-store' });
+            return r.ok ? { ok: true } : { ok: false, why: 'trang báo lỗi ' + r.status + (r.status === 404 ? ' (không tìm thấy file)' : '') };
+          } catch (e1) {
+            if (ctl.signal.aborted) return { ok: false, why: 'quá thời gian chờ' };
+            await fetch(u, { mode: 'no-cors', signal: ctl.signal, cache: 'no-store' });
+            return { ok: true, unverified: true };
+          }
+        } catch (e) { return { ok: false, why: ctl.signal.aborted ? 'quá thời gian chờ' : 'không kết nối được tới địa chỉ này' }; }
+        finally { clearTimeout(to); }
+      }
       function openMat(id) {
         $('dm-err').textContent = '';
         const m = id ? (st.mats.find(x => x.id === Number(id)) || st.lib.find(x => x.id === Number(id))) : null;
-        $('dm-id').value = m ? m.id : ''; $('dm-week').value = m ? m.week_start : weekKey();
+        $('dm-id').value = m ? m.id : '';
+        const wk = m ? toMon(m.week_start) : (st.view === 'lib' ? ymd(weekDates(NOW_WEEK)[0]) : weekKey());
+        $('dm-week').innerHTML = weekOptions(wk); $('dm-week').value = wk;
         $('dm-title').textContent = m ? 'Sửa mục học liệu' : 'Thêm mục học liệu';
-        $('dm-kind').value = m ? m.kind : 'lesson';
-        $('dm-name').value = m ? m.title : ''; $('dm-url').value = m ? m.url : '';
+        $('dm-kind').value = m ? m.kind : 'lesson'; $('dm-skill').value = (m && m.skill) || '';
+        $('dm-name').value = m ? m.title : ''; $('dm-url').value = m ? m.url : ''; $('dm-url').dataset.orig = m ? m.url : '';
         const sel = new Set(m ? m.class_ids : []);
         const cls = matClasses(); (m ? m.class_ids : []).forEach(cid => { const c = st.classes.find(x => x.id === cid); if (c && c.is_archived) cls.push(c); });
         $('dm-classes').innerHTML = cls.map(c => `<label class="pickrow"><input type="checkbox" value="${c.id}"${sel.has(c.id) ? ' checked' : ''}><span>${esc(c.class_code)}</span></label>`).join('');
         quick = quickGroups();
         $('dm-quick').innerHTML = quick.map((g, i) => `<button type="button" class="pick" data-q="${i}">${esc(g.label)}</button>`).join('') + '<button type="button" class="pick" data-q="none">Bỏ chọn</button>';
         $('dm-del').style.display = m ? '' : 'none';
+        updateSuggest();
         openDlg('dlg-mat'); $('dm-name').focus();
       }
       async function saveMat(ev) {
-        ev.preventDefault();
+        ev.preventDefault(); if (st.busy) return;
         const err = $('dm-err'), id = Number($('dm-id').value) || null;
         const title = $('dm-name').value.trim(), url = $('dm-url').value.trim();
         const ids = [...document.querySelectorAll('#dm-classes input:checked')].map(i => Number(i.value));
         if (!title) { err.textContent = 'Nhập tên mục.'; return; }
         if (!isHttp(url)) { err.textContent = 'Link phải bắt đầu bằng http:// hoặc https://'; return; }
         if (!ids.length) { err.textContent = 'Chọn ít nhất một lớp.'; return; }
-        const row = { week_start: $('dm-week').value || weekKey(), kind: $('dm-kind').value, title, url, class_ids: ids };
+        err.textContent = '';
+        if (!id || url !== $('dm-url').dataset.orig) {
+          const btn = ev.target.querySelector('button[type="submit"]'), t0 = btn.textContent;
+          st.busy = true; btn.disabled = true; btn.textContent = 'Đang kiểm tra link...';
+          const chk = await checkLink(url);
+          st.busy = false; btn.disabled = false; btn.textContent = t0;
+          if (!chk.ok && !(await LMS.confirm('Link này chưa mở được: ' + chk.why + '.\n\n' + url + '\n\nNếu bài vừa upload lên GitHub, trang cần khoảng 1 phút mới sẵn sàng.', { ok: 'Vẫn lưu', cancel: 'Sửa lại' }))) return;
+        }
+        const row = { week_start: $('dm-week').value || weekKey(), kind: $('dm-kind').value, skill: $('dm-skill').value || null, title, url, class_ids: ids };
         const res = id ? await st.c.from('week_materials').update(row).eq('id', id) : await st.c.from('week_materials').insert(row);
         if (res.error) { err.textContent = LMS.friendlyError(res.error); return; }
         closeDlgs(); await refresh(id ? 'Đã cập nhật mục.' : 'Đã thêm mục.');
@@ -623,7 +738,7 @@
       /* ---------- Giao bài online hàng loạt ---------- */
       const pad2 = n => String(n).padStart(2, '0');
       const toLocalInput = iso => { if (!iso) return ''; const d = new Date(iso); return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()) + 'T' + pad2(d.getHours()) + ':' + pad2(d.getMinutes()); };
-      async function openAsg() {
+      async function openAsg(code) {
         $('da-err').textContent = '';
         const r = await st.c.from('assignments').select('id,assignment_code,assignment_name,week_start,due_at').eq('is_active', true).order('assignment_code');
         if (r.error) { $('page-msg').textContent = LMS.friendlyError(r.error); return; }
@@ -633,6 +748,7 @@
         $('da-classes').innerHTML = cls.map(c => `<label class="pickrow"><input type="checkbox" value="${esc(c.class_code)}" data-id="${c.id}"><span>${esc(c.class_code)}</span></label>`).join('');
         quick = quickGroups();
         $('da-quick').innerHTML = quick.map((g, i) => `<button type="button" class="pick" data-q="${i}">${esc(g.label)}</button>`).join('') + '<button type="button" class="pick" data-q="none">Bỏ chọn</button>';
+        if (typeof code === 'string' && code) $('da-code').value = code;
         openDlg('dlg-asg');
         await asgPick();
       }
@@ -654,7 +770,7 @@
         const due = $('da-due').value ? new Date($('da-due').value).toISOString() : null;
         const res = await st.c.rpc('assign_assignment_bulk', { p_assignment_code: code, p_class_codes: codes, p_class_prefix: null, p_week_start: $('da-week').value || null, p_due_at: due });
         if (res.error) { err.textContent = LMS.friendlyError(res.error); return; }
-        closeDlgs(); LMS.toast('Đã giao ' + code + ' cho ' + (res.data || []).length + ' lớp.');
+        closeDlgs(); await refresh('Đã giao ' + code + ' cho ' + (res.data || []).length + ' lớp.');
       }
 
       function openDlg(id) { $(id).hidden = false; }
@@ -819,11 +935,13 @@
         addEventListener('hashchange', () => setView(location.hash === '#lib' ? 'lib' : 'schedule'));
         $('btn-add-mat').addEventListener('click', () => openMat(null));
         $('view-mat').addEventListener('click', e => { const b = e.target.closest('[data-edit-mat]'); if (b) openMat(b.dataset.editMat); });
-        $('view-lib').addEventListener('click', e => { const b = e.target.closest('[data-edit-mat]'); if (b) openMat(b.dataset.editMat); });
-        ['lib-search', 'lib-class', 'lib-kind'].forEach(id => $(id).addEventListener(id === 'lib-search' ? 'input' : 'change', renderLib));
+        $('view-lib').addEventListener('click', e => { const b = e.target.closest('[data-edit-mat]'); if (b) return openMat(b.dataset.editMat); const a = e.target.closest('[data-edit-asg]'); if (a) openAsg(a.dataset.editAsg); });
+        ['lib-search', 'lib-class', 'lib-kind', 'lib-skill'].forEach(id => $(id).addEventListener(id === 'lib-search' ? 'input' : 'change', renderLib));
         $('dlg-mat').querySelector('form').addEventListener('submit', saveMat);
         $('dm-del').addEventListener('click', deleteMat);
-        $('btn-asg').addEventListener('click', openAsg);
+        $('btn-asg').addEventListener('click', () => openAsg());
+        $('btn-asg-lib').addEventListener('click', () => openAsg());
+        $('btn-add-lib').addEventListener('click', () => openMat(null));
         $('dlg-asg').querySelector('form').addEventListener('submit', saveAsg);
         $('da-code').addEventListener('change', asgPick);
         $('da-quick').addEventListener('click', e => {
@@ -836,9 +954,16 @@
         $('dm-quick').addEventListener('click', e => {
           const b = e.target.closest('[data-q]'); if (!b) return;
           const boxes = document.querySelectorAll('#dm-classes input');
-          if (b.dataset.q === 'none') { boxes.forEach(x => { x.checked = false; }); return; }
-          const ids = new Set(quick[Number(b.dataset.q)].ids);
-          boxes.forEach(x => { if (ids.has(Number(x.value))) x.checked = true; });
+          if (b.dataset.q === 'none') boxes.forEach(x => { x.checked = false; });
+          else { const ids = new Set(quick[Number(b.dataset.q)].ids); boxes.forEach(x => { if (ids.has(Number(x.value))) x.checked = true; }); }
+          updateSuggest();
+        });
+        ['input', 'change'].forEach(t => $('dlg-mat').addEventListener(t, e => { if (e.target.id !== 'dm-url') updateSuggest(); }));
+        $('dm-suggest').addEventListener('click', async e => {
+          const b = e.target.closest('[data-sug]'); if (!b || !sugUrl) return;
+          if (b.dataset.sug === 'use') { $('dm-url').value = sugUrl; return; }
+          try { await navigator.clipboard.writeText(sugUrl); LMS.toast('Đã chép đường dẫn.'); }
+          catch (_) { $('dm-url').value = sugUrl; LMS.toast('Đã điền vào ô Link.'); }
         });
         document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeDlgs));
         document.querySelectorAll('.dlg').forEach(d => d.addEventListener('click', e => { if (e.target === d) closeDlgs(); }));

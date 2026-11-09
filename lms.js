@@ -277,7 +277,73 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initThemePopover);
   else initThemePopover();
 
+  /* ---------- Đường dẫn học liệu & mã học sinh ---------- */
+  var SITE_BASE = 'https://gb-center.github.io/workspace/';
+  /* Tên không dấu, chữ thường, nối bằng gạch ngang: "Unit 4 - Đọc hiểu" -> "unit-4-doc-hieu" */
+  function slug(v) {
+    return String(v == null ? '' : v).toLowerCase().replace(/đ/g, 'd').normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  }
+  /* Gắn ?s=<mã học sinh> vào link bài của trang LMS. Link ngoài (Drive...) giữ nguyên để không lộ mã. */
+  function withStudent(u, code) {
+    if (!u || !code) return u;
+    try {
+      var x = new URL(u, location.href);
+      if (x.host !== 'gb-center.github.io' && x.host !== location.host) return u;
+      x.searchParams.set('s', code);
+      return x.href;
+    } catch (e) { return u; }
+  }
+  /* Trang bài của học sinh gọi: LMS.studentGate().then(function (s) { /* s.code, s.name *\/ ... })
+     Có ?s=mã hợp lệ thì cho làm ngay; thiếu hoặc sai mã thì hiện ô nhập mã, chưa cho làm. */
+  function studentGate() {
+    var c = client();
+    if (!c) return Promise.reject(new Error('Không tải được thư viện kết nối. Kiểm tra mạng rồi tải lại trang.'));
+    var fromUrl = (new URLSearchParams(location.search).get('s') || '').trim();
+    function verify(code) {
+      return c.rpc('student_portal', { p_student_code: code }).then(function (r) {
+        if (r.error) throw r.error;
+        try { var u = new URL(location.href); u.searchParams.set('s', code); history.replaceState(null, '', u.href); } catch (e) { /* bỏ qua */ }
+        return { code: code, name: (r.data && r.data.student_name) || '' };
+      });
+    }
+    function msgOf(e) { return /student_not_found/.test((e && e.message) || '') ? 'Mã chưa đúng hoặc đã bị tạm ngưng. Hỏi lại giáo viên để lấy mã.' : friendlyError(e); }
+    function prompt(first) {
+      return new Promise(function (resolve) {
+        if (!document.getElementById('lms-gate-css')) {
+          var st = document.createElement('style'); st.id = 'lms-gate-css';
+          st.textContent = '#lms-gate{position:fixed;inset:0;z-index:400;display:flex;align-items:center;justify-content:center;padding:16px;background:#fff}' +
+            '#lms-gate .gt-card{width:100%;max-width:380px}#lms-gate h1{font-size:1.25rem;font-weight:800;color:var(--t-ink,#0f172a);margin:0 0 6px}' +
+            '#lms-gate p{color:var(--t-muted,#475569);font-size:.9375rem;margin:0 0 14px}' +
+            '#lms-gate input{width:100%;min-height:48px;font-size:1.125rem;letter-spacing:.12em;text-align:center;border:1px solid var(--t-line,#cbd5e1);border-radius:12px;padding:0 12px}' +
+            '#lms-gate .gt-err{min-height:22px;margin-top:8px;font-size:.875rem;color:#be123c}' +
+            '#lms-gate button{width:100%;min-height:48px;margin-top:10px;border:0;border-radius:9999px;background:var(--t-primary,#0f172a);color:#fff;font-weight:700;font-size:1rem;cursor:pointer}' +
+            '#lms-gate button:disabled{opacity:.6}';
+          document.head.appendChild(st);
+        }
+        var o = document.createElement('div'); o.id = 'lms-gate'; o.setAttribute('role', 'dialog'); o.setAttribute('aria-modal', 'true'); o.setAttribute('aria-label', 'Nhập mã học sinh');
+        o.innerHTML = '<form class="gt-card" novalidate><h1>Nhập mã học sinh</h1><p>Nhập mã giáo viên đã gửi để bài làm được ghi đúng tên bạn.</p>' +
+          '<input type="text" inputmode="numeric" autocomplete="off" autocapitalize="off" aria-label="Mã học sinh"><div class="gt-err" role="alert"></div><button type="submit">Bắt đầu</button></form>';
+        document.body.appendChild(o);
+        var f = o.querySelector('form'), inp = o.querySelector('input'), err = o.querySelector('.gt-err'), btn = o.querySelector('button');
+        err.textContent = first || ''; setTimeout(function () { inp.focus(); }, 30);
+        f.addEventListener('submit', function (ev) {
+          ev.preventDefault();
+          var v = inp.value.trim();
+          if (!v) { err.textContent = 'Nhập mã học sinh.'; return; }
+          btn.disabled = true; btn.textContent = 'Đang kiểm tra...'; err.textContent = '';
+          verify(v).then(function (res) { o.remove(); resolve(res); }, function (e) {
+            err.textContent = msgOf(e); btn.disabled = false; btn.textContent = 'Bắt đầu';
+          });
+        });
+      });
+    }
+    if (!fromUrl) return prompt('');
+    return verify(fromUrl).catch(function (e) { return prompt(msgOf(e)); });
+  }
+
   window.LMS = {
+    siteBase: SITE_BASE, slug: slug, withStudent: withStudent, studentGate: studentGate,
     client: client, requireTeacher: requireTeacher, signOut: signOut,
     esc: esc, toast: toast, friendlyError: friendlyError, confirm: confirmBox, alert: alertBox,
     theme: { apply: applyTheme, get: getTheme, DEF: DEF }
