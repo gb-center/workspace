@@ -344,10 +344,10 @@
       <label>Giao cho lớp</label>
       <div id="da-quick" class="flex flex-wrap gap-2"></div>
       <div id="da-classes" class="pickgrid" style="margin-top:10px"></div>
-      <p class="text-xs text-slate-500" style="margin-top:8px">Lớp đã được giao sẽ được tick sẵn. Giao lại chỉ cập nhật tuần và hạn nộp. Bỏ tick không gỡ bài đã giao.</p>
+      <p class="text-xs text-slate-500" style="margin-top:8px">Lớp đã được giao sẽ được tick sẵn. Bỏ tick rồi bấm Lưu sẽ gỡ bài khỏi lớp đó (bài nộp của học sinh vẫn được giữ). Không tick lớp nào cũng được.</p>
       <div class="err" id="da-err" role="alert"></div>
       <div class="acts">
-        <button type="submit" class="btn-primary">Giao bài</button>
+        <button type="submit" class="btn-primary">Lưu</button>
         <button type="button" class="btn-soft" data-close>Hủy</button>
       </div>
     </form>
@@ -764,23 +764,32 @@
       }
       async function asgPick() {
         const a = st.asgList.find(x => x.assignment_code === $('da-code').value);
-        const ex = a ? await st.c.from('assignment_classes').select('class_id,week_start,due_at').eq('assignment_id', a.id) : { data: [] };
-        const have = new Set((ex.data || []).map(x => x.class_id));
+        const ex = a ? await st.c.from('assignment_classes').select('class_id,week_start,due_at').eq('assignment_id', a.id).eq('is_active', true) : { data: [] };
+        const have = new Set((ex.data || []).map(x => x.class_id)); st.asgHave = have;
         const first = (ex.data || [])[0];
         $('da-week').value = (first && first.week_start) || (a && a.week_start) || weekKey();
         $('da-due').value = toLocalInput((first && first.due_at) || (a && a.due_at));
         document.querySelectorAll('#da-classes input').forEach(x => { x.checked = have.has(Number(x.dataset.id)); });
       }
       async function saveAsg(ev) {
-        ev.preventDefault();
-        const err = $('da-err'), code = $('da-code').value;
-        const codes = [...document.querySelectorAll('#da-classes input:checked')].map(i => i.value);
-        if (!code) { err.textContent = 'Chưa có bài nào để giao.'; return; }
-        if (!codes.length) { err.textContent = 'Chọn ít nhất một lớp.'; return; }
+        ev.preventDefault(); if (st.busy) return;
+        const err = $('da-err'), code = $('da-code').value, a = st.asgList.find(x => x.assignment_code === code);
+        if (!a) { err.textContent = 'Chưa có bài nào để giao.'; return; }
+        const boxes = [...document.querySelectorAll('#da-classes input')];
+        const codes = boxes.filter(i => i.checked).map(i => i.value);
+        const drop = boxes.filter(i => !i.checked && st.asgHave && st.asgHave.has(Number(i.dataset.id))).map(i => Number(i.dataset.id));
+        if (!codes.length && !drop.length) { closeDlgs(); LMS.toast('Bài chưa giao cho lớp nào, không có thay đổi.'); return; }
         const due = $('da-due').value ? new Date($('da-due').value).toISOString() : null;
-        const res = await st.c.rpc('assign_assignment_bulk', { p_assignment_code: code, p_class_codes: codes, p_class_prefix: null, p_week_start: $('da-week').value || null, p_due_at: due });
-        if (res.error) { err.textContent = LMS.friendlyError(res.error); return; }
-        closeDlgs(); await refresh('Đã giao ' + code + ' cho ' + (res.data || []).length + ' lớp.');
+        st.busy = true; let given = 0, res;
+        if (codes.length) {
+          res = await st.c.rpc('assign_assignment_bulk', { p_assignment_code: code, p_class_codes: codes, p_class_prefix: null, p_week_start: $('da-week').value || null, p_due_at: due });
+          if (!res.error) given = (res.data || []).length;
+        }
+        if ((!res || !res.error) && drop.length) res = await st.c.from('assignment_classes').update({ is_active: false }).eq('assignment_id', a.id).in('class_id', drop);
+        st.busy = false;
+        if (res && res.error) { err.textContent = LMS.friendlyError(res.error); return; }
+        closeDlgs();
+        await refresh((given ? 'Đã giao ' + code + ' cho ' + given + ' lớp.' : '') + (drop.length ? (given ? ' ' : '') + 'Đã gỡ khỏi ' + drop.length + ' lớp.' : ''));
       }
 
       function openDlg(id) { $(id).hidden = false; }
