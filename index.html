@@ -319,7 +319,7 @@
       <label for="dm-url">Link</label>
       <input id="dm-url" type="text" inputmode="url" class="field" autocomplete="off" placeholder="https://..." required>
       <div id="dm-suggest" style="margin-top:8px"></div>
-      <label>Giao cho lớp</label>
+      <label>Giao cho lớp (có thể bỏ trống, giao sau)</label>
       <div id="dm-quick" class="flex flex-wrap gap-2"></div>
       <div id="dm-classes" class="pickgrid" style="margin-top:10px"></div>
       <div class="err" id="dm-err" role="alert"></div>
@@ -604,7 +604,8 @@
               return `<div class="mat-item"><div class="min-w-0 flex-1">
                 <a class="mat-title" href="${isHttp(m.url) ? esc(m.url) : '#'}" target="_blank" rel="noopener">${esc(m.title)}</a>
                 <div class="text-xs text-slate-500 mt-1">${kindText(m)} · ${targetsText(m)}</div></div>
-                <button type="button" class="icon-btn" data-edit-mat="${m.id}" aria-label="Sửa mục"><i data-lucide="pencil" class="w-4 h-4"></i></button></div>`;
+                <button type="button" class="icon-btn" data-edit-mat="${m.id}" aria-label="Sửa mục"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+                <button type="button" class="icon-btn" data-del-mat="${m.id}" aria-label="Xóa mục" style="color:#be123c"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`;
             }).join('')}</div></div>`;
         }).join('') : '<p class="text-sm text-slate-400">Chưa có học liệu nào.</p>';
         icons();
@@ -620,7 +621,8 @@
         return `<div class="mat-item"><div class="min-w-0 flex-1">
           <a class="mat-title" href="${isHttp(m.url) ? esc(m.url) : '#'}" target="_blank" rel="noopener">${esc(m.title)}</a>
           <div class="text-xs text-slate-500 mt-1">${targetsText(m)}</div></div>
-          <button type="button" class="icon-btn" data-edit-mat="${m.id}" aria-label="Sửa mục"><i data-lucide="pencil" class="w-4 h-4"></i></button></div>`;
+          <button type="button" class="icon-btn" data-edit-mat="${m.id}" aria-label="Sửa mục"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+                <button type="button" class="icon-btn" data-del-mat="${m.id}" aria-label="Xóa mục" style="color:#be123c"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`;
       }
       function renderMats() {
         if (st.view !== 'mat') return;
@@ -715,7 +717,6 @@
         const ids = [...document.querySelectorAll('#dm-classes input:checked')].map(i => Number(i.value));
         if (!title) { err.textContent = 'Nhập tên mục.'; return; }
         if (!isHttp(url)) { err.textContent = 'Link phải bắt đầu bằng http:// hoặc https://'; return; }
-        if (!ids.length) { err.textContent = 'Chọn ít nhất một lớp.'; return; }
         err.textContent = '';
         if (!id || url !== $('dm-url').dataset.orig) {
           const btn = ev.target.querySelector('button[type="submit"]'), t0 = btn.textContent;
@@ -727,7 +728,14 @@
         const row = { week_start: $('dm-week').value || weekKey(), kind: $('dm-kind').value, skill: $('dm-skill').value || null, title, url, class_ids: ids };
         const res = id ? await st.c.from('week_materials').update(row).eq('id', id) : await st.c.from('week_materials').insert(row);
         if (res.error) { err.textContent = LMS.friendlyError(res.error); return; }
-        closeDlgs(); await refresh(id ? 'Đã cập nhật mục.' : 'Đã thêm mục.');
+        closeDlgs(); await refresh((id ? 'Đã cập nhật mục.' : 'Đã thêm mục.') + (ids.length ? '' : ' Chưa giao cho lớp nào.'));
+      }
+      async function removeMat(id) {
+        const m = st.mats.find(x => x.id === Number(id)) || st.lib.find(x => x.id === Number(id)); if (!m) return;
+        if (!(await LMS.confirm('Xóa "' + m.title + '" khỏi tất cả các lớp?', { ok: 'Xóa', danger: true }))) return;
+        const res = await st.c.from('week_materials').delete().eq('id', m.id);
+        if (res.error) { LMS.toast(LMS.friendlyError(res.error)); return; }
+        await refresh('Đã xóa mục.');
       }
       async function deleteMat() {
         const id = Number($('dm-id').value); if (!id) return;
@@ -957,8 +965,8 @@
         document.querySelectorAll('.tabbar [data-view]').forEach(b => b.addEventListener('click', () => setView(b.dataset.view)));
         addEventListener('hashchange', () => setView(location.hash === '#lib' ? 'lib' : 'schedule'));
         $('btn-add-mat').addEventListener('click', () => openMat(null));
-        $('view-mat').addEventListener('click', e => { const b = e.target.closest('[data-edit-mat]'); if (b) openMat(b.dataset.editMat); });
-        $('view-lib').addEventListener('click', e => { const b = e.target.closest('[data-edit-mat]'); if (b) return openMat(b.dataset.editMat); const a = e.target.closest('[data-edit-asg]'); if (a) openAsg(a.dataset.editAsg); });
+        $('view-mat').addEventListener('click', e => { const d = e.target.closest('[data-del-mat]'); if (d) return removeMat(d.dataset.delMat); const b = e.target.closest('[data-edit-mat]'); if (b) openMat(b.dataset.editMat); });
+        $('view-lib').addEventListener('click', e => { const d = e.target.closest('[data-del-mat]'); if (d) return removeMat(d.dataset.delMat); const b = e.target.closest('[data-edit-mat]'); if (b) return openMat(b.dataset.editMat); const a = e.target.closest('[data-edit-asg]'); if (a) openAsg(a.dataset.editAsg); });
         ['lib-search', 'lib-class', 'lib-kind', 'lib-skill'].forEach(id => $(id).addEventListener(id === 'lib-search' ? 'input' : 'change', renderLib));
         $('dlg-mat').querySelector('form').addEventListener('submit', saveMat);
         $('dm-del').addEventListener('click', deleteMat);
