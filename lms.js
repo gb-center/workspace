@@ -8,7 +8,7 @@
   var SUPABASE_KEY = 'sb_publishable_B563fC34wnTDCGSZv29euw_6P3mFRs5';
 
   /* ---------- Chủ đề màu: một màu gốc sinh ra cả bộ màu ---------- */
-  var THEME_KEY = 'lms_theme_v2';
+  var THEME_KEY = window.LMS_THEME_KEY || 'lms_theme_v2';
   var L = { 50: 97, 100: 94, 200: 89, 300: 78, 400: 66, 500: 54, 600: 24, 700: 16, 800: 12, 900: 8 };
 
   function hsl2rgb(h, s, l) {

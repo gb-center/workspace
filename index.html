@@ -99,6 +99,7 @@
     <div class="tabbar" role="tablist" aria-label="Chế độ xem">
       <button type="button" role="tab" id="tab-schedule" data-view="schedule" aria-selected="true">Lịch tuần</button>
       <button type="button" role="tab" id="tab-mat" data-view="mat" aria-selected="false">Bài học theo tuần</button>
+      <button type="button" role="tab" id="tab-lib" data-view="lib" aria-selected="false">Học liệu</button>
     </div>
 
     <div id="view-schedule" class="space-y-4">
@@ -151,6 +152,18 @@
           <div id="mat-homework" class="space-y-2"></div>
         </div>
       </div>
+    </section>
+    <section id="view-lib" hidden class="space-y-4" aria-label="Học liệu tổng hợp">
+      <div class="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:items-center">
+        <input id="lib-search" type="search" class="field w-full sm:w-64" placeholder="Tìm theo tên" aria-label="Tìm học liệu">
+        <select id="lib-class" class="field w-full sm:w-48" aria-label="Lọc theo lớp"></select>
+        <select id="lib-kind" class="field w-full sm:w-44" aria-label="Lọc theo loại">
+          <option value="">Tất cả loại</option>
+          <option value="lesson">Bài học</option>
+          <option value="homework">Bài về nhà</option>
+        </select>
+      </div>
+      <div id="lib-list" class="space-y-4"></div>
     </section>
     <div id="page-msg" role="alert" class="text-sm text-rose-700"></div>
   </main>
@@ -220,7 +233,7 @@
   <div id="dlg-mat" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="dm-title">
     <form class="card" novalidate>
       <h2 id="dm-title">Mục học liệu</h2>
-      <input type="hidden" id="dm-id">
+      <input type="hidden" id="dm-id"><input type="hidden" id="dm-week">
       <label for="dm-kind">Loại</label>
       <select id="dm-kind" class="field">
         <option value="lesson">Bài học</option>
@@ -267,7 +280,7 @@
       const BASE_MONDAY = new Date(2026, 8, 7);   // tuần 1 bắt đầu thứ 2 07/09/2026
       const STATUS_TXT = { planned: 'Chưa dạy', done: 'Đã dạy', cancel: 'Hủy', makeup: 'Bù', holiday: 'Nghỉ lễ' };
       const DEF_BLOCKED = ['07:00 - 22:30', '08:00 - 17:00', '08:00 - 17:00', '08:00 - 17:00', '08:00 - 19:00', '20:30 - 22:00', '18:00 - 22:30'];
-      const st = { c: null, classes: [], counts: {}, sessions: [], blocked: DEF_BLOCKED.slice(), week: 1, selDay: 0, busy: false, view: 'schedule', mats: [] };
+      const st = { c: null, classes: [], counts: {}, sessions: [], blocked: DEF_BLOCKED.slice(), week: 1, selDay: 0, busy: false, view: 'schedule', mats: [], lib: [] };
 
       const pad = n => String(n).padStart(2, '0');
       const ymd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
@@ -320,7 +333,7 @@
         st.sessions = r.data || [];
       }
       async function refresh(msg) {
-        try { await Promise.all([loadWeek(), loadMats()]); render(); if (msg) LMS.toast(msg); }
+        try { await Promise.all([loadWeek(), loadMats(), st.view === 'lib' ? loadLib() : null]); render(); if (msg) LMS.toast(msg); }
         catch (e) { $('page-msg').textContent = LMS.friendlyError(e); }
       }
 
@@ -406,7 +419,7 @@
         $('grid-body').innerHTML = html;
         $('page-msg').textContent = '';
         icons();
-        renderMats();
+        renderMats(); renderLib();
       }
 
       /* ---------- Bài học theo tuần ---------- */
@@ -420,11 +433,38 @@
         if (r.error) throw r.error;
         st.mats = r.data || [];
       }
-      function setView(v) {
+      async function setView(v) {
         st.view = v;
-        $('view-schedule').hidden = v !== 'schedule'; $('view-mat').hidden = v !== 'mat';
+        $('view-schedule').hidden = v !== 'schedule'; $('view-mat').hidden = v !== 'mat'; $('view-lib').hidden = v !== 'lib';
         document.querySelectorAll('.tabbar [data-view]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.view === v)));
-        renderMats();
+        if (v === 'lib') { try { await loadLib(); } catch (e) { $('page-msg').textContent = LMS.friendlyError(e); } }
+        renderMats(); renderLib();
+      }
+      async function loadLib() {
+        const r = await st.c.from('week_materials').select('id,week_start,kind,title,url,class_ids,sort_order')
+          .order('week_start', { ascending: false }).order('sort_order').order('id');
+        if (r.error) throw r.error;
+        st.lib = r.data || [];
+      }
+      const weekNoOf = key => { const [y, m, d] = key.split('-').map(Number); return 1 + Math.round((new Date(y, m - 1, d) - BASE_MONDAY) / (7 * 864e5)); };
+      function renderLib() {
+        if (st.view !== 'lib') return;
+        const sel = $('lib-class'), cur = sel.value;
+        sel.innerHTML = '<option value="">Tất cả lớp</option>' + matClasses().map(c => `<option value="${c.id}">${esc(c.class_code)}</option>`).join('');
+        sel.value = cur;
+        const q = $('lib-search').value.trim().toLowerCase(), cid = Number(sel.value) || 0, kind = $('lib-kind').value;
+        const list = st.lib.filter(m => (!q || m.title.toLowerCase().includes(q)) && (!cid || (m.class_ids || []).includes(cid)) && (!kind || m.kind === kind));
+        const byWeek = {}; list.forEach(m => { (byWeek[m.week_start] = byWeek[m.week_start] || []).push(m); });
+        const keys = Object.keys(byWeek).sort().reverse();
+        $('lib-list').innerHTML = keys.length ? keys.map(k => {
+          const n = weekNoOf(k), d = weekDates(n);
+          return `<div class="bg-white rounded-2xl border border-slate-200 p-4"><h2 class="text-sm font-bold text-slate-900 mb-3">Tuần ${pad(n)} <span class="font-normal text-slate-500">(${pad(d[0].getDate())}.${pad(d[0].getMonth() + 1)} – ${pad(d[6].getDate())}.${pad(d[6].getMonth() + 1)})</span></h2>
+            <div class="space-y-2">${byWeek[k].map(m => `<div class="mat-item"><div class="min-w-0 flex-1">
+              <a class="mat-title" href="${isHttp(m.url) ? esc(m.url) : '#'}" target="_blank" rel="noopener">${esc(m.title)}</a>
+              <div class="text-xs text-slate-500 mt-1">${m.kind === 'homework' ? 'Bài về nhà' : 'Bài học'} · ${targetsText(m)}</div></div>
+              <button type="button" class="icon-btn" data-edit-mat="${m.id}" aria-label="Sửa mục"><i data-lucide="pencil" class="w-4 h-4"></i></button></div>`).join('')}</div></div>`;
+        }).join('') : '<p class="text-sm text-slate-400">Chưa có học liệu nào.</p>';
+        icons();
       }
       function targetsText(m) {
         const ids = m.class_ids || [], all = matClasses();
@@ -466,8 +506,8 @@
       let quick = [];
       function openMat(id) {
         $('dm-err').textContent = '';
-        const m = id ? st.mats.find(x => x.id === Number(id)) : null;
-        $('dm-id').value = m ? m.id : '';
+        const m = id ? (st.mats.find(x => x.id === Number(id)) || st.lib.find(x => x.id === Number(id))) : null;
+        $('dm-id').value = m ? m.id : ''; $('dm-week').value = m ? m.week_start : weekKey();
         $('dm-title').textContent = m ? 'Sửa mục học liệu' : 'Thêm mục học liệu';
         $('dm-kind').value = m ? m.kind : 'lesson';
         $('dm-name').value = m ? m.title : ''; $('dm-url').value = m ? m.url : '';
@@ -487,7 +527,7 @@
         if (!title) { err.textContent = 'Nhập tên mục.'; return; }
         if (!isHttp(url)) { err.textContent = 'Link phải bắt đầu bằng http:// hoặc https://'; return; }
         if (!ids.length) { err.textContent = 'Chọn ít nhất một lớp.'; return; }
-        const row = { week_start: weekKey(), kind: $('dm-kind').value, title, url, class_ids: ids };
+        const row = { week_start: $('dm-week').value || weekKey(), kind: $('dm-kind').value, title, url, class_ids: ids };
         const res = id ? await st.c.from('week_materials').update(row).eq('id', id) : await st.c.from('week_materials').insert(row);
         if (res.error) { err.textContent = LMS.friendlyError(res.error); return; }
         closeDlgs(); await refresh(id ? 'Đã cập nhật mục.' : 'Đã thêm mục.');
@@ -659,6 +699,8 @@
         document.querySelectorAll('.tabbar [data-view]').forEach(b => b.addEventListener('click', () => setView(b.dataset.view)));
         $('btn-add-mat').addEventListener('click', () => openMat(null));
         $('view-mat').addEventListener('click', e => { const b = e.target.closest('[data-edit-mat]'); if (b) openMat(b.dataset.editMat); });
+        $('view-lib').addEventListener('click', e => { const b = e.target.closest('[data-edit-mat]'); if (b) openMat(b.dataset.editMat); });
+        ['lib-search', 'lib-class', 'lib-kind'].forEach(id => $(id).addEventListener(id === 'lib-search' ? 'input' : 'change', renderLib));
         $('dlg-mat').querySelector('form').addEventListener('submit', saveMat);
         $('dm-del').addEventListener('click', deleteMat);
         $('dm-quick').addEventListener('click', e => {
