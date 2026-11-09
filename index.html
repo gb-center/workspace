@@ -73,8 +73,9 @@
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col relative">
   <nav id="lms-nav" aria-label="Điều hướng chính">
     <div class="nav-brand"><i data-lucide="graduation-cap" style="width:26px;height:26px"></i><span>gblearning</span></div>
-    <a href="index.html" aria-current="page" aria-label="Tổng quan"><i data-lucide="layout-dashboard"></i><span>Tổng quan</span></a>
+    <a href="index.html" id="nav-home" aria-current="page" aria-label="Tổng quan"><i data-lucide="layout-dashboard"></i><span>Tổng quan</span></a>
     <a href="student-list.html" aria-label="Học viên"><i data-lucide="users"></i><span>Học viên</span></a>
+    <a href="index.html#lib" id="nav-lib" aria-label="Học liệu"><i data-lucide="library"></i><span>Học liệu</span></a>
   </nav>
 
   <header class="has-week bg-white border-b border-slate-200 sticky top-0 z-30">
@@ -96,10 +97,9 @@
   </header>
 
   <main class="flex-1 w-full max-w-none mx-auto px-3 sm:px-5 lg:px-7 py-4 sm:py-6 space-y-4">
-    <div class="tabbar" role="tablist" aria-label="Chế độ xem">
+    <div class="tabbar" id="tabbar" role="tablist" aria-label="Chế độ xem">
       <button type="button" role="tab" id="tab-schedule" data-view="schedule" aria-selected="true">Lịch tuần</button>
       <button type="button" role="tab" id="tab-mat" data-view="mat" aria-selected="false">Bài học theo tuần</button>
-      <button type="button" role="tab" id="tab-lib" data-view="lib" aria-selected="false">Học liệu</button>
     </div>
 
     <div id="view-schedule" class="space-y-4">
@@ -437,6 +437,8 @@
         st.view = v;
         $('view-schedule').hidden = v !== 'schedule'; $('view-mat').hidden = v !== 'mat'; $('view-lib').hidden = v !== 'lib';
         document.querySelectorAll('.tabbar [data-view]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.view === v)));
+        $('tabbar').style.display = v === 'lib' ? 'none' : '';
+        if ($('nav-lib')) { if (v === 'lib') { $('nav-lib').setAttribute('aria-current', 'page'); $('nav-home').removeAttribute('aria-current'); } else { $('nav-home').setAttribute('aria-current', 'page'); $('nav-lib').removeAttribute('aria-current'); } }
         if (v === 'lib') { try { await loadLib(); } catch (e) { $('page-msg').textContent = LMS.friendlyError(e); } }
         renderMats(); renderLib();
       }
@@ -697,6 +699,7 @@
         $('dc-del').addEventListener('click', deleteClass);
         $('dlg-blocked').querySelector('form').addEventListener('submit', saveBlocked);
         document.querySelectorAll('.tabbar [data-view]').forEach(b => b.addEventListener('click', () => setView(b.dataset.view)));
+        addEventListener('hashchange', () => setView(location.hash === '#lib' ? 'lib' : 'schedule'));
         $('btn-add-mat').addEventListener('click', () => openMat(null));
         $('view-mat').addEventListener('click', e => { const b = e.target.closest('[data-edit-mat]'); if (b) openMat(b.dataset.editMat); });
         $('view-lib').addEventListener('click', e => { const b = e.target.closest('[data-edit-mat]'); if (b) openMat(b.dataset.editMat); });
@@ -723,6 +726,7 @@
           st.c = client;
           await Promise.all([loadClasses(), loadBlocked()]);
           await Promise.all([loadWeek(), loadMats()]); render();
+          if (location.hash === '#lib') await setView('lib');
         } catch (e) {
           $('grid-body').innerHTML = `<tr><td colspan="8" class="p-6 text-center text-rose-700 text-sm">${esc(LMS.friendlyError(e))}</td></tr>`;
         }
