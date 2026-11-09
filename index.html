@@ -169,6 +169,17 @@
     <div id="page-msg" role="alert" class="text-sm text-rose-700"></div>
   </main>
 
+  <script>
+    /* Mở thẳng mục Học liệu khi vào bằng index.html#lib (tránh nhảy qua Lịch tuần) */
+    if (location.hash === '#lib') {
+      document.getElementById('view-schedule').hidden = true;
+      document.getElementById('view-lib').hidden = false;
+      document.getElementById('tabbar').style.display = 'none';
+      document.getElementById('nav-lib').setAttribute('aria-current', 'page');
+      document.getElementById('nav-home').removeAttribute('aria-current');
+    }
+  </script>
+
   <!-- Hộp thoại: link lớp online -->
   <div id="dlg-meet" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="dmeet-title">
     <form class="card" novalidate>
