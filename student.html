@@ -23,8 +23,14 @@
     .home-side{position:sticky;top:76px;display:flex;flex-direction:column;gap:16px}
     .home-main{display:flex;flex-direction:column;gap:16px;min-width:0}
     @media(max-width:900px){.home-grid{grid-template-columns:1fr}.home-side{position:static}}
-    @media(min-width:1500px){.home-main{display:grid;grid-template-columns:1fr 1fr;align-items:start}.home-main>.span2{grid-column:1/-1}}
-    .narrow{max-width:820px;margin:0 auto}
+    .home-side .g-info{flex:1}
+    @media(min-width:1500px){
+      .home-grid{grid-template-columns:340px minmax(0,1fr) minmax(0,1fr);grid-template-areas:"side sched mat" "side prog prog" "side hist asg";align-items:stretch}
+      .home-side{grid-area:side;position:static}
+      .home-main{display:contents}
+      .g-sched{grid-area:sched}.g-mat{grid-area:mat}.g-prog{grid-area:prog}.g-hist{grid-area:hist}.g-asg{grid-area:asg}
+    }
+    .row-tags{margin-left:auto;display:flex;flex-wrap:wrap;align-items:center;gap:6px}    .narrow{max-width:820px;margin:0 auto}
     .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     .stat{padding:12px;border-radius:14px;background:#fff;border:1px solid var(--t-border)}
     .stat b{display:block;font-size:1.375rem;font-weight:800;color:var(--t-ink);line-height:1.2}
@@ -40,7 +46,7 @@
     .c-day{display:inline-block;width:5.25rem;font-weight:700}
     .c-date{display:inline-block;width:3.25rem;font-weight:700}
     .hrow .c-day,.hrow .c-date{width:auto}
-    .c-time{display:inline-block;width:6.75rem}
+    .c-time{display:inline-block;width:8rem;white-space:nowrap}
     details.card > summary{display:flex;align-items:center;gap:10px;min-height:44px;cursor:pointer;list-style:none}
     details.card > summary::-webkit-details-marker{display:none}
     details.card > summary h2{margin:0;flex:1}
@@ -96,7 +102,7 @@
         (byWeek[a.week_start] = byWeek[a.week_start] || []).push(100 * a.first_score / tot);
       });
       const pts = Object.keys(byWeek).sort().slice(-8).map(k => ({ k, v: Math.round(byWeek[k].reduce((x, y) => x + y, 0) / byWeek[k].length) }));
-      const head = '<section class="card"><h2><i data-lucide="trending-up"></i>Tiến độ điểm</h2>';
+      const head = '<section class="card g-prog"><h2><i data-lucide="trending-up"></i>Tiến độ điểm</h2>';
       if (!pts.length) return head + '<div class="text-sm text-slate-500">Chưa có điểm. Làm bài tập online để theo dõi tiến độ.</div></section>';
       const W = 320, H = 170, L = 32, R = 16, T = 18, B = 30, iw = W - L - R, ih = H - T - B;
       const X = i => L + (pts.length === 1 ? iw / 2 : iw * i / (pts.length - 1)), Y = v => T + ih * (1 - v / 100);
@@ -156,13 +162,13 @@
         <div class="text-xl font-extrabold mt-1">${next ? fmtDay(next.date) : 'Chưa có lịch'}</div>
         <div class="text-sm mt-1" style="opacity:.9">${next ? next.start + ' - ' + next.end + (next.lesson ? ' · ' + esc(next.lesson) : '') : ''}</div>
         <div class="flex flex-wrap gap-2 mt-4">
-          ${next ? (next.mode === 'online' ? (joinOpen(next) ? joinBtn('solid') : `<span class="hero-btn ghost" style="opacity:.9"><i data-lucide="video" class="w-4 h-4"></i><span>Lớp online · mở link trước giờ học 15 phút</span></span>`) : `<span class="hero-btn ghost" style="opacity:.9"><i data-lucide="map-pin" class="w-4 h-4"></i><span>Học trực tiếp</span></span>`) : ''}
+          ${next ? (next.mode === 'online' ? (joinOpen(next) ? joinBtn('solid') : `<span class="hero-btn ghost" style="opacity:.9;white-space:nowrap"><i data-lucide="video" class="w-4 h-4"></i><span>Online · mở link trước 15 phút</span></span>`) : `<span class="hero-btn ghost" style="opacity:.9"><i data-lucide="map-pin" class="w-4 h-4"></i><span>Học trực tiếp</span></span>`) : ''}
           <a class="hero-btn ghost" href="${esc(isHttp(cls.drive_url) ? cls.drive_url : 'https://drive.google.com')}" target="_blank" rel="noopener"><i data-lucide="folder" class="w-4 h-4"></i><span>Tài liệu</span></a>
         </div></section>`;
 
       const asgAll = d.assignments || [], asgDone = asgAll.filter(a => a.attempts).length;
       const sc = asgAll.filter(a => a.first_score != null && (a.first_total || a.question_count)).map(a => 100 * a.first_score / (a.first_total || a.question_count));
-      side += `<section class="card"><h2><i data-lucide="user-round"></i>Thông tin của bạn</h2>
+      side += `<section class="card g-info"><h2><i data-lucide="user-round"></i>Thông tin học viên</h2>
         <div class="text-sm font-bold text-slate-800" style="overflow-wrap:anywhere">${esc(d.student_name)}</div>
         <div class="text-xs text-slate-500 mb-3">Lớp ${esc(cls.name)}</div>
         <div class="stat-grid">
@@ -172,13 +178,13 @@
           <div class="stat"><b>${sc.length ? Math.round(sc.reduce((x, y) => x + y, 0) / sc.length) + '%' : '–'}</b><span>Điểm lần đầu (TB)</span></div>
         </div></section>`;
 
-      html += `<section class="card"><h2><i data-lucide="calendar-days"></i>Lịch học tuần này</h2><div class="space-y-2">${thisWeek.length ? thisWeek.map(s => {
+      html += `<section class="card g-sched"><h2><i data-lucide="calendar-days"></i>Lịch học tuần này</h2><div class="space-y-2">${thisWeek.length ? thisWeek.map(s => {
         const st = STATUS[s.status] || STATUS.planned;
-        return `<div class="row">${dayCols(s.date)}<span class="c-time font-semibold text-sky-700">${s.start} - ${s.end}</span><span class="tag ${st[1]}">${st[0]}</span>${s.attendance === 'absent' ? '<span class="tag bg-rose-50 text-rose-700">Vắng</span>' : ''}${s.mode === 'online' ? (joinOpen(s) ? joinBtn('row') : '<span class="tag bg-sky-50 text-sky-700">Online</span>') : ''}${s.lesson ? `<span class="text-xs text-slate-500" style="flex:1 1 100%">${esc(s.lesson)}</span>` : ''}</div>`;
+        return `<div class="row">${dayCols(s.date)}<span class="c-time font-semibold text-sky-700">${s.start} - ${s.end}</span><span class="row-tags"><span class="tag ${st[1]}">${st[0]}</span>${s.attendance === 'absent' ? '<span class="tag bg-rose-50 text-rose-700">Vắng</span>' : ''}${s.mode === 'online' ? (joinOpen(s) ? joinBtn('row') : '<span class="tag bg-sky-50 text-sky-700">Online</span>') : ''}</span>${s.lesson ? `<span class="text-xs text-slate-500" style="flex:1 1 100%">${esc(s.lesson)}</span>` : ''}</div>`;
       }).join('') : '<div class="text-sm text-slate-500">Tuần này không có buổi học.</div>'}</div></section>`;
 
       const asg = d.assignments || [];
-      html += `<section class="card"><h2><i data-lucide="pencil-line"></i>Bài tập online</h2><div class="space-y-2">${asg.length ? asg.map(a => {
+      html += `<section class="card g-asg"><h2><i data-lucide="pencil-line"></i>Bài tập online</h2><div class="space-y-2">${asg.length ? asg.map(a => {
         const due = a.due_at ? new Date(a.due_at) : null, late = due && due < now;
         const state = a.attempts ? `Đã làm ${a.attempts} lần${a.first_score != null ? ' · Điểm lần đầu: ' + a.first_score + '/' + (a.first_total || a.question_count) : ''}` : 'Chưa làm';
         return `<div class="row"><div style="flex:1 1 200px;min-width:0"><div class="font-bold text-slate-800" style="overflow-wrap:anywhere">${esc(a.name)}</div>
@@ -188,19 +194,19 @@
 
       html += progressCard(asg);
 
-      html += `<section class="card"><h2><i data-lucide="book-open"></i>Học liệu theo tuần</h2><div class="space-y-3">${weeks.length ? weeks.map((w, i) => {
+      html += `<section class="card g-mat"><h2><i data-lucide="book-open"></i>Học liệu theo tuần</h2><div class="space-y-3">${weeks.length ? weeks.map((w, i) => {
         const s = dOf(w.week_start), e = new Date(s); e.setDate(s.getDate() + 6);
         return `<details ${i === 0 ? 'open' : ''}><summary class="font-bold text-sm" style="min-height:44px;display:flex;align-items:center;cursor:pointer">Tuần ${pad(s.getDate())}/${pad(s.getMonth() + 1)} – ${pad(e.getDate())}/${pad(e.getMonth() + 1)}</summary>
           <div class="space-y-2 mt-1">${linksBlock(w.lessons, 'Bài học', 'presentation')}${linksBlock(w.homeworks, 'Bài tập', 'file-check-2')}</div></details>`;
       }).join('') : '<div class="text-sm text-slate-500">Chưa có học liệu.</div>'}</div></section>`;
 
-      html += `<details class="card" open><summary><h2><i data-lucide="history"></i>Lịch sử buổi học</h2><i data-lucide="chevron-down" class="chev"></i></summary>
+      html += `<details class="card g-hist" open><summary><h2><i data-lucide="history"></i>Lịch sử buổi học</h2><i data-lucide="chevron-down" class="chev"></i></summary>
         <div class="text-xs text-slate-500 mb-2">Đã học ${done.length} buổi · Vắng ${absent} buổi</div>
         <div class="space-y-2">${past.slice(0, 12).map(s => { const st = STATUS[s.status] || STATUS.planned;
           return `<div class="hrow">${dayCols(s.date)}<span class="tag ${st[1]}">${st[0]}</span>${s.attendance === 'absent' ? '<span class="tag bg-rose-50 text-rose-700">Vắng</span>' : '<span></span>'}<span class="h-note text-xs text-slate-500" style="overflow-wrap:anywhere">${s.lesson ? esc(s.lesson) : ''}</span></div>`; }).join('') || '<div class="text-sm text-slate-500">Chưa có buổi học nào.</div>'}</div></details>`;
 
       $('app').innerHTML = `<div class="home-grid"><aside class="home-side">${side}</aside><div class="home-main">${html}</div></div>`; icons();
-      LMS.isTeacherNow().then(ok => { const b = $('btn-class'); if (ok && b && S.data === d) { b.href = 'class.html?class=' + encodeURIComponent(cls.code); b.classList.remove('hidden'); } });
+      (LMS.isTeacherNow ? LMS.isTeacherNow() : Promise.resolve(false)).then(ok => { const b = $('btn-class'); if (ok && b && S.data === d) { b.href = 'class.html?class=' + encodeURIComponent(cls.code); b.classList.remove('hidden'); } });
     }
 
     /* ---------- Làm bài ---------- */
