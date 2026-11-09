@@ -17,7 +17,21 @@
   <style>
     body{padding:0!important}
     #theme-pop .tp-logout{display:none}
-    .wrap{max-width:760px;margin:0 auto;padding:16px 14px calc(32px + env(safe-area-inset-bottom))}
+    .wrap{max-width:none;margin:0 auto;padding:16px 28px calc(32px + env(safe-area-inset-bottom))}
+    @media(max-width:640px){.wrap{padding-left:14px;padding-right:14px}}
+    .home-grid{display:grid;grid-template-columns:340px minmax(0,1fr);gap:16px;align-items:start}
+    .home-side{position:sticky;top:76px;display:flex;flex-direction:column;gap:16px}
+    .home-main{display:flex;flex-direction:column;gap:16px;min-width:0}
+    @media(max-width:900px){.home-grid{grid-template-columns:1fr}.home-side{position:static}}
+    @media(min-width:1500px){.home-main{display:grid;grid-template-columns:1fr 1fr;align-items:start}.home-main>.span2{grid-column:1/-1}}
+    .narrow{max-width:820px;margin:0 auto}
+    .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .stat{padding:12px;border-radius:14px;background:#fff;border:1px solid var(--t-border)}
+    .stat b{display:block;font-size:1.375rem;font-weight:800;color:var(--t-ink);line-height:1.2}
+    .stat span{font-size:.75rem;color:var(--t-muted)}
+    .hrow{display:grid;grid-template-columns:5.25rem 3.25rem 6.5rem 4rem 1fr;align-items:center;gap:6px 10px;padding:10px 12px;border-radius:14px;background:#fff;border:1px solid var(--t-border)}
+    .hrow .tag{display:block;text-align:center}
+    @media(max-width:600px){.hrow{grid-template-columns:5rem 3rem 1fr}.hrow .h-note{grid-column:1/-1}}
     .card{background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.85);border-radius:1.5rem;padding:18px;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
     .card.hero-card{background:linear-gradient(135deg,var(--t-primary) 0%,var(--t-primary-2) 100%);border-color:transparent;color:#fff}
     .card h2{display:flex;align-items:center;gap:10px;font-size:.9375rem;font-weight:800;color:var(--t-ink);margin-bottom:12px}
@@ -25,6 +39,7 @@
     .row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:10px 12px;border-radius:14px;background:#fff;border:1px solid var(--t-border)}
     .c-day{display:inline-block;width:5.25rem;font-weight:700}
     .c-date{display:inline-block;width:3.25rem;font-weight:700}
+    .hrow .c-day,.hrow .c-date{width:auto}
     .c-time{display:inline-block;width:6.75rem}
     details.card > summary{display:flex;align-items:center;gap:10px;min-height:44px;cursor:pointer;list-style:none}
     details.card > summary::-webkit-details-marker{display:none}
@@ -51,6 +66,7 @@
         <div style="min-width:0"><div class="text-base font-bold text-slate-900" id="hello" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">gblearning</div><div class="text-xs text-slate-500" id="hello-sub"></div></div>
       </div>
       <div class="header-tools flex items-center gap-2">
+        <a id="btn-class" class="icon-btn hidden" href="#" aria-label="Về trang lớp (chỉ giáo viên)" title="Về trang lớp"><i data-lucide="school" class="w-5 h-5"></i></a>
         <a id="btn-back" class="btn-soft hidden" href="#"><i data-lucide="arrow-left" class="w-4 h-4"></i><span>Quay lại</span></a>
         <button id="btn-theme" type="button" aria-label="Tùy chỉnh màu chủ đề" aria-haspopup="dialog" aria-expanded="false"><i data-lucide="palette" class="w-5 h-5"></i></button>
       </div>
@@ -105,7 +121,7 @@
       if (/assignment_not_found/.test(m)) return 'Bài này hiện không mở.';
       return LMS.friendlyError(e);
     }
-    function showError(msg) { $('app').innerHTML = `<div class="card text-center"><p class="text-sm text-rose-700">${esc(msg)}</p></div>`; $('hello').textContent = 'gblearning'; $('hello-sub').textContent = ''; }
+    function showError(msg) { $('app').innerHTML = `<div class="narrow"><div class="card text-center"><p class="text-sm text-rose-700">${esc(msg)}</p></div></div>`; $('hello').textContent = 'gblearning'; $('hello-sub').textContent = ''; }
 
     /* ---------- Trang chính ---------- */
     function linksBlock(items, label, icon) {
@@ -135,13 +151,25 @@
       const past = sess.filter(s => s.date <= todayKey && s.status !== 'planned').slice().reverse();
       const weeks = (d.week_links || []).filter(w => (w.lessons || []).length || (w.homeworks || []).length).slice().reverse();
 
-      let html = '';
-      html += `<section class="card hero-card" style="color:#fff"><div class="text-xs" style="opacity:.85">Buổi học tiếp theo</div>
+      let side = '', html = '';
+      side += `<section class="card hero-card" style="color:#fff"><div class="text-xs" style="opacity:.85">Buổi học tiếp theo</div>
         <div class="text-xl font-extrabold mt-1">${next ? fmtDay(next.date) : 'Chưa có lịch'}</div>
         <div class="text-sm mt-1" style="opacity:.9">${next ? next.start + ' - ' + next.end + (next.lesson ? ' · ' + esc(next.lesson) : '') : ''}</div>
         <div class="flex flex-wrap gap-2 mt-4">
           ${next ? (next.mode === 'online' ? (joinOpen(next) ? joinBtn('solid') : `<span class="hero-btn ghost" style="opacity:.9"><i data-lucide="video" class="w-4 h-4"></i><span>Lớp online · mở link trước giờ học 15 phút</span></span>`) : `<span class="hero-btn ghost" style="opacity:.9"><i data-lucide="map-pin" class="w-4 h-4"></i><span>Học trực tiếp</span></span>`) : ''}
           <a class="hero-btn ghost" href="${esc(isHttp(cls.drive_url) ? cls.drive_url : 'https://drive.google.com')}" target="_blank" rel="noopener"><i data-lucide="folder" class="w-4 h-4"></i><span>Tài liệu</span></a>
+        </div></section>`;
+
+      const asgAll = d.assignments || [], asgDone = asgAll.filter(a => a.attempts).length;
+      const sc = asgAll.filter(a => a.first_score != null && (a.first_total || a.question_count)).map(a => 100 * a.first_score / (a.first_total || a.question_count));
+      side += `<section class="card"><h2><i data-lucide="user-round"></i>Thông tin của bạn</h2>
+        <div class="text-sm font-bold text-slate-800" style="overflow-wrap:anywhere">${esc(d.student_name)}</div>
+        <div class="text-xs text-slate-500 mb-3">Lớp ${esc(cls.name)}</div>
+        <div class="stat-grid">
+          <div class="stat"><b>${done.length}</b><span>Buổi đã học</span></div>
+          <div class="stat"><b>${absent}</b><span>Buổi vắng</span></div>
+          <div class="stat"><b>${asgDone}/${asgAll.length}</b><span>Bài online đã làm</span></div>
+          <div class="stat"><b>${sc.length ? Math.round(sc.reduce((x, y) => x + y, 0) / sc.length) + '%' : '–'}</b><span>Điểm lần đầu (TB)</span></div>
         </div></section>`;
 
       html += `<section class="card"><h2><i data-lucide="calendar-days"></i>Lịch học tuần này</h2><div class="space-y-2">${thisWeek.length ? thisWeek.map(s => {
@@ -169,9 +197,10 @@
       html += `<details class="card" open><summary><h2><i data-lucide="history"></i>Lịch sử buổi học</h2><i data-lucide="chevron-down" class="chev"></i></summary>
         <div class="text-xs text-slate-500 mb-2">Đã học ${done.length} buổi · Vắng ${absent} buổi</div>
         <div class="space-y-2">${past.slice(0, 12).map(s => { const st = STATUS[s.status] || STATUS.planned;
-          return `<div class="row">${dayCols(s.date)}<span class="tag ${st[1]}">${st[0]}</span>${s.attendance === 'absent' ? '<span class="tag bg-rose-50 text-rose-700">Vắng</span>' : ''}${s.lesson ? `<span class="text-xs text-slate-500">${esc(s.lesson)}</span>` : ''}</div>`; }).join('') || '<div class="text-sm text-slate-500">Chưa có buổi học nào.</div>'}</div></details>`;
+          return `<div class="hrow">${dayCols(s.date)}<span class="tag ${st[1]}">${st[0]}</span>${s.attendance === 'absent' ? '<span class="tag bg-rose-50 text-rose-700">Vắng</span>' : '<span></span>'}<span class="h-note text-xs text-slate-500" style="overflow-wrap:anywhere">${s.lesson ? esc(s.lesson) : ''}</span></div>`; }).join('') || '<div class="text-sm text-slate-500">Chưa có buổi học nào.</div>'}</div></details>`;
 
-      $('app').innerHTML = html; icons();
+      $('app').innerHTML = `<div class="home-grid"><aside class="home-side">${side}</aside><div class="home-main">${html}</div></div>`; icons();
+      LMS.isTeacherNow().then(ok => { const b = $('btn-class'); if (ok && b && S.data === d) { b.href = 'class.html?class=' + encodeURIComponent(cls.code); b.classList.remove('hidden'); } });
     }
 
     /* ---------- Làm bài ---------- */
@@ -179,16 +208,16 @@
     const textOf = opt => String(opt).replace(/^\s*[A-Za-z][.)]\s*/, '');
 
     function renderAssignment() {
-      const a = S.a; $('btn-back').classList.remove('hidden'); $('btn-back').href = '#' + encodeURIComponent(S.code);
+      const a = S.a; $('btn-class').classList.add('hidden'); $('btn-back').classList.remove('hidden'); $('btn-back').href = '#' + encodeURIComponent(S.code);
       $('hello').textContent = a.name; $('hello-sub').textContent = a.student_name;
       const qs = a.questions || [];
-      $('app').innerHTML = `<section class="card"><div class="text-xs text-slate-500 mb-1">${qs.length} câu${a.due_at ? ' · Hạn ' + new Date(a.due_at).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : ''}. Điểm chỉ tính lần làm đầu tiên; nộp muộn vẫn được nhận nhưng có đánh dấu.</div>
+      $('app').innerHTML = `<div class="narrow"><section class="card"><div class="text-xs text-slate-500 mb-1">${qs.length} câu${a.due_at ? ' · Hạn ' + new Date(a.due_at).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : ''}. Điểm chỉ tính lần làm đầu tiên; nộp muộn vẫn được nhận nhưng có đánh dấu.</div>
         <div id="qs">${qs.map((q, i) => `<div class="qbox" data-q="${esc(q.id)}"><div class="text-sm font-bold text-slate-800 mb-2" style="overflow-wrap:anywhere">Câu ${i + 1}. ${esc(q.text)}</div>
           ${q.type === 'mcq' && Array.isArray(q.options) ? `<div class="space-y-2">${q.options.map((o, j) => `<button type="button" class="opt" data-o="${letterOf(o, j)}" aria-pressed="false"><strong>${letterOf(o, j)}.</strong><span>${esc(textOf(o))}</span></button>`).join('')}</div>`
             : `<input type="text" class="field w-full" data-fill autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Câu trả lời câu ${i + 1}">`}
           <div class="fb text-sm mt-2 hidden"></div></div>`).join('')}</div>
         <div class="flex flex-wrap items-center gap-3 mt-4"><button type="button" id="btn-submit" class="btn-primary"><i data-lucide="send" class="w-4 h-4"></i><span>Nộp bài</span></button><span id="sub-msg" class="text-sm text-rose-700" role="alert"></span></div>
-        <div id="result" class="mt-4 hidden"></div></section>`;
+        <div id="result" class="mt-4 hidden"></div></section></div>`;
       S.answers = {}; S.t0 = Date.now(); icons();
     }
 

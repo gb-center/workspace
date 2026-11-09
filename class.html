@@ -43,6 +43,18 @@
 <style>
 .srow{display:grid;grid-template-columns:84px 56px 140px 96px 130px 1fr 40px;align-items:center;gap:12px;padding:10px 12px}
 @media(max-width:760px){.srow{grid-template-columns:auto auto 1fr 1fr}.srow-note{grid-column:1/-2}.srow button{grid-column:4;justify-self:end}}
+
+.att-cell{display:inline-flex;flex-direction:column;align-items:center;gap:2px}
+.att-cell small{font-size:.6875rem;font-weight:700;color:#64748b;line-height:1}
+.att-sq{width:44px;height:44px;border-radius:10px;border:1.5px solid;font-size:1.125rem;font-weight:800;line-height:1;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.att-sq.present{background:#e0f2fe;border-color:#7dd3fc;color:#075985}
+.att-sq.absent{background:#ffe4e6;border-color:#fda4af;color:#9f1239}
+.att-opt{min-height:56px;border-radius:14px;border:1.5px solid var(--t-line,#cbd5e1);background:#fff;color:var(--t-ink,#0f172a);font-weight:800;font-size:1rem;cursor:pointer}
+#da-present[aria-pressed="true"]{background:#e0f2fe;border-color:#7dd3fc;color:#075985}
+#da-absent[aria-pressed="true"]{background:#ffe4e6;border-color:#fda4af;color:#9f1239}
+.hrow{display:grid;grid-template-columns:84px 56px 120px 136px 1fr;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;background:#fff;border:1px solid #f1f5f9}
+.hrow .h-st{display:block;text-align:center;padding:3px 8px;border-radius:9999px;font-size:.6875rem;font-weight:600}
+@media(max-width:760px){.hrow{grid-template-columns:auto auto 1fr}.hrow .h-st{min-width:8rem}.hrow .h-note{grid-column:1/-1}}
 </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col relative">
@@ -191,6 +203,19 @@
       <div class="err" id="dss-err" role="alert"></div>
       <div class="acts"><button type="submit" class="btn-primary">Lưu</button><button type="button" class="btn-soft" data-close>Hủy</button></div>
     </form>
+  </div>
+
+  <div id="dlg-att" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="da-title">
+    <div class="card" style="width:min(380px,100%)">
+      <h2 id="da-title">Điểm danh</h2>
+      <div class="text-sm text-slate-600" id="da-info"></div>
+      <input type="hidden" id="da-key">
+      <div class="grid grid-cols-2 gap-3" style="margin-top:14px">
+        <button type="button" id="da-present" class="att-opt" aria-pressed="false">✓ Có mặt</button>
+        <button type="button" id="da-absent" class="att-opt" aria-pressed="false">✕ Vắng</button>
+      </div>
+      <div class="acts"><button type="button" class="btn-soft" data-close>Đóng</button></div>
+    </div>
   </div>
 
   <div id="dlg-links" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="dl-title">
@@ -414,8 +439,8 @@
       const sess = weekSessions(S.offset).filter(s => s.status !== 'cancel' && s.status !== 'holiday');
       body.innerHTML = S.students.map(st => {
         const att = sess.length ? sess.map(s => {
-          const absent = S.att[s.id + '|' + st.id] === 'absent';
-          return `<button type="button" data-att="${s.id}|${st.id}" class="px-2.5 py-1 rounded-full text-xs font-semibold ${absent ? 'bg-rose-100 text-rose-800' : 'bg-sky-100 text-sky-800'}" style="min-height:36px" aria-label="${esc(st.student_name)} ${sessionLabel(s)}">${sess.length > 1 ? sessionLabel(s).replace('Thứ ', 'T').replace('Chủ nhật', 'CN') + ' ' : ''}${absent ? '✕ Vắng' : '✓ Có mặt'}</button>`;
+          const absent = S.att[s.id + '|' + st.id] === 'absent', lb = sessionLabel(s);
+          return `<span class="att-cell"><button type="button" data-att="${s.id}|${st.id}" class="att-sq ${absent ? 'absent' : 'present'}" aria-label="${esc(st.student_name)}, ${lb}: ${absent ? 'Vắng' : 'Có mặt'}. Bấm để đổi">${absent ? '✕' : '✓'}</button>${sess.length > 1 ? `<small>${lb.replace('Thứ ', 'T').replace('Chủ nhật', 'CN')}</small>` : ''}</span>`;
         }).join(' ') : '<span class="text-slate-300">–</span>';
         return `<tr class="hover:bg-slate-50">
           <td class="py-3 px-3 font-semibold text-slate-800"><span class="flex items-center gap-1.5"><i data-lucide="user" class="w-3.5 h-3.5 text-slate-400"></i>${esc(st.student_name)}</span></td>
@@ -423,13 +448,23 @@
           <td class="py-3 px-3 text-center"><a href="student.html#${encodeURIComponent(st.student_code)}" class="inline-flex items-center gap-1 text-xs text-sky-600 hover:text-sky-700 font-semibold underline">Trang cá nhân <i data-lucide="arrow-up-right" class="w-3 h-3"></i></a></td></tr>`;
       }).join('');
     }
-    async function toggleAtt(sid, stid) {
-      const key = sid + '|' + stid, absent = S.att[key] === 'absent';
-      if (absent) delete S.att[key]; else S.att[key] = 'absent';
+    function openAtt(sid, stid) {
+      const se = S.sessions.find(x => Number(x.id) === Number(sid)), st = S.students.find(x => Number(x.id) === Number(stid)); if (!se || !st) return;
+      $('da-title').textContent = st.student_name;
+      $('da-info').textContent = sessionLabel(se) + ' · ' + shortDate(dateOf(se.session_date)) + ' · ' + t5(se.start_time) + ' - ' + t5(se.end_time);
+      $('da-key').value = sid + '|' + stid;
+      const absent = S.att[sid + '|' + stid] === 'absent';
+      $('da-present').setAttribute('aria-pressed', String(!absent)); $('da-absent').setAttribute('aria-pressed', String(absent));
+      openDlg('dlg-att');
+    }
+    async function setAtt(sid, stid, wantAbsent) {
+      const key = sid + '|' + stid, was = S.att[key] === 'absent';
+      if (was === wantAbsent) return;
+      if (wantAbsent) S.att[key] = 'absent'; else delete S.att[key];
       refresh();
-      const r = absent ? await S.c.from('attendance').delete().eq('session_id', Number(sid)).eq('student_id', Number(stid))
-        : await S.c.from('attendance').upsert({ session_id: Number(sid), student_id: Number(stid), status: 'absent', updated_at: new Date().toISOString() });
-      if (r.error) { if (absent) S.att[key] = 'absent'; else delete S.att[key]; refresh(); fail(r.error); }
+      const r = wantAbsent ? await S.c.from('attendance').upsert({ session_id: Number(sid), student_id: Number(stid), status: 'absent', updated_at: new Date().toISOString() })
+        : await S.c.from('attendance').delete().eq('session_id', Number(sid)).eq('student_id', Number(stid));
+      if (r.error) { if (was) S.att[key] = 'absent'; else delete S.att[key]; refresh(); fail(r.error); }
     }
 
     /* ---------- Lịch sử buổi học ---------- */
@@ -446,11 +481,11 @@
         const ln = { lessons: [...(own.lessons || []), ...shr.lessons], homeworks: [...(own.homeworks || []), ...shr.homeworks] };
         const list = byWeek[n] || [], res = [...(ln.lessons || []).map((x, i) => ({ x, k: 'Bài học', f: 'Bài học ' + (i + 1) })), ...(ln.homeworks || []).map((x, i) => ({ x, k: 'Bài tập', f: 'Bài tập ' + (i + 1) }))].filter(r => r.x.url || r.x.title);
         if (!list.length && !res.length) continue;
-        const rows = list.map(s => `<div class="flex flex-wrap items-center gap-2 rounded-lg bg-white border border-slate-100 px-3 py-2">
-          <span class="w-16 text-xs font-semibold text-slate-700">${sessionLabel(s)}</span><span class="text-xs text-slate-400">${shortDate(dateOf(s.session_date))}</span>
+        const rows = list.map(s => `<div class="hrow">
+          <span class="text-xs font-semibold text-slate-700">${sessionLabel(s)}</span><span class="text-xs text-slate-400">${shortDate(dateOf(s.session_date))}</span>
           <span class="text-xs font-semibold text-sky-700">${t5(s.start_time)} - ${t5(s.end_time)}</span>
-          <span class="text-[11px] px-2 py-0.5 rounded-full ${STATUS_CLS[s.status]}">${STATUS_TXT[s.status]}</span>
-          ${s.lesson ? `<span class="text-xs text-slate-600">${esc(s.lesson)}</span>` : ''}${s.note ? `<span class="text-xs text-slate-400">${esc(s.note)}</span>` : ''}</div>`).join('');
+          <span class="h-st ${STATUS_CLS[s.status]}">${STATUS_TXT[s.status]}</span>
+          <span class="h-note min-w-0 text-xs" style="overflow-wrap:anywhere">${s.lesson ? `<span class="text-slate-600">${esc(s.lesson)}</span>` : ''}${s.note ? ` <span class="text-slate-400">${esc(s.note)}</span>` : ''}</span></div>`).join('');
         const resHtml = res.length ? `<div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2">${res.map(r => `<a class="flex items-center gap-2 rounded-lg bg-sky-50/70 px-3 py-2 text-xs text-sky-800 hover:bg-sky-100" href="${isHttp(r.x.url) ? esc(r.x.url) : '#'}" target="_blank" rel="noopener"><strong>${r.k}</strong><span style="overflow-wrap:anywhere">${esc(r.x.title || r.f)}</span></a>`).join('')}</div>` : '';
         out.push(`<details class="rounded-xl border border-slate-200 bg-slate-50/60 overflow-hidden" ${n === cur ? 'open' : ''}>
           <summary class="flex cursor-pointer list-none items-center gap-3 px-4 py-3"><span class="text-sm font-bold text-slate-800">Tuần ${pad(n)}</span><span class="text-xs text-slate-500">${shortDate(start)} – ${shortDate(end)}</span>
@@ -468,7 +503,8 @@
       $('btn-prev-week').addEventListener('click', () => { S.offset--; renderAll(); });
       $('btn-next-week').addEventListener('click', () => { S.offset++; renderAll(); });
       $('schedule-grid').addEventListener('click', e => { const b = e.target.closest('button[data-sid]'); if (b) openSessDlg(b.dataset.sid); });
-      $('student-list-body').addEventListener('click', e => { const b = e.target.closest('[data-att]'); if (b) { const [a, c] = b.dataset.att.split('|'); toggleAtt(a, c); } });
+      $('student-list-body').addEventListener('click', e => { const b = e.target.closest('[data-att]'); if (b) { const [a, c] = b.dataset.att.split('|'); openAtt(a, c); } });
+      ['da-present', 'da-absent'].forEach(id => $(id).addEventListener('click', e => { const [a, c] = $('da-key').value.split('|'); closeDlgs(); setAtt(a, c, e.currentTarget.id === 'da-absent'); }));
       $('session-history-list').addEventListener('click', e => { const b = e.target.closest('[data-week]'); if (!b) return; e.preventDefault(); S.offset = Number(b.dataset.week); renderAll(); $('week-indicator').scrollIntoView({ behavior: 'smooth', block: 'center' }); });
       $('add-lesson-link').addEventListener('click', () => openLinksDlg('lesson'));
       $('add-hw-link').addEventListener('click', () => openLinksDlg('hw'));

@@ -224,6 +224,15 @@
     });
   }
 
+  /* Kiểm tra im lặng (không hiện đăng nhập): có phiên giáo viên trên trình duyệt này không. Học sinh luôn nhận false. */
+  function isTeacherNow() {
+    var c = client();
+    if (!c) return Promise.resolve(false);
+    return c.auth.getSession().then(function (r) {
+      return (r.data && r.data.session) ? isTeacher(c) : false;
+    }, function () { return false; });
+  }
+
   function signOut() {
     var c = client();
     var done = function () { location.reload(); };
@@ -343,7 +352,7 @@
   }
 
   window.LMS = {
-    siteBase: SITE_BASE, slug: slug, withStudent: withStudent, studentGate: studentGate,
+    isTeacherNow: isTeacherNow, siteBase: SITE_BASE, slug: slug, withStudent: withStudent, studentGate: studentGate,
     client: client, requireTeacher: requireTeacher, signOut: signOut,
     esc: esc, toast: toast, friendlyError: friendlyError, confirm: confirmBox, alert: alertBox,
     theme: { apply: applyTheme, get: getTheme, DEF: DEF }
