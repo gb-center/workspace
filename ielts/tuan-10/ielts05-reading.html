@@ -419,6 +419,19 @@ mark.v{background:none;color:inherit}
     if (next > -1) btns.push({ t: "Next passage", f: function () { state.p = next; paint(); } });
     modal("Passage " + D.passages[pi].id + " result", body, btns);
   }
+  function retakeAll() {
+    var any = false; D.passages.forEach(function (P, i) { if (state.lock[i]) any = true; });
+    if (!any) { modal("Nothing to retake yet", "Submit at least one passage first.", [{ t: "OK" }]); return; }
+    modal("Retake the whole test?", "All your answers will be cleared. Only your first full attempt counts for your score; retakes do not count.",
+      [{ t: "Cancel", ghost: true }, { t: "Retake", f: function () {
+        D.passages.forEach(function (P, pi) {
+          for (var n = P.range[0]; n <= P.range[1]; n++) { delete state.ans[n]; delete state.byId["q" + n]; }
+          P.groups.forEach(function (g) { if (g.kind === "multi") delete state.ans["m" + g.firstq]; });
+          state.lock[pi] = false; delete state.pres[pi]; if (state.open.indexOf(pi) < 0) state.open.push(pi);
+        });
+        state.p = 0; saveNow(false); paint(); tabMarks();
+      } }]);
+  }
   function retry(pi) {
     var r = pr(pi); for (var n = r[0]; n <= r[1]; n++) { delete state.ans[n]; delete state.byId["q" + n]; }
     D.passages[pi].groups.forEach(function (g) { if (g.kind === "multi") delete state.ans["m" + g.firstq]; });
@@ -464,6 +477,7 @@ mark.v{background:none;color:inherit}
       tools.appendChild(ibtn("book", "Show or hide new words", function (e) { state.vocab = !state.vocab; e.currentTarget.classList.toggle("off", !state.vocab); renderPassage(); }));
       tools.appendChild(ibtn("reset", "Start again", reset));
     } else tools.appendChild(ibtn("tick", "Submit this passage", submit, "dark"));
+    if (!TEACH) tools.appendChild(ibtn("reset", "Retake the whole test", retakeAll));
     tools.appendChild(ibtn("full", "Full screen", function () {
       try { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); } catch (e) { }
     }));
