@@ -78,13 +78,13 @@ mark.v{background:none;color:inherit}
 .tile.ok{background:#bfe3c7}.tile.bad{background:#f2b9b9}
 .ov{position:fixed;inset:0;background:rgba(255,255,255,.7);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:50}
 .ov.solid{background:#fff}
-.card{width:min(440px,92vw);background:#fff;border:1px solid var(--line);border-radius:20px;padding:26px 28px}
+.card{width:min(480px,92vw);background:#fff;border:1px solid var(--line);border-radius:20px;padding:26px 28px}
 .card h3{margin:0 0 10px;font-size:22px}
 .card p{margin:8px 0;line-height:1.5;font-size:16px}
 .card p.score{font-size:44px;font-weight:700;margin:6px 0}
 .err{color:var(--badl)}
 .brow{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
-.pill{border:0;border-radius:22px;background:#111;color:#fff;height:44px;padding:0 24px;font-size:16px;font-weight:600}
+.pill{white-space:nowrap;border:0;border-radius:22px;background:#111;color:#fff;height:44px;padding:0 24px;font-size:16px;font-weight:600}
 .pill.ghost{background:var(--soft);color:#111}
 @media (max-width:900px){#main{flex-direction:column}#passage{width:100%;height:45%}#split{display:none}.brand{display:none}}
 </style></head>
@@ -95,7 +95,7 @@ mark.v{background:none;color:inherit}
 <script>(function () {
   "use strict";
   var D = window.DATA, TEACH = D.mode === "teaching";
-  var state = { p: 0, ans: {}, chk: {}, done: false, res: null, t0: Date.now(), vocab: true, code: "", sname: "" };
+  var state = { p: 0, ans: {}, chk: {}, lock: {}, byId: {}, pres: {}, open: [], vocab: true, code: "", sname: "", saved: "", timer: null, loading: false };
   var $ = function (s, r) { return (r || document).querySelector(s); };
   function h(tag, a) {
     var e = document.createElement(tag);
@@ -130,6 +130,7 @@ mark.v{background:none;color:inherit}
     return state.ans[n] || "";
   }
   function isAnswered(n) { return qValue(n) !== ""; }
+  function locked(n) { return !!state.lock[QMAP[n].pi]; }
   function correctOf(n) {
     var m = QMAP[n]; if (!TEACH) return null;
     if (m.g.kind === "multi") { var v = qValue(n); return v !== "" && m.g.answer.indexOf(v) > -1; }
@@ -138,7 +139,7 @@ mark.v{background:none;color:inherit}
     return norm(it[m.g.kind === "mcq" ? 3 : 2]) === norm(v2);
   }
   function tileState(n) {
-    if (state.res) { var r = state.res.byId["q" + n]; return r === true ? "ok" : (r === false ? "bad" : ""); }
+    if (!TEACH) { var r = state.byId["q" + n]; if (r !== undefined) return r === true ? "ok" : "bad"; }
     var m = QMAP[n];
     if (TEACH) {
       var key = m.g.kind === "multi" ? "g" + m.g.firstq : n;
@@ -184,7 +185,7 @@ mark.v{background:none;color:inherit}
     opts.forEach(function (o) {
       var val = typeof o === "string" ? o : o[0], lab = typeof o === "string" ? o : o[0] + "  " + o[1];
       var b = h("button", { cls: "chip" + (kind === "tfng" ? " wide" : "") + (state.ans[n] === val ? " sel" : ""), text: kind === "tfng" || kind === "para" ? val : lab,
-        onclick: function () { if (state.done) return; state.ans[n] = val; if (TEACH) state.chk[n] = true; rerender(); updateTiles(); } });
+        onclick: function () { if (locked(n)) return; state.ans[n] = val; if (TEACH) state.chk[n] = true; rerender(); updateTiles(); } });
       if (done) { if (val === ans) b.classList.add("right"); else if (state.ans[n] === val) b.classList.add("wrong"); }
       row.appendChild(b);
     });
@@ -211,7 +212,7 @@ mark.v{background:none;color:inherit}
           var parts = it[1].split("{}"), line = h("div", { cls: "qt" }, numTile(n), h("span", { text: parts[0] }));
           var inp = h("input", { cls: "gap", type: "text", autocomplete: "off", spellcheck: "false", "aria-label": "Answer " + n });
           inp.value = state.ans[n] || "";
-          if (state.done) inp.disabled = true;
+          if (!TEACH && locked(n)) inp.disabled = true;
           inp.addEventListener("input", function () { state.ans[n] = inp.value; updateTiles(); });
           if (TEACH) {
             inp.addEventListener("keydown", function (e) { if (e.key === "Enter") { state.chk[n] = true; draw(); updateTiles(); } });
@@ -235,7 +236,7 @@ mark.v{background:none;color:inherit}
           var col = h("div", { cls: "opts" });
           it[2].forEach(function (o) {
             var b = h("button", { cls: "opt" + (state.ans[n] === o[0] ? " sel" : ""),
-              onclick: function () { if (state.done) return; state.ans[n] = o[0]; if (TEACH) state.chk[n] = true; draw(); updateTiles(); } },
+              onclick: function () { if (locked(n)) return; state.ans[n] = o[0]; if (TEACH) state.chk[n] = true; draw(); updateTiles(); } },
               h("b", { text: o[0] }), h("span", { text: o[1] }));
             if (TEACH && state.chk[n]) { if (o[0] === it[3]) b.classList.add("right"); else if (state.ans[n] === o[0]) b.classList.add("wrong"); }
             col.appendChild(b);
@@ -263,7 +264,7 @@ mark.v{background:none;color:inherit}
       g.options.forEach(function (o) {
         var on = sel.indexOf(o[0]) > -1;
         var b = h("button", { cls: "opt" + (on ? " sel" : ""), onclick: function () {
-          if (state.done) return;
+          if (locked(g.firstq)) return;
           var s = multiSel(g).slice(), k = s.indexOf(o[0]);
           if (k > -1) s.splice(k, 1); else if (s.length < g.n) s.push(o[0]); else return;
           state.ans["m" + g.firstq] = s; if (TEACH) delete state.chk[key]; draw(); updateTiles(); } },
@@ -291,6 +292,7 @@ mark.v{background:none;color:inherit}
 
   /* ---------- chrome ---------- */
   function updateTiles() {
+    scheduleSave();
     var foot = $("#tiles"); foot.innerHTML = "";
     D.passages.forEach(function (P, pi) {
       var grp = h("div", { cls: "tg" + (pi === state.p ? " cur" : "") });
@@ -322,8 +324,8 @@ mark.v{background:none;color:inherit}
   }
 
   /* ---------- practice: login + submit ---------- */
-  function rpc(fn, body) {
-    return fetch(D.sb.url + "/rest/v1/rpc/" + fn, { method: "POST", headers: { "Content-Type": "application/json", apikey: D.sb.key }, body: JSON.stringify(body) })
+  function rpc(fn, body, keep) {
+    return fetch(D.sb.url + "/rest/v1/rpc/" + fn, { method: "POST", keepalive: !!keep, headers: { "Content-Type": "application/json", apikey: D.sb.key }, body: JSON.stringify(body) })
       .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error((j && (j.message || j.hint)) || "error"); return j; }); });
   }
   function errText(e) {
@@ -342,37 +344,87 @@ mark.v{background:none;color:inherit}
       var c = inp.value.trim(); if (!c) { msg.textContent = "Please enter your code."; return; }
       msg.textContent = "Checking...";
       rpc("student_assignment", { p_student_code: c, p_assignment_code: D.code }).then(function (j) {
-        state.code = c; state.sname = j.student_name || ""; store("sc", c); state.t0 = Date.now();
-        $("#who").textContent = state.sname; ov.remove();
+        state.code = c; state.sname = j.student_name || ""; store("sc", c);
+        return rpc("get_progress", { p_student_code: c, p_assignment_code: D.code }).then(function (pg) {
+          loadProgress(pg); $("#who").textContent = state.sname; ov.remove();
+        });
       }).catch(function (e) { msg.textContent = errText(e); });
     }
     inp.addEventListener("keydown", function (e) { if (e.key === "Enter") go1(); });
     document.body.appendChild(ov); setTimeout(function () { inp.focus(); }, 50);
   }
-  function submit() {
-    if (state.done) return;
-    var un = 0; for (var n = 1; n <= 40; n++) if (!isAnswered(n)) un++;
-    modal("Submit your answers?", un ? un + " question" + (un > 1 ? "s are" : " is") + " still unanswered. You cannot change your answers after submitting." : "You cannot change your answers after submitting.",
-      [{ t: "Keep working", ghost: true }, { t: "Submit", f: doSubmit }]);
+  function pr(pi) { return D.passages[pi].range; }
+  function loadProgress(pg) {
+    state.loading = true;
+    var d = pg.answers || {}; state.ans = d.ans || {}; state.open = d.open || [];
+    state.lock = {}; state.byId = {}; state.pres = {};
+    (pg.parts || []).forEach(function (x) {
+      var pi = x.part - 1; if (state.open.indexOf(pi) > -1) return;
+      state.lock[pi] = true; state.pres[pi] = x.latest;
+      (x.latest.items || []).forEach(function (it) { state.byId[it.id] = it.correct; });
+    });
+    var first = 0; for (var i = 0; i < D.passages.length; i++) { if (!state.lock[i]) { first = i; break; } }
+    state.p = first; state.saved = JSON.stringify(draftBody()); state.loading = false;
+    paint(); tabMarks(); setSave("");
   }
-  function doSubmit() {
-    var a = {}; for (var n = 1; n <= 40; n++) a["q" + n] = qValue(n);
+  function draftBody() { return { ans: state.ans, open: state.open }; }
+  function setSave(t) { var e = $("#sv"); if (e) e.textContent = t; }
+  function scheduleSave() {
+    if (TEACH || !state.code || state.loading) return;
+    var cur = JSON.stringify(draftBody()); if (cur === state.saved) return;
+    setSave("Saving..."); clearTimeout(state.timer); state.timer = setTimeout(function () { saveNow(false); }, 1200);
+  }
+  function saveNow(keep) {
+    if (TEACH || !state.code) return Promise.resolve();
+    clearTimeout(state.timer);
+    var body = draftBody(), cur = JSON.stringify(body); if (cur === state.saved) { setSave("Saved"); return Promise.resolve(); }
+    return rpc("save_draft", { p_student_code: state.code, p_assignment_code: D.code, p_answers: body }, keep)
+      .then(function () { state.saved = cur; setSave("Saved"); })
+      .catch(function () { setSave("Not saved"); });
+  }
+  document.addEventListener("visibilitychange", function () { if (document.visibilityState === "hidden") saveNow(true); });
+  window.addEventListener("pagehide", function () { saveNow(true); });
+  function tabMarks() {
+    document.querySelectorAll(".tab").forEach(function (t, i) {
+      var P = D.passages[i], r = state.pres[i];
+      t.textContent = "Passage " + P.id + (state.lock[i] && r ? "  " + r.score + "/" + r.total : "");
+    });
+  }
+  function partAnswers(pi) { var a = {}, r = pr(pi); for (var n = r[0]; n <= r[1]; n++) a["q" + n] = qValue(n); return a; }
+  function submit() {
+    var pi = state.p; if (state.lock[pi]) return;
+    var r = pr(pi), un = 0; for (var n = r[0]; n <= r[1]; n++) if (!isAnswered(n)) un++;
+    modal("Submit Passage " + D.passages[pi].id + "?", un ? un + " question" + (un > 1 ? "s are" : " is") + " still unanswered in this passage. You cannot change your answers after submitting." : "You cannot change your answers in this passage after submitting.",
+      [{ t: "Keep working", ghost: true }, { t: "Submit", f: function () { doSubmit(pi); } }]);
+  }
+  function doSubmit(pi) {
     var wait = modal("Submitting...", "Please wait.", []);
-    rpc("submit_assignment", { p_student_code: state.code, p_assignment_code: D.code, p_answers: a, p_duration_seconds: Math.round((Date.now() - state.t0) / 1000) })
+    rpc("submit_assignment_part", { p_student_code: state.code, p_assignment_code: D.code, p_part: D.passages[pi].id, p_answers: partAnswers(pi) })
       .then(function (j) {
-        wait.remove(); state.done = true; var by = {}; j.items.forEach(function (x) { by[x.id] = x.correct; }); state.res = { byId: by, j: j };
-        paint(); showResult();
+        wait.remove(); state.lock[pi] = true; state.pres[pi] = { score: j.score, total: j.total, is_late: j.is_late, counts_for_score: j.counts_for_score, items: j.items };
+        j.items.forEach(function (x) { state.byId[x.id] = x.correct; });
+        state.open = state.open.filter(function (x) { return x !== pi; });
+        saveNow(false); paint(); tabMarks(); showResult(pi, j);
       }).catch(function (e) { wait.remove(); modal("Could not submit", errText(e), [{ t: "OK" }]); });
   }
-  function showResult() {
-    var j = state.res.j, body = h("div", null,
+  function showResult(pi, j) {
+    var left = 0; D.passages.forEach(function (P, i) { if (!state.lock[i]) left++; });
+    var body = h("div", null,
       h("p", { cls: "score", text: j.score + " / " + j.total }),
-      h("p", { text: j.counts_for_score ? "This is your first attempt, so this score counts." : "This is a retake. Only your first attempt counts for your score." }),
+      h("p", { text: j.counts_for_score ? "This is your first attempt at this passage, so this score counts." : "This is a retake. Only your first attempt at each passage counts for your score." }),
       j.is_late ? h("p", { cls: "err", text: "Submitted after the deadline (marked as late)." }) : null,
-      h("p", { cls: "muted", text: "Green tiles are correct, red tiles are wrong. Correct answers are not shown." }));
-    modal("Your result", body, [{ t: "Review", ghost: true }, { t: "Try again", f: retry }]);
+      h("p", { cls: "muted", text: "Green tiles are correct, red tiles are wrong. Correct answers are not shown." + (left ? " " + left + " passage" + (left > 1 ? "s" : "") + " left to submit." : " You have submitted all passages.") }));
+    var next = -1; for (var i = 0; i < D.passages.length; i++) if (!state.lock[i]) { next = i; break; }
+    var btns = [{ t: "Review", ghost: true }, { t: "Try again", ghost: true, f: function () { retry(pi); } }];
+    if (next > -1) btns.push({ t: "Next passage", f: function () { state.p = next; paint(); } });
+    modal("Passage " + D.passages[pi].id + " result", body, btns);
   }
-  function retry() { state.ans = {}; state.res = null; state.done = false; state.t0 = Date.now(); paint(); }
+  function retry(pi) {
+    var r = pr(pi); for (var n = r[0]; n <= r[1]; n++) { delete state.ans[n]; delete state.byId["q" + n]; }
+    D.passages[pi].groups.forEach(function (g) { if (g.kind === "multi") delete state.ans["m" + g.firstq]; });
+    state.lock[pi] = false; delete state.pres[pi]; if (state.open.indexOf(pi) < 0) state.open.push(pi);
+    saveNow(false); paint(); tabMarks();
+  }
 
   /* ---------- teaching ---------- */
   function reset() { modal("Start again?", "All your answers on this page will be cleared.", [{ t: "Cancel", ghost: true }, { t: "Clear all", f: function () { state.ans = {}; state.chk = {}; paint(); } }]); }
@@ -405,13 +457,13 @@ mark.v{background:none;color:inherit}
     var fs = parseFloat(store("fs") || "18"); document.documentElement.style.setProperty("--fs", fs + "px");
     var tabs = h("nav", { cls: "tabs" });
     D.passages.forEach(function (P, i) { tabs.appendChild(h("button", { cls: "tab" + (i === 0 ? " on" : ""), text: "Passage " + P.id, onclick: function () { state.p = i; paint(); } })); });
-    var tools = h("div", { cls: "tools" }, h("span", { id: "who", cls: "who2" }),
+    var tools = h("div", { cls: "tools" }, h("span", { id: "sv", cls: "who2" }), h("span", { id: "who", cls: "who2" }),
       h("button", { cls: "fsb", text: "A−", title: "Smaller text", onclick: function () { fontStep(-1); } }),
       h("button", { cls: "fsb", text: "A+", title: "Larger text", onclick: function () { fontStep(1); } }));
     if (TEACH) {
       tools.appendChild(ibtn("book", "Show or hide new words", function (e) { state.vocab = !state.vocab; e.currentTarget.classList.toggle("off", !state.vocab); renderPassage(); }));
       tools.appendChild(ibtn("reset", "Start again", reset));
-    } else tools.appendChild(ibtn("tick", "Submit", submit, "dark"));
+    } else tools.appendChild(ibtn("tick", "Submit this passage", submit, "dark"));
     tools.appendChild(ibtn("full", "Full screen", function () {
       try { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); } catch (e) { }
     }));
