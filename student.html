@@ -18,9 +18,19 @@
     #theme-pop .tp-logout{display:none}
     .wrap{max-width:760px;margin:0 auto;padding:16px 14px calc(32px + env(safe-area-inset-bottom))}
     .card{background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.85);border-radius:1.5rem;padding:18px;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+    .card.hero-card{background:linear-gradient(135deg,var(--t-primary) 0%,var(--t-primary-2) 100%);border-color:transparent;color:#fff}
     .card h2{display:flex;align-items:center;gap:10px;font-size:.9375rem;font-weight:800;color:var(--t-ink);margin-bottom:12px}
     .card h2 svg{box-sizing:border-box;width:32px;height:32px;padding:8px;border-radius:50%;background:var(--t-tint);color:var(--t-primary);flex:none}
     .row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:10px 12px;border-radius:14px;background:#fff;border:1px solid var(--t-border)}
+    .c-day{display:inline-block;width:5.25rem;font-weight:700}
+    .c-date{display:inline-block;width:3.25rem;font-weight:700}
+    .c-time{display:inline-block;width:6.75rem}
+    details.card > summary{display:flex;align-items:center;gap:10px;min-height:44px;cursor:pointer;list-style:none}
+    details.card > summary::-webkit-details-marker{display:none}
+    details.card > summary h2{margin:0;flex:1}
+    details.card > summary .chev{width:20px;height:20px;flex:none;transition:transform .15s}
+    details.card[open] > summary .chev{transform:rotate(180deg)}
+    details.card[open] > summary{margin-bottom:8px}
     .tag{font-size:.75rem;font-weight:700;padding:2px 9px;border-radius:9999px}
     .opt{display:flex;align-items:flex-start;gap:10px;width:100%;text-align:left;min-height:48px;padding:10px 14px;border-radius:14px;border:1px solid var(--t-line);background:#fff;color:var(--t-ink);font-size:.9375rem}
     .opt[aria-pressed="true"]{border-color:var(--t-primary);background:var(--t-tint);font-weight:700}
@@ -58,6 +68,7 @@
     const pad = n => String(n).padStart(2, '0');
     const ymd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
     const dOf = k => new Date(k + 'T00:00:00');
+    const dayCols = k => { const d = dOf(k); return '<strong class="c-day">' + DAY[d.getDay()] + '</strong><strong class="c-date">' + pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '</strong>'; };
     const fmtDay = k => { const d = dOf(k); return DAY[d.getDay()] + ', ' + pad(d.getDate()) + '/' + pad(d.getMonth() + 1); };
     const isHttp = u => /^https?:\/\//i.test(u || '');
     const S = { c: null, code: '', data: null, a: null, answers: {}, t0: 0, busy: false };
@@ -103,7 +114,7 @@
 
       html += `<section class="card"><h2><i data-lucide="calendar-days"></i>Lịch học tuần này</h2><div class="space-y-2">${thisWeek.length ? thisWeek.map(s => {
         const st = STATUS[s.status] || STATUS.planned;
-        return `<div class="row"><strong style="min-width:110px">${fmtDay(s.date)}</strong><span class="font-semibold text-sky-700">${s.start} - ${s.end}</span><span class="tag ${st[1]}">${st[0]}</span>${s.attendance === 'absent' ? '<span class="tag bg-rose-50 text-rose-700">Vắng</span>' : ''}${s.lesson ? `<span class="text-xs text-slate-500" style="flex:1 1 100%">${esc(s.lesson)}</span>` : ''}</div>`;
+        return `<div class="row">${dayCols(s.date)}<span class="c-time font-semibold text-sky-700">${s.start} - ${s.end}</span><span class="tag ${st[1]}">${st[0]}</span>${s.attendance === 'absent' ? '<span class="tag bg-rose-50 text-rose-700">Vắng</span>' : ''}${s.lesson ? `<span class="text-xs text-slate-500" style="flex:1 1 100%">${esc(s.lesson)}</span>` : ''}</div>`;
       }).join('') : '<div class="text-sm text-slate-500">Tuần này không có buổi học.</div>'}</div></section>`;
 
       const asg = d.assignments || [];
@@ -121,10 +132,10 @@
           <div class="space-y-2 mt-1">${linksBlock(w.lessons, 'Bài học', 'presentation')}${linksBlock(w.homeworks, 'Bài tập', 'file-check-2')}</div></details>`;
       }).join('') : '<div class="text-sm text-slate-500">Chưa có học liệu.</div>'}</div></section>`;
 
-      html += `<section class="card"><h2><i data-lucide="history"></i>Lịch sử buổi học</h2>
+      html += `<details class="card" open><summary><h2><i data-lucide="history"></i>Lịch sử buổi học</h2><i data-lucide="chevron-down" class="chev"></i></summary>
         <div class="text-xs text-slate-500 mb-2">Đã học ${done.length} buổi · Vắng ${absent} buổi</div>
         <div class="space-y-2">${past.slice(0, 12).map(s => { const st = STATUS[s.status] || STATUS.planned;
-          return `<div class="row"><strong style="min-width:110px">${fmtDay(s.date)}</strong><span class="tag ${st[1]}">${st[0]}</span>${s.attendance === 'absent' ? '<span class="tag bg-rose-50 text-rose-700">Vắng</span>' : ''}${s.lesson ? `<span class="text-xs text-slate-500">${esc(s.lesson)}</span>` : ''}</div>`; }).join('') || '<div class="text-sm text-slate-500">Chưa có buổi học nào.</div>'}</div></section>`;
+          return `<div class="row">${dayCols(s.date)}<span class="tag ${st[1]}">${st[0]}</span>${s.attendance === 'absent' ? '<span class="tag bg-rose-50 text-rose-700">Vắng</span>' : ''}${s.lesson ? `<span class="text-xs text-slate-500">${esc(s.lesson)}</span>` : ''}</div>`; }).join('') || '<div class="text-sm text-slate-500">Chưa có buổi học nào.</div>'}</div></details>`;
 
       $('app').innerHTML = html; icons();
     }
