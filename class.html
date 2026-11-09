@@ -30,6 +30,16 @@
     body { padding-left:0; padding-right:0; }
   }
 </style>
+<style id="lms-dlg">
+  .dlg{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(15,23,42,.35)}
+  .dlg[hidden]{display:none}
+  .dlg .card{width:min(520px,100%);max-height:calc(100dvh - 32px);overflow:auto;background:#fff;border:1px solid var(--t-border,#e2e8f0);border-radius:24px;padding:22px}
+  .dlg h2{font-size:1.0625rem;font-weight:800;color:var(--t-ink,#0f172a);margin-bottom:12px}
+  .dlg label{display:block;font-size:.8125rem;font-weight:700;color:var(--t-ink,#0f172a);margin:12px 0 6px}
+  .dlg .field{width:100%}
+  .dlg .acts{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:18px}
+  .dlg .err{min-height:20px;margin-top:10px;font-size:.875rem;color:#be123c}
+</style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col relative">
 
@@ -69,7 +79,7 @@
         <div class="flex items-center gap-2">
           <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-white/20 text-white">Cổng học viên</span>
         </div>
-        <input type="text" id="class-display-name-input" class="text-2xl sm:text-3xl font-bold mt-2 bg-transparent border-b border-transparent hover:border-sky-300/50 focus:border-white focus:bg-white/10 rounded px-1 -ml-1 outline-none w-full max-w-md transition text-white">
+        <h2 id="class-display-name" class="text-2xl sm:text-3xl font-bold mt-2 text-white">&nbsp;</h2>
         <p class="text-xs text-sky-100/90 mt-1">Quản lý lịch học, học liệu và tiến độ học viên theo tuần.</p>
       </div>
       <div class="flex flex-wrap items-center gap-3 shrink-0">
@@ -77,7 +87,7 @@
           <a id="btn-meet" href="https://meet.google.com" target="_self" class="hero-btn solid">
             <i data-lucide="video" class="w-4 h-4"></i><span>Vào lớp Online</span>
           </a>
-          <button onclick="editExternalLink('meet')" class="teacher-feature hidden p-2 text-white bg-white/10 hover:bg-white/20 rounded-lg transition" title="Đổi link Meet">
+          <button type="button" id="edit-meet" class="teacher-feature hidden p-2 text-white bg-white/10 hover:bg-white/20 rounded-lg transition" title="Đổi link lớp online (dùng chung)">
             <i data-lucide="settings" class="w-4 h-4"></i>
           </button>
         </div>
@@ -85,7 +95,7 @@
           <a id="btn-drive" href="https://drive.google.com" target="_self" class="hero-btn ghost">
             <i data-lucide="folder" class="w-4 h-4"></i><span>Drive bài giảng</span>
           </a>
-          <button onclick="editExternalLink('drive')" class="teacher-feature hidden p-2 text-white bg-white/10 hover:bg-white/20 rounded-lg transition" title="Đổi link Drive">
+          <button type="button" id="edit-class" class="teacher-feature hidden p-2 text-white bg-white/10 hover:bg-white/20 rounded-lg transition" title="Sửa tên lớp và link Drive">
             <i data-lucide="settings" class="w-4 h-4"></i>
           </button>
         </div>
@@ -123,11 +133,7 @@
           <div id="hw-shared" class="space-y-2"></div>
         </div>
       </div>
-      <div class="teacher-feature hidden mt-3 justify-end">
-        <button id="btn-save-links" class="px-4 py-2 cta-primary font-semibold text-xs rounded-xl  transition flex items-center gap-1.5">
-          <i data-lucide="save" class="w-3.5 h-3.5"></i><span>Lưu đường dẫn tuần này</span>
-        </button>
-      </div>
+      
     </div>
 
     <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6">
@@ -162,6 +168,56 @@
       <div id="session-history-list" class="space-y-2"></div>
     </section>
   </main>
+
+  <div id="dlg-sess" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="dss-title">
+    <form class="card" novalidate>
+      <h2 id="dss-title">Sửa buổi học</h2>
+      <input type="hidden" id="dss-id">
+      <div class="text-sm text-slate-600" id="dss-info"></div>
+      <label for="dss-status">Trạng thái</label>
+      <select id="dss-status" class="field">
+        <option value="planned">Chưa cập nhật</option><option value="done">Hoàn thành</option><option value="cancel">Hủy (tính nợ)</option>
+        <option value="makeup">Bù (trừ nợ)</option><option value="holiday">Nghỉ lễ (không tính nợ)</option>
+      </select>
+      <label for="dss-mode">Hình thức</label>
+      <select id="dss-mode" class="field"><option value="offline">Trực tiếp</option><option value="online">Online</option></select>
+      <label for="dss-lesson">Bài học</label><input id="dss-lesson" type="text" class="field" autocomplete="off">
+      <label for="dss-note">Ghi chú</label><input id="dss-note" type="text" class="field" autocomplete="off">
+      <div class="err" id="dss-err" role="alert"></div>
+      <div class="acts"><button type="submit" class="btn-primary">Lưu</button><button type="button" class="btn-soft" data-close>Hủy</button></div>
+    </form>
+  </div>
+
+  <div id="dlg-links" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="dl-title">
+    <form class="card" novalidate>
+      <h2 id="dl-title">Học liệu tuần</h2>
+      <input type="hidden" id="dl-kind">
+      <div id="dl-list" class="space-y-2"></div>
+      <button type="button" id="dl-add" class="btn-soft mt-3"><i data-lucide="plus" class="w-4 h-4"></i><span>Thêm dòng</span></button>
+      <div class="err" id="dl-err" role="alert"></div>
+      <div class="acts"><button type="submit" class="btn-primary">Lưu</button><button type="button" class="btn-soft" data-close>Hủy</button></div>
+    </form>
+  </div>
+
+  <div id="dlg-class" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="dc-title">
+    <form class="card" novalidate>
+      <h2 id="dc-title">Sửa lớp</h2>
+      <label for="dc-name">Tên lớp</label><input id="dc-name" type="text" class="field" autocomplete="off">
+      <label for="dc-drive">Link Drive bài giảng</label><input id="dc-drive" type="url" class="field" placeholder="https://drive.google.com/..." autocomplete="off">
+      <div class="err" id="dc-err" role="alert"></div>
+      <div class="acts"><button type="submit" class="btn-primary">Lưu</button><button type="button" class="btn-soft" data-close>Hủy</button></div>
+    </form>
+  </div>
+
+  <div id="dlg-meet" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="dm-title">
+    <form class="card" novalidate>
+      <h2 id="dm-title">Link lớp online</h2>
+      <div class="text-sm text-slate-600">Dùng chung cho mọi lớp.</div>
+      <label for="dm-url">Link</label><input id="dm-url" type="url" class="field" placeholder="https://meet.google.com/..." autocomplete="off">
+      <div class="err" id="dm-err" role="alert"></div>
+      <div class="acts"><button type="submit" class="btn-primary">Lưu</button><button type="button" class="btn-soft" data-close>Hủy</button></div>
+    </form>
+  </div>
 
   <script>
   (function () {
@@ -207,11 +263,13 @@
       const [st, se, ss, wl, wm] = await Promise.all([
         S.c.from('students').select('id,student_name,student_code').eq('class_id', id).eq('is_active', true).order('id'),
         S.c.from('class_settings').select('drive_url,meet_url').eq('class_id', id).maybeSingle(),
-        S.c.from('sessions').select('id,session_no,session_date,start_time,end_time,status,lesson,note').eq('class_id', id).order('session_date').order('start_time'),
+        S.c.from('sessions').select('id,session_no,session_date,start_time,end_time,status,lesson,note,mode').eq('class_id', id).order('session_date').order('start_time'),
         S.c.from('week_links').select('week_start,lessons,homeworks').eq('class_id', id),
         S.c.from('week_materials').select('week_start,kind,title,url,sort_order,id').contains('class_ids', [id]).order('sort_order').order('id')
       ]);
       [st, se, ss, wl, wm].forEach(r => { if (r.error) throw r.error; });
+      const gm = await S.c.from('app_settings').select('value').eq('key', 'online_meet_url').maybeSingle();
+      S.meet = (gm.data && typeof gm.data.value === 'string') ? gm.data.value : '';
       S.students = st.data || []; S.set = se.data || {}; S.sessions = ss.data || [];
       S.links = {}; (wl.data || []).forEach(r => { S.links[r.week_start] = { lessons: r.lessons || [], homeworks: r.homeworks || [] }; });
       S.shared = {}; (wm.data || []).forEach(r => { const w = S.shared[r.week_start] = S.shared[r.week_start] || { lessons: [], homeworks: [] }; (r.kind === 'homework' ? w.homeworks : w.lessons).push({ title: r.title, url: r.url }); });
@@ -228,28 +286,36 @@
       const n = S.cls.class_name;
       document.title = 'Lớp ' + n + ' | gblearning';
       $('class-title-header').textContent = 'Lớp ' + n;
-      $('class-display-name-input').value = n;
+      $('class-display-name').textContent = n;
       $('class-avatar').textContent = S.cls.class_code.substring(0, 2);
-      $('btn-meet').href = S.set.meet_url || 'https://meet.google.com';
+      $('btn-meet').href = isHttp(S.meet) ? S.meet : 'https://meet.google.com';
       $('btn-drive').href = S.set.drive_url || 'https://drive.google.com';
     }
-    window.editExternalLink = async function (type) {
-      const cur = S.set[type + '_url'] || '';
-      const url = prompt('Nhập link mới cho nút ' + (type === 'meet' ? 'Meet' : 'Drive') + ':', cur);
-      if (url === null) return;
-      const v = url.trim();
-      if (v && !isHttp(v)) return toast('Link phải bắt đầu bằng http:// hoặc https://');
-      const patch = {}; patch[type + '_url'] = v || null;
-      const r = await S.c.from('class_settings').upsert(Object.assign({ class_id: S.cls.id }, patch));
-      if (r.error) return fail(r.error);
-      S.set[type + '_url'] = v || null; renderTitle(); toast('Đã lưu link.');
-    };
-    async function renameClass() {
-      const inp = $('class-display-name-input'), v = inp.value.trim();
-      if (!v || v === S.cls.class_name) { inp.value = S.cls.class_name; return; }
-      const r = await S.c.from('classes').update({ class_name: v }).eq('id', S.cls.id);
-      if (r.error) { inp.value = S.cls.class_name; return fail(r.error); }
-      S.cls.class_name = v; renderTitle(); toast('Đã đổi tên lớp.');
+    function openDlg(id) { $(id).hidden = false; }
+    function closeDlgs() { document.querySelectorAll('.dlg').forEach(d => { d.hidden = true; }); }
+    function openClassDlg() {
+      $('dc-err').textContent = ''; $('dc-name').value = S.cls.class_name; $('dc-drive').value = S.set.drive_url || '';
+      openDlg('dlg-class'); setTimeout(() => $('dc-name').focus(), 30);
+    }
+    async function saveClassDlg(e) {
+      e.preventDefault();
+      const name = $('dc-name').value.trim(), drive = $('dc-drive').value.trim();
+      if (!name) { $('dc-err').textContent = 'Nhập tên lớp.'; return; }
+      if (drive && !isHttp(drive)) { $('dc-err').textContent = 'Link phải bắt đầu bằng https://'; return; }
+      let r = await S.c.from('classes').update({ class_name: name }).eq('id', S.cls.id);
+      if (r.error) { $('dc-err').textContent = LMS.friendlyError(r.error); return; }
+      r = await S.c.from('class_settings').upsert({ class_id: S.cls.id, drive_url: drive || null });
+      if (r.error) { $('dc-err').textContent = LMS.friendlyError(r.error); return; }
+      S.cls.class_name = name; S.set.drive_url = drive || null; closeDlgs(); renderTitle(); toast('Đã lưu lớp.');
+    }
+    function openMeetDlg() { $('dm-err').textContent = ''; $('dm-url').value = S.meet || ''; openDlg('dlg-meet'); setTimeout(() => $('dm-url').focus(), 30); }
+    async function saveMeetDlg(e) {
+      e.preventDefault();
+      const v = $('dm-url').value.trim();
+      if (v && !isHttp(v)) { $('dm-err').textContent = 'Link phải bắt đầu bằng https://'; return; }
+      const r = await S.c.from('app_settings').upsert({ key: 'online_meet_url', value: v });
+      if (r.error) { $('dm-err').textContent = LMS.friendlyError(r.error); return; }
+      S.meet = v; closeDlgs(); renderTitle(); toast('Đã lưu link lớp online.');
     }
 
     /* ---------- Thời khóa biểu tuần ---------- */
@@ -266,19 +332,27 @@
             <span class="text-[10px] ${STATUS_CLS[s.status]} px-1.5 py-0.5 rounded font-semibold">${STATUS_TXT[s.status]}</span>
             <div class="text-[11px] font-bold text-sky-700 bg-sky-50 rounded p-1 text-center my-1.5 border border-sky-100">${t5(s.start_time)} - ${t5(s.end_time)}${s.session_no ? '<span class="font-medium text-slate-500"> · Buổi ' + s.session_no + '</span>' : ''}</div>
             ${s.lesson ? `<div class="text-[11px] text-slate-600 mb-1" style="overflow-wrap:anywhere">${esc(s.lesson)}</div>` : ''}
-            <select data-sid="${s.id}" class="w-full text-[10px] p-1 border border-slate-200 rounded bg-white text-slate-700" aria-label="Trạng thái buổi">
-              ${['planned', 'done', 'cancel', 'makeup', 'holiday'].map(k => `<option value="${k}" ${s.status === k ? 'selected' : ''}>${{ planned: 'Chưa cập nhật', done: 'Hoàn thành', cancel: 'Hủy (tính nợ)', makeup: 'Bù (trừ nợ)', holiday: 'Nghỉ lễ (không tính nợ)' }[k]}</option>`).join('')}
-            </select>
+<button type="button" data-sid="${s.id}" class="w-full text-[11px] p-1.5 border border-slate-200 rounded bg-white text-sky-700 font-semibold" style="min-height:36px" aria-label="Sửa buổi học">${s.mode === 'online' ? 'Online · ' : ''}Sửa</button>
           </div>`).join('') : '<div class="text-xs text-center text-slate-300 font-medium py-3 mt-2">Nghỉ</div>';
         return `<div class="p-3 rounded-xl border flex flex-col min-h-[125px] ${cls} ${isToday ? 'ring-2 ring-sky-500' : ''}">
           <div><span class="text-[11px] font-bold ${isToday ? 'text-sky-700' : 'text-slate-700'}">${label}</span><div class="text-[10px] text-slate-400">${shortDate(d)}</div></div>${body}</div>`;
       }).join('');
     }
-    async function setStatus(sid, val) {
-      const s = S.sessions.find(x => x.id === Number(sid)); if (!s) return;
-      const old = s.status; s.status = val; refresh();
-      const r = await S.c.from('sessions').update({ status: val, updated_at: new Date().toISOString() }).eq('id', s.id);
-      if (r.error) { s.status = old; refresh(); fail(r.error); }
+    function openSessDlg(sid) {
+      const x = S.sessions.find(v => v.id === Number(sid)); if (!x) return;
+      $('dss-err').textContent = ''; $('dss-id').value = x.id;
+      $('dss-info').textContent = sessionLabel(x) + ' · ' + shortDate(dateOf(x.session_date)) + ' · ' + t5(x.start_time) + ' - ' + t5(x.end_time);
+      $('dss-status').value = x.status; $('dss-mode').value = x.mode || 'offline';
+      $('dss-lesson').value = x.lesson || ''; $('dss-note').value = x.note || '';
+      openDlg('dlg-sess');
+    }
+    async function saveSessDlg(e) {
+      e.preventDefault();
+      const x = S.sessions.find(v => v.id === Number($('dss-id').value)); if (!x) return;
+      const patch = { status: $('dss-status').value, mode: $('dss-mode').value, lesson: $('dss-lesson').value.trim() || null, note: $('dss-note').value.trim() || null, updated_at: new Date().toISOString() };
+      const r = await S.c.from('sessions').update(patch).eq('id', x.id);
+      if (r.error) { $('dss-err').textContent = LMS.friendlyError(r.error); return; }
+      Object.assign(x, patch); closeDlgs(); refresh(); toast('Đã cập nhật buổi học.');
     }
 
     /* ---------- Học liệu tuần ---------- */
@@ -297,19 +371,30 @@
     }
     const collect = id => [...document.querySelectorAll('#' + id + ' .link-item-row')].map(r => ({
       title: r.querySelector('[data-field="title"]').value.trim(), url: r.querySelector('[data-field="url"]').value.trim() })).filter(x => x.title || x.url);
+    const roList = (items, label) => { const l = (items || []).filter(x => x.title || x.url); return l.length ? l.map((x, i) => isHttp(x.url)
+      ? `<a class="flex items-center gap-2 rounded-lg bg-white border border-slate-200 px-3 py-2 text-xs text-sky-800 font-semibold" style="min-height:44px;overflow-wrap:anywhere" href="${esc(x.url)}" target="_blank" rel="noopener"><span class="flex-1">${esc(x.title || label + ' ' + (i + 1))}</span><i data-lucide="external-link" class="w-4 h-4"></i></a>`
+      : `<div class="rounded-lg bg-white border border-slate-200 px-3 py-2 text-xs text-slate-700" style="min-height:44px">${esc(x.title || label + ' ' + (i + 1))}</div>`).join('') : '<p class="text-[11px] text-slate-400">Chưa có.</p>'; };
+    function openLinksDlg(kind) {
+      const l = S.links[weekKey()] || { lessons: [], homeworks: [] };
+      $('dl-kind').value = kind; $('dl-title').textContent = kind === 'lesson' ? 'Bài học tuần' : 'Bài tập tuần'; $('dl-err').textContent = '';
+      fillLinks('dl-list', kind === 'lesson' ? l.lessons : l.homeworks, kind); icons(); openDlg('dlg-links');
+    }
     function renderWeekLinks() {
       const l = S.links[weekKey()] || { lessons: [], homeworks: [] };
-      fillLinks('lesson-links-list', l.lessons, 'lesson'); fillLinks('hw-links-list', l.homeworks, 'hw');
+      $('lesson-links-list').innerHTML = roList(l.lessons, 'Bài học'); $('hw-links-list').innerHTML = roList(l.homeworks, 'Bài tập');
       const sh = (S.shared || {})[weekKey()] || { lessons: [], homeworks: [] };
       const shHtml = list => list.length ? '<p class="text-[11px] text-slate-400 pt-1">Giao từ tab Bài học theo tuần (sửa ở trang Tổng quan)</p>' + list.map(x => `<a class="flex items-center gap-2 rounded-lg bg-white border border-slate-200 px-3 py-2 text-xs text-sky-800 font-semibold" style="min-height:44px;overflow-wrap:anywhere" href="${isHttp(x.url) ? esc(x.url) : '#'}" target="_blank" rel="noopener">${esc(x.title)}</a>`).join('') : '';
       $('lesson-shared').innerHTML = shHtml(sh.lessons); $('hw-shared').innerHTML = shHtml(sh.homeworks);
     }
-    async function saveLinks() {
-      const lessons = collect('lesson-links-list'), homeworks = collect('hw-links-list');
-      if ([...lessons, ...homeworks].some(x => x.url && !isHttp(x.url))) return toast('Link phải bắt đầu bằng http:// hoặc https://');
-      const r = await S.c.from('week_links').upsert({ class_id: S.cls.id, week_start: weekKey(), lessons, homeworks });
-      if (r.error) return fail(r.error);
-      S.links[weekKey()] = { lessons, homeworks }; refresh(); renderWeekLinks(); icons(); toast('Đã lưu học liệu tuần.');
+    async function saveLinks(e) {
+      e.preventDefault();
+      const kind = $('dl-kind').value, items = collect('dl-list');
+      if (items.some(x => x.url && !isHttp(x.url))) { $('dl-err').textContent = 'Link phải bắt đầu bằng https://'; return; }
+      const cur = S.links[weekKey()] || { lessons: [], homeworks: [] };
+      const next = { lessons: kind === 'lesson' ? items : (cur.lessons || []), homeworks: kind === 'lesson' ? (cur.homeworks || []) : items };
+      const r = await S.c.from('week_links').upsert({ class_id: S.cls.id, week_start: weekKey(), lessons: next.lessons, homeworks: next.homeworks });
+      if (r.error) { $('dl-err').textContent = LMS.friendlyError(r.error); return; }
+      S.links[weekKey()] = next; closeDlgs(); refresh(); renderWeekLinks(); icons(); toast('Đã lưu học liệu tuần.');
     }
 
     /* ---------- Học sinh và điểm danh ---------- */
@@ -372,20 +457,25 @@
     function bind() {
       $('btn-prev-week').addEventListener('click', () => { S.offset--; renderAll(); });
       $('btn-next-week').addEventListener('click', () => { S.offset++; renderAll(); });
-      $('schedule-grid').addEventListener('change', e => { const sel = e.target.closest('select[data-sid]'); if (sel) setStatus(sel.dataset.sid, sel.value); });
+      $('schedule-grid').addEventListener('click', e => { const b = e.target.closest('button[data-sid]'); if (b) openSessDlg(b.dataset.sid); });
       $('student-list-body').addEventListener('click', e => { const b = e.target.closest('[data-att]'); if (b) { const [a, c] = b.dataset.att.split('|'); toggleAtt(a, c); } });
       $('session-history-list').addEventListener('click', e => { const b = e.target.closest('[data-week]'); if (!b) return; e.preventDefault(); S.offset = Number(b.dataset.week); renderAll(); $('week-indicator').scrollIntoView({ behavior: 'smooth', block: 'center' }); });
-      $('add-lesson-link').addEventListener('click', () => { const l = collect('lesson-links-list'); l.push({ title: '', url: '' }); fillLinks('lesson-links-list', l, 'lesson'); icons(); });
-      $('add-hw-link').addEventListener('click', () => { const l = collect('hw-links-list'); l.push({ title: '', url: '' }); fillLinks('hw-links-list', l, 'hw'); icons(); });
-      ['lesson-links-list', 'hw-links-list'].forEach(id => $(id).addEventListener('click', e => {
+      $('add-lesson-link').addEventListener('click', () => openLinksDlg('lesson'));
+      $('add-hw-link').addEventListener('click', () => openLinksDlg('hw'));
+      $('dl-add').addEventListener('click', () => { const k = $('dl-kind').value, l = collect('dl-list'); l.push({ title: '', url: '' }); fillLinks('dl-list', l, k); icons(); });
+      $('dl-list').addEventListener('click', e => {
         const b = e.target.closest('.remove-link-row'); if (!b) return;
-        const kind = b.closest('.link-item-row').dataset.kind; b.closest('.link-item-row').remove();
-        if (!$(id).querySelector('.link-item-row')) fillLinks(id, [], kind); icons();
-      }));
-      $('btn-save-links').addEventListener('click', saveLinks);
-      const inp = $('class-display-name-input');
-      inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); });
-      inp.addEventListener('blur', renameClass);
+        const kind = $('dl-kind').value; b.closest('.link-item-row').remove();
+        if (!$('dl-list').querySelector('.link-item-row')) fillLinks('dl-list', [], kind); icons();
+      });
+      $('dlg-links').querySelector('form').addEventListener('submit', saveLinks);
+      $('edit-class').addEventListener('click', openClassDlg);
+      $('edit-meet').addEventListener('click', openMeetDlg);
+      $('dlg-class').querySelector('form').addEventListener('submit', saveClassDlg);
+      $('dlg-meet').querySelector('form').addEventListener('submit', saveMeetDlg);
+      $('dlg-sess').querySelector('form').addEventListener('submit', saveSessDlg);
+      document.querySelectorAll('.dlg').forEach(d => { d.addEventListener('mousedown', e => { if (e.target === d) closeDlgs(); }); d.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeDlgs)); });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDlgs(); });
     }
 
     async function boot() {

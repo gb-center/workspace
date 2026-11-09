@@ -13,6 +13,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="lms.css">
   <script src="lms.js"></script>
+  <style>
+    .edlg{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(15,23,42,.35)}
+    .edlg[hidden]{display:none}
+    .edlg-card{width:min(560px,100%);max-height:calc(100dvh - 32px);overflow:auto}
+  </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col relative">
   <nav id="lms-nav" aria-label="Điều hướng chính">
@@ -71,7 +76,8 @@
       </div>
     </section>
 
-    <section id="editor" class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6" aria-label="Thêm hoặc sửa học viên">
+    <div id="editor" class="edlg" hidden role="dialog" aria-modal="true" aria-labelledby="editor-title">
+    <section class="edlg-card bg-white rounded-2xl border border-slate-200 p-5 sm:p-6">
       <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2 mb-4"><i data-lucide="user-plus" class="w-4 h-4"></i><span id="editor-title">Thêm học viên</span></h3>
       <form id="student-form" novalidate class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <input type="hidden" id="student-id">
@@ -106,6 +112,7 @@
         </div>
       </form>
     </section>
+    </div>
   </main>
 
   <script>
@@ -199,6 +206,8 @@
         $('editor-title').textContent = 'Thêm học viên';
         $('code-row').classList.add('hidden'); setMsg('');
       }
+      function openEditor() { $('editor').hidden = false; setTimeout(() => $('student-name').focus(), 30); }
+      function closeEditor() { resetForm(); $('editor').hidden = true; }
 
       function edit(id) {
         const s = find(id); if (!s) return;
@@ -210,8 +219,7 @@
         $('student-tuition').value = Number(s.monthly_tuition || 0).toLocaleString('en-US');
         $('editor-title').textContent = 'Sửa học viên';
         $('code-view').textContent = s.student_code; $('code-row').classList.remove('hidden'); setMsg('');
-        $('editor').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        $('student-name').focus({ preventScroll: true });
+        openEditor();
       }
 
       async function reload(msg) {
@@ -242,7 +250,7 @@
           setMsg(res.error.code === '23505' ? 'Học viên này đã có trong lớp đã chọn.' : LMS.friendlyError(res.error));
           return;
         }
-        resetForm();
+        closeEditor();
         await reload(id ? 'Đã cập nhật học viên.' : 'Đã thêm học viên.');
       }
 
@@ -282,9 +290,11 @@
       function bind() {
         $('search').addEventListener('input', e => { state.q = e.target.value; render(); });
         $('filter-class').addEventListener('change', render);
-        $('btn-add').addEventListener('click', () => { resetForm(); $('editor').scrollIntoView({ behavior: 'smooth', block: 'start' }); $('student-name').focus({ preventScroll: true }); });
+        $('btn-add').addEventListener('click', () => { resetForm(); openEditor(); });
         $('btn-export').addEventListener('click', exportCsv);
-        $('btn-cancel').addEventListener('click', resetForm);
+        $('btn-cancel').addEventListener('click', closeEditor);
+        $('editor').addEventListener('mousedown', e => { if (e.target === $('editor')) closeEditor(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('editor').hidden) closeEditor(); });
         $('student-form').addEventListener('submit', onSubmit);
         const tuition = $('student-tuition');
         tuition.addEventListener('focus', () => tuition.select());
