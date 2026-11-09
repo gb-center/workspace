@@ -256,18 +256,18 @@
 
       async function remove(id) {
         const s = find(id); if (!s) return;
-        if (!confirm(`Xóa "${s.student_name}" khỏi danh sách?`)) return;
+        if (!(await LMS.confirm(`Xóa "${s.student_name}" khỏi danh sách?`, { ok: 'Xóa', danger: true }))) return;
         const res = await state.client.from('students').delete().eq('id', s.id);
         if (res.error) {
           if (res.error.code === '23503') {
-            if (confirm(`"${s.student_name}" đã có bài nộp nên không thể xóa (để giữ điểm). Chuyển sang Tạm ngưng?`)) {
+            if (await LMS.confirm(`"${s.student_name}" đã có bài nộp nên không thể xóa (để giữ điểm). Chuyển sang Tạm ngưng?`, { ok: 'Tạm ngưng' })) {
               const u = await state.client.from('students').update({ is_active: false }).eq('id', s.id);
-              if (u.error) { alert(LMS.friendlyError(u.error)); return; }
+              if (u.error) { await LMS.alert(LMS.friendlyError(u.error)); return; }
               await reload('Đã chuyển sang Tạm ngưng.');
             }
             return;
           }
-          alert(LMS.friendlyError(res.error)); return;
+          await LMS.alert(LMS.friendlyError(res.error)); return;
         }
         await reload('Đã xóa học viên.');
       }

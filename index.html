@@ -605,7 +605,7 @@
       }
       async function deleteMat() {
         const id = Number($('dm-id').value); if (!id) return;
-        if (!confirm('Xóa mục này khỏi tất cả các lớp?')) return;
+        if (!(await LMS.confirm('Xóa mục này khỏi tất cả các lớp?', { ok: 'Xóa', danger: true }))) return;
         const res = await st.c.from('week_materials').delete().eq('id', id);
         if (res.error) { $('dm-err').textContent = LMS.friendlyError(res.error); return; }
         closeDlgs(); await refresh('Đã xóa mục.');
@@ -695,7 +695,7 @@
         const status = $('ds-status').value;
         if (status !== 'cancel' && status !== 'holiday') {
           const cf = conflictsFor(classId, date, a, b, id ? Number(id) : null);
-          if (cf.length && !confirm('Buổi này trùng với:\n' + cf.join('\n') + '\n\nVẫn lưu?')) return;
+          if (cf.length && !(await LMS.confirm('Buổi này trùng với:\n' + cf.join('\n') + '\n\nVẫn lưu?', { ok: 'Vẫn lưu' }))) return;
         }
         const payload = { class_id: classId, session_date: date, start_time: $('ds-start').value, end_time: $('ds-end').value, status,
           mode: $('ds-mode').value, lesson: $('ds-lesson').value.trim() || null, note: $('ds-note').value.trim() || null, updated_at: new Date().toISOString() };
@@ -707,7 +707,7 @@
       }
       async function deleteSession() {
         const id = Number($('ds-id').value); if (!id) return;
-        if (!confirm('Xóa buổi học này? Điểm danh của buổi cũng bị xóa.')) return;
+        if (!(await LMS.confirm('Xóa buổi học này? Điểm danh của buổi cũng bị xóa.', { ok: 'Xóa', danger: true }))) return;
         const res = await st.c.from('sessions').delete().eq('id', id);
         if (res.error) { $('ds-err').textContent = LMS.friendlyError(res.error); return; }
         closeDlgs(); await refresh('Đã xóa buổi học.');
@@ -742,7 +742,7 @@
       async function deleteClass() {
         const id = Number($('dc-id').value), c = st.classes.find(x => x.id === id); if (!c) return;
         if ((st.counts[id] || 0) > 0) { $('dc-err').textContent = 'Lớp còn học viên đang học. Chuyển lớp sang Lưu trữ thay vì xóa.'; return; }
-        if (!confirm('Xóa lớp "' + c.class_code + '" cùng toàn bộ buổi học và điểm danh của lớp?')) return;
+        if (!(await LMS.confirm('Xóa lớp "' + c.class_code + '" cùng toàn bộ buổi học và điểm danh của lớp?', { ok: 'Xóa', danger: true }))) return;
         const res = await st.c.from('classes').delete().eq('id', id);
         if (res.error) { $('dc-err').textContent = res.error.code === '23503' ? 'Lớp đã có bài tập hoặc bài nộp nên không xóa được. Chuyển sang Lưu trữ.' : LMS.friendlyError(res.error); return; }
         closeDlgs(); await loadClasses(); await refresh('Đã xóa lớp.');
@@ -767,7 +767,7 @@
       async function copyNextWeek() {
         const dates = weekDates(st.week), mine = st.sessions;
         if (!mine.length) { LMS.toast('Tuần này chưa có buổi nào để chép.'); return; }
-        if (!confirm('Chép lịch Tuần ' + pad(st.week) + ' sang Tuần ' + pad(st.week + 1) + '? Chỉ thêm vào ngày lớp chưa có buổi.')) return;
+        if (!(await LMS.confirm('Chép lịch Tuần ' + pad(st.week) + ' sang Tuần ' + pad(st.week + 1) + '? Chỉ thêm vào ngày lớp chưa có buổi.', { ok: 'Chép' }))) return;
         const nd = weekDates(st.week + 1).map(ymd);
         const ex = await st.c.from('sessions').select('class_id,session_date').gte('session_date', nd[0]).lte('session_date', nd[6]);
         if (ex.error) { LMS.toast(LMS.friendlyError(ex.error)); return; }

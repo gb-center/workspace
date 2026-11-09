@@ -61,6 +61,43 @@
     el.textContent = msg; el.hidden = false;
     clearTimeout(toastTimer); toastTimer = setTimeout(function () { el.hidden = true; }, 2600);
   }
+
+  /* ---------- Hộp thoại xác nhận / thông báo (thay confirm, alert của trình duyệt) ---------- */
+  function ask(msg, opt) {
+    opt = opt || {};
+    return new Promise(function (resolve) {
+      if (!document.getElementById('lms-cf-css')) {
+        var st = document.createElement('style'); st.id = 'lms-cf-css';
+        st.textContent = '#lms-cf{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(15,23,42,.45)}' +
+          '#lms-cf .cf-card{width:100%;max-width:420px;background:#fff;border-radius:20px;padding:22px 22px 18px}' +
+          '#lms-cf .cf-msg{white-space:pre-line;overflow-wrap:anywhere;font-size:1rem;line-height:1.5;color:#0f172a}' +
+          '#lms-cf .cf-acts{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}' +
+          '#lms-cf button{min-height:44px;padding:0 20px;border-radius:9999px;font-weight:700;font-size:.9375rem;cursor:pointer}' +
+          '#lms-cf .cf-no{border:1px solid var(--t-tint-2,#cbd5e1);background:#fff;color:var(--t-primary,#0f172a)}' +
+          '#lms-cf .cf-ok{border:0;background:var(--t-primary,#0f172a);color:#fff}' +
+          '#lms-cf .cf-ok.danger{background:#be123c}';
+        document.head.appendChild(st);
+      }
+      var prev = document.activeElement;
+      var o = document.createElement('div'); o.id = 'lms-cf'; o.setAttribute('role', 'alertdialog'); o.setAttribute('aria-modal', 'true');
+      var c = document.createElement('div'); c.className = 'cf-card';
+      var m = document.createElement('div'); m.className = 'cf-msg'; m.textContent = msg;
+      var a = document.createElement('div'); a.className = 'cf-acts';
+      var no = document.createElement('button'); no.type = 'button'; no.className = 'cf-no'; no.textContent = opt.cancel || 'Hủy';
+      var ok = document.createElement('button'); ok.type = 'button'; ok.className = 'cf-ok' + (opt.danger ? ' danger' : ''); ok.textContent = opt.ok || 'Đồng ý';
+      if (!opt.alertOnly) a.appendChild(no); a.appendChild(ok);
+      c.appendChild(m); c.appendChild(a); o.appendChild(c); document.body.appendChild(o);
+      function done(v) { document.removeEventListener('keydown', key, true); o.remove(); if (prev && prev.focus) { try { prev.focus(); } catch (e) {} } resolve(v); }
+      function key(e) { if (e.key === 'Escape') { e.stopPropagation(); e.preventDefault(); done(false); } }
+      document.addEventListener('keydown', key, true);
+      ok.addEventListener('click', function () { done(true); });
+      no.addEventListener('click', function () { done(false); });
+      o.addEventListener('click', function (e) { if (e.target === o) done(false); });
+      ok.focus();
+    });
+  }
+  function confirmBox(msg, opt) { return ask(msg, opt); }
+  function alertBox(msg) { return ask(msg, { alertOnly: true, ok: 'Đã hiểu' }); }
   function friendlyError(e) {
     var m = (e && (e.message || e.error_description)) || String(e || '');
     if (/invalid login credentials/i.test(m)) return 'Email hoặc mật khẩu chưa đúng.';
@@ -242,7 +279,7 @@
 
   window.LMS = {
     client: client, requireTeacher: requireTeacher, signOut: signOut,
-    esc: esc, toast: toast, friendlyError: friendlyError,
+    esc: esc, toast: toast, friendlyError: friendlyError, confirm: confirmBox, alert: alertBox,
     theme: { apply: applyTheme, get: getTheme, DEF: DEF }
   };
 })();

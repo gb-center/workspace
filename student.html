@@ -195,7 +195,7 @@
     async function submit() {
       if (S.busy) return;
       const qs = S.a.questions || [], empty = qs.filter(q => !(S.answers[q.id] || '').trim()).length;
-      if (empty && !confirm('Còn ' + empty + ' câu chưa trả lời. Vẫn nộp bài?')) return;
+      if (empty && !(await LMS.confirm('Còn ' + empty + ' câu chưa trả lời. Vẫn nộp bài?', { ok: 'Vẫn nộp' }))) return;
       S.busy = true; $('btn-submit').disabled = true; $('sub-msg').textContent = '';
       const r = await S.c.rpc('submit_assignment', { p_student_code: S.code, p_assignment_code: S.a.code, p_answers: S.answers, p_duration_seconds: Math.round((Date.now() - S.t0) / 1000) });
       S.busy = false;
