@@ -24,17 +24,23 @@
     #grid td.day{padding:6px;height:64px;cursor:pointer}
     #grid td.day:hover{background:var(--t-soft)}
     #grid td.today{background:color-mix(in srgb,var(--t-tint) 55%,transparent)}
-    #grid tr.special td{background:var(--t-soft);font-size:.8125rem;color:var(--t-muted)}
-    #grid tr.special .c-name{background:var(--t-soft);font-weight:700;color:var(--t-ink)}
+    #grid td.c-name,#grid td.day{vertical-align:middle}
+    #grid tr.special td{position:sticky;font-size:.8125rem;font-weight:600;text-align:center;vertical-align:middle;padding:8px 6px;z-index:3}
+    #grid tr.special .c-name{z-index:4;text-align:left;font-weight:800}
+    #grid tr.free td{top:var(--h1,56px);background:#ecfdf5;color:#047857;border-bottom-color:#a7f3d0}
+    #grid tr.free td.today{background:#d1fae5}
+    #grid tr.busy td{top:calc(var(--h1,56px) + var(--h2,56px));background:#fff1f2;color:#be123c;border-bottom-color:#fecdd3}
+    #grid tr.busy td.today{background:#ffe4e6}
+    #grid tr.special td.c-name{color:inherit}
     #grid tr.dim .c-name,#grid tr.dim td.day{opacity:.55}
-    .chip{display:block;width:100%;text-align:left;margin-bottom:4px;padding:6px 8px;border-radius:12px;border:1px solid var(--t-tint-2);background:var(--t-tint);color:var(--t-ink);font-size:.8125rem;font-weight:600;line-height:1.25;min-height:44px}
+    .chip{display:block;width:100%;text-align:center;margin-bottom:4px;padding:6px 8px;border-radius:12px;border:1px solid var(--t-tint-2);background:var(--t-tint);color:var(--t-ink);font-size:.8125rem;font-weight:600;line-height:1.25;min-height:44px}
     .chip small{display:block;font-weight:500;color:var(--t-muted);font-size:.75rem}
     .chip.done,.chip.makeup{background:#fff}
     .chip.holiday{background:#fff;color:var(--t-muted);text-decoration:line-through}
     .chip.holiday small{text-decoration:none}
     .chip.cancel{background:#fff;color:#be123c;border-color:#fecdd3;text-decoration:line-through}
     .chip.cancel small{text-decoration:none}
-    .free-line{display:block;white-space:nowrap}
+    .free-line{display:block;white-space:nowrap;line-height:1.6}
     .cls-link{font-weight:800;color:var(--t-primary);text-decoration:none}
     .cls-link:hover{text-decoration:underline}
     .day-tabs{display:none;gap:6px;overflow-x:auto;padding-bottom:4px}
@@ -462,11 +468,11 @@
           `<th class="dcol d${i}${keys[i] === todayKey ? ' today' : ''}">${n}<div style="font-weight:500;opacity:.8">${pad(dates[i].getDate())}/${pad(dates[i].getMonth() + 1)}</div></th>`).join('');
 
         let html = '';
-        html += '<tr class="special"><td class="c-name">Lịch rảnh</td>' + keys.map((k, i) => {
+        html += '<tr class="special free"><td class="c-name">Lịch rảnh</td>' + keys.map((k, i) => {
           const f = freeTimes(k, i);
-          return `<td class="dcol d${i}${k === todayKey ? ' today' : ''}" style="padding:6px">${f.length ? f.map(x => `<span class="free-line">${x}</span>`).join('') : '–'}</td>`;
+          return `<td class="dcol d${i}${k === todayKey ? ' today' : ''}" style="padding:8px 6px">${f.length ? f.map(x => `<span class="free-line">${x}</span>`).join('') : '–'}</td>`;
         }).join('') + '</tr>';
-        html += '<tr class="special"><td class="c-name">Lịch bận</td>' + keys.map((k, i) =>
+        html += '<tr class="special busy"><td class="c-name">Lịch bận</td>' + keys.map((k, i) =>
           `<td class="dcol d${i}${k === todayKey ? ' today' : ''}" data-blocked="${i}" style="padding:6px;cursor:pointer">${parseRanges(st.blocked[i]).map(r => `<span class="free-line">${fmt(r.s)} - ${fmt(r.e)}</span>`).join('') || '–'}</td>`).join('') + '</tr>';
 
         const list = visibleClasses();
@@ -482,10 +488,13 @@
             + keys.map((k, i) => {
               const ss = sessionsOf(c.id, k);
               return `<td class="day dcol d${i}${k === todayKey ? ' today' : ''}" data-class="${c.id}" data-date="${k}">` + ss.map(x =>
-                `<button type="button" class="chip ${x.status}" data-sid="${x.id}">${t5(x.start_time)} - ${t5(x.end_time)}<small>${x.status === 'cancel' ? 'Hủy' : (x.session_no ? 'Buổi ' + x.session_no : '')}${x.status === 'done' ? ' · Đã dạy' : x.status === 'makeup' ? ' · Bù' : x.status === 'holiday' ? ' · Nghỉ lễ' : ''}${x.mode === 'online' ? ' · Online' : ''}${x.lesson ? ' · ' + esc(x.lesson) : ''}${x.note ? ' · ' + esc(x.note) : ''}</small></button>`).join('') + '</td>';
+                `<button type="button" class="chip ${x.status}" data-sid="${x.id}">${t5(x.start_time)} - ${t5(x.end_time)}<small>${[x.status === 'cancel' ? 'Hủy' : '', x.status === 'done' ? 'Đã dạy' : x.status === 'makeup' ? 'Bù' : x.status === 'holiday' ? 'Nghỉ lễ' : '', x.mode === 'online' ? 'Online' : '', x.lesson ? esc(x.lesson) : '', x.note ? esc(x.note) : ''].filter(Boolean).join(' · ')}</small></button>`).join('') + '</td>';
             }).join('') + '</tr>';
         });
         $('grid-body').innerHTML = html;
+        const g = $('grid'), fr = g.querySelector('tr.free');
+        g.style.setProperty('--h1', g.tHead.offsetHeight + 'px');
+        if (fr) g.style.setProperty('--h2', fr.offsetHeight + 'px');
         $('page-msg').textContent = '';
         icons();
         renderMats(); renderLib();
