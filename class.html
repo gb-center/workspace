@@ -44,9 +44,11 @@
 .srow{display:grid;grid-template-columns:84px 56px 140px 96px 130px 1fr 40px;align-items:center;gap:12px;padding:10px 12px}
 @media(max-width:760px){.srow{grid-template-columns:auto auto 1fr 1fr}.srow-note{grid-column:1/-2}.srow button{grid-column:4;justify-self:end}}
 
-.att-cell{display:inline-flex;flex-direction:column;align-items:center;gap:2px}
-.att-cell small{font-size:.6875rem;font-weight:700;color:#64748b;line-height:1}
-.att-sq{width:44px;height:44px;border-radius:10px;border:1.5px solid;font-size:1.125rem;font-weight:800;line-height:1;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.att-row{display:inline-flex;gap:8px;justify-content:center}
+.att-hl{display:flex;gap:8px;justify-content:center;margin-top:3px}
+.att-hl span{width:40px;text-align:center;font-size:.6875rem;font-weight:700;color:#64748b}
+.att-sq{width:40px;height:40px;border-radius:10px;border:1.5px solid #cbd5e1;background:#fff;color:transparent;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.att-sq svg{width:20px;height:20px;display:block}
 .att-sq.present{background:#e0f2fe;border-color:#7dd3fc;color:#075985}
 .att-sq.absent{background:#ffe4e6;border-color:#fda4af;color:#9f1239}
 .att-opt{min-height:56px;border-radius:14px;border:1.5px solid var(--t-line,#cbd5e1);background:#fff;color:var(--t-ink,#0f172a);font-weight:800;font-size:1rem;cursor:pointer}
@@ -165,7 +167,7 @@
           <thead>
             <tr class="text-[11px] text-slate-400 font-bold border-b border-slate-100 uppercase tracking-wider">
               <th class="py-2.5 px-3">Học sinh</th>
-              <th class="py-2.5 px-3 text-center">Điểm danh</th>
+              <th id="att-head" class="py-2.5 px-3 text-center">Điểm danh</th>
               <th class="py-2.5 px-3 text-center">Trang cá nhân</th>
             </tr>
           </thead>
@@ -214,7 +216,7 @@
         <button type="button" id="da-present" class="att-opt" aria-pressed="false">✓ Có mặt</button>
         <button type="button" id="da-absent" class="att-opt" aria-pressed="false">✕ Vắng</button>
       </div>
-      <div class="acts"><button type="button" class="btn-soft" data-close>Đóng</button></div>
+      <div class="acts"><button type="button" id="da-clear" class="btn-soft">Bỏ chọn</button><button type="button" class="btn-soft" data-close>Đóng</button></div>
     </div>
   </div>
 
@@ -437,11 +439,14 @@
       const body = $('student-list-body');
       if (!S.students.length) { body.innerHTML = '<tr><td colspan="3" class="p-4 text-center text-slate-400">Chưa có học sinh. Thêm học sinh ở trang Student List.</td></tr>'; return; }
       const sess = weekSessions(S.offset).filter(s => s.status !== 'cancel' && s.status !== 'holiday');
+      $('att-head').innerHTML = 'Điểm danh' + (sess.length > 1 ? '<div class="att-hl">' + sess.map(x => `<span>${sessionLabel(x).replace('Thứ ', 'T').replace('Chủ nhật', 'CN')}</span>`).join('') + '</div>' : '');
       body.innerHTML = S.students.map(st => {
-        const att = sess.length ? sess.map(s => {
-          const absent = S.att[s.id + '|' + st.id] === 'absent', lb = sessionLabel(s);
-          return `<span class="att-cell"><button type="button" data-att="${s.id}|${st.id}" class="att-sq ${absent ? 'absent' : 'present'}" aria-label="${esc(st.student_name)}, ${lb}: ${absent ? 'Vắng' : 'Có mặt'}. Bấm để đổi">${absent ? '✕' : '✓'}</button>${sess.length > 1 ? `<small>${lb.replace('Thứ ', 'T').replace('Chủ nhật', 'CN')}</small>` : ''}</span>`;
-        }).join(' ') : '<span class="text-slate-300">–</span>';
+        const att = sess.length ? '<div class="att-row">' + sess.map(s => {
+          const v = S.att[s.id + '|' + st.id] || '', cls = v === 'absent' ? 'absent' : (v ? 'present' : ''), lb = sessionLabel(s);
+          const ic = v === 'absent' ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>'
+            : (v ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>' : '');
+          return `<button type="button" data-att="${s.id}|${st.id}" class="att-sq ${cls}" aria-label="${esc(st.student_name)}, ${lb}: ${v === 'absent' ? 'Vắng' : v ? 'Có mặt' : 'Chưa điểm danh'}">${ic}</button>`;
+        }).join('') + '</div>' : '<span class="text-slate-300">–</span>';
         return `<tr class="hover:bg-slate-50">
           <td class="py-3 px-3 font-semibold text-slate-800"><span class="flex items-center gap-1.5"><i data-lucide="user" class="w-3.5 h-3.5 text-slate-400"></i>${esc(st.student_name)}</span></td>
           <td class="py-3 px-3 text-center"><div class="flex flex-wrap justify-center gap-1.5">${att}</div></td>
@@ -453,18 +458,19 @@
       $('da-title').textContent = st.student_name;
       $('da-info').textContent = sessionLabel(se) + ' · ' + shortDate(dateOf(se.session_date)) + ' · ' + t5(se.start_time) + ' - ' + t5(se.end_time);
       $('da-key').value = sid + '|' + stid;
-      const absent = S.att[sid + '|' + stid] === 'absent';
-      $('da-present').setAttribute('aria-pressed', String(!absent)); $('da-absent').setAttribute('aria-pressed', String(absent));
+      const v = S.att[sid + '|' + stid] || '';
+      $('da-present').setAttribute('aria-pressed', String(!!v && v !== 'absent')); $('da-absent').setAttribute('aria-pressed', String(v === 'absent'));
+      $('da-clear').style.display = v ? '' : 'none';
       openDlg('dlg-att');
     }
-    async function setAtt(sid, stid, wantAbsent) {
-      const key = sid + '|' + stid, was = S.att[key] === 'absent';
-      if (was === wantAbsent) return;
-      if (wantAbsent) S.att[key] = 'absent'; else delete S.att[key];
+    async function setAtt(sid, stid, val) {
+      const key = sid + '|' + stid, prev = S.att[key] || null;
+      if (prev === val) return;
+      if (val) S.att[key] = val; else delete S.att[key];
       refresh();
-      const r = wantAbsent ? await S.c.from('attendance').upsert({ session_id: Number(sid), student_id: Number(stid), status: 'absent', updated_at: new Date().toISOString() })
+      const r = val ? await S.c.from('attendance').upsert({ session_id: Number(sid), student_id: Number(stid), status: val, updated_at: new Date().toISOString() })
         : await S.c.from('attendance').delete().eq('session_id', Number(sid)).eq('student_id', Number(stid));
-      if (r.error) { if (was) S.att[key] = 'absent'; else delete S.att[key]; refresh(); fail(r.error); }
+      if (r.error) { if (prev) S.att[key] = prev; else delete S.att[key]; refresh(); fail(r.error); }
     }
 
     /* ---------- Lịch sử buổi học ---------- */
@@ -504,7 +510,7 @@
       $('btn-next-week').addEventListener('click', () => { S.offset++; renderAll(); });
       $('schedule-grid').addEventListener('click', e => { const b = e.target.closest('button[data-sid]'); if (b) openSessDlg(b.dataset.sid); });
       $('student-list-body').addEventListener('click', e => { const b = e.target.closest('[data-att]'); if (b) { const [a, c] = b.dataset.att.split('|'); openAtt(a, c); } });
-      ['da-present', 'da-absent'].forEach(id => $(id).addEventListener('click', e => { const [a, c] = $('da-key').value.split('|'); closeDlgs(); setAtt(a, c, e.currentTarget.id === 'da-absent'); }));
+      ['da-present', 'da-absent', 'da-clear'].forEach(id => $(id).addEventListener('click', e => { const [a, c] = $('da-key').value.split('|'), i = e.currentTarget.id; closeDlgs(); setAtt(a, c, i === 'da-absent' ? 'absent' : i === 'da-present' ? 'present' : null); }));
       $('session-history-list').addEventListener('click', e => { const b = e.target.closest('[data-week]'); if (!b) return; e.preventDefault(); S.offset = Number(b.dataset.week); renderAll(); $('week-indicator').scrollIntoView({ behavior: 'smooth', block: 'center' }); });
       $('add-lesson-link').addEventListener('click', () => openLinksDlg('lesson'));
       $('add-hw-link').addEventListener('click', () => openLinksDlg('hw'));
