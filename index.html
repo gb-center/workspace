@@ -63,6 +63,9 @@
     .tabbar button{min-height:44px;padding:0 18px;border-radius:9999px;border:1px solid var(--t-tint-2);background:#fff;color:var(--t-primary);font-weight:700;font-size:.9375rem}
     .tabbar button[aria-selected="true"]{background:var(--t-primary);color:#fff;border-color:var(--t-primary)}
     .pick{min-height:44px;padding:0 14px;border-radius:9999px;border:1px solid var(--t-tint-2);background:#fff;color:var(--t-primary);font-weight:700;font-size:.8125rem}
+    .pick-green{background:#dcfce7;border-color:#86efac;color:#166534}
+    .pick-yellow{background:#fef9c3;border-color:#fde047;color:#854d0e}
+    .pick-blue{background:#e0f2fe;border-color:#7dd3fc;color:#075985}
     .pickgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
     .dlg label.pickrow{display:flex;align-items:center;gap:10px;min-height:44px;margin:0;padding:0 12px;border:1px solid var(--t-border);border-radius:12px;background:#fff;font-size:.9375rem;font-weight:600;cursor:pointer}
     .pickrow input{width:20px;height:20px;flex:none}
@@ -160,16 +163,16 @@
           <div id="mat-lesson" class="space-y-2"></div>
         </div>
         <div class="bg-white rounded-2xl border border-slate-200 p-4">
-          <h2 class="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2"><i data-lucide="file-check-2" class="w-4 h-4"></i>Bài về nhà</h2>
+          <h2 class="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2"><i data-lucide="file-check-2" class="w-4 h-4"></i>Bài tập</h2>
           <div id="mat-homework" class="space-y-2"></div>
         </div>
       </div>
     </section>
     <section id="view-lib" hidden class="space-y-4" aria-label="Học liệu tổng hợp">
       <div class="flex flex-wrap items-center justify-between gap-3">
-        <p class="text-sm text-slate-600">Gồm học liệu theo tuần và bài tập online của mọi tuần.</p>
+        <p class="text-sm text-slate-600">Gồm học liệu và đề đã giao của mọi tuần.</p>
         <div class="flex flex-wrap gap-2">
-          <button id="btn-asg-lib" type="button" class="btn-soft"><i data-lucide="send" class="w-4 h-4"></i><span>Giao bài online</span></button>
+          <button id="btn-asg-lib" type="button" class="btn-soft"><i data-lucide="send" class="w-4 h-4"></i><span>Giao bài</span></button>
           <button id="btn-add-lib" type="button" class="btn-primary"><i data-lucide="plus" class="w-4 h-4"></i><span>Thêm học liệu</span></button>
         </div>
       </div>
@@ -179,8 +182,8 @@
         <select id="lib-kind" class="field w-full sm:w-44" aria-label="Lọc theo loại">
           <option value="">Tất cả loại</option>
           <option value="lesson">Bài học</option>
-          <option value="homework">Bài về nhà</option>
-          <option value="asg">Bài tập online</option>
+          <option value="homework">Bài tập</option>
+          
         </select>
         <select id="lib-skill" class="field w-full sm:w-44" aria-label="Lọc theo kỹ năng">
           <option value="">Mọi kỹ năng</option>
@@ -301,7 +304,7 @@
         <div><label for="dm-kind">Loại</label>
           <select id="dm-kind" class="field">
             <option value="lesson">Bài học</option>
-            <option value="homework">Bài về nhà</option>
+            <option value="homework">Bài tập</option>
           </select></div>
       </div>
       <label for="dm-skill">Kỹ năng (không bắt buộc)</label>
@@ -331,12 +334,18 @@
     </form>
   </div>
 
-  <!-- Hộp thoại: giao bài online cho nhiều lớp -->
+  <!-- Hộp thoại: giao bài cho nhiều lớp -->
   <div id="dlg-asg" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="da-title">
     <form class="card" novalidate>
       <h2 id="da-title">Giao bài cho nhiều lớp</h2>
-      <label for="da-code">Bài</label>
+      <div class="row2">
+        <div><label for="da-grp">Nhóm lớp</label><select id="da-grp" class="field"></select></div>
+        <div><label for="da-skill">Kỹ năng / dạng đề</label><select id="da-skill" class="field"></select></div>
+      </div>
+      <label for="da-code">Đề</label>
       <select id="da-code" class="field"></select>
+      <label for="da-kind">Dùng như</label>
+      <select id="da-kind" class="field"><option value="lesson">Bài học</option><option value="homework">Bài tập</option></select>
       <label for="da-week">Tuần (ngày đầu tuần)</label>
       <input id="da-week" type="date" class="field">
       <label for="da-due">Hạn nộp</label>
@@ -349,6 +358,7 @@
       <div class="acts">
         <button type="submit" class="btn-primary">Lưu</button>
         <button type="button" class="btn-soft" data-close>Hủy</button>
+        <button type="button" class="btn-danger" id="da-del">Xóa đề</button>
       </div>
     </form>
   </div>
@@ -561,13 +571,13 @@
         if (lib) { $('week-label').textContent = 'Học liệu'; $('week-badge').classList.add('hidden'); $('week-range').textContent = 'Mọi tuần, mới nhất trước'; }
       }
       const SKILL = { reading: 'Reading', listening: 'Listening', writing: 'Writing', speaking: 'Speaking', grammar: 'Grammar', vocabulary: 'Vocabulary' };
-      const kindText = m => (m.kind === 'homework' ? 'Bài về nhà' : 'Bài học') + (m.skill && SKILL[m.skill] ? ' · ' + SKILL[m.skill] : '');
+      const kindText = m => (m.kind === 'homework' ? 'Bài tập' : 'Bài học') + (m.skill && SKILL[m.skill] ? ' · ' + SKILL[m.skill] : '');
       const toMon = k => { if (!k) return ''; const [y, m, d] = k.split('-').map(Number), dt = new Date(y, m - 1, d); dt.setDate(dt.getDate() - (dt.getDay() + 6) % 7); return ymd(dt); };
       const weekNoOf = key => { const [y, m, d] = key.split('-').map(Number); return 1 + Math.round((new Date(y, m - 1, d) - BASE_MONDAY) / (7 * 864e5)); };
       async function loadLib() {
         const [r, a, ac] = await Promise.all([
           st.c.from('week_materials').select('id,week_start,kind,skill,title,url,class_ids,sort_order').order('week_start', { ascending: false }).order('sort_order').order('id'),
-          st.c.from('assignments').select('id,assignment_code,assignment_name,week_start,due_at').eq('is_active', true),
+          st.c.from('assignments').select('id,assignment_code,assignment_name,week_start,due_at,kind').eq('is_active', true),
           st.c.from('assignment_classes').select('assignment_id,class_id,week_start,due_at').eq('is_active', true)
         ]);
         if (r.error) throw r.error; if (a.error) throw a.error; if (ac.error) throw ac.error;
@@ -577,7 +587,7 @@
         (ac.data || []).forEach(row => {
           const x = am[row.assignment_id]; if (!x) return;
           const wk = toMon(row.week_start || x.week_start), key = x.id + '|' + wk;
-          (g[key] = g[key] || { kind: 'asg', code: x.assignment_code, title: x.assignment_name || x.assignment_code, week_start: wk, due_at: row.due_at || x.due_at, class_ids: [] }).class_ids.push(row.class_id);
+          (g[key] = g[key] || { kind: x.kind === 'lesson' ? 'lesson' : 'homework', asg: true, code: x.assignment_code, title: x.assignment_name || x.assignment_code, week_start: wk, due_at: row.due_at || x.due_at, class_ids: [] }).class_ids.push(row.class_id);
         });
         st.libAsg = Object.keys(g).map(k => g[k]);
       }
@@ -595,10 +605,10 @@
           if (k) { const n = weekNoOf(k), d = weekDates(n); head = `Tuần ${pad(n)} <span class="font-normal text-slate-500">(${pad(d[0].getDate())}.${pad(d[0].getMonth() + 1)} – ${pad(d[6].getDate())}.${pad(d[6].getMonth() + 1)})</span>`; }
           return `<div class="bg-white rounded-2xl border border-slate-200 p-4"><h2 class="text-sm font-bold text-slate-900 mb-3">${head}</h2>
             <div class="space-y-2">${byWeek[k].map(m => {
-              if (m.kind === 'asg') {
+              if (m.asg) {
                 const due = m.due_at ? new Date(m.due_at) : null;
                 return `<div class="mat-item"><div class="min-w-0 flex-1"><div style="font-weight:700;color:var(--t-primary);overflow-wrap:anywhere">${esc(m.title)}</div>
-                  <div class="text-xs text-slate-500 mt-1">Bài tập online${due ? ' · Hạn ' + pad(due.getDate()) + '/' + pad(due.getMonth() + 1) : ''} · ${targetsText(m)}</div></div>
+                  <div class="text-xs text-slate-500 mt-1">${m.kind === 'lesson' ? 'Bài học' : 'Bài tập'} · Đề${due ? ' · Hạn ' + pad(due.getDate()) + '/' + pad(due.getMonth() + 1) : ''} · ${targetsText(m)}</div></div>
                   <button type="button" class="icon-btn" data-edit-asg="${esc(m.code)}" aria-label="Giao lại bài"><i data-lucide="send" class="w-4 h-4"></i></button></div>`;
               }
               return `<div class="mat-item"><div class="min-w-0 flex-1">
@@ -635,18 +645,14 @@
         icons();
       }
       function quickGroups() {
-        const cls = matClasses(), out = [];
-        const prog = {}, fam = {};
-        cls.forEach(c => {
-          const p = (/^[A-Za-z]+/.exec(c.class_code) || [''])[0].toUpperCase();
-          (prog[PROGRAM[p] || p] = prog[PROGRAM[p] || p] || []).push(c.id);
-          const f = c.group_code || c.class_code.split('.')[0];
-          (fam[f] = fam[f] || []).push(c.id);
-        });
-        out.push({ label: 'Tất cả lớp', ids: cls.map(c => c.id) });
-        Object.keys(prog).sort(natural).forEach(k => { if (prog[k].length > 1) out.push({ label: k, ids: prog[k] }); });
-        Object.keys(fam).sort(natural).forEach(k => { if (fam[k].length > 1) out.push({ label: k, ids: fam[k] }); });
+        const cls = matClasses(), ie = cls.filter(c => /^IE/i.test(c.class_code)).map(c => c.id), out = [{ label: 'Tất cả lớp', ids: cls.map(c => c.id), tone: 'green' }];
+        if (ie.length) out.push({ label: 'IELTS', ids: ie, tone: 'blue' });
         return out;
+      }
+      function quickHtml() {
+        const b = (tone, attr, label) => `<button type="button" class="pick pick-${tone}" ${attr}>${esc(label)}</button>`;
+        return quick.map((g, i) => g.tone === 'green' ? b('green', 'data-q="' + i + '"', g.label) : '').join('') + b('yellow', 'data-q="none"', 'Bỏ chọn')
+          + quick.map((g, i) => g.tone === 'blue' ? b('blue', 'data-q="' + i + '"', g.label) : '').join('');
       }
       let quick = [];
       const PROG_DIR = { AC: 'gs', IE: 'ielts', TO: 'toeic', GT: 'gt' };
@@ -705,7 +711,7 @@
         const cls = matClasses(); (m ? m.class_ids : []).forEach(cid => { const c = st.classes.find(x => x.id === cid); if (c && c.is_archived) cls.push(c); });
         $('dm-classes').innerHTML = cls.map(c => `<label class="pickrow"><input type="checkbox" value="${c.id}"${sel.has(c.id) ? ' checked' : ''}><span>${esc(c.class_code)}</span></label>`).join('');
         quick = quickGroups();
-        $('dm-quick').innerHTML = quick.map((g, i) => `<button type="button" class="pick" data-q="${i}">${esc(g.label)}</button>`).join('') + '<button type="button" class="pick" data-q="none">Bỏ chọn</button>';
+        $('dm-quick').innerHTML = quickHtml();
         $('dm-del').style.display = m ? '' : 'none';
         updateSuggest();
         openDlg('dlg-mat'); $('dm-name').focus();
@@ -745,19 +751,56 @@
         closeDlgs(); await refresh('Đã xóa mục.');
       }
 
-      /* ---------- Giao bài online hàng loạt ---------- */
+      /* ---------- Giao bài hàng loạt ---------- */
       const pad2 = n => String(n).padStart(2, '0');
       const toLocalInput = iso => { if (!iso) return ''; const d = new Date(iso); return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()) + 'T' + pad2(d.getHours()) + ':' + pad2(d.getMinutes()); };
+      const ASG_SKILLS = [['reading', 'Reading'], ['listening', 'Listening'], ['writing', 'Writing'], ['speaking', 'Speaking'], ['grammar', 'Grammar'], ['vocab', 'Vocabulary']];
+      function asgGroup(a) {
+        const t = (a.assignment_code + ' ' + (a.assignment_name || '')).toLowerCase();
+        if (/ielts/.test(t)) return 'IELTS'; if (/toeic/.test(t)) return 'TOEIC';
+        if (/thpt|đgnl|dgnl|vact/.test(t)) return 'ĐGNL và TN THPT'; if (/\bket\b|a2 key/.test(t)) return 'A2 Key';
+        if (/global success|(^|[^a-z])(gs\d*|ac\d+|unit)([^a-z]|$)/.test(t)) return 'Global Success';
+        return 'Khác';
+      }
+      function asgSkill(a) {
+        const t = (a.assignment_code + ' ' + (a.assignment_name || '')).toLowerCase(), m = ASG_SKILLS.find(x => t.indexOf(x[0]) >= 0);
+        return m ? m[1] : 'Khác';
+      }
+      function fillAsgSkill() {
+        const g = $('da-grp').value, cur = $('da-skill').value;
+        const sk = [...new Set(st.asgList.filter(a => !g || a._g === g).map(a => a._s))].sort(natural);
+        $('da-skill').innerHTML = '<option value="">Tất cả</option>' + sk.map(x => `<option value="${esc(x)}">${esc(x)}</option>`).join('');
+        if (sk.includes(cur)) $('da-skill').value = cur;
+      }
+      function fillAsgCode(want) {
+        const g = $('da-grp').value, k = $('da-skill').value, cur = want || $('da-code').value;
+        const list = st.asgList.filter(a => (!g || a._g === g) && (!k || a._s === k));
+        $('da-code').innerHTML = list.map(a => `<option value="${esc(a.assignment_code)}">${esc(a.assignment_name || a.assignment_code)} (${esc(a.assignment_code)})</option>`).join('') || '<option value="">Không có đề phù hợp</option>';
+        if (list.some(a => a.assignment_code === cur)) $('da-code').value = cur;
+      }
+      async function deleteAsg() {
+        const a = st.asgList.find(x => x.assignment_code === $('da-code').value); if (!a) return;
+        const n = await st.c.from('submissions').select('*', { count: 'exact', head: true }).eq('assignment_id', a.id);
+        if (n.error) { $('da-err').textContent = LMS.friendlyError(n.error); return; }
+        const subs = n.count || 0;
+        if (!(await LMS.confirm('Xóa đề "' + (a.assignment_name || a.assignment_code) + '"?\n\nĐề biến mất khỏi mọi lớp' + (subs ? ', và ' + subs + ' bài nộp của học sinh cũng bị xóa' : '') + '. Không hoàn tác được.', { ok: 'Xóa đề', danger: true }))) return;
+        if (subs) { const d1 = await st.c.from('submissions').delete().eq('assignment_id', a.id); if (d1.error) { $('da-err').textContent = LMS.friendlyError(d1.error); return; } }
+        const d = await st.c.from('assignments').delete().eq('id', a.id);
+        if (d.error) { $('da-err').textContent = LMS.friendlyError(d.error); return; }
+        closeDlgs(); await refresh('Đã xóa đề.');
+      }
       async function openAsg(code) {
         $('da-err').textContent = '';
-        const r = await st.c.from('assignments').select('id,assignment_code,assignment_name,week_start,due_at').eq('is_active', true).order('assignment_code');
+        const r = await st.c.from('assignments').select('id,assignment_code,assignment_name,week_start,due_at,kind').eq('is_active', true).order('assignment_code');
         if (r.error) { $('page-msg').textContent = LMS.friendlyError(r.error); return; }
         st.asgList = r.data || [];
-        $('da-code').innerHTML = st.asgList.map(a => `<option value="${esc(a.assignment_code)}">${esc(a.assignment_name || a.assignment_code)} (${esc(a.assignment_code)})</option>`).join('');
+        st.asgList.forEach(a => { a._g = asgGroup(a); a._s = asgSkill(a); });
+        $('da-grp').innerHTML = '<option value="">Tất cả nhóm</option>' + [...new Set(st.asgList.map(a => a._g))].sort(natural).map(g => `<option value="${esc(g)}">${esc(g)}</option>`).join('');
+        fillAsgSkill(); fillAsgCode(typeof code === 'string' ? code : '');
         const cls = matClasses();
         $('da-classes').innerHTML = cls.map(c => `<label class="pickrow"><input type="checkbox" value="${esc(c.class_code)}" data-id="${c.id}"><span>${esc(c.class_code)}</span></label>`).join('');
         quick = quickGroups();
-        $('da-quick').innerHTML = quick.map((g, i) => `<button type="button" class="pick" data-q="${i}">${esc(g.label)}</button>`).join('') + '<button type="button" class="pick" data-q="none">Bỏ chọn</button>';
+        $('da-quick').innerHTML = quickHtml();
         if (typeof code === 'string' && code) $('da-code').value = code;
         openDlg('dlg-asg');
         await asgPick();
@@ -768,6 +811,7 @@
         const have = new Set((ex.data || []).map(x => x.class_id)); st.asgHave = have;
         const first = (ex.data || [])[0];
         $('da-week').value = (first && first.week_start) || (a && a.week_start) || weekKey();
+        $('da-kind').value = (a && a.kind) === 'lesson' ? 'lesson' : 'homework';
         $('da-due').value = toLocalInput((first && first.due_at) || (a && a.due_at));
         document.querySelectorAll('#da-classes input').forEach(x => { x.checked = have.has(Number(x.dataset.id)); });
       }
@@ -778,7 +822,9 @@
         const boxes = [...document.querySelectorAll('#da-classes input')];
         const codes = boxes.filter(i => i.checked).map(i => i.value);
         const drop = boxes.filter(i => !i.checked && st.asgHave && st.asgHave.has(Number(i.dataset.id))).map(i => Number(i.dataset.id));
-        if (!codes.length && !drop.length) { closeDlgs(); LMS.toast('Bài chưa giao cho lớp nào, không có thay đổi.'); return; }
+        const kind = $('da-kind').value === 'lesson' ? 'lesson' : 'homework';
+        if (kind !== a.kind) { const uk = await st.c.from('assignments').update({ kind }).eq('id', a.id); if (uk.error) { err.textContent = LMS.friendlyError(uk.error); return; } a.kind = kind; }
+        if (!codes.length && !drop.length) { closeDlgs(); await refresh('Đã lưu loại: ' + (kind === 'lesson' ? 'Bài học' : 'Bài tập') + '.'); return; }
         const due = $('da-due').value ? new Date($('da-due').value).toISOString() : null;
         st.busy = true; let given = 0, res;
         if (codes.length) {
@@ -984,6 +1030,9 @@
         $('btn-add-lib').addEventListener('click', () => openMat(null));
         $('dlg-asg').querySelector('form').addEventListener('submit', saveAsg);
         $('da-code').addEventListener('change', asgPick);
+        $('da-grp').addEventListener('change', () => { fillAsgSkill(); fillAsgCode(); asgPick(); });
+        $('da-skill').addEventListener('change', () => { fillAsgCode(); asgPick(); });
+        $('da-del').addEventListener('click', deleteAsg);
         $('da-quick').addEventListener('click', e => {
           const b = e.target.closest('[data-q]'); if (!b) return;
           const boxes = document.querySelectorAll('#da-classes input');

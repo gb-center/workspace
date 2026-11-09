@@ -294,19 +294,32 @@
       S.cls = (cl.data || []).find(c => c.class_code.toLowerCase() === low) || (cl.data || []).find(c => c.class_name.toLowerCase() === low);
       if (!S.cls) throw new Error('Lớp "' + code + '" chưa có trong hệ thống.');
       const id = S.cls.id;
-      const [st, se, ss, wl, wm] = await Promise.all([
+      const [st, se, ss, wl, wm, ac] = await Promise.all([
         S.c.from('students').select('id,student_name,student_code').eq('class_id', id).eq('is_active', true).order('id'),
         S.c.from('class_settings').select('drive_url,meet_url,is_archived').eq('class_id', id).maybeSingle(),
         S.c.from('sessions').select('id,session_no,session_date,start_time,end_time,status,lesson,note,mode').eq('class_id', id).order('session_date').order('start_time'),
         S.c.from('week_links').select('week_start,lessons,homeworks').eq('class_id', id),
-        S.c.from('week_materials').select('week_start,kind,title,url,sort_order,id').contains('class_ids', [id]).order('sort_order').order('id')
+        S.c.from('week_materials').select('week_start,kind,title,url,sort_order,id').contains('class_ids', [id]).order('sort_order').order('id'),
+        S.c.from('assignment_classes').select('assignment_id,week_start').eq('class_id', id).eq('is_active', true)
       ]);
-      [st, se, ss, wl, wm].forEach(r => { if (r.error) throw r.error; });
+      [st, se, ss, wl, wm, ac].forEach(r => { if (r.error) throw r.error; });
       const gm = await S.c.from('app_settings').select('value').eq('key', 'online_meet_url').maybeSingle();
       S.meet = (gm.data && typeof gm.data.value === 'string') ? gm.data.value : '';
       S.students = st.data || []; S.set = se.data || {}; S.sessions = ss.data || [];
       S.links = {}; (wl.data || []).forEach(r => { S.links[r.week_start] = { lessons: r.lessons || [], homeworks: r.homeworks || [] }; });
       S.shared = {}; (wm.data || []).forEach(r => { const w = S.shared[r.week_start] = S.shared[r.week_start] || { lessons: [], homeworks: [] }; (r.kind === 'homework' ? w.homeworks : w.lessons).push({ title: r.title, url: r.url }); });
+      const ids = (ac.data || []).map(r => r.assignment_id), am = {};
+      if (ids.length) {
+        const ar = await S.c.from('assignments').select('id,assignment_name,assignment_code,kind,week_start,page_path,is_active').in('id', ids);
+        if (ar.error) throw ar.error; (ar.data || []).forEach(a => { am[a.id] = a; });
+      }
+      (ac.data || []).forEach(r => {
+        const a = am[r.assignment_id]; if (!a || !a.is_active) return;
+        const wk = r.week_start || a.week_start; if (!wk) return;
+        const w = S.shared[wk] = S.shared[wk] || { lessons: [], homeworks: [] };
+        let url = ''; try { if (a.page_path) url = new URL(a.page_path, location.href).href; } catch (e) {}
+        (a.kind === 'lesson' ? w.lessons : w.homeworks).push({ title: a.assignment_name || a.assignment_code, url });
+      });
       S.att = {};
       if (S.students.length && S.sessions.length) {
         const at = await S.c.from('attendance').select('session_id,student_id,status').in('student_id', S.students.map(x => x.id));
