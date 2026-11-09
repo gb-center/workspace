@@ -111,7 +111,7 @@
           <div class="px-3 py-1 bg-sky-50 text-sky-700 font-semibold rounded-lg border border-sky-200 flex items-center gap-1.5"><i data-lucide="check-check" class="w-3.5 h-3.5"></i><span>Đã bù: <strong id="stat-makeup">0</strong></span></div>
         </div>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-7 gap-2.5" id="schedule-grid"></div>
+      <div class="flex flex-wrap gap-2.5" id="schedule-grid"></div>
     </div>
 
     <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6">
@@ -330,17 +330,18 @@
       $('week-indicator').textContent = shortDate(dates[0]) + ' – ' + shortDate(dates[6]);
       const cancel = S.sessions.filter(s => s.status === 'cancel').length, makeup = S.sessions.filter(s => s.status === 'makeup').length;
       $('stat-debt').textContent = Math.max(0, cancel - makeup); $('stat-makeup').textContent = makeup;
-      $('schedule-grid').innerHTML = DAYS.map((label, i) => {
-        const d = dates[i], key = ymd(d), isToday = key === todayKey, list = S.sessions.filter(s => s.session_date === key);
-        const cls = list.length ? 'border-sky-200 bg-white' : 'border-slate-100 bg-slate-50/70';
-        const body = list.length ? list.map(s => `
+      const days = DAYS.map((label, i) => ({ label, d: dates[i], list: S.sessions.filter(s => s.session_date === ymd(dates[i])) })).filter(x => x.list.length);
+      $('schedule-grid').innerHTML = !days.length ? '<div class="w-full rounded-xl border border-dashed border-slate-200 p-5 text-center text-xs text-slate-400">Tuần này không có buổi học.</div>' : days.map(({ label, d, list }) => {
+        const key = ymd(d), isToday = key === todayKey;
+        const cls = 'border-sky-200 bg-white';
+        const body = list.map(s => `
           <div class="mt-2">
             <span class="text-[10px] ${STATUS_CLS[s.status]} px-1.5 py-0.5 rounded font-semibold">${STATUS_TXT[s.status]}</span>
             <div class="text-[11px] font-bold text-sky-700 bg-sky-50 rounded p-1 text-center my-1.5 border border-sky-100">${t5(s.start_time)} - ${t5(s.end_time)}${s.session_no ? '<span class="font-medium text-slate-500"> · Buổi ' + s.session_no + '</span>' : ''}</div>
             ${s.lesson ? `<div class="text-[11px] text-slate-600 mb-1" style="overflow-wrap:anywhere">${esc(s.lesson)}</div>` : ''}
 <button type="button" data-sid="${s.id}" class="w-full text-[11px] p-1.5 border border-slate-200 rounded bg-white text-sky-700 font-semibold" style="min-height:36px" aria-label="Sửa buổi học">${s.mode === 'online' ? 'Online · ' : ''}Sửa</button>
-          </div>`).join('') : '<div class="text-xs text-center text-slate-300 font-medium py-3 mt-2">Nghỉ</div>';
-        return `<div class="p-3 rounded-xl border flex flex-col min-h-[125px] ${cls} ${isToday ? 'ring-2 ring-sky-500' : ''}">
+          </div>`).join('');
+        return `<div style="flex:1 1 170px;max-width:300px" class="p-3 rounded-xl border flex flex-col ${cls} ${isToday ? 'ring-2 ring-sky-500' : ''}">
           <div><span class="text-[11px] font-bold ${isToday ? 'text-sky-700' : 'text-slate-700'}">${label}</span><div class="text-[10px] text-slate-400">${shortDate(d)}</div></div>${body}</div>`;
       }).join('');
     }
