@@ -2,601 +2,217 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Classroom | Hồ sơ học tập</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Trang học viên | gblearning</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>tailwind.config={theme:{extend:{colors:{sky:{50:"rgb(var(--sky-50) / <alpha-value>)",100:"rgb(var(--sky-100) / <alpha-value>)",200:"rgb(var(--sky-200) / <alpha-value>)",300:"rgb(var(--sky-300) / <alpha-value>)",400:"rgb(var(--sky-400) / <alpha-value>)",500:"rgb(var(--sky-500) / <alpha-value>)",600:"rgb(var(--sky-600) / <alpha-value>)",700:"rgb(var(--sky-700) / <alpha-value>)",800:"rgb(var(--sky-800) / <alpha-value>)",900:"rgb(var(--sky-900) / <alpha-value>)"}}}}}</script>
+  <script src="https://unpkg.com/lucide@0.462.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
-
-  <style id="lms-design-system">
-    :root{color-scheme:light;--lms-accent:#0284c7;--lms-accent-dark:#075985;--lms-border:#dbeafe;--lms-muted:#64748b;--lms-bg:#f3f9ff}
-    body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--lms-bg);color:#172033;letter-spacing:-.01em}
-    button,a,input,select,textarea{transition:background-color .16s ease,border-color .16s ease,box-shadow .16s ease}
-    input:focus,select:focus,textarea:focus{outline:none;box-shadow:0 0 0 3px rgba(14,165,233,.16);border-color:#0ea5e9!important}
-    .rounded-2xl{border-radius:1rem}
-    ::selection{background:#e0f2fe;color:#075985}
-    ::-webkit-scrollbar{width:7px;height:7px}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:10px}
+  <link rel="stylesheet" href="lms.css">
+  <script src="lms.js"></script>
+  <style>
+    body{padding:0!important}
+    #theme-pop .tp-logout{display:none}
+    .wrap{max-width:760px;margin:0 auto;padding:16px 14px calc(32px + env(safe-area-inset-bottom))}
+    .card{background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.85);border-radius:1.5rem;padding:18px;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+    .card h2{display:flex;align-items:center;gap:10px;font-size:.9375rem;font-weight:800;color:var(--t-ink);margin-bottom:12px}
+    .card h2 svg{box-sizing:border-box;width:32px;height:32px;padding:8px;border-radius:50%;background:var(--t-tint);color:var(--t-primary);flex:none}
+    .row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:10px 12px;border-radius:14px;background:#fff;border:1px solid var(--t-border)}
+    .tag{font-size:.75rem;font-weight:700;padding:2px 9px;border-radius:9999px}
+    .opt{display:flex;align-items:flex-start;gap:10px;width:100%;text-align:left;min-height:48px;padding:10px 14px;border-radius:14px;border:1px solid var(--t-line);background:#fff;color:var(--t-ink);font-size:.9375rem}
+    .opt[aria-pressed="true"]{border-color:var(--t-primary);background:var(--t-tint);font-weight:700}
+    .opt.good{border-color:#059669;background:#ecfdf5}
+    .opt.bad{border-color:#e11d48;background:#fff1f2}
+    .qbox{padding:14px 0;border-bottom:1px solid var(--t-border)}
+    .qbox:last-child{border-bottom:0}
+    .btn-primary[disabled]{opacity:.55}
+    .hidden{display:none!important}
   </style>
-
-
-<style id="lms-full-width-responsive">
-  html, body { width:100%; max-width:100%; }
-  body { overflow-x:hidden; }
-  main, header > div, body > div { box-sizing:border-box; }
-  img, video, canvas, iframe { max-width:100%; }
-  input, select, textarea { max-width:100%; min-width:0; }
-  table { max-width:100%; }
-  @media (max-width: 640px) {
-    .overflow-x-auto { -webkit-overflow-scrolling:touch; }
-    header .min-w-\[140px\] { min-width:0; }
-    body { padding-left:0; padding-right:0; }
-  }
-</style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen px-3 sm:px-5 lg:px-7 py-4 sm:py-6 relative">
-
-  <!-- NÚT KHÓA BẢO MẬT GIÁO VIÊN -->
-  <button onclick="toggleGlobalTeacherMode()" id="global-lock-btn" 
-          class="fixed bottom-6 right-6 p-3 bg-sky-800 hover:bg-sky-900 text-white rounded-full transition-all z-50 shadow-lg flex items-center justify-center opacity-30 hover:opacity-100" 
-          title="Mở khóa Giáo viên (0208)">
-    <i data-lucide="lock" class="w-5 h-5" id="global-lock-icon"></i>
-  </button>
-
-  <div class="w-full max-w-none mx-auto space-y-5">
-    
-    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex items-center justify-between">
-      <div class="flex items-center gap-5 flex-1">
-        <div class="min-h-[44px] max-w-[220px] rounded-full bg-sky-100 border border-sky-200 text-sky-800 font-bold flex items-center justify-center text-center text-sm leading-tight shrink-0 px-5 py-2 break-words" id="student-avatar">AC07</div>
-        <div class="flex-1 pl-1">
-          <div class="flex flex-wrap items-center gap-2">
-            <input type="text" id="student-name-input" value="Nguyễn Minh Khang" class="text-base font-bold text-slate-900 bg-transparent border-b border-transparent hover:border-slate-300 focus:border-sky-500 focus:bg-slate-50 rounded px-1 -ml-1 outline-none transition max-w-[240px]" title="Nhấp vào để đổi tên học sinh">
-          </div>
-          <div class="flex items-center gap-1.5 text-xs text-slate-500 mt-1"><i data-lucide="check-circle" class="w-3.5 h-3.5 text-sky-600"></i><span id="attendance-summary" class="font-medium">Chuyên cần: 100% (Có mặt)</span></div>
-        </div>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30">
+    <div class="wrap" style="padding-top:10px;padding-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:10px">
+      <div class="flex items-center gap-3" style="min-width:0">
+        <div class="w-9 h-9 rounded-xl bg-sky-600 flex items-center justify-center text-white" style="flex:none"><i data-lucide="graduation-cap" class="w-4 h-4"></i></div>
+        <div style="min-width:0"><div class="text-base font-bold text-slate-900" id="hello" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">gblearning</div><div class="text-xs text-slate-500" id="hello-sub"></div></div>
       </div>
-
-    </div>
-
-    <!-- LIÊN KẾT NHANH CỦA LỚP -->
-    <section class="grid grid-cols-1 sm:grid-cols-2 gap-3" aria-label="Liên kết nhanh của lớp">
-      <a id="student-drive-link" href="https://drive.google.com" target="_self" rel="noopener noreferrer" class="flex items-center gap-3 rounded-2xl border border-sky-100 bg-white p-4 shadow-xs hover:border-sky-300 hover:bg-sky-50/60">
-        <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-sky-100 text-sky-700"><i data-lucide="folder-open" class="h-5 w-5"></i></span>
-        <span class="min-w-0 flex-1"><span class="block text-sm font-bold text-slate-800">Google Drive lớp học</span><span class="mt-1 block text-xs text-slate-500">Tài liệu, bài học và bài tập</span></span>
-        <i data-lucide="external-link" class="h-4 w-4 shrink-0 text-slate-400"></i>
-      </a>
-      <a id="student-meet-link" href="https://meet.google.com" target="_self" rel="noopener noreferrer" class="flex items-center gap-3 rounded-2xl border border-emerald-100 bg-white p-4 shadow-xs hover:border-emerald-300 hover:bg-emerald-50/60">
-        <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-emerald-100 text-emerald-700"><i data-lucide="video" class="h-5 w-5"></i></span>
-        <span class="min-w-0 flex-1"><span class="block text-sm font-bold text-slate-800">Vào lớp online</span><span class="mt-1 block text-xs text-slate-500">Mở phòng học trực tuyến</span></span>
-        <i data-lucide="external-link" class="h-4 w-4 shrink-0 text-slate-400"></i>
-      </a>
-    </section>
-
-    <!-- TÓM TẮT THÔNG TIN LỚP & BUỔI HỌC -->
-    <section class="grid grid-cols-1 sm:grid-cols-3 gap-3" aria-label="Thông tin lớp và buổi học">
-      <div class="rounded-2xl border border-sky-100 bg-sky-50 p-4">
-        <div class="text-[10px] font-bold uppercase tracking-wider text-sky-700">Lớp học</div>
-        <div id="student-class-summary" class="mt-1 text-base font-bold text-sky-900">Chưa rõ lớp</div>
-        <div class="mt-1 text-[11px] text-sky-700">Thông tin lớp hiện tại</div>
-      </div>
-      <div class="rounded-2xl border border-rose-100 bg-rose-50 p-4">
-        <div class="text-[10px] font-bold uppercase tracking-wider text-rose-700">Số buổi hủy</div>
-        <div id="student-cancelled-count" class="mt-1 text-2xl font-bold text-rose-900">—</div>
-        <div class="mt-1 text-[11px] text-rose-700">Tổng buổi được đánh dấu hủy</div>
-      </div>
-      <div class="rounded-2xl border border-amber-100 bg-amber-50 p-4">
-        <div class="text-[10px] font-bold uppercase tracking-wider text-amber-700">Số buổi nợ</div>
-        <div id="student-debt-count" class="mt-1 text-2xl font-bold text-amber-900">—</div>
-        <div class="mt-1 text-[11px] text-amber-700">Buổi hủy chưa được học bù</div>
-      </div>
-    </section>
-
-    <!-- LỊCH HỌC & LỊCH SỬ BUỔI HỌC: dành cho học viên xem trực tiếp trong hồ sơ -->
-    <section class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4" aria-label="Lịch học và lịch sử buổi học">
-      <div class="flex items-center justify-between gap-3 border-b border-slate-100 pb-3">
-        <div>
-          <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2"><i data-lucide="calendar-days" class="w-4 h-4 text-sky-600"></i>Lịch học</h3>
-          <p class="text-xs text-slate-500 mt-1">Xem lịch trong tuần, thời gian học và trạng thái từng buổi.</p>
-        </div>
-        <select id="student-week-select" class="max-w-[160px] rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700"></select>
-      </div>
-      <div class="overflow-x-auto pb-1"><div id="student-week-schedule" class="grid grid-cols-7 gap-2 min-w-[840px]">
-        <p class="text-xs text-slate-400 col-span-7">Đang tải lịch học...</p>
-      </div></div>
-      <div class="rounded-xl bg-sky-50/70 border border-sky-100 p-3">
-        <p class="text-[10px] font-bold uppercase tracking-wider text-sky-800 mb-2">Học liệu của tuần đã chọn</p>
-        <div id="student-week-links-inline" class="flex flex-wrap items-center gap-y-1"><span class="text-xs text-slate-400">Đang tải học liệu...</span></div>
-      </div>
-    </section>
-
-    <!-- KHỐI 1: HỌC LIỆU TUẦN -->
-    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-3">
-      <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
-        <h3 class="font-bold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-1.5"><i data-lucide="calendar-check" class="w-4 h-4 text-sky-600"></i><span>Học Liệu & Bài Tập Tuần</span></h3>
-        <span class="text-[10px] text-slate-400 font-medium" id="week-label-sync">Đang đồng bộ...</span>
-      </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-        <a id="btn-class-lesson" href="#" target="_self" class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-sky-50/50 hover:border-sky-200 transition flex items-center justify-between group">
-          <div class="flex items-center gap-2.5"><div class="w-8 h-8 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center shrink-0"><i data-lucide="presentation" class="w-4 h-4"></i></div>
-            <div><div class="text-xs font-bold text-slate-800 group-hover:text-sky-700 transition">Slide / Bài học</div><div class="text-[10px] text-slate-400">Xem lý thuyết</div></div>
-          </div><i data-lucide="external-link" class="w-4 h-4 text-slate-300 group-hover:text-sky-600 transition"></i>
-        </a>
-        <a id="btn-class-hw" href="#" target="_self" class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-sky-50/50 hover:border-sky-200 transition flex items-center justify-between group">
-          <div class="flex items-center gap-2.5"><div class="w-8 h-8 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center shrink-0"><i data-lucide="file-text" class="w-4 h-4"></i></div>
-            <div><div class="text-xs font-bold text-slate-800 group-hover:text-sky-700 transition">Bài tập tuần</div><div class="text-[10px] text-slate-400">Xem câu hỏi & đề bài</div></div>
-          </div><i data-lucide="external-link" class="w-4 h-4 text-slate-300 group-hover:text-sky-600 transition"></i>
-        </a>
+      <div class="header-tools flex items-center gap-2">
+        <a id="btn-back" class="btn-soft hidden" href="#"><i data-lucide="arrow-left" class="w-4 h-4"></i><span>Quay lại</span></a>
+        <button id="btn-theme" type="button" aria-label="Tùy chỉnh màu chủ đề" aria-haspopup="dialog" aria-expanded="false"><i data-lucide="palette" class="w-5 h-5"></i></button>
       </div>
     </div>
+  </header>
 
-    <!-- KHỐI 2: ANSWER SHEET RIÊNG -->
-    <div class="bg-gradient-to-br from-sky-800 to-[#244a66] rounded-2xl p-5 text-white shadow-sm space-y-3">
-      <div class="flex items-center justify-between">
-        <span class="text-[11px] font-semibold uppercase tracking-wider text-sky-200">Answer Sheet Cá Nhân</span>
-        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-sky-500/30 text-sky-100 border border-sky-400/30">Chấm & Nhận Xét Riêng</span>
-      </div>
-      <div><h3 class="text-lg font-bold">Nộp Bài & Trả Bài</h3></div>
-      <div class="pt-2 flex items-center gap-2">
-        <a id="btn-sheet" href="https://docs.google.com" target="_self" class="flex-1 py-2.5 px-4 bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2">
-          <i data-lucide="file-edit" class="w-4 h-4"></i><span>Mở File Answer Sheet</span>
-        </a>
-        <button onclick="editAnswerSheetUrl()" class="teacher-feature hidden p-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl border border-white/20 transition" title="Cài đặt link Answer Sheet">
-          <i data-lucide="settings" class="w-4 h-4"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- KHỐI 3: BẢNG TIẾN ĐỘ GOOGLE SHEET -->
-    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-3">
-      <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-        <div><h3 class="font-bold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-1.5"><i data-lucide="table" class="w-4 h-4 text-sky-600"></i><span>Tiến Độ Làm Bài & Điểm Số</span></h3></div>
-        <div class="teacher-feature hidden items-center gap-2">
-          <button onclick="configureProgressSheet()" class="text-xs font-semibold px-2.5 py-1 bg-sky-50 text-sky-700 hover:bg-sky-100 rounded-lg transition flex items-center gap-1 border border-sky-200">
-            <i data-lucide="settings" class="w-3.5 h-3.5"></i><span>Cài link Sheet</span>
-          </button>
-        </div>
-      </div>
-      <div id="embed-sheet-wrapper" class="w-full border border-slate-200 rounded-xl overflow-hidden bg-slate-50 min-h-[320px] flex flex-col justify-center items-center">
-        <div id="embed-placeholder" class="text-center p-6 space-y-2">
-          <i data-lucide="file-spreadsheet" class="w-8 h-8 text-slate-300 mx-auto"></i>
-          <p class="text-xs text-slate-500 font-medium">Chưa liên kết với Google Sheet tiến độ.</p>
-        </div>
-        <iframe id="embed-sheet-frame" src="" class="hidden w-full h-[380px] border-0"></iframe>
-      </div>
-    </div>
-
-    <!-- KHỐI 4: GHI NHẬN KẾT QUẢ LUYỆN TẬP -->
-    <section class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
-      <div class="flex items-center justify-between gap-3 border-b border-slate-100 pb-3">
-        <div>
-          <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2"><i data-lucide="chart-no-axes-combined" class="w-4 h-4 text-sky-600"></i>Kết quả luyện tập</h3>
-          <p class="text-xs text-slate-500 mt-1">Ghi nhận điểm số sau mỗi lần làm bài.</p>
-        </div>
-        <span id="result-sync-badge" class="text-[10px] font-semibold px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200">Chưa kết nối</span>
-      </div>
-      <form id="result-submission-form" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div class="sm:col-span-2"><label for="result-test-name" class="block text-xs font-semibold text-slate-600 mb-1">Tên bài kiểm tra</label><input id="result-test-name" required maxlength="120" placeholder="Ví dụ: IELTS Reading Practice Test 04" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm bg-slate-50"></div>
-        <div><label for="result-score" class="block text-xs font-semibold text-slate-600 mb-1">Điểm đạt được</label><input id="result-score" required type="number" min="0" step="any" placeholder="Ví dụ: 28" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm bg-slate-50"></div>
-        <div><label for="result-max-score" class="block text-xs font-semibold text-slate-600 mb-1">Tổng điểm</label><input id="result-max-score" required type="number" min="0.01" step="any" placeholder="Ví dụ: 40" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm bg-slate-50"></div>
-        <div class="sm:col-span-2"><label for="result-note" class="block text-xs font-semibold text-slate-600 mb-1">Ghi chú (không bắt buộc)</label><textarea id="result-note" rows="2" maxlength="500" placeholder="Phần còn khó, câu hỏi cần xem lại…" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm bg-slate-50"></textarea></div>
-        <div class="sm:col-span-2 flex flex-wrap items-center justify-between gap-3">
-          <p id="result-submit-message" class="text-xs text-slate-500 flex-1">Kết quả sẽ được lưu trên thiết bị này. Kết nối Google Sheets để gửi kết quả về giáo viên.</p>
-          <button type="submit" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-sky-700 hover:bg-sky-800 text-white text-xs font-bold shadow-sm"><i data-lucide="send" class="w-4 h-4"></i> Lưu kết quả</button>
-        </div>
-      </form>
-      <div><h4 class="text-xs font-bold text-slate-700 mb-2">Lịch sử lần làm trên thiết bị này</h4><div id="result-history" class="space-y-2"><p class="text-xs text-slate-400">Chưa có kết quả được lưu.</p></div></div>
-    </section>
-
-    <!-- KHỐI 5: THÔNG BÁO HỌC PHÍ -->
-    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-3">
-      <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-        <h3 class="font-bold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-1.5"><i data-lucide="receipt" class="w-4 h-4 text-sky-600"></i><span>Thông Báo Học Phí Tháng <span id="current-month-label"></span></span></h3>
-        <span id="tuition-status-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">Chưa đóng</span>
-      </div>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
-          <label class="text-[10px] text-slate-400 uppercase font-bold block mb-1">Mức học phí</label>
-          <input type="text" id="input-tuition-amount" value="1.200.000 đ" disabled class="w-full text-xs font-bold text-slate-800 bg-transparent border-b border-transparent outline-none pb-0.5 disabled:opacity-90">
-        </div>
-        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
-          <label class="text-[10px] text-slate-400 uppercase font-bold block mb-1">Tình trạng</label>
-          <select id="select-tuition-status" disabled class="w-full text-xs font-semibold text-slate-700 bg-transparent border border-transparent rounded p-1 outline-none disabled:appearance-none disabled:bg-transparent">
-            <option value="unpaid">Chưa đóng</option><option value="paid">Đã hoàn thành</option>
-          </select>
-        </div>
-        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
-          <label class="text-[10px] text-slate-400 uppercase font-bold block mb-1">Ngày đóng</label>
-          <input type="date" id="input-tuition-date" disabled class="w-full text-xs font-medium text-slate-700 bg-transparent border border-transparent rounded p-1 outline-none disabled:opacity-90">
-        </div>
-      </div>
-      <div class="teacher-feature hidden justify-end pt-1" id="teacher-save-wrapper">
-        <button id="btn-save-tuition" class="px-3.5 py-1.5 bg-sky-800 hover:bg-sky-900 text-white font-semibold text-xs rounded-xl transition flex items-center gap-1.5 shadow-xs"><i data-lucide="check" class="w-3.5 h-3.5"></i><span>Lưu thông tin học phí</span></button>
-      </div>
-    </div>
-
-    <!-- LỊCH SỬ BUỔI HỌC: tóm tắt theo tuần, có thể thu gọn -->
-    <section class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-3" aria-label="Lịch sử buổi học">
-      <div class="flex items-center justify-between gap-3">
-        <div>
-          <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2"><i data-lucide="history" class="w-4 h-4 text-sky-600"></i>Lịch sử buổi học</h3>
-          <p class="text-xs text-slate-500 mt-1">Tóm tắt lịch học theo tuần; mỗi ô là một ngày.</p>
-        </div>
-        <div class="flex items-center gap-2 shrink-0">
-          <span id="student-history-count" class="text-[10px] text-slate-400"></span>
-          <button type="button" id="toggle-student-history" aria-expanded="true" class="pill-btn inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100"><i data-lucide="chevron-up" class="w-4 h-4"></i><span>Thu gọn</span></button>
-        </div>
-      </div>
-      <div id="student-session-history" class="space-y-3 overflow-x-auto">
-        <p class="text-xs text-slate-400">Chưa có dữ liệu lịch sử buổi học.</p>
-      </div>
-    </section>
-  </div>
+  <main class="wrap space-y-4" id="app"><div class="card text-center text-sm text-slate-500">Đang tải...</div></main>
 
   <script>
+  (function () {
+    'use strict';
+    const $ = id => document.getElementById(id), esc = LMS.esc, icons = () => { if (window.lucide) lucide.createIcons(); };
+    const DAY = ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
+    const STATUS = { planned: ['Sắp tới', 'bg-slate-100 text-slate-600'], done: ['Đã học', 'bg-emerald-50 text-emerald-700'], cancel: ['Hủy', 'bg-rose-50 text-rose-700'],
+      makeup: ['Học bù', 'bg-sky-50 text-sky-700'], holiday: ['Nghỉ lễ', 'bg-slate-100 text-slate-600'] };
+    const pad = n => String(n).padStart(2, '0');
+    const ymd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+    const dOf = k => new Date(k + 'T00:00:00');
+    const fmtDay = k => { const d = dOf(k); return DAY[d.getDay()] + ', ' + pad(d.getDate()) + '/' + pad(d.getMonth() + 1); };
+    const isHttp = u => /^https?:\/\//i.test(u || '');
+    const S = { c: null, code: '', data: null, a: null, answers: {}, t0: 0, busy: false };
 
-function themedPinPrompt(){
-  return new Promise(resolve=>{
-    let modal=document.getElementById('pin-theme-modal');
-    if(!modal){
-      modal=document.createElement('div'); modal.id='pin-theme-modal';
-      modal.className='fixed inset-0 z-[999] flex items-center justify-center p-4';
-      modal.style.background='rgba(15,23,42,.48)'; modal.style.backdropFilter='blur(5px)';
-      modal.innerHTML=`<div class="w-full max-w-sm overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-2xl"><div class="p-5 sm:p-6"><div class="flex items-start gap-3"><div class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-sky-50 text-sky-700 border border-sky-100"><i data-lucide="lock-keyhole" class="h-5 w-5"></i></div><div class="min-w-0 flex-1"><h2 class="text-lg font-bold text-slate-800">PIN needed</h2><p class="mt-1 text-sm leading-5 text-slate-500">Nhập mã PIN để mở khóa chế độ giáo viên.</p></div></div><input id="pin-theme-input" type="password" inputmode="numeric" autocomplete="current-password" placeholder="PIN" aria-label="PIN giáo viên" class="mt-5 w-full rounded-xl border-2 border-sky-200 bg-sky-50 px-4 py-3 text-base font-medium text-slate-800 placeholder:text-slate-400 shadow-inner focus:border-sky-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-sky-100"><p id="pin-theme-error" class="hidden mt-2 text-xs font-medium text-rose-600">Mã PIN không đúng. Vui lòng thử lại.</p></div><div class="flex justify-end gap-2 border-t border-sky-100 bg-slate-50/80 p-4"><button type="button" id="pin-theme-cancel" class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-100">Hủy</button><button type="button" id="pin-theme-submit" class="rounded-xl bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-sky-700">Mở khóa</button></div></div>`;
-      document.body.appendChild(modal);
+    function mondayKey(d) { const dow = d.getDay() === 0 ? 6 : d.getDay() - 1; return ymd(new Date(d.getFullYear(), d.getMonth(), d.getDate() - dow)); }
+    function errText(e) {
+      const m = (e && e.message) || '';
+      if (/student_not_found/.test(m)) return 'Mã học viên chưa đúng hoặc đã bị tạm ngưng. Hỏi lại giáo viên để lấy link mới.';
+      if (/assignment_not_found/.test(m)) return 'Bài này hiện không mở.';
+      return LMS.friendlyError(e);
     }
-    const input=modal.querySelector('#pin-theme-input'), error=modal.querySelector('#pin-theme-error'), submit=modal.querySelector('#pin-theme-submit'), cancel=modal.querySelector('#pin-theme-cancel');
-    input.value=''; error.classList.add('hidden'); modal.classList.remove('hidden');
-    if(window.lucide) lucide.createIcons(); input.focus();
-    let done=false;
-    const cleanup=value=>{if(done)return;done=true;modal.classList.add('hidden');submit.removeEventListener('click',onSubmit);cancel.removeEventListener('click',onCancel);document.removeEventListener('keydown',onKey);resolve(value)};
-    const onSubmit=()=>cleanup(input.value); const onCancel=()=>cleanup(null); const onKey=e=>{if(e.key==='Escape')cleanup(null);if(e.key==='Enter'){e.preventDefault();onSubmit()}};
-    submit.addEventListener('click',onSubmit);cancel.addEventListener('click',onCancel);document.addEventListener('keydown',onKey);
-  });
-}
-function themedPinNotice(message, title='Thông báo'){
-  let modal=document.getElementById('pin-theme-notice');
-  if(!modal){modal=document.createElement('div');modal.id='pin-theme-notice';modal.className='fixed inset-0 z-[1000] flex items-center justify-center p-4';modal.style.background='rgba(15,23,42,.48)';modal.style.backdropFilter='blur(5px)';modal.innerHTML=`<div class="w-full max-w-sm rounded-2xl border border-sky-100 bg-white p-5 shadow-2xl"><div class="flex items-start gap-3"><div class="grid h-10 w-10 place-items-center rounded-xl bg-sky-50 text-sky-700"><i data-lucide="info" class="h-5 w-5"></i></div><div class="flex-1"><h2 id="pin-notice-title" class="font-bold text-slate-800"></h2><p id="pin-notice-message" class="mt-2 text-sm leading-6 text-slate-600"></p></div></div><div class="mt-5 flex justify-end"><button id="pin-notice-ok" class="rounded-xl bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-sky-700">Đã hiểu</button></div></div>`;document.body.appendChild(modal)}
-  modal.querySelector('#pin-notice-title').textContent=title;modal.querySelector('#pin-notice-message').textContent=message;modal.classList.remove('hidden');if(window.lucide)lucide.createIcons();modal.querySelector('#pin-notice-ok').onclick=()=>modal.classList.add('hidden');
-}
+    function showError(msg) { $('app').innerHTML = `<div class="card text-center"><p class="text-sm text-rose-700">${esc(msg)}</p></div>`; $('hello').textContent = 'gblearning'; $('hello-sub').textContent = ''; }
 
-    const TEACHER_PIN = "0208";
-    let isTeacherUnlocked = false;
-
-    async function toggleGlobalTeacherMode() {
-      if (isTeacherUnlocked) {
-        isTeacherUnlocked = false;
-        document.getElementById('global-lock-icon').setAttribute('data-lucide', 'lock');
-        document.querySelectorAll('.teacher-feature').forEach(el => el.classList.add('hidden'));
-        lockTuitionForm();
-        themedPinNotice("Đã khóa chế độ chỉnh sửa.", "Đã khóa");
-      } else {
-        const pin = await themedPinPrompt();
-        if (pin === TEACHER_PIN) {
-          isTeacherUnlocked = true;
-          document.getElementById('global-lock-icon').setAttribute('data-lucide', 'unlock');
-          document.querySelectorAll('.teacher-feature').forEach(el => el.classList.remove('hidden'));
-          unlockTuitionForm();
-          themedPinNotice("Đã mở khóa tính năng chỉnh sửa!", "Đã mở khóa");
-        } else if (pin !== null) themedPinNotice("Mã PIN không đúng.", "Không thể mở khóa");
-      }
-      lucide.createIcons();
+    /* ---------- Trang chính ---------- */
+    function linksBlock(items, label, icon) {
+      const list = (items || []).filter(x => x && (x.url || x.title));
+      if (!list.length) return '';
+      return list.map((x, i) => isHttp(x.url)
+        ? `<a class="row" href="${esc(x.url)}" target="_blank" rel="noopener" style="text-decoration:none;color:var(--t-primary);font-weight:700;min-height:48px"><i data-lucide="${icon}" class="w-4 h-4"></i><span style="overflow-wrap:anywhere">${esc(x.title || label + ' ' + (i + 1))}</span><i data-lucide="arrow-up-right" class="w-4 h-4" style="margin-left:auto"></i></a>`
+        : `<div class="row"><span>${esc(x.title || label + ' ' + (i + 1))}</span></div>`).join('');
     }
 
-    const urlParams = new URLSearchParams(window.location.search);
-    let targetClass = urlParams.get('class');
-    let targetStudent = urlParams.get('student');
-    const targetClassId = urlParams.get('classId') || '';
-    const targetStudentId = urlParams.get('studentId') || '';
-    const driveLinkFromUrl = urlParams.get('drive') || '';
-    const meetLinkFromUrl = urlParams.get('meet') || '';
-    let weekLinksFromUrl = {};
-    try { weekLinksFromUrl = JSON.parse(urlParams.get('weekLinks') || '{}') || {}; } catch (e) { weekLinksFromUrl = {}; }
+    function renderHome() {
+      const d = S.data, cls = d.class, now = new Date(), todayKey = ymd(now), nowHM = pad(now.getHours()) + ':' + pad(now.getMinutes());
+      $('hello').textContent = 'Xin chào, ' + d.student_name; $('hello-sub').textContent = cls ? 'Lớp ' + cls.name : 'Chưa xếp lớp';
+      $('btn-back').classList.add('hidden');
+      if (!cls) { $('app').innerHTML = '<div class="card text-sm text-slate-600">Bạn chưa được xếp lớp. Hỏi giáo viên nhé.</div>'; return; }
+      const sess = d.sessions || [];
+      const next = sess.find(s => (s.status === 'planned' || s.status === 'makeup') && (s.date > todayKey || (s.date === todayKey && s.end > nowHM)));
+      const wk = mondayKey(now), thisWeek = sess.filter(s => mondayKey(dOf(s.date)) === wk);
+      const done = sess.filter(s => s.status === 'done' || s.status === 'makeup'), absent = sess.filter(s => s.attendance === 'absent').length;
+      const past = sess.filter(s => s.date <= todayKey && s.status !== 'planned').slice().reverse();
+      const weeks = (d.week_links || []).filter(w => (w.lessons || []).length || (w.homeworks || []).length).slice().reverse();
 
-    let path = decodeURI(window.location.pathname);
-    if (path.endsWith('/')) path = path.slice(0, -1);
-    let parts = path.split('/'); let fileName = parts.pop() || "", folderName = parts.pop() || "";
+      let html = '';
+      html += `<section class="card hero-card" style="color:#fff"><div class="text-xs" style="opacity:.85">Buổi học tiếp theo</div>
+        <div class="text-xl font-extrabold mt-1">${next ? fmtDay(next.date) : 'Chưa có lịch'}</div>
+        <div class="text-sm mt-1" style="opacity:.9">${next ? next.start + ' - ' + next.end + (next.lesson ? ' · ' + esc(next.lesson) : '') : ''}</div>
+        <div class="flex flex-wrap gap-2 mt-4">
+          <a class="hero-btn solid" href="${esc(isHttp(cls.meet_url) ? cls.meet_url : 'https://meet.google.com')}" target="_blank" rel="noopener"><i data-lucide="video" class="w-4 h-4"></i><span>Vào lớp online</span></a>
+          <a class="hero-btn ghost" href="${esc(isHttp(cls.drive_url) ? cls.drive_url : 'https://drive.google.com')}" target="_blank" rel="noopener"><i data-lucide="folder" class="w-4 h-4"></i><span>Tài liệu</span></a>
+        </div></section>`;
 
-    if (!targetStudent) {
-      if (fileName.includes('.html') && fileName.toLowerCase() !== 'student.html') {
-        let cleanName = fileName.replace(/\.html$/i, '').replace(/-/g, ' ');
-        targetStudent = cleanName.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-      } else targetStudent = "Học viên ẩn danh";
-    }
-    if (!targetClass) targetClass = folderName ? folderName.toUpperCase().replace(/-/g, ' ') : "CHƯA RÕ LỚP";
+      html += `<section class="card"><h2><i data-lucide="calendar-days"></i>Lịch học tuần này</h2><div class="space-y-2">${thisWeek.length ? thisWeek.map(s => {
+        const st = STATUS[s.status] || STATUS.planned;
+        return `<div class="row"><strong style="min-width:110px">${fmtDay(s.date)}</strong><span class="font-semibold text-sky-700">${s.start} - ${s.end}</span><span class="tag ${st[1]}">${st[0]}</span>${s.attendance === 'absent' ? '<span class="tag bg-rose-50 text-rose-700">Vắng</span>' : ''}${s.lesson ? `<span class="text-xs text-slate-500" style="flex:1 1 100%">${esc(s.lesson)}</span>` : ''}</div>`;
+      }).join('') : '<div class="text-sm text-slate-500">Tuần này không có buổi học.</div>'}</div></section>`;
 
-    const STUDENT_REGISTRY_KEY = 'lms_students_registry_v1';
-    function getSharedStudent() {
-      try {
-        const records = JSON.parse(localStorage.getItem(STUDENT_REGISTRY_KEY) || '[]');
-        return records.find(s => String(s.id) === String(targetStudentId)) || records.find(s => s.name === targetStudent && String(s.classId) === String(targetClassId)) || null;
-      } catch(e) { return null; }
-    }
-    let sharedStudent = getSharedStudent();
-    if (sharedStudent) {
-      targetStudent = sharedStudent.name || targetStudent;
-      targetClass = sharedStudent.className || targetClass;
+      const asg = d.assignments || [];
+      html += `<section class="card"><h2><i data-lucide="pencil-line"></i>Bài tập online</h2><div class="space-y-2">${asg.length ? asg.map(a => {
+        const due = a.due_at ? new Date(a.due_at) : null, late = due && due < now;
+        const state = a.attempts ? `Đã làm ${a.attempts} lần${a.first_score != null ? ' · Điểm lần đầu: ' + a.first_score + '/' + (a.first_total || a.question_count) : ''}` : 'Chưa làm';
+        return `<div class="row"><div style="flex:1 1 200px;min-width:0"><div class="font-bold text-slate-800" style="overflow-wrap:anywhere">${esc(a.name)}</div>
+          <div class="text-xs text-slate-500">${a.question_count} câu · ${state}${due ? ' · Hạn ' + pad(due.getDate()) + '/' + pad(due.getMonth() + 1) + (late ? ' (đã quá hạn)' : '') : ''}</div></div>
+          <a class="btn-primary" href="#${encodeURIComponent(S.code)}/${encodeURIComponent(a.code)}" style="text-decoration:none">${a.attempts ? 'Làm lại' : 'Làm bài'}</a></div>`;
+      }).join('') : '<div class="text-sm text-slate-500">Chưa có bài tập online.</div>'}</div></section>`;
+
+      html += `<section class="card"><h2><i data-lucide="book-open"></i>Học liệu theo tuần</h2><div class="space-y-3">${weeks.length ? weeks.map((w, i) => {
+        const s = dOf(w.week_start), e = new Date(s); e.setDate(s.getDate() + 6);
+        return `<details ${i === 0 ? 'open' : ''}><summary class="font-bold text-sm" style="min-height:44px;display:flex;align-items:center;cursor:pointer">Tuần ${pad(s.getDate())}/${pad(s.getMonth() + 1)} – ${pad(e.getDate())}/${pad(e.getMonth() + 1)}</summary>
+          <div class="space-y-2 mt-1">${linksBlock(w.lessons, 'Bài học', 'presentation')}${linksBlock(w.homeworks, 'Bài tập', 'file-check-2')}</div></details>`;
+      }).join('') : '<div class="text-sm text-slate-500">Chưa có học liệu.</div>'}</div></section>`;
+
+      html += `<section class="card"><h2><i data-lucide="history"></i>Lịch sử buổi học</h2>
+        <div class="text-xs text-slate-500 mb-2">Đã học ${done.length} buổi · Vắng ${absent} buổi</div>
+        <div class="space-y-2">${past.slice(0, 12).map(s => { const st = STATUS[s.status] || STATUS.planned;
+          return `<div class="row"><strong style="min-width:110px">${fmtDay(s.date)}</strong><span class="tag ${st[1]}">${st[0]}</span>${s.attendance === 'absent' ? '<span class="tag bg-rose-50 text-rose-700">Vắng</span>' : ''}${s.lesson ? `<span class="text-xs text-slate-500">${esc(s.lesson)}</span>` : ''}</div>`; }).join('') || '<div class="text-sm text-slate-500">Chưa có buổi học nào.</div>'}</div></section>`;
+
+      $('app').innerHTML = html; icons();
     }
 
-    const nameInput = document.getElementById('student-name-input');
-    nameInput.value = targetStudent;
-    function updateAvatar(className) {
-      const avatar = document.getElementById('student-avatar');
-      avatar.textContent = className || 'CHƯA RÕ LỚP';
-      avatar.style.fontSize = (className || '').length > 10 ? '11px' : ((className || '').length > 6 ? '12px' : '14px');
-    }
-    updateAvatar(targetClass);
-    nameInput.addEventListener('input', () => { if (!isTeacherUnlocked) { nameInput.value = targetStudent; return; } targetStudent = nameInput.value; document.title = `Hồ Sơ: ${targetStudent}`; });
-    nameInput.addEventListener('change', () => {
-      if (!isTeacherUnlocked) { nameInput.value = targetStudent; return; }
-      const newName = nameInput.value.trim(); if (!newName) { nameInput.value = targetStudent; return; }
-      try {
-        const records = JSON.parse(localStorage.getItem(STUDENT_REGISTRY_KEY) || '[]');
-        const record = records.find(s => String(s.id) === String(targetStudentId));
-        if (record) { record.name = newName; record.className = targetClass; localStorage.setItem(STUDENT_REGISTRY_KEY, JSON.stringify(records)); }
-        targetStudent = newName;
-      } catch(e) {}
-    });
+    /* ---------- Làm bài ---------- */
+    const letterOf = (opt, i) => { const m = /^\s*([A-Za-z])[.)]\s*/.exec(opt); return m ? m[1].toUpperCase() : String.fromCharCode(65 + i); };
+    const textOf = opt => String(opt).replace(/^\s*[A-Za-z][.)]\s*/, '');
 
-    function getWeekKey(d = new Date()) {
-      const anchor = new Date(2026, 8, 7); const date = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-      date.setHours(0,0,0,0); anchor.setHours(0,0,0,0);
-      const number = Math.floor((date-anchor)/(7*86400000))+1;
-      return `W${String(number).padStart(2,'0')}`;
+    function renderAssignment() {
+      const a = S.a; $('btn-back').classList.remove('hidden'); $('btn-back').href = '#' + encodeURIComponent(S.code);
+      $('hello').textContent = a.name; $('hello-sub').textContent = a.student_name;
+      const qs = a.questions || [];
+      $('app').innerHTML = `<section class="card"><div class="text-xs text-slate-500 mb-1">${qs.length} câu${a.due_at ? ' · Hạn ' + new Date(a.due_at).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : ''}. Điểm chỉ tính lần làm đầu tiên; nộp muộn vẫn được nhận nhưng có đánh dấu.</div>
+        <div id="qs">${qs.map((q, i) => `<div class="qbox" data-q="${esc(q.id)}"><div class="text-sm font-bold text-slate-800 mb-2" style="overflow-wrap:anywhere">Câu ${i + 1}. ${esc(q.text)}</div>
+          ${q.type === 'mcq' && Array.isArray(q.options) ? `<div class="space-y-2">${q.options.map((o, j) => `<button type="button" class="opt" data-o="${letterOf(o, j)}" aria-pressed="false"><strong>${letterOf(o, j)}.</strong><span>${esc(textOf(o))}</span></button>`).join('')}</div>`
+            : `<input type="text" class="field w-full" data-fill autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Câu trả lời câu ${i + 1}">`}
+          <div class="fb text-sm mt-2 hidden"></div></div>`).join('')}</div>
+        <div class="flex flex-wrap items-center gap-3 mt-4"><button type="button" id="btn-submit" class="btn-primary"><i data-lucide="send" class="w-4 h-4"></i><span>Nộp bài</span></button><span id="sub-msg" class="text-sm text-rose-700" role="alert"></span></div>
+        <div id="result" class="mt-4 hidden"></div></section>`;
+      S.answers = {}; S.t0 = Date.now(); icons();
     }
-    const currentWeekKey = getWeekKey();
-    document.getElementById("week-label-sync").textContent = `Tuần ${currentWeekKey.replace('W','')} · ${targetClass}`;
 
-    const classStorageId = targetClassId || targetClass;
-    const studentStorageId = targetStudentId || targetStudent;
+    async function submit() {
+      if (S.busy) return;
+      const qs = S.a.questions || [], empty = qs.filter(q => !(S.answers[q.id] || '').trim()).length;
+      if (empty && !confirm('Còn ' + empty + ' câu chưa trả lời. Vẫn nộp bài?')) return;
+      S.busy = true; $('btn-submit').disabled = true; $('sub-msg').textContent = '';
+      const r = await S.c.rpc('submit_assignment', { p_student_code: S.code, p_assignment_code: S.a.code, p_answers: S.answers, p_duration_seconds: Math.round((Date.now() - S.t0) / 1000) });
+      S.busy = false;
+      if (r.error) { $('btn-submit').disabled = false; $('sub-msg').textContent = errText(r.error); return; }
+      showResult(r.data);
+    }
 
-    // Quick links are passed from class.html in the student profile URL so they also work on the student's own device.
-    // LocalStorage is a fallback for previews opened in the same browser as the teacher's class page.
-    function safeExternalLink(value, fallback) {
-      try { const u = new URL(value || fallback, window.location.href); return ['http:', 'https:'].includes(u.protocol) ? u.href : fallback; }
-      catch (e) { return fallback; }
-    }
-    const driveLink = safeExternalLink(driveLinkFromUrl || localStorage.getItem(`class_${classStorageId}_drive_link`), 'https://drive.google.com');
-    const meetLink = safeExternalLink(meetLinkFromUrl || localStorage.getItem(`class_${classStorageId}_meet_link`), 'https://meet.google.com');
-    document.getElementById('student-drive-link').href = driveLink;
-    document.getElementById('student-meet-link').href = meetLink;
-
-    // Class/session figures are read from the same class-specific records used by class.html.
-    function renderClassSessionSummary() {
-      document.getElementById('student-class-summary').textContent = targetClass || 'Chưa rõ lớp';
-      try {
-        const statuses = JSON.parse(localStorage.getItem(`class_${classStorageId}_session_statuses`) || '{}');
-        const values = Object.values(statuses);
-        const cancelled = values.filter(v => v === 'cancelled').length;
-        const makeup = values.filter(v => v === 'makeup').length;
-        document.getElementById('student-cancelled-count').textContent = String(cancelled);
-        document.getElementById('student-debt-count').textContent = String(Math.max(0, cancelled - makeup));
-      } catch (e) {
-        document.getElementById('student-cancelled-count').textContent = '—';
-        document.getElementById('student-debt-count').textContent = '—';
-      }
-    }
-    renderClassSessionSummary();
-
-    const studentDayNames = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ nhật"];
-    const studentWeekAnchor = new Date(2026, 8, 7);
-    function studentWeekNumber(date) {
-      const d = new Date(date.getFullYear(), date.getMonth(), date.getDate()); d.setHours(0,0,0,0);
-      const a = new Date(studentWeekAnchor); a.setHours(0,0,0,0);
-      return Math.floor((d-a)/(7*86400000))+1;
-    }
-    function studentWeekDates(weekNumber) {
-      const monday = new Date(studentWeekAnchor); monday.setDate(monday.getDate() + (weekNumber-1)*7);
-      return Array.from({length:7},(_,i)=>{const d=new Date(monday);d.setDate(d.getDate()+i);return d;});
-    }
-    function studentFmtDate(date) { return `${String(date.getDate()).padStart(2,'0')}/${String(date.getMonth()+1).padStart(2,'0')}`; }
-    function studentEsc(value) { return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
-    function getStudentClassScheduleData() {
-      try {
-        const allWeeks = JSON.parse(localStorage.getItem('all_weeks_schedule_data') || '{}');
-        const statusData = JSON.parse(localStorage.getItem(`class_${classStorageId}_session_statuses`) || '{}');
-        const localLinksData = JSON.parse(localStorage.getItem(`class_${classStorageId}_week_links`) || '{}');
-        // Prefer URL data when available: localStorage is not shared across a teacher's and student's devices.
-        const linksData = Object.keys(weekLinksFromUrl).length ? weekLinksFromUrl : localLinksData;
-        const weekNumsFromLinks = Object.keys(linksData).map(k => Number(String(k).replace(/^W/i, ''))).filter(n=>Number.isFinite(n) && n>0);
-        const weeks = [...new Set([...Object.keys(allWeeks).map(Number).filter(n=>Number.isFinite(n) && n>0), ...weekNumsFromLinks])].sort((a,b)=>b-a);
-        return {allWeeks,statusData,linksData,weeks};
-      } catch(e) { return {allWeeks:{},statusData:{},linksData:{},weeks:[]}; }
-    }
-    function studentStatusLabel(status) {
-      return ({done:'Hoàn thành',cancelled:'Đã hủy · còn nợ buổi',makeup:'Đã học bù',holiday:'Nghỉ lễ'})[status] || 'Chưa cập nhật';
-    }
-    function renderStudentSchedule() {
-      const {allWeeks,statusData,linksData,weeks} = getStudentClassScheduleData();
-      const today = new Date();
-      const currentNum = studentWeekNumber(today);
-      const select = document.getElementById('student-week-select');
-      const available = [...new Set([currentNum,...weeks])].filter(n=>n>0).sort((a,b)=>b-a);
-      if (!available.length) {
-        select.innerHTML = `<option value="${currentNum}">Tuần ${currentNum}</option>`;
-      } else {
-        select.innerHTML = available.map(n=>`<option value="${n}">Tuần ${String(n).padStart(2,'0')}</option>`).join('');
-      }
-      // The options are sorted newest-first, so explicitly select the real current week.
-      select.value = String(currentNum);
-      if (!select.dataset.bound) {
-        select.addEventListener('change', renderStudentSelectedWeek);
-        select.dataset.bound='1';
-      }
-      renderStudentSelectedWeek();
-      const history = [];
-      weeks.forEach(n=>{
-        const weekRows = allWeeks[n] || [];
-        const row = weekRows.find(r=>r && (String(r.id)===String(classStorageId) || String(r.name||'').toLowerCase()===String(targetClass).toLowerCase()));
-        if (!row) return;
-        const dates = studentWeekDates(n);
-        const days = dates.map((date,idx)=>{
-          const time = Array.isArray(row.schedule) ? row.schedule[idx] : '';
-          const key = `${classStorageId}_W${String(n).padStart(2,'0')}_d${idx}`;
-          const status = statusData[key] || '';
-          return {n,idx,date,time,status};
-        });
-        if (days.some(d=>d.time || d.status)) history.push({n,days});
+    function showResult(res) {
+      const by = {}; (res.items || []).forEach(it => { by[it.id] = it; });
+      document.querySelectorAll('#qs .qbox').forEach(box => {
+        const it = by[box.dataset.q], fb = box.querySelector('.fb'); if (!it) return;
+        box.querySelectorAll('.opt').forEach(b => { b.disabled = true; const l = b.dataset.o, ans = [].concat(it.answer).map(x => String(x).toUpperCase());
+          if (ans.includes(l)) b.classList.add('good'); else if (b.getAttribute('aria-pressed') === 'true') b.classList.add('bad'); });
+        const inp = box.querySelector('[data-fill]'); if (inp) inp.disabled = true;
+        const ans = [].concat(it.answer).join(' / ');
+        fb.className = 'fb text-sm mt-2 ' + (it.correct ? 'text-emerald-700' : 'text-rose-700');
+        fb.innerHTML = (it.correct ? '<strong>Đúng.</strong> ' : '<strong>Chưa đúng.</strong> Đáp án: ' + esc(ans) + '. ') + (it.explanation ? `<span class="text-slate-600">${esc(it.explanation)}</span>` : '');
       });
-      history.sort((a,b)=>b.n-a.n);
-      const totalDays = history.reduce((sum,w)=>sum+w.days.filter(d=>d.time||d.status).length,0);
-      document.getElementById('student-history-count').textContent = `${history.length} tuần · ${totalDays} ngày`;
-      const historyEl = document.getElementById('student-session-history');
-      if (!history.length) {
-        historyEl.innerHTML = '<p class="text-xs text-slate-400 py-2">Chưa có lịch sử buổi học được lưu trên thiết bị này.</p>';
-      } else {
-        historyEl.innerHTML = history.map(week=>{
-          const cells = week.days.map(item=>{
-            const active = Boolean(item.time);
-            const statusColor = item.status==='cancelled' ? 'border-rose-200 bg-rose-100 text-rose-800' : item.status==='done' ? 'border-emerald-200 bg-emerald-100 text-emerald-800' : active ? 'border-amber-200 bg-amber-100 text-amber-900' : 'border-slate-200 bg-slate-100 text-slate-400';
-            const statusLabel = item.status==='cancelled' ? 'Đã hủy' : item.status==='done' ? 'Hoàn thành' : item.status==='makeup' ? 'Học bù' : active ? 'Có lịch' : 'Không có lịch';
-            return `<div class="min-w-[92px] flex-1 rounded-lg border ${statusColor} p-2"><p class="text-[10px] font-extrabold">${studentDayNames[item.idx]}</p><p class="text-[10px] opacity-80 mt-0.5">${studentFmtDate(item.date)}</p><p class="text-[11px] font-bold mt-2 break-words">${active?studentEsc(item.time):'—'}</p><p class="text-[9px] font-semibold mt-1">${statusLabel}</p></div>`;
-          }).join('');
-          return `<div class="rounded-xl border border-slate-200 p-3 space-y-2"><div class="flex items-center justify-between gap-2"><span class="text-xs font-extrabold text-slate-800">Tuần ${String(week.n).padStart(2,'0')}</span><span class="text-[10px] text-slate-400">${week.days[0] ? studentFmtDate(week.days[0].date) : ''} – ${week.days[6] ? studentFmtDate(week.days[6].date) : ''}</span></div><div class="flex gap-2 min-w-[700px]">${cells}</div></div>`;
-        }).join('');
-      }
+      $('btn-submit').classList.add('hidden');
+      const rs = $('result'); rs.classList.remove('hidden');
+      rs.innerHTML = `<div class="stat-tile" style="background:var(--t-tint)"><div class="stat-n">${res.score}/${res.total}</div>
+        <div class="stat-l">${res.counts_for_score ? 'Lần làm đầu tiên: điểm này được ghi nhận.' : 'Lần làm lại: điểm không thay đổi, bạn vẫn xem được đáp án.'}${res.is_late ? ' Nộp muộn.' : ''}</div></div>
+        <a class="btn-soft mt-3" href="#${encodeURIComponent(S.code)}" style="text-decoration:none">Về trang chính</a>`;
+      rs.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
 
+    /* ---------- Điều hướng bằng # ---------- */
+    async function route() {
+      const parts = location.hash.replace(/^#/, '').split('/').map(decodeURIComponent);
+      S.code = (parts[0] || '').trim();
+      if (!S.code) return showError('Thiếu mã học viên. Mở lại link giáo viên đã gửi.');
+      try {
+        if (parts[1]) {
+          $('app').innerHTML = '<div class="card text-center text-sm text-slate-500">Đang tải bài...</div>';
+          const r = await S.c.rpc('student_assignment', { p_student_code: S.code, p_assignment_code: parts[1] });
+          if (r.error) throw r.error; S.a = r.data; renderAssignment();
+        } else {
+          $('app').innerHTML = '<div class="card text-center text-sm text-slate-500">Đang tải...</div>';
+          const r = await S.c.rpc('student_portal', { p_student_code: S.code });
+          if (r.error) throw r.error; S.data = r.data; renderHome();
+        }
+      } catch (e) { showError(errText(e)); }
+      window.scrollTo(0, 0);
     }
-    function renderStudentSelectedWeek() {
-      const weekNum = Number(document.getElementById('student-week-select').value) || studentWeekNumber(new Date());
-      const {allWeeks,statusData,linksData} = getStudentClassScheduleData();
-      const weekKey = `W${String(weekNum).padStart(2,'0')}`;
-      const row = (allWeeks[weekNum] || []).find(r=>r && (String(r.id)===String(classStorageId) || String(r.name||'').toLowerCase()===String(targetClass).toLowerCase()));
-      const dates = studentWeekDates(weekNum);
-      const grid = document.getElementById('student-week-schedule');
-      const links = linksData[weekKey] || {};
-      grid.innerHTML = studentDayNames.map((day,idx)=>{
-        const time = row && Array.isArray(row.schedule) ? row.schedule[idx] : '';
-        const key = `${classStorageId}_${weekKey}_d${idx}`;
-        const status = statusData[key] || '';
-        const active = Boolean(time);
-        // Ưu tiên trạng thái buổi học: hủy = đỏ, hoàn thành = xanh;
-        // nếu có giờ nhưng chưa hủy/hoàn thành thì vàng; không có giờ thì xám.
-        const color = status==='cancelled' ? 'border-rose-200 bg-rose-100' : status==='done' ? 'border-emerald-200 bg-emerald-100' : active ? 'border-amber-200 bg-amber-100' : 'border-slate-200 bg-slate-100';
-        const textColor = status==='cancelled' ? 'text-rose-800' : status==='done' ? 'text-emerald-800' : active ? 'text-amber-900' : 'text-slate-400';
-        const label = status==='cancelled' ? 'Đã hủy' : status==='done' ? 'Hoàn thành' : active ? (status==='makeup' ? 'Học bù' : 'Có lịch') : 'Không có lịch';
-        return `<div class="rounded-xl border ${color} p-3 min-h-[104px]"><div class="flex flex-col gap-1"><span class="text-[11px] font-extrabold ${textColor}">${day}</span><span class="text-[10px] ${textColor} opacity-80">${studentFmtDate(dates[idx])}</span></div><p class="mt-3 text-sm font-extrabold leading-snug ${textColor}">${active?studentEsc(time):'—'}</p><p class="mt-2 text-[10px] font-semibold ${textColor}">${label}</p></div>`;
-      }).join('');
-      const linksBox = document.getElementById('student-week-links-inline');
-      if (linksBox) {
-        const items = [];
-        const lessonSource = links.lessons ?? links.lesson ?? [];
-        const homeworkSource = links.homeworks ?? links.hw ?? [];
-        const arr = Array.isArray(lessonSource) ? lessonSource : (lessonSource ? [{name:'Bài học',url:lessonSource}] : []);
-        const hw = Array.isArray(homeworkSource) ? homeworkSource : (homeworkSource ? [{name:'Bài tập',url:homeworkSource}] : []);
-        [...arr.map(x=>({...x,type:'Bài học'})),...hw.map(x=>({...x,type:'Bài tập'}))].forEach(x=>{if(x.url)items.push(`<a class="text-xs text-sky-700 underline" target="_self" rel="noopener" href="${studentEsc(x.url)}">${studentEsc(x.title||x.name||x.type)}</a>`);});
-        linksBox.innerHTML = items.length ? items.join('<span class="text-slate-300 mx-2">·</span>') : '<span class="text-xs text-slate-400">Chưa có link học liệu cho tuần này.</span>';
-      }
-    }
-    renderStudentSchedule();
-    const historyToggle = document.getElementById('toggle-student-history');
-    if (historyToggle) {
-      historyToggle.addEventListener('click', () => {
-        const panel = document.getElementById('student-session-history');
-        const expanded = historyToggle.getAttribute('aria-expanded') === 'true';
-        historyToggle.setAttribute('aria-expanded', String(!expanded));
-        panel.classList.toggle('hidden', expanded);
-        historyToggle.innerHTML = expanded ? '<i data-lucide="chevron-down" class="w-4 h-4"></i><span>Mở rộng</span>' : '<i data-lucide="chevron-up" class="w-4 h-4"></i><span>Thu gọn</span>';
-        if (window.lucide) lucide.createIcons();
+
+    function bind() {
+      $('app').addEventListener('click', e => {
+        const o = e.target.closest('.opt');
+        if (o && !o.disabled) { const box = o.closest('.qbox'); box.querySelectorAll('.opt').forEach(b => b.setAttribute('aria-pressed', b === o ? 'true' : 'false')); S.answers[box.dataset.q] = o.dataset.o; return; }
+        if (e.target.closest('#btn-submit')) submit();
       });
+      $('app').addEventListener('input', e => { const i = e.target.closest('[data-fill]'); if (i) S.answers[i.closest('.qbox').dataset.q] = i.value; });
+      window.addEventListener('hashchange', route);
     }
 
-    const localClassLinks = JSON.parse(localStorage.getItem(`class_${classStorageId}_week_links`) || '{}');
-    const classLinks = (Object.keys(weekLinksFromUrl).length ? weekLinksFromUrl : localClassLinks)[currentWeekKey] || {};
-    function firstLinkUrl(value) {
-      if (Array.isArray(value)) return (value.find(x => x && x.url) || {}).url || '#';
-      return value && typeof value === 'object' ? (value.url || '#') : (value || '#');
+    function boot() {
+      icons(); bind(); S.c = LMS.client();
+      if (!S.c) return showError('Không tải được thư viện kết nối. Kiểm tra mạng rồi tải lại trang.');
+      route();
     }
-    document.getElementById("btn-class-lesson").href = firstLinkUrl(classLinks.lessons ?? classLinks.lesson);
-    document.getElementById("btn-class-hw").href = firstLinkUrl(classLinks.homeworks ?? classLinks.hw);
-
-    const attKey = `class_${classStorageId}_att_${currentWeekKey}`;
-    document.getElementById("attendance-summary").textContent = (JSON.parse(localStorage.getItem(attKey) || '{}')[studentStorageId] !== false) ? "Chuyên cần: Chưa có dữ liệu" : "Chuyên cần: Vắng";
-
-    const sheetKey = `student_${classStorageId}_${studentStorageId}_sheet_url`;
-    document.getElementById('btn-sheet').href = localStorage.getItem(sheetKey) || "https://docs.google.com";
-
-    function editAnswerSheetUrl() {
-      if (!isTeacherUnlocked) return;
-      const newUrl = prompt("Dán link Answer Sheet riêng:", document.getElementById('btn-sheet').href);
-      if (newUrl && newUrl.trim()) { localStorage.setItem(sheetKey, newUrl.trim()); document.getElementById('btn-sheet').href = newUrl.trim(); }
-    }
-
-    const progressSheetKey = `student_${classStorageId}_${studentStorageId}_progress_sheet_url`;
-    function renderProgressSheet() {
-      const savedUrl = localStorage.getItem(progressSheetKey);
-      const frame = document.getElementById('embed-sheet-frame'), placeholder = document.getElementById('embed-placeholder');
-      if (savedUrl && savedUrl.trim()) {
-        frame.src = savedUrl.trim().includes('/edit') ? savedUrl.trim().replace(/\/edit.*$/, '/pubhtml?widget=true&headers=false') : savedUrl.trim();
-        frame.classList.remove('hidden'); placeholder.classList.add('hidden');
-      } else { frame.classList.add('hidden'); placeholder.classList.remove('hidden'); }
-    }
-    function configureProgressSheet() {
-      if (!isTeacherUnlocked) return;
-      const url = prompt("Dán link Google Sheet tiến độ:", localStorage.getItem(progressSheetKey) || "");
-      if (url !== null) { url.trim() ? localStorage.setItem(progressSheetKey, url.trim()) : localStorage.removeItem(progressSheetKey); renderProgressSheet(); }
-    }
-
-    // Paste the deployed Google Apps Script Web App URL here to send results to the teacher's spreadsheet.
-    const RESULTS_WEB_APP_URL = "";
-    const resultStorageKey = `student_${classStorageId}_${studentStorageId}_results`;
-    function renderResultHistory() {
-      const records = JSON.parse(localStorage.getItem(resultStorageKey) || '[]');
-      const target = document.getElementById('result-history');
-      if (!records.length) { target.innerHTML = '<p class="text-xs text-slate-400">Chưa có kết quả được lưu.</p>'; return; }
-      target.innerHTML = records.slice().reverse().map(item => `<div class="flex items-start justify-between gap-3 rounded-xl border border-slate-100 bg-slate-50 p-3"><div class="min-w-0"><p class="text-xs font-bold text-slate-800 break-words">${escapeHtml(item.testName)}</p><p class="text-[11px] text-slate-500 mt-1">${new Date(item.submittedAt).toLocaleString('vi-VN')}${item.note ? ' · ' + escapeHtml(item.note) : ''}</p></div><span class="shrink-0 rounded-lg bg-sky-50 border border-sky-100 px-2.5 py-1 text-xs font-bold text-sky-800">${item.score} / ${item.maxScore}</span></div>`).join('');
-    }
-    function escapeHtml(value) { return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
-    if (RESULTS_WEB_APP_URL) { document.getElementById('result-sync-badge').textContent = 'Đã cấu hình gửi kết quả'; document.getElementById('result-sync-badge').className = 'text-[10px] font-semibold px-2.5 py-1 rounded-full bg-sky-50 text-sky-700 border border-sky-200'; }
-    document.getElementById('result-submission-form').addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const testName = document.getElementById('result-test-name').value.trim();
-      const score = Number(document.getElementById('result-score').value);
-      const maxScore = Number(document.getElementById('result-max-score').value);
-      const note = document.getElementById('result-note').value.trim();
-      if (!testName || !Number.isFinite(score) || !Number.isFinite(maxScore) || score < 0 || maxScore <= 0 || score > maxScore) return alert('Kiểm tra lại tên bài và điểm số (điểm đạt được không được lớn hơn tổng điểm).');
-      const record = { classId: classStorageId, className: targetClass, studentId: studentStorageId, studentName: targetStudent, testName, score, maxScore, note, submittedAt: new Date().toISOString() };
-      const records = JSON.parse(localStorage.getItem(resultStorageKey) || '[]'); records.push(record); localStorage.setItem(resultStorageKey, JSON.stringify(records));
-      if (RESULTS_WEB_APP_URL) {
-        try {
-          await fetch(RESULTS_WEB_APP_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' }, body: new URLSearchParams(record).toString() });
-          document.getElementById('result-submit-message').textContent = 'Đã gửi yêu cầu ghi nhận kết quả. Hãy kiểm tra Google Sheets để xác nhận dữ liệu đã vào bảng.';
-        } catch (error) { document.getElementById('result-submit-message').textContent = 'Đã lưu trên thiết bị này nhưng gửi lên bảng tính chưa thành công. Hãy thử lại sau.'; }
-      } else {
-        document.getElementById('result-submit-message').textContent = 'Đã lưu trên thiết bị này. Để giáo viên nhận được kết quả, cần cấu hình Google Apps Script Web App URL trong file student.html.';
-      }
-      event.target.reset(); renderResultHistory();
-    });
-    renderResultHistory();
-
-    const tuitionKey = `student_${classStorageId}_${studentStorageId}_tuition_${new Date().getFullYear()}_${String(new Date().getMonth()+1).padStart(2,"0")}`;
-    const registryTuition = sharedStudent && Number.isFinite(Number(sharedStudent.monthlyTuition)) ? Number(sharedStudent.monthlyTuition) : 1200000;
-    const defaultTuitionAmount = registryTuition.toLocaleString('vi-VN') + ' đ';
-    const tData = JSON.parse(localStorage.getItem(tuitionKey) || JSON.stringify({amount:defaultTuitionAmount,status:"unpaid",date:""}));
-    document.getElementById("input-tuition-amount").value = tData.amount;
-    document.getElementById("select-tuition-status").value = tData.status;
-    document.getElementById("input-tuition-date").value = tData.date;
-
-    function unlockTuitionForm() {
-      ['input-tuition-amount', 'select-tuition-status', 'input-tuition-date'].forEach(id => {
-        const el = document.getElementById(id); el.disabled = false; el.classList.add("border-slate-300"); el.classList.remove("border-transparent", "bg-transparent");
-      });
-    }
-    function lockTuitionForm() {
-      ['input-tuition-amount', 'select-tuition-status', 'input-tuition-date'].forEach(id => {
-        const el = document.getElementById(id); el.disabled = true; el.classList.remove("border-slate-300"); el.classList.add("border-transparent", "bg-transparent");
-      });
-      document.getElementById("tuition-status-badge").textContent = document.getElementById("select-tuition-status").value === "paid" ? "Đã thanh toán" : "Chưa đóng";
-      document.getElementById("tuition-status-badge").className = document.getElementById("select-tuition-status").value === "paid" ? "px-2.5 py-0.5 rounded-full text-xs font-bold bg-sky-100 text-sky-800" : "px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800";
-    }
-
-    document.getElementById("btn-save-tuition").addEventListener("click", () => {
-      localStorage.setItem(tuitionKey, JSON.stringify({ amount: document.getElementById("input-tuition-amount").value, status: document.getElementById("select-tuition-status").value, date: document.getElementById("input-tuition-date").value }));
-      lockTuitionForm(); alert("Đã lưu!");
-    });
-
-    renderProgressSheet(); lockTuitionForm(); lucide.createIcons();
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  })();
   </script>
 </body>
 </html>

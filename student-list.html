@@ -1,63 +1,314 @@
 <!DOCTYPE html>
-<html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Student List | Quản lý học viên</title><script src="https://cdn.tailwindcss.com"></script><script src="https://unpkg.com/lucide@latest"></script><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><style>body{font-family:'Plus Jakarta Sans',sans-serif;background:#f3f9ff;color:#172033}input,select,button{transition:.15s}input:focus,select:focus{outline:none;border-color:#0ea5e9;box-shadow:0 0 0 3px #0ea5e922}::selection{background:#e0f2fe}</style>
-<style id="lms-full-width-responsive">
-  html, body { width:100%; max-width:100%; }
-  body { overflow-x:hidden; }
-  main, header > div, body > div { box-sizing:border-box; }
-  img, video, canvas, iframe { max-width:100%; }
-  input, select, textarea { max-width:100%; min-width:0; }
-  table { max-width:100%; }
-  @media (max-width: 640px) {
-    .overflow-x-auto { -webkit-overflow-scrolling:touch; }
-    header .min-w-\[140px\] { min-width:0; }
-    body { padding-left:0; padding-right:0; }
-  }
-</style>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Student List | Danh sách học viên</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{colors:{sky:{50:"rgb(var(--sky-50) / <alpha-value>)",100:"rgb(var(--sky-100) / <alpha-value>)",200:"rgb(var(--sky-200) / <alpha-value>)",300:"rgb(var(--sky-300) / <alpha-value>)",400:"rgb(var(--sky-400) / <alpha-value>)",500:"rgb(var(--sky-500) / <alpha-value>)",600:"rgb(var(--sky-600) / <alpha-value>)",700:"rgb(var(--sky-700) / <alpha-value>)",800:"rgb(var(--sky-800) / <alpha-value>)",900:"rgb(var(--sky-900) / <alpha-value>)"}}}}}</script>
+  <script src="https://unpkg.com/lucide@0.462.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="lms.css">
+  <script src="lms.js"></script>
 </head>
-<body class="min-h-screen"><header class="sticky top-0 z-20 bg-white/95 backdrop-blur border-b border-sky-100"><div class="w-full max-w-none mx-auto px-3 sm:px-5 lg:px-7 py-3 flex items-center justify-between gap-3"><div class="flex items-center gap-3"><a href="index.html" class="p-2 rounded-xl hover:bg-sky-50 text-slate-500" title="Lịch tổng quan"><i data-lucide="arrow-left" class="w-4 h-4"></i></a><div class="w-10 h-10 rounded-2xl bg-sky-600 text-white grid place-items-center"><i data-lucide="users" class="w-5 h-5"></i></div><div><h1 class="font-extrabold text-slate-900">Student List</h1><p class="text-xs text-slate-500">Danh sách học viên tập trung</p></div></div><div class="flex gap-2"><button onclick="exportStudents()" class="px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-600 text-xs font-bold flex items-center gap-2"><i data-lucide="download" class="w-4 h-4"></i><span class="hidden sm:inline">Xuất CSV</span></button></div></div></header>
-<main class="w-full max-w-none mx-auto px-3 sm:px-5 lg:px-7 py-4 sm:py-6 space-y-5"><section class="grid grid-cols-1 sm:grid-cols-3 gap-3"><div class="bg-white border border-sky-100 rounded-2xl p-4"><p class="text-xs text-slate-500">Tổng học viên</p><p id="total-count" class="text-2xl font-extrabold text-sky-800 mt-1">0</p></div><div class="bg-white border border-sky-100 rounded-2xl p-4"><p class="text-xs text-slate-500">Đã xếp lớp</p><p id="assigned-count" class="text-2xl font-extrabold text-sky-800 mt-1">0</p></div><div class="bg-white border border-sky-100 rounded-2xl p-4"><p class="text-xs text-slate-500">Chưa xếp lớp</p><p id="unassigned-count" class="text-2xl font-extrabold text-amber-600 mt-1">0</p></div></section>
-<section id="editor" class="bg-white border border-sky-100 rounded-2xl p-4 sm:p-5 shadow-sm"><div class="flex items-center justify-between gap-3 mb-4"><div><h2 class="font-bold text-slate-900">Thêm / cập nhật học viên</h2><p class="text-xs text-slate-500 mt-1">Thông tin tại đây là nguồn chính cho danh sách lớp và hồ sơ cá nhân.</p></div><button onclick="resetForm()" class="text-xs text-slate-500 hover:text-sky-700">Làm mới</button></div><form id="student-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"><input type="hidden" id="student-id"><label class="text-xs text-slate-600">Họ tên *<input required id="student-name" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm" placeholder="Tên học viên"></label><label class="text-xs text-slate-600">Lớp<select id="student-class" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm"><option value="">Chưa xếp lớp</option></select></label><label class="text-xs text-slate-600">Học phí hàng tháng (VNĐ)<input id="student-monthly-tuition" type="text" inputmode="numeric" autocomplete="off" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm" placeholder="1,200,000"></label><label class="text-xs text-slate-600">Trạng thái<select id="student-status" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm"><option value="active">Đang học</option><option value="inactive">Tạm ngưng</option></select></label><label class="text-xs text-slate-600">Ghi chú<input id="student-note" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm" placeholder="Thông tin thêm"></label><div class="sm:col-span-2 lg:col-span-4 flex justify-end"><button class="px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold" type="submit">Lưu học viên</button></div></form></section>
-<section class="bg-white border border-sky-100 rounded-2xl p-4 shadow-sm"><div class="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between mb-4"><div><h2 class="font-bold text-slate-900">Danh sách học viên</h2><p class="text-xs text-slate-500 mt-1">Bấm vào hồ sơ để mở trang cá nhân.</p></div><div class="flex gap-2"><input id="search" oninput="render()" class="w-full sm:w-52 rounded-xl border border-slate-200 px-3 py-2 text-xs" placeholder="Tìm tên học viên..."><select id="filter-class" onchange="render()" class="rounded-xl border border-slate-200 px-3 py-2 text-xs"><option value="all">Tất cả lớp</option><option value="none">Chưa xếp lớp</option></select></div></div><div class="overflow-x-auto"><table class="w-full text-left"><thead><tr class="text-[11px] uppercase tracking-wide text-slate-400 border-b border-slate-100"><th class="py-3 px-2">Học viên</th><th class="py-3 px-2">Lớp</th><th class="py-3 px-2">Học phí / tháng</th><th class="py-3 px-2">Trạng thái</th><th class="py-3 px-2">Ghi chú</th><th class="py-3 px-2 text-right">Thao tác</th></tr></thead><tbody id="rows" class="divide-y divide-slate-100"></tbody></table></div><p id="empty" class="hidden text-center text-sm text-slate-400 py-10">Chưa có học viên. Thêm học viên bằng biểu mẫu phía trên.</p></section><p class="text-[11px] text-slate-400 px-1">Lưu ý: dữ liệu dùng chung localStorage trên cùng trình duyệt / thiết bị và cùng tên miền GitHub Pages. Muốn đồng bộ giữa nhiều thiết bị cần backend như Supabase.</p></main>
-<script>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col relative">
+  <nav id="lms-nav" aria-label="Điều hướng chính">
+    <div class="nav-brand"><i data-lucide="graduation-cap" style="width:26px;height:26px"></i><span>gblearning</span></div>
+    <a href="index.html" aria-label="Tổng quan"><i data-lucide="layout-dashboard"></i><span>Tổng quan</span></a>
+    <a href="student-list.html" aria-current="page" aria-label="Học viên"><i data-lucide="users"></i><span>Học viên</span></a>
+  </nav>
 
-function themedPinPrompt(){
-  return new Promise(resolve=>{
-    let modal=document.getElementById('pin-theme-modal');
-    if(!modal){
-      modal=document.createElement('div'); modal.id='pin-theme-modal';
-      modal.className='fixed inset-0 z-[999] flex items-center justify-center p-4';
-      modal.style.background='rgba(15,23,42,.48)'; modal.style.backdropFilter='blur(5px)';
-      modal.innerHTML=`<div class="w-full max-w-sm overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-2xl"><div class="p-5 sm:p-6"><div class="flex items-start gap-3"><div class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-sky-50 text-sky-700 border border-sky-100"><i data-lucide="lock-keyhole" class="h-5 w-5"></i></div><div class="min-w-0 flex-1"><h2 class="text-lg font-bold text-slate-800">PIN needed</h2><p class="mt-1 text-sm leading-5 text-slate-500">Nhập mã PIN để mở khóa chế độ giáo viên.</p></div></div><input id="pin-theme-input" type="password" inputmode="numeric" autocomplete="current-password" placeholder="PIN" aria-label="PIN giáo viên" class="mt-5 w-full rounded-xl border-2 border-sky-200 bg-sky-50 px-4 py-3 text-base font-medium text-slate-800 placeholder:text-slate-400 shadow-inner focus:border-sky-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-sky-100"><p id="pin-theme-error" class="hidden mt-2 text-xs font-medium text-rose-600">Mã PIN không đúng. Vui lòng thử lại.</p></div><div class="flex justify-end gap-2 border-t border-sky-100 bg-slate-50/80 p-4"><button type="button" id="pin-theme-cancel" class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-100">Hủy</button><button type="button" id="pin-theme-submit" class="rounded-xl bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-sky-700">Mở khóa</button></div></div>`;
-      document.body.appendChild(modal);
-    }
-    const input=modal.querySelector('#pin-theme-input'), error=modal.querySelector('#pin-theme-error'), submit=modal.querySelector('#pin-theme-submit'), cancel=modal.querySelector('#pin-theme-cancel');
-    input.value=''; error.classList.add('hidden'); modal.classList.remove('hidden');
-    if(window.lucide) lucide.createIcons(); input.focus();
-    let done=false;
-    const cleanup=value=>{if(done)return;done=true;modal.classList.add('hidden');submit.removeEventListener('click',onSubmit);cancel.removeEventListener('click',onCancel);document.removeEventListener('keydown',onKey);resolve(value)};
-    const onSubmit=()=>cleanup(input.value); const onCancel=()=>cleanup(null); const onKey=e=>{if(e.key==='Escape')cleanup(null);if(e.key==='Enter'){e.preventDefault();onSubmit()}};
-    submit.addEventListener('click',onSubmit);cancel.addEventListener('click',onCancel);document.addEventListener('keydown',onKey);
-  });
-}
-function themedPinNotice(message, title='Thông báo'){
-  let modal=document.getElementById('pin-theme-notice');
-  if(!modal){modal=document.createElement('div');modal.id='pin-theme-notice';modal.className='fixed inset-0 z-[1000] flex items-center justify-center p-4';modal.style.background='rgba(15,23,42,.48)';modal.style.backdropFilter='blur(5px)';modal.innerHTML=`<div class="w-full max-w-sm rounded-2xl border border-sky-100 bg-white p-5 shadow-2xl"><div class="flex items-start gap-3"><div class="grid h-10 w-10 place-items-center rounded-xl bg-sky-50 text-sky-700"><i data-lucide="info" class="h-5 w-5"></i></div><div class="flex-1"><h2 id="pin-notice-title" class="font-bold text-slate-800"></h2><p id="pin-notice-message" class="mt-2 text-sm leading-6 text-slate-600"></p></div></div><div class="mt-5 flex justify-end"><button id="pin-notice-ok" class="rounded-xl bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-sky-700">Đã hiểu</button></div></div>`;document.body.appendChild(modal)}
-  modal.querySelector('#pin-notice-title').textContent=title;modal.querySelector('#pin-notice-message').textContent=message;modal.classList.remove('hidden');if(window.lucide)lucide.createIcons();modal.querySelector('#pin-notice-ok').onclick=()=>modal.classList.add('hidden');
-}
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30">
+    <div class="w-full max-w-none mx-auto px-3 sm:px-5 lg:px-7 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-sky-600 flex items-center justify-center text-white"><i data-lucide="users" class="w-4 h-4"></i></div>
+        <h1 class="text-base font-bold text-slate-900">Danh sách học viên</h1>
+      </div>
+      <div class="header-tools flex items-center gap-2">
+        <button id="btn-theme" type="button" aria-label="Tùy chỉnh màu chủ đề" aria-haspopup="dialog" aria-expanded="false"><i data-lucide="palette" class="w-5 h-5"></i></button>
+      </div>
+    </div>
+  </header>
 
-const KEY='lms_students_registry_v1'; let unlocked=true;
-function uid(){return 'STU_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7)}
-function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function records(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return []}} function save(a){localStorage.setItem(KEY,JSON.stringify(a))}
-function getClasses(){let map=new Map();try{const all=JSON.parse(localStorage.getItem('all_weeks_schedule_data')||'{}');Object.values(all).flat().forEach(r=>{if(r&&!r.isSpecial&&r.id&&r.name)map.set(String(r.id),{id:String(r.id),name:r.name})})}catch(e){};return [...map.values()].sort((a,b)=>a.name.localeCompare(b.name,'vi'))}
-function populateClasses(){const classes=getClasses();const select=document.getElementById('student-class');select.innerHTML='<option value="">Chưa xếp lớp</option>'+classes.map(c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('');const filter=document.getElementById('filter-class');const old=filter.value;filter.innerHTML='<option value="all">Tất cả lớp</option><option value="none">Chưa xếp lớp</option>'+classes.map(c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('');if([...filter.options].some(o=>o.value===old))filter.value=old}
-function syncClassNames(){const classes=getClasses(), names=new Map(classes.map(c=>[c.id,c.name]));let list=records(), changed=false;list.forEach(s=>{if(s.classId&&names.has(String(s.classId))&&s.className!==names.get(String(s.classId))){s.className=names.get(String(s.classId));changed=true}});if(changed)save(list)}
-function render(){populateClasses();syncClassNames();let list=records();const q=document.getElementById('search').value.trim().toLowerCase(), f=document.getElementById('filter-class').value, classes=new Map(getClasses().map(c=>[c.id,c.name]));document.getElementById('total-count').textContent=list.length;document.getElementById('assigned-count').textContent=list.filter(s=>s.classId).length;document.getElementById('unassigned-count').textContent=list.filter(s=>!s.classId).length;list=list.filter(s=>(!q||s.name.toLowerCase().includes(q))&&(f==='all'||(f==='none'?!s.classId:String(s.classId)===f)));document.getElementById('rows').innerHTML=list.map(s=>`<tr class="hover:bg-sky-50/50"><td class="py-3 px-2"><div class="font-semibold text-sm text-slate-800">${esc(s.name)}</div><div class="text-[10px] text-slate-400">${esc(s.id)}</div></td><td class="py-3 px-2 text-xs text-slate-600">${esc(s.className||classes.get(String(s.classId))||'Chưa xếp lớp')}</td><td class="py-3 px-2 text-xs font-semibold text-slate-700">${Number(s.monthlyTuition||0).toLocaleString('vi-VN')} đ</td><td class="py-3 px-2"><span class="text-[11px] px-2 py-1 rounded-full ${s.active===false?'bg-amber-50 text-amber-700':'bg-emerald-50 text-emerald-700'}">${s.active===false?'Tạm ngưng':'Đang học'}</span></td><td class="py-3 px-2 text-xs text-slate-500">${esc(s.note||'—')}</td><td class="py-3 px-2"><div class="flex justify-end gap-1"><a class="p-2 rounded-lg hover:bg-sky-100 text-sky-700" title="Mở hồ sơ" href="student.html?classId=${encodeURIComponent(s.classId||'')}&class=${encodeURIComponent(s.className||classes.get(String(s.classId))||'Chưa xếp lớp')}&studentId=${encodeURIComponent(s.id)}&student=${encodeURIComponent(s.name)}"><i data-lucide="external-link" class="w-4 h-4"></i></a><button onclick="editStudent('${esc(s.id)}')" class="p-2 rounded-lg hover:bg-sky-100 text-slate-500" title="Sửa"><i data-lucide="pencil" class="w-4 h-4"></i></button><button onclick="removeStudent('${esc(s.id)}')" class="p-2 rounded-lg hover:bg-rose-50 text-rose-500" title="Xóa"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></td></tr>`).join('');document.getElementById('empty').classList.toggle('hidden',list.length>0);lucide.createIcons()}
-function resetForm(){document.getElementById('student-form').reset();document.getElementById('student-id').value=''}
-function editStudent(id){const s=records().find(x=>String(x.id)===String(id));if(!s)return;document.getElementById('student-id').value=s.id;document.getElementById('student-name').value=s.name;document.getElementById('student-class').value=s.classId||'';document.getElementById('student-status').value=s.active===false?'inactive':'active';document.getElementById('student-note').value=s.note||'';document.getElementById('student-monthly-tuition').value=Number(s.monthlyTuition??1200000).toLocaleString('en-US');document.getElementById('editor').scrollIntoView({behavior:'smooth'})}
-function removeStudent(id){if(!confirm('Xóa học viên khỏi Student List? Hồ sơ và dữ liệu đã lưu trong localStorage có thể không còn được liên kết.'))return;save(records().filter(s=>String(s.id)!==String(id)));render()}
-const tuitionInput=document.getElementById('student-monthly-tuition'); tuitionInput.addEventListener('input',()=>{const digits=tuitionInput.value.replace(/\D/g,'');tuitionInput.value=digits?Number(digits).toLocaleString('en-US'):''});
-document.getElementById('student-form').addEventListener('submit',e=>{e.preventDefault();const id=document.getElementById('student-id').value||uid(), name=document.getElementById('student-name').value.trim(), classId=document.getElementById('student-class').value, cls=getClasses().find(c=>c.id===classId);if(!name)return;let list=records();if(list.some(s=>s.id!==id&&s.name.toLowerCase()===name.toLowerCase()&&String(s.classId||'')===String(classId)))return alert('Học viên này đã có trong lớp đã chọn.');const old=list.find(s=>s.id===id)||{};const item={...old,id,name,classId,className:cls?.name||'',active:document.getElementById('student-status').value==='active',note:document.getElementById('student-note').value.trim(),monthlyTuition:Math.max(0,Number(document.getElementById('student-monthly-tuition').value.replace(/,/g,'')||0)),createdAt:old.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()};const ix=list.findIndex(s=>s.id===id);if(ix>=0)list[ix]=item;else list.push(item);save(list);resetForm();render()});
-function exportStudents(){const list=records(),rows=[['Student ID','Name','Class','Monthly Tuition (VND)','Status','Note'],...list.map(s=>[s.id,s.name,s.className,s.monthlyTuition||0,s.active===false?'Inactive':'Active',s.note||''])];const csv='\ufeff'+rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));a.download='student-list.csv';a.click();URL.revokeObjectURL(a.href)}
-render();
-</script></body></html>
+  <main class="flex-1 w-full max-w-none mx-auto px-3 sm:px-5 lg:px-7 py-4 sm:py-6 space-y-6">
+    <section class="panel-overview rounded-2xl p-5 sm:p-6" aria-label="Tổng quan học viên">
+      <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2 mb-4"><i data-lucide="layout-dashboard" class="w-4 h-4"></i><span>Tổng quan</span></h3>
+      <div class="grid grid-cols-3 gap-3">
+        <div class="stat-tile"><div class="stat-n" id="total-count">–</div><div class="stat-l">Tổng học viên</div></div>
+        <div class="stat-tile"><div class="stat-n" id="assigned-count">–</div><div class="stat-l">Đã xếp lớp</div></div>
+        <div class="stat-tile"><div class="stat-n" id="unassigned-count">–</div><div class="stat-l">Chưa xếp lớp</div></div>
+      </div>
+    </section>
+
+    <section class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6" aria-label="Danh sách">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-4">
+        <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2 whitespace-nowrap"><i data-lucide="list" class="w-4 h-4"></i><span>Học viên</span></h3>
+        <div class="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:items-center">
+          <input id="search" type="search" class="field w-full sm:w-56" placeholder="Tìm tên, mã hoặc lớp" aria-label="Tìm học viên">
+          <select id="filter-class" class="field w-full sm:w-52" aria-label="Lọc theo lớp"></select>
+          <button id="btn-add" type="button" class="btn-primary"><i data-lucide="plus" class="w-4 h-4"></i><span>Thêm học viên</span></button>
+          <button id="btn-export" type="button" class="btn-soft" aria-label="Xuất CSV"><i data-lucide="download" class="w-4 h-4"></i><span>Xuất CSV</span></button>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="stack w-full text-left text-sm">
+          <thead>
+            <tr class="text-[11px] text-slate-400 font-bold border-b border-slate-100">
+              <th class="py-2.5 px-2">Học viên</th>
+              <th class="py-2.5 px-2">Lớp</th>
+              <th class="py-2.5 px-2">Học phí tháng</th>
+              <th class="py-2.5 px-2">Trạng thái</th>
+              <th class="py-2.5 px-2">Ghi chú</th>
+              <th class="py-2.5 px-2 text-right">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="rows" class="divide-y divide-slate-100"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="editor" class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6" aria-label="Thêm hoặc sửa học viên">
+      <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2 mb-4"><i data-lucide="user-plus" class="w-4 h-4"></i><span id="editor-title">Thêm học viên</span></h3>
+      <form id="student-form" novalidate class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <input type="hidden" id="student-id">
+        <div>
+          <label class="field-label" for="student-name">Họ tên</label>
+          <input id="student-name" type="text" class="field w-full" autocomplete="off" required>
+        </div>
+        <div>
+          <label class="field-label" for="student-class">Lớp</label>
+          <select id="student-class" class="field w-full"></select>
+        </div>
+        <div>
+          <label class="field-label" for="student-status">Trạng thái</label>
+          <select id="student-status" class="field w-full">
+            <option value="active">Đang học</option>
+            <option value="inactive">Tạm ngưng</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label" for="student-tuition">Học phí hàng tháng (đồng)</label>
+          <input id="student-tuition" type="text" inputmode="numeric" class="field w-full" placeholder="0" autocomplete="off">
+        </div>
+        <div class="sm:col-span-2">
+          <label class="field-label" for="student-note">Ghi chú</label>
+          <textarea id="student-note" class="field w-full"></textarea>
+        </div>
+        <div id="code-row" class="sm:col-span-2 hidden text-xs text-slate-500">Mã học viên: <span id="code-view" class="code-chip"></span></div>
+        <div class="sm:col-span-2 flex flex-wrap items-center gap-3">
+          <button type="submit" id="btn-save" class="btn-primary"><i data-lucide="save" class="w-4 h-4"></i><span>Lưu</span></button>
+          <button type="button" id="btn-cancel" class="btn-soft">Hủy</button>
+          <span id="form-msg" role="alert" class="text-sm text-rose-700"></span>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      const $ = id => document.getElementById(id);
+      const esc = LMS.esc;
+      const state = { client: null, classes: [], students: [], q: '', cls: 'all', busy: false };
+
+      const natural = (a, b) => String(a).localeCompare(String(b), 'vi', { numeric: true });
+      const vnd = n => Number(n || 0).toLocaleString('vi-VN') + ' đ';
+      const classOf = s => state.classes.find(c => c.id === s.class_id);
+      const find = id => state.students.find(s => s.id === Number(id));
+      const icons = () => { if (window.lucide) lucide.createIcons(); };
+
+      function setMsg(t) { $('form-msg').textContent = t || ''; }
+
+      async function load() {
+        const [c, s] = await Promise.all([
+          state.client.from('classes').select('id,class_code,class_name').order('class_code'),
+          state.client.from('students').select('id,student_code,student_name,class_id,is_active,note,monthly_tuition').order('id')
+        ]);
+        if (c.error) throw c.error;
+        if (s.error) throw s.error;
+        state.classes = (c.data || []).slice().sort((a, b) => natural(a.class_code, b.class_code));
+        state.students = (s.data || []).map(r => Object.assign({}, r, { monthly_tuition: Number(r.monthly_tuition || 0) }));
+      }
+
+      function fillClassSelects() {
+        const opts = state.classes.map(c => `<option value="${c.id}">${esc(c.class_name)}</option>`).join('');
+        const f = $('filter-class'), old = f.value || 'all';
+        f.innerHTML = '<option value="all">Tất cả lớp</option><option value="none">Chưa xếp lớp</option>' + opts;
+        f.value = [...f.options].some(o => o.value === old) ? old : 'all';
+        const e = $('student-class'), oldE = e.value;
+        e.innerHTML = '<option value="">Chưa xếp lớp</option>' + opts;
+        e.value = [...e.options].some(o => o.value === oldE) ? oldE : '';
+      }
+
+      function visible() {
+        const q = state.q.trim().toLowerCase(), f = $('filter-class').value;
+        return state.students.filter(s => {
+          const cls = classOf(s);
+          const hay = (s.student_name + ' ' + s.student_code + ' ' + (cls ? cls.class_name : '')).toLowerCase();
+          if (q && !hay.includes(q)) return false;
+          if (f === 'all') return true;
+          if (f === 'none') return !s.class_id;
+          return String(s.class_id) === f;
+        }).sort((a, b) => {
+          const ca = classOf(a), cb = classOf(b);
+          if (!ca && cb) return 1; if (ca && !cb) return -1;
+          return (ca && cb ? natural(ca.class_code, cb.class_code) : 0) || (a.id - b.id);
+        });
+      }
+
+      function render() {
+        fillClassSelects();
+        const all = state.students;
+        $('total-count').textContent = all.length;
+        $('assigned-count').textContent = all.filter(s => s.class_id).length;
+        $('unassigned-count').textContent = all.filter(s => !s.class_id).length;
+        const list = visible();
+        if (!list.length) {
+          $('rows').innerHTML = '<tr><td colspan="6" class="py-6 px-2 text-center text-slate-400 text-sm">Không có học viên phù hợp.</td></tr>';
+          return icons();
+        }
+        $('rows').innerHTML = list.map(s => {
+          const cls = classOf(s);
+          const clsCell = cls ? `<a href="class.html?class=${encodeURIComponent(cls.class_code)}" class="text-sky-700 underline">${esc(cls.class_name)}</a>` : 'Chưa xếp lớp';
+          return `<tr class="hover:bg-slate-50/60">
+            <td class="cell-main py-3 px-2">
+              <div class="font-semibold text-sm text-slate-800">${esc(s.student_name)}</div>
+              <div class="code-chip mt-0.5"><span>${esc(s.student_code)}</span>
+                <button type="button" class="icon-btn" style="width:32px;height:32px" data-act="copy" data-id="${s.id}" aria-label="Sao chép mã ${esc(s.student_name)}"><i data-lucide="copy" class="w-3.5 h-3.5"></i></button>
+              </div>
+            </td>
+            <td class="py-3 px-2 text-xs text-slate-600">${clsCell}</td>
+            <td class="py-3 px-2 text-xs font-semibold text-slate-700">${vnd(s.monthly_tuition)}</td>
+            <td class="py-3 px-2"><span class="text-[11px] px-2 py-1 rounded-full ${s.is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${s.is_active ? 'Đang học' : 'Tạm ngưng'}</span></td>
+            <td class="py-3 px-2 text-xs text-slate-500">${esc(s.note || '—')}</td>
+            <td class="cell-actions py-3 px-2"><div class="flex justify-end">
+              <button type="button" class="icon-btn" data-act="edit" data-id="${s.id}" aria-label="Sửa ${esc(s.student_name)}"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+              <button type="button" class="icon-btn danger" data-act="delete" data-id="${s.id}" aria-label="Xóa ${esc(s.student_name)}"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+            </div></td>
+          </tr>`;
+        }).join('');
+        icons();
+      }
+
+      function resetForm() {
+        $('student-form').reset();
+        $('student-id').value = ''; $('student-tuition').value = '';
+        $('editor-title').textContent = 'Thêm học viên';
+        $('code-row').classList.add('hidden'); setMsg('');
+      }
+
+      function edit(id) {
+        const s = find(id); if (!s) return;
+        $('student-id').value = s.id;
+        $('student-name').value = s.student_name;
+        $('student-class').value = s.class_id ? String(s.class_id) : '';
+        $('student-status').value = s.is_active ? 'active' : 'inactive';
+        $('student-note').value = s.note || '';
+        $('student-tuition').value = Number(s.monthly_tuition || 0).toLocaleString('en-US');
+        $('editor-title').textContent = 'Sửa học viên';
+        $('code-view').textContent = s.student_code; $('code-row').classList.remove('hidden'); setMsg('');
+        $('editor').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        $('student-name').focus({ preventScroll: true });
+      }
+
+      async function reload(msg) {
+        try { await load(); render(); if (msg) LMS.toast(msg); }
+        catch (e) { setMsg(LMS.friendlyError(e)); }
+      }
+
+      async function onSubmit(ev) {
+        ev.preventDefault();
+        if (state.busy) return;
+        const name = $('student-name').value.trim();
+        if (!name) { setMsg('Nhập họ tên học viên.'); $('student-name').focus(); return; }
+        const classId = $('student-class').value;
+        const payload = {
+          student_name: name,
+          class_id: classId ? Number(classId) : null,
+          is_active: $('student-status').value === 'active',
+          note: $('student-note').value.trim() || null,
+          monthly_tuition: Math.max(0, Number(String($('student-tuition').value).replace(/\D/g, '') || 0))
+        };
+        const id = $('student-id').value;
+        state.busy = true; $('btn-save').disabled = true; setMsg('');
+        const res = id
+          ? await state.client.from('students').update(payload).eq('id', Number(id))
+          : await state.client.from('students').insert(payload);
+        state.busy = false; $('btn-save').disabled = false;
+        if (res.error) {
+          setMsg(res.error.code === '23505' ? 'Học viên này đã có trong lớp đã chọn.' : LMS.friendlyError(res.error));
+          return;
+        }
+        resetForm();
+        await reload(id ? 'Đã cập nhật học viên.' : 'Đã thêm học viên.');
+      }
+
+      async function remove(id) {
+        const s = find(id); if (!s) return;
+        if (!confirm(`Xóa "${s.student_name}" khỏi danh sách?`)) return;
+        const res = await state.client.from('students').delete().eq('id', s.id);
+        if (res.error) {
+          if (res.error.code === '23503') {
+            if (confirm(`"${s.student_name}" đã có bài nộp nên không thể xóa (để giữ điểm). Chuyển sang Tạm ngưng?`)) {
+              const u = await state.client.from('students').update({ is_active: false }).eq('id', s.id);
+              if (u.error) { alert(LMS.friendlyError(u.error)); return; }
+              await reload('Đã chuyển sang Tạm ngưng.');
+            }
+            return;
+          }
+          alert(LMS.friendlyError(res.error)); return;
+        }
+        await reload('Đã xóa học viên.');
+      }
+
+      async function copyCode(id) {
+        const s = find(id); if (!s) return;
+        try { await navigator.clipboard.writeText(s.student_code); LMS.toast('Đã sao chép mã ' + s.student_code); }
+        catch (e) { LMS.toast('Không sao chép được. Mã: ' + s.student_code); }
+      }
+
+      function exportCsv() {
+        const rows = [['Mã học viên', 'Họ tên', 'Lớp', 'Học phí hàng tháng (VND)', 'Trạng thái', 'Ghi chú']]
+          .concat(visible().map(s => [s.student_code, s.student_name, (classOf(s) || {}).class_name || '', s.monthly_tuition || 0, s.is_active ? 'Đang học' : 'Tạm ngưng', s.note || '']));
+        const csv = '\ufeff' + rows.map(r => r.map(v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"').join(',')).join('\r\n');
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+        a.download = 'student-list.csv'; a.click(); URL.revokeObjectURL(a.href);
+      }
+
+      function bind() {
+        $('search').addEventListener('input', e => { state.q = e.target.value; render(); });
+        $('filter-class').addEventListener('change', render);
+        $('btn-add').addEventListener('click', () => { resetForm(); $('editor').scrollIntoView({ behavior: 'smooth', block: 'start' }); $('student-name').focus({ preventScroll: true }); });
+        $('btn-export').addEventListener('click', exportCsv);
+        $('btn-cancel').addEventListener('click', resetForm);
+        $('student-form').addEventListener('submit', onSubmit);
+        const tuition = $('student-tuition');
+        tuition.addEventListener('focus', () => tuition.select());
+        tuition.addEventListener('input', () => { const d = tuition.value.replace(/\D/g, ''); tuition.value = d ? Number(d).toLocaleString('en-US') : ''; });
+        $('rows').addEventListener('click', e => {
+          const b = e.target.closest('[data-act]'); if (!b) return;
+          const act = b.dataset.act, id = b.dataset.id;
+          if (act === 'edit') edit(id); else if (act === 'delete') remove(id); else if (act === 'copy') copyCode(id);
+        });
+      }
+
+      async function boot() {
+        icons(); bind();
+        $('rows').innerHTML = '<tr><td colspan="6" class="py-6 px-2 text-center text-slate-400 text-sm">Đang tải danh sách...</td></tr>';
+        try {
+          const { client } = await LMS.requireTeacher();
+          state.client = client;
+          await load();
+          render();
+        } catch (e) {
+          $('rows').innerHTML = `<tr><td colspan="6" class="py-6 px-2 text-center text-rose-700 text-sm">${esc(LMS.friendlyError(e))}</td></tr>`;
+        }
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+    })();
+  </script>
+</body>
+</html>

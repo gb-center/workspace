@@ -2,29 +2,19 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  
   <title>Classroom | Lớp học</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>tailwind.config={theme:{extend:{colors:{sky:{50:"rgb(var(--sky-50) / <alpha-value>)",100:"rgb(var(--sky-100) / <alpha-value>)",200:"rgb(var(--sky-200) / <alpha-value>)",300:"rgb(var(--sky-300) / <alpha-value>)",400:"rgb(var(--sky-400) / <alpha-value>)",500:"rgb(var(--sky-500) / <alpha-value>)",600:"rgb(var(--sky-600) / <alpha-value>)",700:"rgb(var(--sky-700) / <alpha-value>)",800:"rgb(var(--sky-800) / <alpha-value>)",900:"rgb(var(--sky-900) / <alpha-value>)"}}}}}</script>
+  <script src="https://unpkg.com/lucide@0.462.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style> body { font-family: 'Plus Jakarta Sans', sans-serif; } </style>
-
-  <style id="lms-design-system">
-    :root{color-scheme:light;--lms-accent:#0284c7;--lms-accent-dark:#075985;--lms-border:#dbeafe;--lms-muted:#64748b;--lms-bg:#f3f9ff}
-    body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--lms-bg);color:#172033;letter-spacing:-.01em}
-    button,a,input,select,textarea{transition:background-color .16s ease,border-color .16s ease,box-shadow .16s ease}
-    input:focus,select:focus,textarea:focus{outline:none;box-shadow:0 0 0 3px rgba(14,165,233,.16);border-color:#0ea5e9!important}
-    .rounded-2xl{border-radius:1rem}
-    .add-link-btn{align-items:center;justify-content:center;gap:.35rem;padding:.4rem .7rem;border:1px solid #bae6fd;border-radius:9999px;background:#f0f9ff;color:#0369a1;font-size:11px;font-weight:700;line-height:1.2;white-space:nowrap;box-shadow:0 1px 2px rgba(2,132,199,.05)}
-    .add-link-btn:not(.hidden){display:inline-flex}
-    .add-link-btn svg{width:14px;height:14px;stroke-width:2.5}
-    .add-link-btn:hover{background:#e0f2fe;border-color:#7dd3fc;color:#075985;box-shadow:0 2px 7px rgba(2,132,199,.12);transform:translateY(-1px)}
-    .add-link-btn:active{transform:translateY(0)}
-    ::selection{background:#e0f2fe;color:#075985}
-    ::-webkit-scrollbar{width:7px;height:7px}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:10px}
-  </style>
+  
+  <link rel="stylesheet" href="lms.css">
+  <script src="lms.js"></script>
 
 
 <style id="lms-full-width-responsive">
@@ -43,80 +33,86 @@
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col relative">
 
+<nav id="lms-nav" aria-label="Điều hướng chính">
+    <div class="nav-brand"><i data-lucide="graduation-cap" style="width:26px;height:26px"></i><span>gblearning</span></div>
+    <a href="index.html" aria-label="Tổng quan"><i data-lucide="layout-dashboard"></i><span>Tổng quan</span></a>
+    <a href="#" aria-current="page" aria-label="Lớp này"><i data-lucide="book-open"></i><span>Lớp này</span></a>
+    <a href="student-list.html" aria-label="Học viên"><i data-lucide="users"></i><span>Học viên</span></a>
+  </nav>
+
   <!-- NÚT KHÓA BẢO MẬT GIÁO VIÊN -->
-<header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+<header class="has-week bg-white border-b border-slate-200 sticky top-0 z-30">
     <div class="w-full max-w-none mx-auto px-3 sm:px-5 lg:px-7 py-3 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <a href="index.html" class="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-slate-800 transition flex items-center gap-1 text-xs font-semibold">
-          <i data-lucide="arrow-left" class="w-4 h-4"></i><span>Lịch tổng quan</span>
-        </a>
-        <span class="text-slate-300">|</span>
         <div class="flex items-center gap-2">
-          <div class="w-7 h-7 rounded-lg bg-sky-600 flex items-center justify-center text-white text-xs font-bold uppercase" id="class-avatar">CL</div>
-          <h1 class="text-sm font-bold text-slate-900" id="class-title-header">Đang tải...</h1>
+          <div class="w-9 h-9 rounded-xl bg-sky-600 flex items-center justify-center text-white text-xs font-bold" id="class-avatar">CL</div>
+          <h1 class="text-base font-bold text-slate-900" id="class-title-header">Đang tải...</h1>
         </div>
       </div>
-      <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200">
-        <button id="btn-prev-week" class="p-1 hover:bg-white rounded-lg text-slate-600 transition"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+      <div class="header-tools flex items-center gap-2">
+      <button id="btn-theme" type="button" aria-label="Tùy chỉnh màu nền" aria-haspopup="dialog" aria-expanded="false"><i data-lucide="palette" class="w-5 h-5"></i></button>
+      <div class="flex items-center gap-1.5 bg-sky-50 p-1 rounded-xl border border-slate-200">
+        <button id="btn-prev-week" class="p-2 hover:bg-white rounded-lg text-slate-600 transition" aria-label="Tuần trước"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
         <div class="text-xs text-slate-700 font-semibold px-2 flex items-center gap-1.5 min-w-[140px] justify-center">
           <i data-lucide="calendar" class="w-3.5 h-3.5 text-sky-600"></i><span id="week-indicator">Đang tải...</span>
         </div>
-        <button id="btn-next-week" class="p-1 hover:bg-white rounded-lg text-slate-600 transition"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+        <button id="btn-next-week" class="p-2 hover:bg-white rounded-lg text-slate-600 transition" aria-label="Tuần sau"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+      </div>
       </div>
     </div>
   </header>
 
   <main class="flex-1 w-full max-w-none mx-auto px-3 sm:px-5 lg:px-7 py-4 sm:py-6 space-y-6">
-    <div class="bg-gradient-to-r from-[#285f83] to-[#244a66] rounded-2xl p-6 text-white shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="hero-card rounded-2xl p-6 sm:p-7 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div class="flex-1">
         <div class="flex items-center gap-2">
-          <span class="text-xs uppercase tracking-wider font-semibold px-2 py-0.5 rounded bg-white/20 text-sky-100">Cổng Học Viên</span>
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-white/20 text-white">Cổng học viên</span>
         </div>
-        <input type="text" id="class-display-name-input" class="text-2xl font-bold mt-1 bg-transparent border-b border-transparent hover:border-sky-300/50 focus:border-white focus:bg-white/10 rounded px-1 -ml-1 outline-none w-full max-w-md transition text-white">
+        <input type="text" id="class-display-name-input" class="text-2xl sm:text-3xl font-bold mt-2 bg-transparent border-b border-transparent hover:border-sky-300/50 focus:border-white focus:bg-white/10 rounded px-1 -ml-1 outline-none w-full max-w-md transition text-white">
         <p class="text-xs text-sky-100/90 mt-1">Quản lý lịch học, học liệu và tiến độ học viên theo tuần.</p>
       </div>
-      <div class="flex items-center gap-3 shrink-0">
+      <div class="flex flex-wrap items-center gap-3 shrink-0">
         <div class="flex items-center gap-1">
-          <a id="btn-meet" href="https://meet.google.com" target="_self" class="px-3.5 py-2 bg-sky-500 hover:bg-sky-400 text-white font-semibold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
+          <a id="btn-meet" href="https://meet.google.com" target="_self" class="hero-btn solid">
             <i data-lucide="video" class="w-4 h-4"></i><span>Vào lớp Online</span>
           </a>
-          <button onclick="editExternalLink('meet')" class="teacher-feature hidden p-2 text-sky-100 hover:text-white bg-sky-700/50 rounded-lg transition" title="Đổi link Meet">
+          <button onclick="editExternalLink('meet')" class="teacher-feature hidden p-2 text-white bg-white/10 hover:bg-white/20 rounded-lg transition" title="Đổi link Meet">
             <i data-lucide="settings" class="w-4 h-4"></i>
           </button>
         </div>
         <div class="flex items-center gap-1">
-          <a id="btn-drive" href="https://drive.google.com" target="_self" class="px-3.5 py-2 bg-white/10 hover:bg-white/20 text-white font-semibold text-xs rounded-xl border border-white/20 transition flex items-center gap-1.5">
+          <a id="btn-drive" href="https://drive.google.com" target="_self" class="hero-btn ghost">
             <i data-lucide="folder" class="w-4 h-4"></i><span>Drive bài giảng</span>
           </a>
-          <button onclick="editExternalLink('drive')" class="teacher-feature hidden p-2 text-sky-100 hover:text-white bg-sky-700/50 rounded-lg transition" title="Đổi link Drive">
+          <button onclick="editExternalLink('drive')" class="teacher-feature hidden p-2 text-white bg-white/10 hover:bg-white/20 rounded-lg transition" title="Đổi link Drive">
             <i data-lucide="settings" class="w-4 h-4"></i>
           </button>
         </div>
       </div>
     </div>
 
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-5">
+    <div class="panel-overview rounded-2xl p-5 sm:p-6">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 gap-2 mb-4">
-        <div><h3 class="font-bold text-slate-900 text-sm flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4 text-sky-600"></i><span>Thời Khóa Biểu & Tình Trạng Buổi Học</span></h3></div>
+        <div><h3 class="font-bold text-slate-900 text-sm flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4 text-sky-600"></i><span>Thời khóa biểu và tình trạng buổi học</span></h3></div>
         <div class="flex items-center gap-2 text-xs">
           <div class="px-3 py-1 bg-amber-50 text-amber-700 font-semibold rounded-lg border border-amber-200 flex items-center gap-1.5"><i data-lucide="alert-circle" class="w-3.5 h-3.5"></i><span>Nợ (Hủy): <strong id="stat-debt">0</strong></span></div>
-          <div class="px-3 py-1 bg-blue-50 text-blue-700 font-semibold rounded-lg border border-blue-200 flex items-center gap-1.5"><i data-lucide="check-check" class="w-3.5 h-3.5"></i><span>Đã bù: <strong id="stat-makeup">0</strong></span></div>
+          <div class="px-3 py-1 bg-sky-50 text-sky-700 font-semibold rounded-lg border border-sky-200 flex items-center gap-1.5"><i data-lucide="check-check" class="w-3.5 h-3.5"></i><span>Đã bù: <strong id="stat-makeup">0</strong></span></div>
         </div>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-7 gap-2.5" id="schedule-grid"></div>
     </div>
 
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-5">
-      <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2 mb-3"><i data-lucide="book-open" class="w-4 h-4 text-sky-600"></i><span>Học Liệu & Bài Tập Trong Tuần</span></h3>
+    <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6">
+      <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2 mb-3"><i data-lucide="book-open" class="w-4 h-4 text-sky-600"></i><span>Học liệu và bài tập trong tuần</span></h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3">
+        <div class="p-3.5 rounded-xl panel-soft space-y-3">
           <div class="flex items-center justify-between gap-2">
             <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5"><i data-lucide="presentation" class="w-4 h-4 text-sky-600"></i>Bài học tuần</span>
             <button type="button" id="add-lesson-link" class="teacher-feature hidden add-link-btn" title="Thêm bài học" aria-label="Thêm bài học"><i data-lucide="plus"></i><span class="add-link-label">Thêm</span></button>
           </div>
           <div id="lesson-links-list" class="space-y-2"></div>
         </div>
-        <div class="p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3">
+        <div class="p-3.5 rounded-xl panel-soft space-y-3">
           <div class="flex items-center justify-between gap-2">
             <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5"><i data-lucide="file-check-2" class="w-4 h-4 text-sky-600"></i>Bài tập (Homework)</span>
             <button type="button" id="add-hw-link" class="teacher-feature hidden add-link-btn" title="Thêm bài tập" aria-label="Thêm bài tập"><i data-lucide="plus"></i><span class="add-link-label">Thêm</span></button>
@@ -125,15 +121,15 @@
         </div>
       </div>
       <div class="teacher-feature hidden mt-3 justify-end">
-        <button id="btn-save-links" class="px-4 py-2 bg-sky-800 hover:bg-sky-900 text-white font-semibold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
+        <button id="btn-save-links" class="px-4 py-2 cta-primary font-semibold text-xs rounded-xl  transition flex items-center gap-1.5">
           <i data-lucide="save" class="w-3.5 h-3.5"></i><span>Lưu đường dẫn tuần này</span>
         </button>
       </div>
     </div>
 
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-5">
+    <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 gap-3 mb-4">
-        <div><h3 class="font-bold text-slate-900 text-sm flex items-center gap-2"><i data-lucide="users" class="w-4 h-4 text-sky-600"></i><span>Danh Sách Học Sinh</span></h3></div>
+        <div><h3 class="font-bold text-slate-900 text-sm flex items-center gap-2"><i data-lucide="users" class="w-4 h-4 text-sky-600"></i><span>Danh sách học sinh</span></h3></div>
         <div class="teacher-feature hidden items-center gap-2">
           <a href="student-list.html" class="px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-lg flex items-center gap-1"><i data-lucide="users" class="w-3.5 h-3.5"></i><span>Quản lý học viên</span></a>
         </div>
@@ -143,9 +139,8 @@
           <thead>
             <tr class="text-[11px] text-slate-400 font-bold border-b border-slate-100 uppercase tracking-wider">
               <th class="py-2.5 px-3">Học sinh</th>
-              <th class="py-2.5 px-3 text-center">Trạng thái điểm danh tuần</th>
+              <th class="py-2.5 px-3 text-center">Điểm danh</th>
               <th class="py-2.5 px-3 text-center">Trang cá nhân</th>
-              <th class="py-2.5 px-3 text-right">Thao tác</th>
             </tr>
           </thead>
           <tbody id="student-list-body" class="divide-y divide-slate-100 text-xs"></tbody>
@@ -153,10 +148,10 @@
       </div>
     </div>
 
-    <section class="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 mt-5" id="session-history-section">
+    <section class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 mt-5" id="session-history-section">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100 mb-3">
         <div>
-          <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2"><i data-lucide="history" class="w-4 h-4 text-sky-600"></i><span>Lịch Sử Buổi Học</span></h3>
+          <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2"><i data-lucide="history" class="w-4 h-4 text-sky-600"></i><span>Lịch sử buổi học</span></h3>
           <p class="text-xs text-slate-500 mt-1">Xem lại các buổi học, trạng thái, bài học và bài tập của những tuần trước.</p>
         </div>
         <span id="history-week-count" class="text-[11px] text-slate-400"></span>
@@ -166,420 +161,237 @@
   </main>
 
   <script>
+  (function () {
+    'use strict';
+    const $ = id => document.getElementById(id);
+    const esc = LMS.esc;
+    const icons = () => { if (window.lucide) lucide.createIcons(); };
+    const DAYS = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ nhật'];
+    const WEEK_ANCHOR = new Date(2026, 8, 7); // thứ 2 07/09/2026 = tuần 1
+    const STATUS_TXT = { planned: 'Chưa cập nhật', done: 'Hoàn thành', cancel: 'Hủy (còn nợ buổi)', makeup: 'Đã học bù', holiday: 'Nghỉ lễ' };
+    const STATUS_CLS = { planned: 'bg-slate-100 text-slate-500', done: 'bg-emerald-50 text-emerald-700', cancel: 'bg-rose-50 text-rose-700', makeup: 'bg-sky-50 text-sky-700', holiday: 'bg-slate-100 text-slate-600' };
+    const S = { c: null, cls: null, set: {}, students: [], sessions: [], links: {}, att: {}, offset: 0, busy: false };
 
-function themedPinPrompt(){
-  return new Promise(resolve=>{
-    let modal=document.getElementById('pin-theme-modal');
-    if(!modal){
-      modal=document.createElement('div'); modal.id='pin-theme-modal';
-      modal.className='fixed inset-0 z-[999] flex items-center justify-center p-4';
-      modal.style.background='rgba(15,23,42,.48)'; modal.style.backdropFilter='blur(5px)';
-      modal.innerHTML=`<div class="w-full max-w-sm overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-2xl"><div class="p-5 sm:p-6"><div class="flex items-start gap-3"><div class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-sky-50 text-sky-700 border border-sky-100"><i data-lucide="lock-keyhole" class="h-5 w-5"></i></div><div class="min-w-0 flex-1"><h2 class="text-lg font-bold text-slate-800">PIN needed</h2><p class="mt-1 text-sm leading-5 text-slate-500">Nhập mã PIN để mở khóa chế độ giáo viên.</p></div></div><input id="pin-theme-input" type="password" inputmode="numeric" autocomplete="current-password" placeholder="PIN" aria-label="PIN giáo viên" class="mt-5 w-full rounded-xl border-2 border-sky-200 bg-sky-50 px-4 py-3 text-base font-medium text-slate-800 placeholder:text-slate-400 shadow-inner focus:border-sky-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-sky-100"><p id="pin-theme-error" class="hidden mt-2 text-xs font-medium text-rose-600">Mã PIN không đúng. Vui lòng thử lại.</p></div><div class="flex justify-end gap-2 border-t border-sky-100 bg-slate-50/80 p-4"><button type="button" id="pin-theme-cancel" class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-100">Hủy</button><button type="button" id="pin-theme-submit" class="rounded-xl bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-sky-700">Mở khóa</button></div></div>`;
-      document.body.appendChild(modal);
+    const pad = n => String(n).padStart(2, '0');
+    const ymd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+    const shortDate = d => pad(d.getDate()) + '/' + pad(d.getMonth() + 1);
+    const t5 = v => (v || '').slice(0, 5);
+    const isHttp = u => /^https?:\/\//i.test(u || '');
+    const dateOf = key => new Date(key + 'T00:00:00');
+
+    function weekDates(offset) {
+      const now = new Date(), dow = now.getDay() === 0 ? 6 : now.getDay() - 1;
+      const mon = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dow + offset * 7);
+      return Array.from({ length: 7 }, (_, i) => { const d = new Date(mon); d.setDate(mon.getDate() + i); return d; });
     }
-    const input=modal.querySelector('#pin-theme-input'), error=modal.querySelector('#pin-theme-error'), submit=modal.querySelector('#pin-theme-submit'), cancel=modal.querySelector('#pin-theme-cancel');
-    input.value=''; error.classList.add('hidden'); modal.classList.remove('hidden');
-    if(window.lucide) lucide.createIcons(); input.focus();
-    let done=false;
-    const cleanup=value=>{if(done)return;done=true;modal.classList.add('hidden');submit.removeEventListener('click',onSubmit);cancel.removeEventListener('click',onCancel);document.removeEventListener('keydown',onKey);resolve(value)};
-    const onSubmit=()=>cleanup(input.value); const onCancel=()=>cleanup(null); const onKey=e=>{if(e.key==='Escape')cleanup(null);if(e.key==='Enter'){e.preventDefault();onSubmit()}};
-    submit.addEventListener('click',onSubmit);cancel.addEventListener('click',onCancel);document.addEventListener('keydown',onKey);
-  });
-}
-function themedPinNotice(message, title='Thông báo'){
-  let modal=document.getElementById('pin-theme-notice');
-  if(!modal){modal=document.createElement('div');modal.id='pin-theme-notice';modal.className='fixed inset-0 z-[1000] flex items-center justify-center p-4';modal.style.background='rgba(15,23,42,.48)';modal.style.backdropFilter='blur(5px)';modal.innerHTML=`<div class="w-full max-w-sm rounded-2xl border border-sky-100 bg-white p-5 shadow-2xl"><div class="flex items-start gap-3"><div class="grid h-10 w-10 place-items-center rounded-xl bg-sky-50 text-sky-700"><i data-lucide="info" class="h-5 w-5"></i></div><div class="flex-1"><h2 id="pin-notice-title" class="font-bold text-slate-800"></h2><p id="pin-notice-message" class="mt-2 text-sm leading-6 text-slate-600"></p></div></div><div class="mt-5 flex justify-end"><button id="pin-notice-ok" class="rounded-xl bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-sky-700">Đã hiểu</button></div></div>`;document.body.appendChild(modal)}
-  modal.querySelector('#pin-notice-title').textContent=title;modal.querySelector('#pin-notice-message').textContent=message;modal.classList.remove('hidden');if(window.lucide)lucide.createIcons();modal.querySelector('#pin-notice-ok').onclick=()=>modal.classList.add('hidden');
-}
+    const weekNo = d => Math.floor((new Date(d.getFullYear(), d.getMonth(), d.getDate()) - WEEK_ANCHOR) / (7 * 864e5)) + 1;
+    const weekSessions = offset => { const k = weekDates(offset).map(ymd); return S.sessions.filter(s => k.includes(s.session_date)); };
+    const sessionLabel = s => DAYS[(dateOf(s.session_date).getDay() + 6) % 7];
 
-    const TEACHER_PIN = "0208";
-    let isTeacherUnlocked = true;
-    // These pages are teacher-only/private; no extra PIN gate is needed here.
-    document.querySelectorAll('.teacher-feature').forEach(el => el.classList.remove('hidden'));
-    document.querySelectorAll('.teacher-disabled').forEach(el => el.disabled = false);
+    function toast(m) { LMS.toast(m); }
+    function fail(e) { toast(LMS.friendlyError(e)); }
 
-    async function toggleGlobalTeacherMode() {
-      if (isTeacherUnlocked) {
-        isTeacherUnlocked = false;
-        document.getElementById('global-lock-icon').setAttribute('data-lucide', 'lock');
-        document.querySelectorAll('.teacher-feature').forEach(el => el.classList.add('hidden'));
-        document.querySelectorAll('.teacher-disabled').forEach(el => el.disabled = true);
-        themedPinNotice("Đã khóa chế độ giáo viên.", "Đã khóa");
-      } else {
-        const pin = await themedPinPrompt();
-        if (pin === TEACHER_PIN) {
-          isTeacherUnlocked = true;
-          document.getElementById('global-lock-icon').setAttribute('data-lucide', 'unlock');
-          document.querySelectorAll('.teacher-feature').forEach(el => el.classList.remove('hidden'));
-          document.querySelectorAll('.teacher-disabled').forEach(el => el.disabled = false);
-          themedPinNotice("Đã mở khóa tính năng chỉnh sửa!", "Đã mở khóa");
-        } else if (pin !== null) themedPinNotice("Mã PIN không đúng.", "Không thể mở khóa");
-      }
-      lucide.createIcons();
-    }
-
-    function detectClassName() {
-      const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get('class')) return urlParams.get('class').trim().toUpperCase();
-      let path = decodeURI(window.location.pathname);
-      if (path.endsWith('/')) path = path.slice(0, -1);
-      let parts = path.split('/');
-      let lastPart = parts.pop();
-      if (lastPart && lastPart.includes('.html')) {
-        if (lastPart.toLowerCase() === 'index.html') lastPart = parts.pop();
-        else lastPart = lastPart.replace(/\.html$/i, '');
-      }
-      if (!lastPart || lastPart.toLowerCase() === 'class') return "LỚP MỚI";
-      return lastPart.toUpperCase().replace(/-/g, ' ');
-    }
-
-    const pageParams = new URLSearchParams(window.location.search);
-    let targetClassName = detectClassName();
-    let targetClassId = pageParams.get('classId') || '';
-    if (targetClassId) {
-      try {
-        const storedWeeks = JSON.parse(localStorage.getItem('all_weeks_schedule_data') || '{}');
-        const matchingRow = Object.values(storedWeeks).flat().find(row => row && String(row.id) === String(targetClassId));
-        if (matchingRow && matchingRow.name) targetClassName = matchingRow.name;
-      } catch (e) {}
-    }
-    let currentWeekOffset = 0;
-    const nameInput = document.getElementById("class-display-name-input");
-    const WEEK_ANCHOR = new Date(2026, 8, 7); // Monday 07/09/2026 = Week 01
-    function makeId(prefix) { return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,7)}`; }
-    function slugId(name) { return String(name || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
-    if (!targetClassId) {
-      const registry = JSON.parse(localStorage.getItem('lms_class_id_registry') || '{}');
-      const key = slugId(targetClassName);
-      targetClassId = registry[key] || makeId('CLS'); registry[key] = targetClassId;
-      localStorage.setItem('lms_class_id_registry', JSON.stringify(registry));
-    }
-    // One-time migration of legacy name-based keys into the stable ClassID namespace.
-    ['meet_link','drive_link','students','session_statuses','week_links'].forEach(sub => {
-      const oldKey = `class_${targetClassName}_${sub}`, newKey = `class_${targetClassId}_${sub}`;
-      if (localStorage.getItem(newKey) === null && localStorage.getItem(oldKey) !== null) localStorage.setItem(newKey, localStorage.getItem(oldKey));
-    });
-    function getStorageKey(sub) { return `class_${targetClassId}_${sub}`; }
-    function getLmsWeekNumber(date) { const d = new Date(date.getFullYear(), date.getMonth(), date.getDate()); d.setHours(0,0,0,0); const a = new Date(WEEK_ANCHOR); a.setHours(0,0,0,0); return Math.floor((d-a)/(7*86400000))+1; }
-    function getLmsWeekKey(date) { return `W${String(getLmsWeekNumber(date)).padStart(2,'0')}`; }
-    function getStudentId(name) {
-      const key = getStorageKey('student_id_registry'); const map = JSON.parse(localStorage.getItem(key) || '{}');
-      if (!map[name]) { map[name] = makeId('STU'); localStorage.setItem(key, JSON.stringify(map)); }
-      return map[name];
-    }
-
-    // Init custom external links
-    document.getElementById('btn-meet').href = localStorage.getItem(getStorageKey('meet_link')) || "https://meet.google.com";
-    document.getElementById('btn-drive').href = localStorage.getItem(getStorageKey('drive_link')) || "https://drive.google.com";
-
-    function editExternalLink(type) {
-      if (!isTeacherUnlocked) return;
-      const key = getStorageKey(type + '_link');
-      const current = document.getElementById('btn-' + type).href;
-      const url = prompt(`Nhập link mới cho nút ${type.toUpperCase()}:`, current);
-      if (url !== null && url.trim()) {
-        localStorage.setItem(key, url.trim());
-        document.getElementById('btn-' + type).href = url.trim();
+    /* ---------- Tải dữ liệu ---------- */
+    async function load() {
+      const code = (new URLSearchParams(location.search).get('class') || '').trim();
+      if (!code) throw new Error('Thiếu mã lớp. Mở lớp từ trang Tổng quan.');
+      const cl = await S.c.from('classes').select('id,class_code,class_name,is_active');
+      if (cl.error) throw cl.error;
+      const low = code.toLowerCase();
+      S.cls = (cl.data || []).find(c => c.class_code.toLowerCase() === low) || (cl.data || []).find(c => c.class_name.toLowerCase() === low);
+      if (!S.cls) throw new Error('Lớp "' + code + '" chưa có trong hệ thống.');
+      const id = S.cls.id;
+      const [st, se, ss, wl] = await Promise.all([
+        S.c.from('students').select('id,student_name,student_code').eq('class_id', id).eq('is_active', true).order('id'),
+        S.c.from('class_settings').select('drive_url,meet_url').eq('class_id', id).maybeSingle(),
+        S.c.from('sessions').select('id,session_no,session_date,start_time,end_time,status,lesson,note').eq('class_id', id).order('session_date').order('start_time'),
+        S.c.from('week_links').select('week_start,lessons,homeworks').eq('class_id', id)
+      ]);
+      [st, se, ss, wl].forEach(r => { if (r.error) throw r.error; });
+      S.students = st.data || []; S.set = se.data || {}; S.sessions = ss.data || [];
+      S.links = {}; (wl.data || []).forEach(r => { S.links[r.week_start] = { lessons: r.lessons || [], homeworks: r.homeworks || [] }; });
+      S.att = {};
+      if (S.students.length && S.sessions.length) {
+        const at = await S.c.from('attendance').select('session_id,student_id,status').in('student_id', S.students.map(x => x.id));
+        if (at.error) throw at.error;
+        (at.data || []).forEach(r => { S.att[r.session_id + '|' + r.student_id] = r.status; });
       }
     }
 
-    function editStudentLink(studentId) {
-      if (!isTeacherUnlocked) return;
-      const key = getStorageKey('student_url_' + studentId);
-      const current = localStorage.getItem(key) || "";
-      const url = prompt(`Nhập link trang cá nhân riêng biệt cho học viên [${studentId}]:\n(Bỏ trống để dùng link hồ sơ tự động)`, current);
-      if (url !== null) {
-        if (url.trim()) localStorage.setItem(key, url.trim());
-        else localStorage.removeItem(key);
-        renderStudents();
-      }
+    /* ---------- Tiêu đề, liên kết ngoài ---------- */
+    function renderTitle() {
+      const n = S.cls.class_name;
+      document.title = 'Lớp ' + n + ' | gblearning';
+      $('class-title-header').textContent = 'Lớp ' + n;
+      $('class-display-name-input').value = n;
+      $('class-avatar').textContent = S.cls.class_code.substring(0, 2);
+      $('btn-meet').href = S.set.meet_url || 'https://meet.google.com';
+      $('btn-drive').href = S.set.drive_url || 'https://drive.google.com';
+    }
+    window.editExternalLink = async function (type) {
+      const cur = S.set[type + '_url'] || '';
+      const url = prompt('Nhập link mới cho nút ' + (type === 'meet' ? 'Meet' : 'Drive') + ':', cur);
+      if (url === null) return;
+      const v = url.trim();
+      if (v && !isHttp(v)) return toast('Link phải bắt đầu bằng http:// hoặc https://');
+      const patch = {}; patch[type + '_url'] = v || null;
+      const r = await S.c.from('class_settings').upsert(Object.assign({ class_id: S.cls.id }, patch));
+      if (r.error) return fail(r.error);
+      S.set[type + '_url'] = v || null; renderTitle(); toast('Đã lưu link.');
+    };
+    async function renameClass() {
+      const inp = $('class-display-name-input'), v = inp.value.trim();
+      if (!v || v === S.cls.class_name) { inp.value = S.cls.class_name; return; }
+      const r = await S.c.from('classes').update({ class_name: v }).eq('id', S.cls.id);
+      if (r.error) { inp.value = S.cls.class_name; return fail(r.error); }
+      S.cls.class_name = v; renderTitle(); toast('Đã đổi tên lớp.');
     }
 
-    function getWeekDates(offset) {
-      const now = new Date();
-      const dayOfWeek = now.getDay() === 0 ? 6 : now.getDay() - 1;
-      const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      monday.setDate(monday.getDate() - dayOfWeek + (offset * 7));
-      return Array.from({length: 7}, (_, i) => { const d = new Date(monday); d.setDate(d.getDate() + i); return d; });
-    }
-
-    function formatShortDate(d) { return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`; }
-
-    function updateTitleUI(name) {
-      targetClassName = name;
-      try {
-        const allWeeks = JSON.parse(localStorage.getItem('all_weeks_schedule_data') || '{}');
-        Object.values(allWeeks).forEach(week => (week || []).forEach(row => { if (row && String(row.id) === String(targetClassId)) row.name = name; }));
-        localStorage.setItem('all_weeks_schedule_data', JSON.stringify(allWeeks));
-      } catch (e) {}
-      document.title = `Classroom | ${name}`; document.getElementById("class-title-header").textContent = `Lớp ${name}`;
-      nameInput.value = name; document.getElementById("class-avatar").textContent = name.substring(0, 2).toUpperCase();
-      renderAll();
-    }
-    nameInput.addEventListener("keydown", (e) => { if (e.key === "Enter") nameInput.blur(); });
-    nameInput.addEventListener("blur", () => { if (nameInput.value.trim() && nameInput.value.trim() !== targetClassName) updateTitleUI(nameInput.value.trim()); });
-
-    const STUDENT_REGISTRY_KEY = 'lms_students_registry_v1';
-    function readStudentRegistry() { try { return JSON.parse(localStorage.getItem(STUDENT_REGISTRY_KEY) || '[]'); } catch(e) { return []; } }
-    function writeStudentRegistry(list) { localStorage.setItem(STUDENT_REGISTRY_KEY, JSON.stringify(list)); }
-    function getStudents() {
-      let registry = readStudentRegistry();
-      // One-time migration: import any legacy class-local student names into the shared registry.
-      const migrationKey = 'lms_student_registry_migrated_' + targetClassId;
-      if (!localStorage.getItem(migrationKey)) {
-        let legacy = [];
-        try { legacy = JSON.parse(localStorage.getItem(getStorageKey('students')) || '[]'); } catch(e) {}
-        legacy.forEach(entry => {
-          const name = typeof entry === 'string' ? entry.trim() : String(entry?.name || '').trim();
-          if (!name) return;
-          let found = registry.find(s => s.classId === targetClassId && s.name.toLowerCase() === name.toLowerCase());
-          if (!found) registry.push({ id: (typeof entry === 'object' && entry.id) ? entry.id : makeId('STU'), name, classId: targetClassId, className: targetClassName, active: true, createdAt: new Date().toISOString() });
-        });
-        writeStudentRegistry(registry); localStorage.setItem(migrationKey, '1');
-      }
-      return registry.filter(s => String(s.classId) === String(targetClassId) && s.active !== false);
-    }
-    function saveStudents(list) {
-      const registry = readStudentRegistry().filter(s => String(s.classId) !== String(targetClassId));
-      list.forEach(s => registry.push({ ...s, classId: targetClassId, className: targetClassName, active: s.active !== false }));
-      writeStudentRegistry(registry);
-    }
-    function getSessionStatuses() { return JSON.parse(localStorage.getItem(getStorageKey("session_statuses")) || '{}'); }
-    function saveSessionStatuses(data) { localStorage.setItem(getStorageKey("session_statuses"), JSON.stringify(data)); }
-    function getWeekLinks(weekKey) { return JSON.parse(localStorage.getItem(getStorageKey("week_links")) || '{}')[weekKey] || { lesson: '', hw: '' }; }
-    function saveWeekLinks(weekKey, links) { const allLinks = JSON.parse(localStorage.getItem(getStorageKey("week_links")) || '{}'); allLinks[weekKey] = links; localStorage.setItem(getStorageKey("week_links"), JSON.stringify(allLinks)); }
-
-    function getWeekNumber(d) { return getLmsWeekNumber(d); }
-
+    /* ---------- Thời khóa biểu tuần ---------- */
     function renderSchedule() {
-      const weekDates = getWeekDates(currentWeekOffset);
-      const weekKey = getLmsWeekKey(weekDates[0]);
-      document.getElementById("week-indicator").textContent = `${formatShortDate(weekDates[0])} – ${formatShortDate(weekDates[6])}`;
-
-      const allWeeksData = JSON.parse(localStorage.getItem("all_weeks_schedule_data") || "{}");
-      const currentWeekNumber = getLmsWeekNumber(weekDates[0]);
-      let currentWeekSchedule = allWeeksData[currentWeekNumber] || [];
-      let classRow = currentWeekSchedule.find(r => String(r.id) === String(targetClassId));
-      if (!classRow) classRow = currentWeekSchedule.find(r => r.name && r.name.toLowerCase() === targetClassName.toLowerCase());
-      if (!classRow) classRow = { name: targetClassName, schedule: ["", "", "", "", "", "", ""] };
-
-      const statuses = getSessionStatuses();
-      const todayStr = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
-      
-      const allStatusValues = Object.values(statuses);
-      const cancelledCount = allStatusValues.filter(v => v === 'cancelled').length;
-      const makeupCount = allStatusValues.filter(v => v === 'makeup').length;
-      const debtCount = Math.max(0, cancelledCount - makeupCount);
-      document.getElementById("stat-debt").textContent = debtCount;
-      document.getElementById("stat-makeup").textContent = makeupCount;
-
-      document.getElementById("schedule-grid").innerHTML = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ nhật"].map((label, idx) => {
-        const d = weekDates[idx];
-        const isToday = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}` === todayStr;
-        const time = (classRow && classRow.schedule) ? classRow.schedule[idx] : "";
-        const sessionKey = `${targetClassId}_${weekKey}_d${idx}`;
-        const status = statuses[sessionKey] || "";
-        let statusBadge = "", borderClass = time ? "border-sky-200 bg-white" : "border-slate-100 bg-slate-50/70";
-        if (isToday) borderClass += " ring-2 ring-sky-500 shadow-sm";
-
-        if (time) {
-          if (status === "done") statusBadge = `<span class="text-[10px] bg-sky-100 text-sky-800 px-1.5 py-0.5 rounded font-semibold">✓ Hoàn thành</span>`;
-          else if (status === "cancelled") statusBadge = `<span class="text-[10px] bg-rose-100 text-rose-800 px-1.5 py-0.5 rounded font-semibold">✕ Hủy (Nợ)</span>`;
-          else if (status === "makeup") statusBadge = `<span class="text-[10px] bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-semibold">↻ Bù</span>`;
-          else if (status === "holiday") statusBadge = `<span class="text-[10px] bg-violet-100 text-violet-800 px-1.5 py-0.5 rounded font-semibold">Nghỉ lễ</span>`;
-          else statusBadge = `<span class="text-[10px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-medium">Chưa cập nhật</span>`;
-        }
-
-        return `
-          <div class="p-3 rounded-xl border flex flex-col justify-between min-h-[125px] transition ${borderClass}">
-            <div>
-              <div class="flex items-center justify-between"><span class="text-[11px] font-bold ${isToday ? 'text-sky-700' : 'text-slate-700'}">${label}</span></div>
-              <div class="text-[10px] text-slate-400 font-normal mb-1.5">${formatShortDate(d)}</div>
-              ${statusBadge}
-            </div>
-            <div class="mt-2">
-              ${time ? `
-                <div class="text-[11px] font-bold text-sky-700 bg-sky-50 rounded p-1 text-center mb-1.5 border border-sky-100">${time}</div>
-                <select onchange="updateSessionStatus('${sessionKey}', this.value)" class="teacher-disabled w-full text-[10px] p-1 border border-slate-200 rounded bg-white text-slate-700 outline-none" ${isTeacherUnlocked ? '' : 'disabled'}>
-                  <option value="" ${status===''?'selected':''}>Chọn trạng thái…</option>
-                  <option value="cancelled" ${status==='cancelled'?'selected':''}>Hủy (tính nợ)</option>
-                  <option value="done" ${status==='done'?'selected':''}>Hoàn thành</option>
-                  <option value="makeup" ${status==='makeup'?'selected':''}>Bù (trừ nợ)</option>
-                  <option value="holiday" ${status==='holiday'?'selected':''}>Nghỉ lễ (không tính nợ)</option>
-                </select>
-              ` : `<div class="text-xs text-center text-slate-300 font-medium py-3">Nghỉ</div>`}
-            </div>
-          </div>
-        `;
-      }).join("");
-      lucide.createIcons();
-    }
-
-    window.updateSessionStatus = function(sessionKey, val) {
-      if (!isTeacherUnlocked) return;
-      const statuses = getSessionStatuses(); if (val) statuses[sessionKey] = val; else delete statuses[sessionKey]; saveSessionStatuses(statuses); renderSchedule();
-    };
-
-    function normalizeLinkItems(value) {
-      if (Array.isArray(value)) return value.map(v => typeof v === 'string' ? { title: '', url: v } : { title: v.title || '', url: v.url || '' });
-      return value ? [{ title: '', url: value }] : [];
-    }
-    function renderLinkItems(containerId, values, kind) {
-      const container = document.getElementById(containerId);
-      const items = normalizeLinkItems(values);
-      if (!items.length) items.push({ title: '', url: '' });
-      container.innerHTML = items.map((item, i) => {
-        const title = String(item.title || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
-        const url = String(item.url || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
-        const placeholder = kind === 'lesson' ? 'Tên bài học (không bắt buộc)' : 'Tên bài tập (không bắt buộc)';
-        const urlPlaceholder = kind === 'lesson' ? 'Dán link Google Slides...' : 'Dán link Google Form...';
-        const safeUrl = /^https?:\/\//i.test(item.url || '') ? item.url : '#';
-        return `<div class="link-item-row space-y-1.5" data-kind="${kind}"><div class="flex gap-2"><input data-field="title" value="${title}" placeholder="${placeholder}" class="teacher-feature hidden min-w-0 flex-1 text-xs p-2.5 bg-white border border-slate-200 rounded-lg"><input data-field="url" value="${url}" placeholder="${urlPlaceholder}" class="teacher-feature hidden min-w-0 flex-1 text-xs p-2.5 bg-white border border-slate-200 rounded-lg"><button type="button" class="teacher-feature hidden remove-link-row shrink-0 rounded-lg border border-slate-200 bg-white px-2 text-slate-500 hover:bg-rose-50 hover:text-rose-600" title="Xóa dòng"><i data-lucide="x" class="w-4 h-4"></i></button></div><div class="link-public-view ${item.url ? '' : 'hidden'}"><a href="${safeUrl}" target="_self" rel="noopener" class="text-xs text-sky-700 hover:underline font-semibold inline-flex items-center gap-1">${title || (kind === 'lesson' ? `Mở bài học ${i+1}` : `Mở bài tập ${i+1}`)} <i data-lucide="external-link" class="w-3 h-3"></i></a></div></div>`;
+      const dates = weekDates(S.offset), todayKey = ymd(new Date());
+      $('week-indicator').textContent = shortDate(dates[0]) + ' – ' + shortDate(dates[6]);
+      const cancel = S.sessions.filter(s => s.status === 'cancel').length, makeup = S.sessions.filter(s => s.status === 'makeup').length;
+      $('stat-debt').textContent = Math.max(0, cancel - makeup); $('stat-makeup').textContent = makeup;
+      $('schedule-grid').innerHTML = DAYS.map((label, i) => {
+        const d = dates[i], key = ymd(d), isToday = key === todayKey, list = S.sessions.filter(s => s.session_date === key);
+        const cls = list.length ? 'border-sky-200 bg-white' : 'border-slate-100 bg-slate-50/70';
+        const body = list.length ? list.map(s => `
+          <div class="mt-2">
+            <span class="text-[10px] ${STATUS_CLS[s.status]} px-1.5 py-0.5 rounded font-semibold">${STATUS_TXT[s.status]}</span>
+            <div class="text-[11px] font-bold text-sky-700 bg-sky-50 rounded p-1 text-center my-1.5 border border-sky-100">${t5(s.start_time)} - ${t5(s.end_time)}${s.session_no ? '<span class="font-medium text-slate-500"> · Buổi ' + s.session_no + '</span>' : ''}</div>
+            ${s.lesson ? `<div class="text-[11px] text-slate-600 mb-1" style="overflow-wrap:anywhere">${esc(s.lesson)}</div>` : ''}
+            <select data-sid="${s.id}" class="w-full text-[10px] p-1 border border-slate-200 rounded bg-white text-slate-700" aria-label="Trạng thái buổi">
+              ${['planned', 'done', 'cancel', 'makeup', 'holiday'].map(k => `<option value="${k}" ${s.status === k ? 'selected' : ''}>${{ planned: 'Chưa cập nhật', done: 'Hoàn thành', cancel: 'Hủy (tính nợ)', makeup: 'Bù (trừ nợ)', holiday: 'Nghỉ lễ (không tính nợ)' }[k]}</option>`).join('')}
+            </select>
+          </div>`).join('') : '<div class="text-xs text-center text-slate-300 font-medium py-3 mt-2">Nghỉ</div>';
+        return `<div class="p-3 rounded-xl border flex flex-col min-h-[125px] ${cls} ${isToday ? 'ring-2 ring-sky-500' : ''}">
+          <div><span class="text-[11px] font-bold ${isToday ? 'text-sky-700' : 'text-slate-700'}">${label}</span><div class="text-[10px] text-slate-400">${shortDate(d)}</div></div>${body}</div>`;
       }).join('');
-      container.querySelectorAll('.remove-link-row').forEach(btn => btn.addEventListener('click', () => { btn.closest('.link-item-row').remove(); if (!container.querySelector('.link-item-row')) renderLinkItems(containerId, [], kind); }));
-      if (window.lucide) lucide.createIcons();
     }
-    function collectLinkItems(containerId) {
-      return [...document.querySelectorAll(`#${containerId} .link-item-row`)].map(row => ({ title: row.querySelector('[data-field="title"]').value.trim(), url: row.querySelector('[data-field="url"]').value.trim() })).filter(item => item.title || item.url);
+    async function setStatus(sid, val) {
+      const s = S.sessions.find(x => x.id === Number(sid)); if (!s) return;
+      const old = s.status; s.status = val; refresh();
+      const r = await S.c.from('sessions').update({ status: val, updated_at: new Date().toISOString() }).eq('id', s.id);
+      if (r.error) { s.status = old; refresh(); fail(r.error); }
     }
+
+    /* ---------- Học liệu tuần ---------- */
+    const weekKey = () => ymd(weekDates(S.offset)[0]);
+    function linkRow(item, kind) {
+      return `<div class="link-item-row flex items-center gap-2" data-kind="${kind}">
+        <input data-field="title" value="${esc(item.title)}" placeholder="Tên ${kind === 'lesson' ? 'bài học' : 'bài tập'} (không bắt buộc)" class="min-w-0 flex-1 text-xs p-2.5 bg-white border border-slate-200 rounded-lg">
+        <input data-field="url" value="${esc(item.url)}" placeholder="${kind === 'lesson' ? 'Dán link Google Slides...' : 'Dán link bài tập...'}" class="min-w-0 flex-[2] text-xs p-2.5 bg-white border border-slate-200 rounded-lg">
+        ${isHttp(item.url) ? `<a href="${esc(item.url)}" target="_blank" rel="noopener" class="icon-btn" aria-label="Mở link"><i data-lucide="external-link" class="w-4 h-4"></i></a>` : ''}
+        <button type="button" class="icon-btn danger remove-link-row" aria-label="Xóa dòng"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`;
+    }
+    function fillLinks(id, items, kind) {
+      const c = $(id), list = (items || []).map(v => ({ title: v.title || '', url: v.url || '' }));
+      if (!list.length) list.push({ title: '', url: '' });
+      c.innerHTML = list.map(it => linkRow(it, kind)).join('');
+    }
+    const collect = id => [...document.querySelectorAll('#' + id + ' .link-item-row')].map(r => ({
+      title: r.querySelector('[data-field="title"]').value.trim(), url: r.querySelector('[data-field="url"]').value.trim() })).filter(x => x.title || x.url);
     function renderWeekLinks() {
-      const weekDates = getWeekDates(currentWeekOffset);
-      const links = getWeekLinks(getLmsWeekKey(weekDates[0]));
-      renderLinkItems('lesson-links-list', links.lessons || links.lesson, 'lesson');
-      renderLinkItems('hw-links-list', links.homeworks || links.hw, 'hw');
-      if (typeof isTeacherUnlocked !== 'undefined' && isTeacherUnlocked) {
-        document.querySelectorAll('#lesson-links-list input, #lesson-links-list .remove-link-row, #hw-links-list input, #hw-links-list .remove-link-row').forEach(el => el.classList.remove('hidden'));
-      }
+      const l = S.links[weekKey()] || { lessons: [], homeworks: [] };
+      fillLinks('lesson-links-list', l.lessons, 'lesson'); fillLinks('hw-links-list', l.homeworks, 'hw');
     }
-    document.getElementById('add-lesson-link').addEventListener('click', () => { if (!isTeacherUnlocked) return; const items = collectLinkItems('lesson-links-list'); items.push({title:'',url:''}); renderLinkItems('lesson-links-list', items, 'lesson'); document.querySelectorAll('#lesson-links-list input, #lesson-links-list .remove-link-row').forEach(el => el.classList.remove('hidden')); });
-    document.getElementById('add-hw-link').addEventListener('click', () => { if (!isTeacherUnlocked) return; const items = collectLinkItems('hw-links-list'); items.push({title:'',url:''}); renderLinkItems('hw-links-list', items, 'hw'); document.querySelectorAll('#hw-links-list input, #hw-links-list .remove-link-row').forEach(el => el.classList.remove('hidden')); });
-    document.getElementById("btn-save-links").addEventListener("click", () => {
-      if (!isTeacherUnlocked) return;
-      const weekDates = getWeekDates(currentWeekOffset);
-      saveWeekLinks(getLmsWeekKey(weekDates[0]), { lessons: collectLinkItems('lesson-links-list'), homeworks: collectLinkItems('hw-links-list') });
-      renderWeekLinks(); alert("Đã lưu học liệu tuần thành công!");
-    });
+    async function saveLinks() {
+      const lessons = collect('lesson-links-list'), homeworks = collect('hw-links-list');
+      if ([...lessons, ...homeworks].some(x => x.url && !isHttp(x.url))) return toast('Link phải bắt đầu bằng http:// hoặc https://');
+      const r = await S.c.from('week_links').upsert({ class_id: S.cls.id, week_start: weekKey(), lessons, homeworks });
+      if (r.error) return fail(r.error);
+      S.links[weekKey()] = { lessons, homeworks }; refresh(); renderWeekLinks(); icons(); toast('Đã lưu học liệu tuần.');
+    }
 
+    /* ---------- Học sinh và điểm danh ---------- */
     function renderStudents() {
-      const students = getStudents(), weekDates = getWeekDates(currentWeekOffset);
-      const attendanceKey = getStorageKey(`att_${getLmsWeekKey(weekDates[0])}`);
-      const attendance = JSON.parse(localStorage.getItem(attendanceKey) || '{}');
-      const tbody = document.getElementById("student-list-body");
-
-      if (students.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Chưa có học sinh.</td></tr>`; return;
-      }
-
-      tbody.innerHTML = students.map((entry, index) => {
-        const name = typeof entry === 'string' ? entry : entry.name;
-        const studentId = (typeof entry === 'object' && entry.id) ? entry.id : getStudentId(name);
-        if (typeof entry === 'string') { students[index] = { id: studentId, name }; saveStudents(students); }
-        const isPresent = attendance[studentId] !== false;
-        const overrideUrl = localStorage.getItem(getStorageKey(`student_url_${studentId}`));
-        // Đính kèm học liệu của lớp vào URL để hồ sơ học viên vẫn xem được khi mở trên thiết bị khác.
-        const allClassWeekLinks = JSON.parse(localStorage.getItem(getStorageKey('week_links')) || '{}');
-        const studentUrlParams = new URLSearchParams({
-          classId: targetClassId,
-          class: targetClassName,
-          studentId,
-          student: name,
-          drive: localStorage.getItem(getStorageKey('drive_link')) || 'https://drive.google.com',
-          meet: localStorage.getItem(getStorageKey('meet_link')) || 'https://meet.google.com',
-          weekLinks: JSON.stringify(allClassWeekLinks)
-        });
-        const studentUrl = overrideUrl || `student.html?${studentUrlParams.toString()}`;
-
-        return `
-          <tr class="hover:bg-slate-50 transition">
-            <td class="py-3 px-3 font-semibold text-slate-800"><span class="flex items-center gap-1.5"><i data-lucide="user" class="w-3.5 h-3.5 text-slate-400"></i>${name}</span></td>
-            <td class="py-3 px-3 text-center"><button onclick="toggleAttendance('${studentId}')" class="px-2.5 py-1 rounded-full text-xs font-semibold transition ${isPresent ? 'bg-sky-100 text-sky-800' : 'bg-rose-100 text-rose-800'}">${isPresent ? '✓ Có mặt' : '✕ Vắng'}</button></td>
-            <td class="py-3 px-3 text-center">
-              <div class="flex items-center justify-center gap-1.5">
-                <a href="${studentUrl}" class="inline-flex items-center gap-1 text-xs text-sky-600 hover:text-sky-700 font-semibold underline">Trang cá nhân <i data-lucide="arrow-up-right" class="w-3 h-3"></i></a>
-                <button onclick="editStudentLink('${studentId}')" class="teacher-feature hidden p-1 text-slate-400 hover:text-sky-600 transition"><i data-lucide="settings" class="w-3.5 h-3.5"></i></button>
-              </div>
-            </td>
-            <td class="py-3 px-3 text-right"><button onclick="removeStudent(${index})" class="teacher-feature hidden text-slate-400 hover:text-rose-600 p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
-          </tr>
-        `;
-      }).join("");
-      lucide.createIcons();
+      const body = $('student-list-body');
+      if (!S.students.length) { body.innerHTML = '<tr><td colspan="3" class="p-4 text-center text-slate-400">Chưa có học sinh. Thêm học sinh ở trang Student List.</td></tr>'; return; }
+      const sess = weekSessions(S.offset).filter(s => s.status !== 'cancel' && s.status !== 'holiday');
+      body.innerHTML = S.students.map(st => {
+        const att = sess.length ? sess.map(s => {
+          const absent = S.att[s.id + '|' + st.id] === 'absent';
+          return `<button type="button" data-att="${s.id}|${st.id}" class="px-2.5 py-1 rounded-full text-xs font-semibold ${absent ? 'bg-rose-100 text-rose-800' : 'bg-sky-100 text-sky-800'}" style="min-height:36px" aria-label="${esc(st.student_name)} ${sessionLabel(s)}">${sess.length > 1 ? sessionLabel(s).replace('Thứ ', 'T').replace('Chủ nhật', 'CN') + ' ' : ''}${absent ? '✕ Vắng' : '✓ Có mặt'}</button>`;
+        }).join(' ') : '<span class="text-slate-300">–</span>';
+        return `<tr class="hover:bg-slate-50">
+          <td class="py-3 px-3 font-semibold text-slate-800"><span class="flex items-center gap-1.5"><i data-lucide="user" class="w-3.5 h-3.5 text-slate-400"></i>${esc(st.student_name)}</span></td>
+          <td class="py-3 px-3 text-center"><div class="flex flex-wrap justify-center gap-1.5">${att}</div></td>
+          <td class="py-3 px-3 text-center"><a href="student.html#${encodeURIComponent(st.student_code)}" class="inline-flex items-center gap-1 text-xs text-sky-600 hover:text-sky-700 font-semibold underline">Trang cá nhân <i data-lucide="arrow-up-right" class="w-3 h-3"></i></a></td></tr>`;
+      }).join('');
+    }
+    async function toggleAtt(sid, stid) {
+      const key = sid + '|' + stid, absent = S.att[key] === 'absent';
+      if (absent) delete S.att[key]; else S.att[key] = 'absent';
+      refresh();
+      const r = absent ? await S.c.from('attendance').delete().eq('session_id', Number(sid)).eq('student_id', Number(stid))
+        : await S.c.from('attendance').upsert({ session_id: Number(sid), student_id: Number(stid), status: 'absent', updated_at: new Date().toISOString() });
+      if (r.error) { if (absent) S.att[key] = 'absent'; else delete S.att[key]; refresh(); fail(r.error); }
     }
 
-    window.toggleAttendance = function(studentId) {
-      if (!isTeacherUnlocked) return alert("Mở khóa Giáo viên để điểm danh!");
-      const key = getStorageKey(`att_${getLmsWeekKey(getWeekDates(currentWeekOffset)[0])}`);
-      const att = JSON.parse(localStorage.getItem(key) || '{}');
-      att[studentId] = att[studentId] === false ? true : false;
-      localStorage.setItem(key, JSON.stringify(att)); renderStudents();
-    };
-
-    window.removeStudent = function(idx) {
-      if (!isTeacherUnlocked) return;
-      const students = getStudents(); const entry = students[idx]; if (!entry) return;
-      if (!confirm(`Gỡ "${entry.name}" khỏi lớp này? Hồ sơ học viên vẫn được giữ trong Student List.`)) return;
-      const registry = readStudentRegistry(); const record = registry.find(s => String(s.id) === String(entry.id));
-      if (record) { record.classId = ''; record.className = ''; record.active = true; writeStudentRegistry(registry); }
-      renderStudents();
-    };
-
-    document.getElementById("btn-prev-week").addEventListener("click", () => { currentWeekOffset--; renderAll(); });
-    document.getElementById("btn-next-week").addEventListener("click", () => { currentWeekOffset++; renderAll(); });
-
-    function escapeHistoryText(value) { return String(value || '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
-
-    function renderSessionHistory() {
-      const container = document.getElementById('session-history-list');
-      if (!container) return;
-      const now = new Date();
-      const todayMonday = getWeekDates(0)[0];
-      const currentNumber = getLmsWeekNumber(todayMonday);
-      const allWeeksData = JSON.parse(localStorage.getItem('all_weeks_schedule_data') || '{}');
-      const allLinks = JSON.parse(localStorage.getItem(getStorageKey('week_links')) || '{}');
-      const statuses = getSessionStatuses();
-      const weeks = [];
-      for (let weekNo = currentNumber; weekNo >= 1; weekNo--) {
-        const start = new Date(WEEK_ANCHOR); start.setDate(start.getDate() + (weekNo - 1) * 7);
-        const end = new Date(start); end.setDate(end.getDate() + 6);
+    /* ---------- Lịch sử buổi học ---------- */
+    function renderHistory() {
+      const todayMon = weekDates(0)[0], cur = weekNo(todayMon), now = new Date(), box = $('session-history-list');
+      const byWeek = {};
+      S.sessions.forEach(s => { const n = weekNo(dateOf(s.session_date)); (byWeek[n] = byWeek[n] || []).push(s); });
+      const out = [];
+      for (let n = cur; n >= 1; n--) {
+        const start = new Date(WEEK_ANCHOR); start.setDate(start.getDate() + (n - 1) * 7);
+        const end = new Date(start); end.setDate(start.getDate() + 6);
         if (start > now) continue;
-        const weekKey = `W${String(weekNo).padStart(2, '0')}`;
-        const weekOffset = Math.round((start - todayMonday) / (7 * 86400000));
-        const rows = allWeeksData[weekNo] || [];
-        let classRow = rows.find(r => String(r?.id) === String(targetClassId)) || rows.find(r => r?.name && r.name.toLowerCase() === targetClassName.toLowerCase());
-        const times = (classRow && Array.isArray(classRow.schedule)) ? classRow.schedule : [];
-        const linkData = allLinks[weekKey] || {};
-        const lessonItems = normalizeLinkItems(linkData.lessons || linkData.lesson).filter(x => x.url || x.title);
-        const hwItems = normalizeLinkItems(linkData.homeworks || linkData.hw).filter(x => x.url || x.title);
-        const weekStatusEntries = Object.entries(statuses).filter(([key]) => key.startsWith(`${targetClassId}_${weekKey}_d`));
-        const hasScheduled = times.some(Boolean);
-        if (!hasScheduled && !lessonItems.length && !hwItems.length && !weekStatusEntries.length) continue;
-        const dayLabels = ['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7','Chủ nhật'];
-        const dayRows = dayLabels.map((label, idx) => {
-          const d = new Date(start); d.setDate(start.getDate() + idx);
-          const time = times[idx] || '';
-          const status = statuses[`${targetClassId}_${weekKey}_d${idx}`] || '';
-          if (!time && !status) return '';
-          const statusText = ({done:'Hoàn thành',cancelled:'Hủy (còn nợ buổi)',makeup:'Đã học bù',holiday:'Nghỉ lễ'})[status] || (time ? 'Chưa cập nhật' : '');
-          const statusClass = ({done:'bg-emerald-50 text-emerald-700',cancelled:'bg-rose-50 text-rose-700',makeup:'bg-blue-50 text-blue-700',holiday:'bg-violet-50 text-violet-700'})[status] || 'bg-slate-100 text-slate-500';
-          return `<div class="flex flex-wrap items-center gap-2 rounded-lg bg-white border border-slate-100 px-3 py-2"><span class="w-16 text-xs font-semibold text-slate-700">${label}</span><span class="text-xs text-slate-400">${formatShortDate(d)}</span><span class="text-xs font-semibold text-sky-700">${escapeHistoryText(time || 'Không có lịch')}</span>${statusText ? `<span class="ml-auto rounded-full px-2 py-1 text-[10px] font-semibold ${statusClass}">${statusText}</span>` : ''}</div>`;
-        }).filter(Boolean).join('');
-        const resources = [...lessonItems.map((item,i)=>({...item, kind:'Bài học', fallback:`Bài học ${i+1}`})), ...hwItems.map((item,i)=>({...item, kind:'Bài tập', fallback:`Bài tập ${i+1}`}))];
-        const resourceHtml = resources.length ? `<div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2">${resources.map(item => `<a class="flex items-center gap-2 rounded-lg bg-sky-50/70 px-3 py-2 text-xs text-sky-800 hover:bg-sky-100" href="${/^https?:\/\//i.test(item.url) ? escapeHistoryText(item.url) : '#'}" target="_self" rel="noopener"><i data-lucide="${item.kind === 'Bài học' ? 'presentation' : 'file-check-2'}" class="h-4 w-4 shrink-0"></i><span class="min-w-0 flex-1 truncate">${escapeHistoryText(item.title || item.fallback)}</span><span class="text-[10px] text-sky-600">${item.kind}</span></a>`).join('')}</div>` : '<p class="mt-2 text-xs text-slate-400">Tuần này chưa lưu link bài học hoặc bài tập.</p>';
-        weeks.push(`<details class="group rounded-xl border border-slate-200 bg-slate-50/60 overflow-hidden" ${weekNo === currentNumber ? 'open' : ''}><summary class="flex cursor-pointer list-none items-center gap-3 px-4 py-3 hover:bg-sky-50/70"><span class="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-sky-100 text-sky-700"><i data-lucide="calendar-days" class="h-4 w-4"></i></span><span class="min-w-0 flex-1"><span class="block text-xs font-bold text-slate-800">Tuần ${String(weekNo).padStart(2,'0')} · ${formatShortDate(start)} – ${formatShortDate(end)}</span><span class="mt-0.5 block text-[10px] text-slate-500">${times.filter(Boolean).length} buổi theo lịch · ${lessonItems.length} bài học · ${hwItems.length} bài tập</span></span><i data-lucide="chevron-down" class="h-4 w-4 text-slate-400 transition group-open:rotate-180"></i></summary><div class="space-y-2 border-t border-slate-100 p-3">${dayRows || '<p class="text-xs text-slate-400">Chưa có lịch buổi học được lưu cho tuần này.</p>'}${resourceHtml}<div class="pt-1 text-right"><button type="button" onclick="openHistoryWeek(${weekOffset})" class="inline-flex items-center gap-1 rounded-lg border border-sky-200 bg-white px-3 py-2 text-xs font-semibold text-sky-700 hover:bg-sky-50"><i data-lucide="calendar-clock" class="h-3.5 w-3.5"></i>Xem tuần này ở phía trên</button></div></div></details>`);
+        const key = ymd(start), ln = S.links[key] || { lessons: [], homeworks: [] };
+        const list = byWeek[n] || [], res = [...(ln.lessons || []).map((x, i) => ({ x, k: 'Bài học', f: 'Bài học ' + (i + 1) })), ...(ln.homeworks || []).map((x, i) => ({ x, k: 'Bài tập', f: 'Bài tập ' + (i + 1) }))].filter(r => r.x.url || r.x.title);
+        if (!list.length && !res.length) continue;
+        const rows = list.map(s => `<div class="flex flex-wrap items-center gap-2 rounded-lg bg-white border border-slate-100 px-3 py-2">
+          <span class="w-16 text-xs font-semibold text-slate-700">${sessionLabel(s)}</span><span class="text-xs text-slate-400">${shortDate(dateOf(s.session_date))}</span>
+          <span class="text-xs font-semibold text-sky-700">${t5(s.start_time)} - ${t5(s.end_time)}</span>
+          <span class="text-[11px] px-2 py-0.5 rounded-full ${STATUS_CLS[s.status]}">${STATUS_TXT[s.status]}</span>
+          ${s.lesson ? `<span class="text-xs text-slate-600">${esc(s.lesson)}</span>` : ''}${s.note ? `<span class="text-xs text-slate-400">${esc(s.note)}</span>` : ''}</div>`).join('');
+        const resHtml = res.length ? `<div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2">${res.map(r => `<a class="flex items-center gap-2 rounded-lg bg-sky-50/70 px-3 py-2 text-xs text-sky-800 hover:bg-sky-100" href="${isHttp(r.x.url) ? esc(r.x.url) : '#'}" target="_blank" rel="noopener"><strong>${r.k}</strong><span style="overflow-wrap:anywhere">${esc(r.x.title || r.f)}</span></a>`).join('')}</div>` : '';
+        out.push(`<details class="rounded-xl border border-slate-200 bg-slate-50/60 overflow-hidden" ${n === cur ? 'open' : ''}>
+          <summary class="flex cursor-pointer list-none items-center gap-3 px-4 py-3"><span class="text-sm font-bold text-slate-800">Tuần ${pad(n)}</span><span class="text-xs text-slate-500">${shortDate(start)} – ${shortDate(end)}</span>
+          <button type="button" data-week="${Math.round((start - todayMon) / (7 * 864e5))}" class="ml-auto text-xs font-semibold text-sky-700 underline" style="min-height:36px">Mở tuần này</button></summary>
+          <div class="px-4 pb-4 space-y-2">${rows}${resHtml}</div></details>`);
       }
-      document.getElementById('history-week-count').textContent = `${weeks.length} tuần có dữ liệu`;
-      container.innerHTML = weeks.length ? weeks.join('') : '<div class="rounded-xl border border-dashed border-slate-200 p-5 text-center text-xs text-slate-400">Chưa có lịch sử buổi học hoặc học liệu được lưu cho lớp này.</div>';
-      if (window.lucide) lucide.createIcons();
+      $('history-week-count').textContent = out.length + ' tuần có dữ liệu';
+      box.innerHTML = out.length ? out.join('') : '<div class="rounded-xl border border-dashed border-slate-200 p-5 text-center text-xs text-slate-400">Chưa có lịch sử buổi học hoặc học liệu được lưu cho lớp này.</div>';
     }
 
-    window.openHistoryWeek = function(offset) {
-      currentWeekOffset = offset;
-      renderAll();
-      document.getElementById('week-indicator')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    };
+    function refresh() { renderSchedule(); renderStudents(); renderHistory(); icons(); }
+    function renderAll() { renderTitle(); renderSchedule(); renderWeekLinks(); renderStudents(); renderHistory(); icons(); }
 
-    function renderAll() { renderSchedule(); renderWeekLinks(); renderStudents(); renderSessionHistory(); }
-    updateTitleUI(targetClassName);
+    function bind() {
+      $('btn-prev-week').addEventListener('click', () => { S.offset--; renderAll(); });
+      $('btn-next-week').addEventListener('click', () => { S.offset++; renderAll(); });
+      $('schedule-grid').addEventListener('change', e => { const sel = e.target.closest('select[data-sid]'); if (sel) setStatus(sel.dataset.sid, sel.value); });
+      $('student-list-body').addEventListener('click', e => { const b = e.target.closest('[data-att]'); if (b) { const [a, c] = b.dataset.att.split('|'); toggleAtt(a, c); } });
+      $('session-history-list').addEventListener('click', e => { const b = e.target.closest('[data-week]'); if (!b) return; e.preventDefault(); S.offset = Number(b.dataset.week); renderAll(); $('week-indicator').scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+      $('add-lesson-link').addEventListener('click', () => { const l = collect('lesson-links-list'); l.push({ title: '', url: '' }); fillLinks('lesson-links-list', l, 'lesson'); icons(); });
+      $('add-hw-link').addEventListener('click', () => { const l = collect('hw-links-list'); l.push({ title: '', url: '' }); fillLinks('hw-links-list', l, 'hw'); icons(); });
+      ['lesson-links-list', 'hw-links-list'].forEach(id => $(id).addEventListener('click', e => {
+        const b = e.target.closest('.remove-link-row'); if (!b) return;
+        const kind = b.closest('.link-item-row').dataset.kind; b.closest('.link-item-row').remove();
+        if (!$(id).querySelector('.link-item-row')) fillLinks(id, [], kind); icons();
+      }));
+      $('btn-save-links').addEventListener('click', saveLinks);
+      const inp = $('class-display-name-input');
+      inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); });
+      inp.addEventListener('blur', renameClass);
+    }
+
+    async function boot() {
+      icons(); bind();
+      document.querySelectorAll('.teacher-feature').forEach(el => el.classList.remove('hidden'));
+      try {
+        const { client } = await LMS.requireTeacher();
+        S.c = client; await load(); renderAll();
+      } catch (e) {
+        document.querySelector('main').innerHTML = `<div class="bg-white rounded-2xl border border-slate-200 p-6 text-center"><p class="text-sm text-rose-700">${esc(LMS.friendlyError(e))}</p><a href="index.html" class="btn-soft mt-4">Về trang Tổng quan</a></div>`;
+        $('class-title-header').textContent = 'Lớp'; icons();
+      }
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  })();
   </script>
 </body>
 </html>
