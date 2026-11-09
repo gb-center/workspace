@@ -116,12 +116,19 @@
         : `<div class="row"><span>${esc(x.title || label + ' ' + (i + 1))}</span></div>`).join('');
     }
 
+    const toMin = hm => { const [h, m] = String(hm).split(':').map(Number); return h * 60 + m; };
+    const hm = n => { n = Math.max(0, n); return pad(Math.floor(n / 60)) + ':' + pad(n % 60); };
     function renderHome() {
       const d = S.data, cls = d.class, now = new Date(), todayKey = ymd(now), nowHM = pad(now.getHours()) + ':' + pad(now.getMinutes());
       $('hello').textContent = 'Xin chào, ' + d.student_name; $('hello-sub').textContent = cls ? 'Lớp ' + cls.name : 'Chưa xếp lớp';
       $('btn-back').classList.add('hidden');
       if (!cls) { $('app').innerHTML = '<div class="card text-sm text-slate-600">Bạn chưa được xếp lớp. Hỏi giáo viên nhé.</div>'; return; }
       const sess = d.sessions || [];
+      const joinOpen = s => s.mode === 'online' && isHttp(d.meet_url) && s.status !== 'cancel' && s.status !== 'holiday' && s.date === todayKey
+        && nowHM >= hm(toMin(s.start) - 15) && nowHM < s.end;
+      const joinBtn = k => k === 'solid'
+        ? `<a class="hero-btn solid" href="${esc(d.meet_url)}" target="_blank" rel="noopener"><i data-lucide="video" class="w-4 h-4"></i><span>Vào lớp online</span></a>`
+        : `<a class="tag bg-sky-600 text-white" href="${esc(d.meet_url)}" target="_blank" rel="noopener" style="text-decoration:none;min-height:36px;display:inline-flex;align-items:center;gap:6px;font-weight:700">Vào lớp</a>`;
       const next = sess.find(s => (s.status === 'planned' || s.status === 'makeup') && (s.date > todayKey || (s.date === todayKey && s.end > nowHM)));
       const wk = mondayKey(now), thisWeek = sess.filter(s => mondayKey(dOf(s.date)) === wk);
       const done = sess.filter(s => s.status === 'done' || s.status === 'makeup'), absent = sess.filter(s => s.attendance === 'absent').length;
@@ -133,13 +140,13 @@
         <div class="text-xl font-extrabold mt-1">${next ? fmtDay(next.date) : 'Chưa có lịch'}</div>
         <div class="text-sm mt-1" style="opacity:.9">${next ? next.start + ' - ' + next.end + (next.lesson ? ' · ' + esc(next.lesson) : '') : ''}</div>
         <div class="flex flex-wrap gap-2 mt-4">
-          <a class="hero-btn solid" href="${esc(isHttp(cls.meet_url) ? cls.meet_url : 'https://meet.google.com')}" target="_blank" rel="noopener"><i data-lucide="video" class="w-4 h-4"></i><span>Vào lớp online</span></a>
+          ${next ? (next.mode === 'online' ? (joinOpen(next) ? joinBtn('solid') : `<span class="hero-btn ghost" style="opacity:.9"><i data-lucide="video" class="w-4 h-4"></i><span>Lớp online · mở link trước giờ học 15 phút</span></span>`) : `<span class="hero-btn ghost" style="opacity:.9"><i data-lucide="map-pin" class="w-4 h-4"></i><span>Học trực tiếp</span></span>`) : ''}
           <a class="hero-btn ghost" href="${esc(isHttp(cls.drive_url) ? cls.drive_url : 'https://drive.google.com')}" target="_blank" rel="noopener"><i data-lucide="folder" class="w-4 h-4"></i><span>Tài liệu</span></a>
         </div></section>`;
 
       html += `<section class="card"><h2><i data-lucide="calendar-days"></i>Lịch học tuần này</h2><div class="space-y-2">${thisWeek.length ? thisWeek.map(s => {
         const st = STATUS[s.status] || STATUS.planned;
-        return `<div class="row">${dayCols(s.date)}<span class="c-time font-semibold text-sky-700">${s.start} - ${s.end}</span><span class="tag ${st[1]}">${st[0]}</span>${s.attendance === 'absent' ? '<span class="tag bg-rose-50 text-rose-700">Vắng</span>' : ''}${s.lesson ? `<span class="text-xs text-slate-500" style="flex:1 1 100%">${esc(s.lesson)}</span>` : ''}</div>`;
+        return `<div class="row">${dayCols(s.date)}<span class="c-time font-semibold text-sky-700">${s.start} - ${s.end}</span><span class="tag ${st[1]}">${st[0]}</span>${s.attendance === 'absent' ? '<span class="tag bg-rose-50 text-rose-700">Vắng</span>' : ''}${s.mode === 'online' ? (joinOpen(s) ? joinBtn('row') : '<span class="tag bg-sky-50 text-sky-700">Online</span>') : ''}${s.lesson ? `<span class="text-xs text-slate-500" style="flex:1 1 100%">${esc(s.lesson)}</span>` : ''}</div>`;
       }).join('') : '<div class="text-sm text-slate-500">Tuần này không có buổi học.</div>'}</div></section>`;
 
       const asg = d.assignments || [];
@@ -242,6 +249,10 @@
       });
       $('app').addEventListener('input', e => { const i = e.target.closest('[data-fill]'); if (i) S.answers[i.closest('.qbox').dataset.q] = i.value; });
       window.addEventListener('hashchange', route);
+      const sig = () => { const d = S.data; if (!d) return ''; const n = new Date(), k = ymd(n), h = pad(n.getHours()) + ':' + pad(n.getMinutes());
+        return (d.sessions || []).map(s => s.mode === 'online' && s.date === k && h >= hm(toMin(s.start) - 15) && h < s.end ? 1 : 0).join(''); };
+      let last = null;
+      setInterval(() => { if (!S.data || $('btn-back').classList.contains('hidden') === false) return; const g = sig(); if (last === null) { last = g; return; } if (g !== last) { last = g; renderHome(); } }, 30000);
     }
 
     function boot() {
