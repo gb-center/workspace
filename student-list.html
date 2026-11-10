@@ -17,7 +17,8 @@
     .edlg{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(15,23,42,.35)}
     .edlg[hidden]{display:none}
     .edlg-card{width:min(560px,100%);max-height:calc(100dvh - 32px);overflow:auto}
-  </style>
+        .sortbtn{background:none;border:0;padding:6px 0;font:inherit;color:inherit;cursor:pointer;display:inline-flex;gap:4px;align-items:center;min-height:36px;text-transform:inherit;letter-spacing:inherit}
+    </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col relative">
   <nav id="lms-nav" aria-label="Điều hướng chính">
@@ -63,8 +64,8 @@
         <table class="stack w-full text-left text-sm">
           <thead>
             <tr class="text-[11px] text-slate-400 font-bold border-b border-slate-100">
-              <th class="py-2.5 px-2">Học viên</th>
-              <th class="py-2.5 px-2">Lớp</th>
+              <th class="py-2.5 px-2"><button type="button" class="sortbtn" data-sort="name">Học viên <span class="sarr"></span></button></th>
+              <th class="py-2.5 px-2"><button type="button" class="sortbtn" data-sort="class">Lớp <span class="sarr"></span></button></th>
               <th class="py-2.5 px-2">Học phí tháng</th>
               <th class="py-2.5 px-2">Trạng thái</th>
               <th class="py-2.5 px-2">Ghi chú</th>
@@ -140,7 +141,7 @@
     (function () {
       const $ = id => document.getElementById(id);
       const esc = LMS.esc, SCORE = LMS.score;
-      const state = { client: null, classes: [], students: [], q: '', cls: 'all', busy: false };
+      const state = { client: null, classes: [], students: [], q: '', cls: 'all', busy: false, sort: { key: 'class', dir: 1 } };
 
       const natural = (a, b) => String(a).localeCompare(String(b), 'vi', { numeric: true });
       const vnd = n => Number(n || 0).toLocaleString('vi-VN') + ' đ';
@@ -181,14 +182,20 @@
           if (f === 'none') return !s.class_id;
           return String(s.class_id) === f;
         }).sort((a, b) => {
+          const d = state.sort.dir;
+          if (state.sort.key === 'name') {
+            const given = n => String(n).trim().split(/\s+/).pop();
+            return (natural(given(a.student_name), given(b.student_name)) || natural(a.student_name, b.student_name)) * d;
+          }
           const ca = classOf(a), cb = classOf(b);
           if (!ca && cb) return 1; if (ca && !cb) return -1;
-          return (ca && cb ? natural(ca.class_code, cb.class_code) : 0) || (a.id - b.id);
+          return (ca && cb ? natural(ca.class_code, cb.class_code) * d : 0) || natural(a.student_name, b.student_name);
         });
       }
 
       function render() {
         fillClassSelects();
+        document.querySelectorAll('.sortbtn').forEach(b => { const on = b.dataset.sort === state.sort.key; b.querySelector('.sarr').textContent = on ? (state.sort.dir === 1 ? '↑' : '↓') : '↕'; b.style.opacity = on ? '1' : '.55'; b.setAttribute('aria-label', 'Sắp xếp theo ' + b.dataset.sort); });
         const all = state.students;
         $('total-count').textContent = all.length;
         $('assigned-count').textContent = all.filter(s => s.class_id).length;
@@ -382,6 +389,9 @@
       }
 
       function bind() {
+        document.querySelectorAll('.sortbtn').forEach(b => b.addEventListener('click', () => {
+          const k = b.dataset.sort; state.sort = state.sort.key === k ? { key: k, dir: -state.sort.dir } : { key: k, dir: 1 }; render();
+        }));
         $('search').addEventListener('input', e => { state.q = e.target.value; render(); });
         $('filter-class').addEventListener('change', render);
         $('btn-add').addEventListener('click', () => { resetForm(); openEditor(); });
