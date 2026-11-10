@@ -131,9 +131,7 @@
       ov.id = 'lms-login'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'Đăng nhập giáo viên');
       ov.innerHTML =
         '<form class="lg-card" novalidate>' +
-          '<div class="lg-brand"><span>' +
-            '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="8 8 34 34" aria-hidden="true"><path d="M25 18c-3-3-8-3.5-12-2.5v17c4-1 9-.5 12 2.5 3-3 8-3.5 12-2.5v-17c-4-1-9-.5-12 2.5z" fill="currentColor"/><circle cx="37" cy="11" r="3.2" fill="#facc15"/></svg>' +
-          '</span>gb<b style="color:#2563eb;font-weight:800">learning</b></div>' +
+          '<div class="lg-brand"><img src="logo-wordmark.png" alt="gblearninghub" style="height:26px;width:auto;max-width:100%"></div>' +
           '<h1>Đăng nhập giáo viên</h1>' +
           '<p>Chỉ giáo viên mới xem và sửa được danh sách học viên.</p>' +
           '<label for="lg-email">Email</label>' +
