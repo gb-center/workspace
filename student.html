@@ -106,7 +106,7 @@
       </div>
       <div class="dash-title"><i data-lucide="graduation-cap" class="w-5 h-5"></i><span>Student Dashboard</span></div>
       <div class="header-tools flex items-center gap-2">
-        <a id="btn-home" class="icon-btn" href="#" aria-label="Trang chính" title="Trang chính"><i data-lucide="house" class="w-5 h-5"></i></a>
+        <a id="btn-home" class="icon-btn hidden" href="index.html" aria-label="Trang chính" title="Trang chính"><i data-lucide="house" class="w-5 h-5"></i></a>
         <a id="btn-class" class="icon-btn hidden" href="#" aria-label="Về trang lớp (chỉ giáo viên)" title="Về trang lớp"><i data-lucide="school" class="w-5 h-5"></i></a>
         <a id="btn-back" class="btn-soft hidden" href="#"><i data-lucide="arrow-left" class="w-4 h-4"></i><span>Quay lại</span></a>
         <button id="btn-theme" type="button" aria-label="Tùy chỉnh màu chủ đề" aria-haspopup="dialog" aria-expanded="false"><i data-lucide="palette" class="w-5 h-5"></i></button>
@@ -175,6 +175,7 @@
         <div class="text-sm mt-2" style="opacity:.9;display:flex;align-items:center;gap:6px">${next ? '<i data-lucide="clock" class="w-4 h-4"></i>' + next.start + ' – ' + next.end : ''}</div></div>
         <div class="flex flex-wrap gap-2">
           ${next ? (next.mode === 'online' ? (joinOpen(next) ? joinBtn('solid') : `<span class="hero-btn ghost" style="opacity:.9;white-space:nowrap"><i data-lucide="video" class="w-4 h-4"></i><span>Online · mở link trước 15 phút</span></span>`) : `<span class="hero-btn ghost" style="opacity:.9"><i data-lucide="map-pin" class="w-4 h-4"></i><span>Học trực tiếp</span></span>`) : ''}
+          <a class="hero-btn ghost" href="${esc(isHttp(cls.drive_url) ? cls.drive_url : 'https://drive.google.com')}" target="_blank" rel="noopener"><i data-lucide="folder" class="w-4 h-4"></i><span>Drive</span></a>
         </div></section>`;
 
       const asgAll = d.assignments || [], asgDone = asgAll.filter(a => a.attempts).length;
@@ -224,7 +225,7 @@
         const rows = SC.targets(prog, d.targets, d.scores), F = (k, v) => SC.fmt(prog, k, v);
         const big = r => `${F(r.kind, r.current)} <em>/ ${F(r.kind, r.target)}</em>`;
         if (prog === 'ac12') {
-          progBody = `<div class="goal-pair">${rows.map(r => goalBox('Mục tiêu ' + r.label, 'target', big(r), 'Hiện tại / Mục tiêu', r.pct)).join('')}</div>`;
+          progBody = `<div class="goal-pair">${rows.map(r => goalBox('Mục tiêu ' + r.label, 'target', big(r), 'Số câu đúng: hiện tại / mục tiêu (' + (r.kind === 'thpt' ? 40 : 30) + ' câu)', r.pct)).join('')}</div>`;
         } else {
           const ov = rows[0], sk = rows.slice(1);
           progBody = `<div class="prog-body two">${goalBox('Mục tiêu điểm', 'target', big(ov), 'Hiện tại / Mục tiêu', ov.pct)}
@@ -249,9 +250,8 @@
         <div class="space-y-2">${past.map(s => { const st = s.attendance === 'absent' ? ['Vắng', 'bg-rose-50 text-rose-700'] : (STATUS[s.status] || STATUS.planned);
           return `<div class="hrow">${dayCols(s.date)}<span class="text-xs font-semibold text-sky-700">${s.start} – ${s.end}</span><span class="tag ${st[1]}">${st[0]}</span><span class="h-note text-xs text-slate-500" style="overflow-wrap:anywhere">${[s.lesson, s.note].filter(Boolean).map(esc).join(' · ')}</span></div>`; }).join('') || '<div class="text-sm text-slate-500">Chưa có buổi học nào.</div>'}</div></details>`;
 
-      $('btn-home').href = '#' + encodeURIComponent(S.code);
       $('app').innerHTML = `<div class="home-grid">${heroHtml}${schedHtml}${progHtml}${infoHtml}${matHtml}${hwHtml}${histHtml}</div>`; icons();
-      (LMS.isTeacherNow ? LMS.isTeacherNow() : Promise.resolve(false)).then(ok => { const b = $('btn-class'); if (ok && b && S.data === d) { b.href = 'class.html?class=' + encodeURIComponent(cls.code); b.classList.remove('hidden'); } });
+      (LMS.isTeacherNow ? LMS.isTeacherNow() : Promise.resolve(false)).then(ok => { const b = $('btn-class'); if (ok && b && S.data === d) { b.href = 'class.html?class=' + encodeURIComponent(cls.code); b.classList.remove('hidden'); $('btn-home').classList.remove('hidden'); } });
     }
 
     /* ---------- Làm bài ---------- */
@@ -259,7 +259,7 @@
     const textOf = opt => String(opt).replace(/^\s*[A-Za-z][.)]\s*/, '');
 
     function renderAssignment() {
-      const a = S.a; $('btn-class').classList.add('hidden'); $('btn-back').classList.remove('hidden'); $('btn-back').href = '#' + encodeURIComponent(S.code); $('btn-home').href = '#' + encodeURIComponent(S.code);
+      const a = S.a; $('btn-class').classList.add('hidden'); $('btn-home').classList.add('hidden'); $('btn-back').classList.remove('hidden'); $('btn-back').href = '#' + encodeURIComponent(S.code);
       $('hello').textContent = a.name; $('hello-sub').textContent = a.student_name;
       const qs = a.questions || [];
       $('app').innerHTML = `<div class="narrow"><section class="card"><div class="text-xs text-slate-500 mb-1">${qs.length} câu${a.due_at ? ' · Hạn ' + new Date(a.due_at).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : ''}. Điểm chỉ tính lần làm đầu tiên; nộp muộn vẫn được nhận nhưng có đánh dấu.</div>

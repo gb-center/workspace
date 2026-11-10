@@ -369,14 +369,13 @@
     if (!isFinite(v) || !(n > 0)) return null;
     if (program === 'ielts' && (kind === 'listening' || kind === 'reading')) return lookup(kind === 'listening' ? BAND_L : BAND_R, Math.round(v / n * 40));
     if (program === 'toeic' && (kind === 'listening' || kind === 'reading')) return v <= 0 ? 5 : Math.min(495, Math.max(5, Math.round(v / n * 495 / 5) * 5));
-    if (program === 'ac12' && kind === 'thpt') return Math.round(v / n * 10 * 4) / 4;
-    if (program === 'ac12' && kind === 'dgnl') return Math.round(v / n * 100);
+    if (program === 'ac12') { var tot = kind === 'thpt' ? 40 : 30; return n === tot ? v : Math.round(v / n * tot); } /* số câu đúng: TN THPT 40 câu, ĐGNL 30 câu */
     return null;
   }
   function fmtScore(program, kind, v) {
     if (v == null || !isFinite(v)) return '–';
     if (program === 'ielts') return Number(v).toFixed(1);
-    if (program === 'ac12' && kind === 'thpt') return String(Math.round(v * 100) / 100);
+    if (program === 'ac12') return String(Math.round(v));
     return String(Math.round(v * 10) / 10);
   }
   /* scores: [{kind, v, n, at, manual}] -> danh sách điểm đã quy đổi theo thời gian, sắp tăng dần */
