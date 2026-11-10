@@ -346,6 +346,8 @@
       <select id="da-code" class="field"></select>
       <label for="da-kind">Dùng như</label>
       <select id="da-kind" class="field"><option value="lesson">Bài học</option><option value="homework">Bài tập</option></select>
+      <label for="da-askill">Tính vào điểm mục tiêu</label>
+      <select id="da-askill" class="field"><option value="">Không tính</option><option value="reading">Reading</option><option value="listening">Listening</option><option value="writing">Writing</option><option value="speaking">Speaking</option><option value="dgnl">ĐGNL</option><option value="thpt">TN THPT</option></select>
       <label for="da-week">Tuần (ngày đầu tuần)</label>
       <input id="da-week" type="date" class="field">
       <label for="da-due">Hạn nộp</label>
@@ -791,7 +793,7 @@
       }
       async function openAsg(code) {
         $('da-err').textContent = '';
-        const r = await st.c.from('assignments').select('id,assignment_code,assignment_name,week_start,due_at,kind').eq('is_active', true).order('assignment_code');
+        const r = await st.c.from('assignments').select('id,assignment_code,assignment_name,week_start,due_at,kind,skill').eq('is_active', true).order('assignment_code');
         if (r.error) { $('page-msg').textContent = LMS.friendlyError(r.error); return; }
         st.asgList = r.data || [];
         st.asgList.forEach(a => { a._g = asgGroup(a); a._s = asgSkill(a); });
@@ -811,7 +813,7 @@
         const have = new Set((ex.data || []).map(x => x.class_id)); st.asgHave = have;
         const first = (ex.data || [])[0];
         $('da-week').value = (first && first.week_start) || (a && a.week_start) || weekKey();
-        $('da-kind').value = (a && a.kind) === 'lesson' ? 'lesson' : 'homework';
+        $('da-kind').value = (a && a.kind) === 'lesson' ? 'lesson' : 'homework'; $('da-askill').value = (a && a.skill) || '';
         $('da-due').value = toLocalInput((first && first.due_at) || (a && a.due_at));
         document.querySelectorAll('#da-classes input').forEach(x => { x.checked = have.has(Number(x.dataset.id)); });
       }
@@ -823,7 +825,8 @@
         const codes = boxes.filter(i => i.checked).map(i => i.value);
         const drop = boxes.filter(i => !i.checked && st.asgHave && st.asgHave.has(Number(i.dataset.id))).map(i => Number(i.dataset.id));
         const kind = $('da-kind').value === 'lesson' ? 'lesson' : 'homework';
-        if (kind !== a.kind) { const uk = await st.c.from('assignments').update({ kind }).eq('id', a.id); if (uk.error) { err.textContent = LMS.friendlyError(uk.error); return; } a.kind = kind; }
+        const askill = $('da-askill').value || null;
+        if (kind !== a.kind || askill !== (a.skill || null)) { const uk = await st.c.from('assignments').update({ kind, skill: askill }).eq('id', a.id); if (uk.error) { err.textContent = LMS.friendlyError(uk.error); return; } a.kind = kind; a.skill = askill; }
         if (!codes.length && !drop.length) { closeDlgs(); await refresh('Đã lưu loại: ' + (kind === 'lesson' ? 'Bài học' : 'Bài tập') + '.'); return; }
         const due = $('da-due').value ? new Date($('da-due').value).toISOString() : null;
         st.busy = true; let given = 0, res;

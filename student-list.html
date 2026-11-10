@@ -113,12 +113,33 @@
       </form>
     </section>
     </div>
+    <div id="targets" class="edlg" hidden role="dialog" aria-modal="true" aria-labelledby="tg-title">
+    <section class="edlg-card bg-white rounded-2xl border border-slate-200 p-5 sm:p-6">
+      <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2 mb-1"><i data-lucide="target" class="w-4 h-4"></i><span id="tg-title">Mục tiêu điểm</span></h3>
+      <p class="text-xs text-slate-500 mb-4" id="tg-sub"></p>
+      <div id="tg-rows" class="space-y-2"></div>
+      <p class="text-xs text-slate-500 mt-2">Baseline để trống thì lấy điểm đầu tiên. Điểm hiện tại lấy từ bài practice gần nhất đã gắn kỹ năng khi giao bài. Điểm nhập tay (Writing, Speaking...) thêm ở dưới.</p>
+      <h4 class="font-bold text-slate-800 text-xs mt-5 mb-2">Điểm nhập tay</h4>
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
+        <select id="tg-mk" class="field w-full" aria-label="Kỹ năng"></select>
+        <input id="tg-mw" type="date" class="field w-full" aria-label="Ngày">
+        <input id="tg-ms" type="text" inputmode="decimal" class="field w-full" placeholder="Điểm" aria-label="Điểm" autocomplete="off">
+        <button type="button" id="tg-madd" class="btn-soft">Thêm</button>
+      </div>
+      <div id="tg-manual" class="space-y-1 mt-2"></div>
+      <div class="flex flex-wrap items-center gap-3 mt-4">
+        <button type="button" id="tg-save" class="btn-primary"><i data-lucide="save" class="w-4 h-4"></i><span>Lưu mục tiêu</span></button>
+        <button type="button" id="tg-close" class="btn-soft">Đóng</button>
+        <span id="tg-msg" role="alert" class="text-sm text-rose-700"></span>
+      </div>
+    </section>
+    </div>
   </main>
 
   <script>
     (function () {
       const $ = id => document.getElementById(id);
-      const esc = LMS.esc;
+      const esc = LMS.esc, SCORE = LMS.score;
       const state = { client: null, classes: [], students: [], q: '', cls: 'all', busy: false };
 
       const natural = (a, b) => String(a).localeCompare(String(b), 'vi', { numeric: true });
@@ -192,6 +213,7 @@
             <td class="py-3 px-2"><span class="text-[11px] px-2 py-1 rounded-full ${s.is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${s.is_active ? 'Đang học' : 'Tạm ngưng'}</span></td>
             <td class="py-3 px-2 text-xs text-slate-500">${esc(s.note || '—')}</td>
             <td class="cell-actions py-3 px-2"><div class="flex justify-end">
+              ${SCORE.KINDS[SCORE.programOf(cls && cls.class_code)] ? `<button type="button" class="icon-btn" data-act="target" data-id="${s.id}" aria-label="Mục tiêu điểm ${esc(s.student_name)}"><i data-lucide="target" class="w-4 h-4"></i></button>` : ''}
               <button type="button" class="icon-btn" data-act="edit" data-id="${s.id}" aria-label="Sửa ${esc(s.student_name)}"><i data-lucide="pencil" class="w-4 h-4"></i></button>
               <button type="button" class="icon-btn danger" data-act="delete" data-id="${s.id}" aria-label="Xóa ${esc(s.student_name)}"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
             </div></td>
@@ -287,6 +309,61 @@
         a.download = 'student-list.csv'; a.click(); URL.revokeObjectURL(a.href);
       }
 
+      /* ---------- Mục tiêu điểm (IELTS, TOEIC, AC12) ---------- */
+      let tg = null;
+      const numOf = v => { v = String(v || '').trim().replace(',', '.'); if (v === '') return null; const n = Number(v); return isFinite(n) ? n : NaN; };
+      const dmy = k => { const p = String(k).split('-'); return p[2] + '/' + p[1] + '/' + p[0]; };
+      function renderTargetRows() {
+        $('tg-rows').innerHTML = '<div class="grid grid-cols-3 gap-2 text-[11px] font-bold text-slate-400"><span></span><span>Baseline</span><span>Mục tiêu</span></div>' +
+          SCORE.KINDS[tg.program].map(k => { const t = tg.targets[k] || {};
+            return `<div class="grid grid-cols-3 gap-2 items-center"><span class="text-sm font-semibold text-slate-800">${esc(SCORE.KIND_LABEL[k])}</span>
+              <input id="tg-b-${k}" type="text" inputmode="decimal" class="field w-full" value="${t.baseline != null ? t.baseline : ''}" aria-label="Baseline ${esc(SCORE.KIND_LABEL[k])}" autocomplete="off">
+              <input id="tg-t-${k}" type="text" inputmode="decimal" class="field w-full" value="${t.target != null ? t.target : ''}" aria-label="Mục tiêu ${esc(SCORE.KIND_LABEL[k])}" autocomplete="off"></div>`; }).join('');
+      }
+      function renderManual() {
+        $('tg-manual').innerHTML = tg.manual.length ? tg.manual.slice().reverse().map(m => `<div class="flex items-center justify-between gap-2 text-sm px-3 py-1 rounded-xl border border-slate-200"><span><strong>${esc(SCORE.KIND_LABEL[m.kind] || m.kind)}</strong> · ${dmy(m.week_start)} · ${esc(String(m.score))}</span>
+          <button type="button" class="icon-btn" data-md="${esc(m.kind)}|${m.week_start}" aria-label="Xóa điểm"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`).join('') : '<div class="text-xs text-slate-400">Chưa có điểm nhập tay.</div>';
+        icons();
+      }
+      async function openTargets(id) {
+        const s = find(id); if (!s) return; const cls = classOf(s), program = SCORE.programOf(cls && cls.class_code);
+        if (!SCORE.KINDS[program]) return;
+        const [t, m] = await Promise.all([state.client.from('student_targets').select('kind,baseline,target').eq('student_id', s.id), state.client.from('student_scores').select('kind,week_start,score').eq('student_id', s.id).order('week_start')]);
+        if (t.error || m.error) { LMS.toast(LMS.friendlyError(t.error || m.error)); return; }
+        tg = { s, program, targets: {}, manual: m.data || [] }; (t.data || []).forEach(r => { tg.targets[r.kind] = r; });
+        $('tg-title').textContent = 'Mục tiêu điểm · ' + s.student_name; $('tg-sub').textContent = 'Lớp ' + (cls ? cls.class_name : '') + ' · ' + ({ ielts: 'IELTS', toeic: 'TOEIC', ac12: 'AC12 (ĐGNL và TN THPT)' }[program]);
+        $('tg-mk').innerHTML = SCORE.KINDS[program].filter(k => k !== 'overall').map(k => `<option value="${k}">${esc(SCORE.KIND_LABEL[k])}</option>`).join('');
+        const n = new Date(); $('tg-mw').value = n.getFullYear() + '-' + String(n.getMonth() + 1).padStart(2, '0') + '-' + String(n.getDate()).padStart(2, '0'); $('tg-ms').value = ''; $('tg-msg').textContent = '';
+        renderTargetRows(); renderManual(); $('targets').hidden = false;
+      }
+      async function saveTargets() {
+        if (!tg) return; $('tg-msg').textContent = '';
+        const rows = [], del = [];
+        for (const k of SCORE.KINDS[tg.program]) {
+          const b = numOf($('tg-b-' + k).value), t = numOf($('tg-t-' + k).value);
+          if (Number.isNaN(b) || Number.isNaN(t)) { $('tg-msg').textContent = 'Điểm ' + SCORE.KIND_LABEL[k] + ' chưa hợp lệ.'; return; }
+          if (b == null && t == null) { if (tg.targets[k]) del.push(k); } else rows.push({ student_id: tg.s.id, kind: k, baseline: b, target: t });
+        }
+        let r = rows.length ? await state.client.from('student_targets').upsert(rows, { onConflict: 'student_id,kind' }) : { error: null };
+        if (!r.error && del.length) r = await state.client.from('student_targets').delete().eq('student_id', tg.s.id).in('kind', del);
+        if (r.error) { $('tg-msg').textContent = LMS.friendlyError(r.error); return; }
+        $('targets').hidden = true; LMS.toast('Đã lưu mục tiêu điểm.');
+      }
+      async function addManual() {
+        if (!tg) return; const v = numOf($('tg-ms').value), w = $('tg-mw').value;
+        if (v == null || Number.isNaN(v) || !w) { $('tg-msg').textContent = 'Nhập ngày và điểm hợp lệ.'; return; }
+        const k = $('tg-mk').value;
+        const r = await state.client.from('student_scores').upsert({ student_id: tg.s.id, kind: k, week_start: w, score: v }, { onConflict: 'student_id,kind,week_start' });
+        if (r.error) { $('tg-msg').textContent = LMS.friendlyError(r.error); return; }
+        tg.manual = tg.manual.filter(m => !(m.kind === k && m.week_start === w)).concat([{ kind: k, week_start: w, score: v }]).sort((a, b) => String(a.week_start).localeCompare(String(b.week_start)));
+        $('tg-ms').value = ''; $('tg-msg').textContent = ''; renderManual();
+      }
+      async function delManual(key) {
+        const [k, w] = key.split('|'); const r = await state.client.from('student_scores').delete().eq('student_id', tg.s.id).eq('kind', k).eq('week_start', w);
+        if (r.error) { $('tg-msg').textContent = LMS.friendlyError(r.error); return; }
+        tg.manual = tg.manual.filter(m => !(m.kind === k && m.week_start === w)); renderManual();
+      }
+
       function bind() {
         $('search').addEventListener('input', e => { state.q = e.target.value; render(); });
         $('filter-class').addEventListener('change', render);
@@ -296,13 +373,16 @@
         $('editor').addEventListener('mousedown', e => { if (e.target === $('editor')) closeEditor(); });
         document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('editor').hidden) closeEditor(); });
         $('student-form').addEventListener('submit', onSubmit);
+        $('tg-save').addEventListener('click', saveTargets); $('tg-madd').addEventListener('click', addManual); $('tg-close').addEventListener('click', () => { $('targets').hidden = true; });
+        $('targets').addEventListener('mousedown', e => { if (e.target === $('targets')) $('targets').hidden = true; });
+        $('tg-manual').addEventListener('click', e => { const b = e.target.closest('[data-md]'); if (b) delManual(b.dataset.md); });
         const tuition = $('student-tuition');
         tuition.addEventListener('focus', () => tuition.select());
         tuition.addEventListener('input', () => { const d = tuition.value.replace(/\D/g, ''); tuition.value = d ? Number(d).toLocaleString('en-US') : ''; });
         $('rows').addEventListener('click', e => {
           const b = e.target.closest('[data-act]'); if (!b) return;
           const act = b.dataset.act, id = b.dataset.id;
-          if (act === 'edit') edit(id); else if (act === 'delete') remove(id); else if (act === 'copy') copyCode(id);
+          if (act === 'target') openTargets(id); else if (act === 'edit') edit(id); else if (act === 'delete') remove(id); else if (act === 'copy') copyCode(id);
         });
       }
 

@@ -35,6 +35,13 @@
   .dlg[hidden]{display:none}
   .dlg .card{width:min(520px,100%);max-height:calc(100dvh - 32px);overflow:auto;background:#fff;border:1px solid var(--t-border,#e2e8f0);border-radius:24px;padding:22px}
   .dlg h2{font-size:1.0625rem;font-weight:800;color:var(--t-ink,#0f172a);margin-bottom:12px}
+  .obj-g{font-size:.75rem;font-weight:800;color:#475569;margin:12px 0 6px}
+  .obj{border:1px solid #e2e8f0;border-radius:14px;padding:10px 12px;margin-bottom:8px;background:#fff}
+  .obj-h{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:.875rem;font-weight:700;color:#0f172a}
+  .obj-h small{font-weight:600;color:#64748b;white-space:nowrap}
+  .obj-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .ochip{min-height:44px;padding:0 14px;border-radius:9999px;border:1px solid #cbd5e1;background:#fff;color:#334155;font-size:.8125rem;font-weight:600}
+  .ochip.on{background:#16a34a;border-color:#16a34a;color:#fff}
   .dlg label{display:block;font-size:.8125rem;font-weight:700;color:var(--t-ink,#0f172a);margin:12px 0 6px}
   .dlg .field{width:100%}
   .dlg .acts{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:18px}
@@ -159,6 +166,7 @@
       <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 gap-3 mb-4">
         <div><h3 class="font-bold text-slate-900 text-sm flex items-center gap-2"><i data-lucide="users" class="w-4 h-4 text-sky-600"></i><span>Danh sách học sinh</span></h3></div>
         <div class="teacher-feature hidden items-center gap-2">
+          <button type="button" id="btn-obj" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-semibold rounded-lg flex items-center gap-1" style="min-height:44px"><i data-lucide="target" class="w-3.5 h-3.5"></i><span>Mục tiêu nội dung</span></button>
           <a href="student-list.html" class="px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-lg flex items-center gap-1"><i data-lucide="users" class="w-3.5 h-3.5"></i><span>Quản lý học viên</span></a>
         </div>
       </div>
@@ -250,6 +258,21 @@
       <label for="dm-url">Link</label><input id="dm-url" type="url" class="field" placeholder="https://meet.google.com/..." autocomplete="off">
       <div class="err" id="dm-err" role="alert"></div>
       <div class="acts"><button type="submit" class="btn-primary">Lưu</button><button type="button" class="btn-soft" data-close>Hủy</button></div>
+    </form>
+  </div>
+
+  <div id="dlg-obj" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="do-title">
+    <form class="card" novalidate id="obj-form" style="max-width:680px;width:100%;max-height:calc(100dvh - 32px);overflow:auto">
+      <h2 id="do-title">Mục tiêu nội dung</h2>
+      <div class="text-sm text-slate-600">Mục tiêu của cả lớp. Bấm tên học sinh để đánh dấu đã hoàn thành.</div>
+      <div class="row2" style="margin-top:10px">
+        <div><label for="do-group">Chủ điểm (Unit, Topic...)</label><input id="do-group" type="text" class="field" list="do-groups" autocomplete="off" placeholder="Unit 1"><datalist id="do-groups"></datalist></div>
+        <div><label for="do-title-in">Mục tiêu</label><input id="do-title-in" type="text" class="field" autocomplete="off" placeholder="Present simple"></div>
+      </div>
+      <div class="acts" style="margin-top:8px"><button type="button" id="do-add" class="btn-primary">Thêm mục tiêu</button></div>
+      <div id="obj-list" style="margin-top:12px"></div>
+      <div class="err" id="do-err" role="alert"></div>
+      <div class="acts"><button type="button" class="btn-soft" data-close>Đóng</button></div>
     </form>
   </div>
 
@@ -543,12 +566,65 @@
       document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDlgs(); });
     }
 
+
+    /* ---------- Mục tiêu nội dung (Global Success, Giao tiếp) ---------- */
+    async function loadObj() {
+      const o = await S.c.from('class_objectives').select('id,group_label,title,sort_order').eq('class_id', S.cls.id).order('sort_order').order('id');
+      if (o.error) throw o.error; S.obj = o.data || []; S.done = new Set();
+      if (S.obj.length) {
+        const d = await S.c.from('objective_done').select('objective_id,student_id').in('objective_id', S.obj.map(x => x.id));
+        if (d.error) throw d.error; (d.data || []).forEach(r => S.done.add(r.objective_id + '|' + r.student_id));
+      }
+    }
+    function renderObj() {
+      const groups = [], map = {}; S.obj.forEach(o => { const g = o.group_label || ''; if (!map[g]) { map[g] = []; groups.push(g); } map[g].push(o); });
+      $('do-groups').innerHTML = groups.filter(Boolean).map(g => `<option value="${esc(g)}">`).join('');
+      $('obj-list').innerHTML = S.obj.length ? groups.map(g => (g ? `<div class="obj-g">${esc(g)}</div>` : '') + map[g].map(o => {
+        const n = S.students.filter(st => S.done.has(o.id + '|' + st.id)).length;
+        return `<div class="obj"><div class="obj-h"><span style="overflow-wrap:anywhere">${esc(o.title)}</span><span class="flex items-center gap-2"><small>${n}/${S.students.length}</small><button type="button" class="icon-btn" data-delobj="${o.id}" aria-label="Xóa mục tiêu"><i data-lucide="trash-2" class="w-4 h-4"></i></button></span></div>
+          <div class="obj-chips">${S.students.map(st => `<button type="button" class="ochip ${S.done.has(o.id + '|' + st.id) ? 'on' : ''}" data-t="${o.id}|${st.id}" aria-pressed="${S.done.has(o.id + '|' + st.id)}">${esc(st.student_name)}</button>`).join('')}</div></div>`;
+      }).join('')).join('') : '<div class="text-sm text-slate-500">Chưa có mục tiêu nào.</div>';
+      icons();
+    }
+    async function openObj() {
+      $('do-err').textContent = '';
+      try { await loadObj(); } catch (e) { $('do-err').textContent = LMS.friendlyError(e); }
+      renderObj(); openDlg('dlg-obj');
+    }
+    async function addObj() {
+      const title = $('do-title-in').value.trim(), g = $('do-group').value.trim(); $('do-err').textContent = '';
+      if (!title) { $('do-err').textContent = 'Nhập nội dung mục tiêu.'; return; }
+      const r = await S.c.from('class_objectives').insert({ class_id: S.cls.id, group_label: g, title, sort_order: S.obj.reduce((m, o) => Math.max(m, o.sort_order || 0), 0) + 1 });
+      if (r.error) { $('do-err').textContent = LMS.friendlyError(r.error); return; }
+      $('do-title-in').value = ''; await loadObj(); renderObj(); $('do-title-in').focus();
+    }
+    async function toggleObj(key) {
+      const [oid, sid] = key.split('|').map(Number), on = S.done.has(key);
+      const r = on ? await S.c.from('objective_done').delete().eq('objective_id', oid).eq('student_id', sid) : await S.c.from('objective_done').insert({ objective_id: oid, student_id: sid });
+      if (r.error) { $('do-err').textContent = LMS.friendlyError(r.error); return; }
+      if (on) S.done.delete(key); else S.done.add(key); renderObj();
+    }
+    async function delObj(id) {
+      const o = S.obj.find(x => x.id === Number(id)); if (!o) return;
+      if (!(await LMS.confirm('Xóa mục tiêu "' + o.title + '"? Trạng thái hoàn thành của học sinh cũng bị xóa.', { ok: 'Xóa', danger: true }))) return;
+      const r = await S.c.from('class_objectives').delete().eq('id', o.id);
+      if (r.error) { $('do-err').textContent = LMS.friendlyError(r.error); return; }
+      await loadObj(); renderObj();
+    }
+    function bindObj() {
+      $('btn-obj').addEventListener('click', openObj);
+      $('do-add').addEventListener('click', addObj);
+      $('obj-form').addEventListener('submit', e => { e.preventDefault(); addObj(); });
+      $('obj-list').addEventListener('click', e => { const t = e.target.closest('[data-t]'); if (t) return toggleObj(t.dataset.t); const d = e.target.closest('[data-delobj]'); if (d) delObj(d.dataset.delobj); });
+    }
+
     async function boot() {
-      icons(); bind();
+      icons(); bind(); bindObj();
       document.querySelectorAll('.teacher-feature').forEach(el => el.classList.remove('hidden'));
       try {
         const { client } = await LMS.requireTeacher();
         S.c = client; await load(); renderAll();
+        $('btn-obj').style.display = ['gs', 'comm'].includes(LMS.score.programOf(S.cls.class_code)) ? '' : 'none';
       } catch (e) {
         document.querySelector('main').innerHTML = `<div class="bg-white rounded-2xl border border-slate-200 p-6 text-center"><p class="text-sm text-rose-700">${esc(LMS.friendlyError(e))}</p><a href="index.html" class="btn-soft mt-4">Về trang Tổng quan</a></div>`;
         $('class-title-header').textContent = 'Lớp'; icons();

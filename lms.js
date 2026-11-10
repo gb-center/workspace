@@ -351,7 +351,83 @@
     return verify(fromUrl).catch(function (e) { return prompt(msgOf(e)); });
   }
 
+
+  /* ---------- Điểm mục tiêu: quy đổi và tiến độ (dùng chung giáo viên + học viên) ---------- */
+  var KINDS = {
+    ielts: ['overall', 'listening', 'reading', 'writing', 'speaking'],
+    toeic: ['overall', 'listening', 'reading'],
+    ac12: ['dgnl', 'thpt']
+  };
+  var KIND_LABEL = { overall: 'Overall', listening: 'Listening', reading: 'Reading', writing: 'Writing', speaking: 'Speaking', dgnl: 'ĐGNL', thpt: 'TN THPT' };
+  var KIND_SHORT = { listening: 'L', reading: 'R', writing: 'W', speaking: 'S' };
+  var BAND_L = [[39, 9], [37, 8.5], [35, 8], [32, 7.5], [30, 7], [26, 6.5], [23, 6], [18, 5.5], [16, 5], [13, 4.5], [10, 4], [8, 3.5], [6, 3], [4, 2.5], [2, 2], [1, 1]];
+  var BAND_R = [[39, 9], [37, 8.5], [35, 8], [33, 7.5], [30, 7], [27, 6.5], [23, 6], [19, 5.5], [15, 5], [13, 4.5], [10, 4], [8, 3.5], [6, 3], [4, 2.5], [2, 2], [1, 1]];
+  function lookup(tab, raw) { for (var i = 0; i < tab.length; i++) if (raw >= tab[i][0]) return tab[i][1]; return 0; }
+  /* Đổi số câu đúng (v/n) thành điểm theo chương trình. Trả null nếu kỹ năng không chấm tự động. */
+  function convert(program, kind, v, n) {
+    v = Number(v); n = Number(n);
+    if (!isFinite(v) || !(n > 0)) return null;
+    if (program === 'ielts' && (kind === 'listening' || kind === 'reading')) return lookup(kind === 'listening' ? BAND_L : BAND_R, Math.round(v / n * 40));
+    if (program === 'toeic' && (kind === 'listening' || kind === 'reading')) return v <= 0 ? 5 : Math.min(495, Math.max(5, Math.round(v / n * 495 / 5) * 5));
+    if (program === 'ac12' && kind === 'thpt') return Math.round(v / n * 10 * 4) / 4;
+    if (program === 'ac12' && kind === 'dgnl') return Math.round(v / n * 100);
+    return null;
+  }
+  function fmtScore(program, kind, v) {
+    if (v == null || !isFinite(v)) return '–';
+    if (program === 'ielts') return Number(v).toFixed(1);
+    if (program === 'ac12' && kind === 'thpt') return String(Math.round(v * 100) / 100);
+    return String(Math.round(v * 10) / 10);
+  }
+  /* scores: [{kind, v, n, at, manual}] -> danh sách điểm đã quy đổi theo thời gian, sắp tăng dần */
+  function series(program, kind, scores) {
+    var out = [];
+    (scores || []).forEach(function (r) {
+      if (r.kind !== kind) return;
+      var val = r.manual ? Number(r.v) : convert(program, kind, r.v, r.n);
+      if (val == null || !isFinite(val)) return;
+      out.push({ v: val, at: new Date(r.at).getTime() || 0 });
+    });
+    return out.sort(function (a, b) { return a.at - b.at; });
+  }
+  function ieltsRound(x) { return Math.round(x * 2) / 2; }
+  /* Trả về [{kind, label, baseline, current, target, pct}] theo thứ tự KINDS[program] */
+  function targets(program, tg, scores) {
+    var list = KINDS[program]; if (!list) return [];
+    var tgMap = {}; (tg || []).forEach(function (t) { tgMap[t.kind] = t; });
+    var rows = {};
+    list.forEach(function (k) {
+      if (k === 'overall') return;
+      var se = series(program, k, scores), t = tgMap[k] || {};
+      rows[k] = { kind: k, label: KIND_LABEL[k], baseline: t.baseline != null ? Number(t.baseline) : (se.length ? se[0].v : null), current: se.length ? se[se.length - 1].v : null, target: t.target != null ? Number(t.target) : null };
+    });
+    if (list.indexOf('overall') >= 0) {
+      var skills = list.filter(function (k) { return k !== 'overall'; }), t0 = tgMap.overall || {};
+      var all = function (f) { var vs = skills.map(function (k) { return rows[k][f]; }); return vs.every(function (x) { return x != null; }) ? vs : null; };
+      var avg = function (vs) { var m = vs.reduce(function (a, b) { return a + b; }, 0) / vs.length; return program === 'ielts' ? ieltsRound(m) : (program === 'toeic' ? vs.reduce(function (a, b) { return a + b; }, 0) : m); };
+      var cv = all('current'), bv = all('baseline');
+      rows.overall = { kind: 'overall', label: 'Overall', baseline: t0.baseline != null ? Number(t0.baseline) : (bv ? avg(bv) : null), current: cv ? avg(cv) : null, target: t0.target != null ? Number(t0.target) : null };
+    }
+    return list.map(function (k) { var r = rows[k]; r.pct = progress(r.baseline, r.current, r.target); return r; });
+  }
+  /* Progress = (Current - Baseline) / (Target - Baseline), giới hạn 0-100, null nếu thiếu số liệu */
+  function progress(b, c, t) {
+    if (b == null || c == null || t == null) return null;
+    if (c < b) return 0;
+    if (t === b) return c >= t ? 100 : 0;
+    return Math.max(0, Math.min(100, Math.round((c - b) / (t - b) * 100)));
+  }
+  function contentProgress(objs) {
+    var total = (objs || []).length, done = (objs || []).filter(function (o) { return o.done; }).length;
+    return { total: total, done: done, pct: total ? Math.round(done / total * 100) : null };
+  }
+  function programOf(code) {
+    code = String(code || '').toUpperCase();
+    if (code.indexOf('AC12') === 0) return 'ac12'; if (code.indexOf('IE') === 0) return 'ielts'; if (code.indexOf('TO') === 0) return 'toeic'; if (code.indexOf('GT') === 0) return 'comm'; return 'gs';
+  }
+
   window.LMS = {
+    score: { KINDS: KINDS, KIND_LABEL: KIND_LABEL, KIND_SHORT: KIND_SHORT, convert: convert, fmt: fmtScore, targets: targets, progress: progress, contentProgress: contentProgress, programOf: programOf },
     isTeacherNow: isTeacherNow, siteBase: SITE_BASE, slug: slug, withStudent: withStudent, studentGate: studentGate,
     client: client, requireTeacher: requireTeacher, signOut: signOut,
     esc: esc, toast: toast, friendlyError: friendlyError, confirm: confirmBox, alert: alertBox,
