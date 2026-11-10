@@ -205,7 +205,8 @@ h2{margin:0 0 14px;font-size:calc(var(--fs) + 8px);line-height:1.25}
   /* ---------- login ---------- */
   function login() {
     var inp = h("input", { cls: "gap", type: "text", autocomplete: "off", spellcheck: "false", placeholder: "Student code", "aria-label": "Student code" });
-    inp.value = store("sc") || "";
+    var hc = decodeURIComponent((location.hash || "").slice(1)).trim();
+    inp.value = hc || store("sc") || "";
     var msg = h("p", { cls: "err", text: "" });
     var ov = h("div", { cls: "ov solid" }, h("div", { cls: "card" }, h("h3", { text: D.title }), h("p", { text: "Enter your student code to start." }), inp, msg,
       h("div", { cls: "brow" }, h("button", { cls: "pill", text: "Start", onclick: go1 }))));
@@ -218,6 +219,7 @@ h2{margin:0 0 14px;font-size:calc(var(--fs) + 8px);line-height:1.25}
     }
     inp.addEventListener("keydown", function (e) { if (e.key === "Enter") go1(); });
     document.body.appendChild(ov); setTimeout(function () { inp.focus(); }, 50);
+    if (hc) { try { history.replaceState(null, "", location.pathname + location.search); } catch (e) { } go1(); }
   }
 
   /* ---------- chrome ---------- */

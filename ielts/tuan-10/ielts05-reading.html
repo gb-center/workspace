@@ -351,7 +351,8 @@ mark.v{background:none;color:inherit}
   }
   function login() {
     var inp = h("input", { cls: "gap big", type: "text", autocomplete: "off", spellcheck: "false", placeholder: "Student code", "aria-label": "Student code" });
-    inp.value = store("sc") || "";
+    var hc = decodeURIComponent((location.hash || "").slice(1)).trim();
+    inp.value = hc || store("sc") || "";
     var msg = h("p", { cls: "err", text: "" });
     var ov = h("div", { cls: "ov solid" }, h("div", { cls: "card" }, h("h3", { text: D.title }), h("p", { text: "Enter your student code to start the test." }), inp, msg,
       h("div", { cls: "brow" }, h("button", { cls: "pill", text: "Start", onclick: go1 }))));
@@ -367,6 +368,7 @@ mark.v{background:none;color:inherit}
     }
     inp.addEventListener("keydown", function (e) { if (e.key === "Enter") go1(); });
     document.body.appendChild(ov); setTimeout(function () { inp.focus(); }, 50);
+    if (hc) { try { history.replaceState(null, "", location.pathname + location.search); } catch (e) { } go1(); }
   }
   function pr(pi) { return D.passages[pi].range; }
   function loadProgress(pg) {
