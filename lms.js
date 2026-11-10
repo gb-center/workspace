@@ -85,7 +85,9 @@
       var a = document.createElement('div'); a.className = 'cf-acts';
       var no = document.createElement('button'); no.type = 'button'; no.className = 'cf-no'; no.textContent = opt.cancel || 'Hủy';
       var ok = document.createElement('button'); ok.type = 'button'; ok.className = 'cf-ok' + (opt.danger ? ' danger' : ''); ok.textContent = opt.ok || 'Đồng ý';
-      if (!opt.alertOnly) a.appendChild(no); a.appendChild(ok);
+      if (!opt.alertOnly) a.appendChild(no);
+      if (opt.alt) { var al = document.createElement('button'); al.type = 'button'; al.className = 'cf-no'; al.style.color = '#be123c'; al.textContent = opt.alt; al.addEventListener('click', function () { done('alt'); }); a.appendChild(al); }
+      a.appendChild(ok);
       c.appendChild(m); c.appendChild(a); o.appendChild(c); document.body.appendChild(o);
       function done(v) { document.removeEventListener('keydown', key, true); o.remove(); if (prev && prev.focus) { try { prev.focus(); } catch (e) {} } resolve(v); }
       function key(e) { if (e.key === 'Escape') { e.stopPropagation(); e.preventDefault(); done(false); } }
@@ -130,8 +132,8 @@
       ov.innerHTML =
         '<form class="lg-card" novalidate>' +
           '<div class="lg-brand"><span>' +
-            '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg>' +
-          '</span>gblearning</div>' +
+            '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="8 8 34 34" aria-hidden="true"><path d="M25 18c-3-3-8-3.5-12-2.5v17c4-1 9-.5 12 2.5 3-3 8-3.5 12-2.5v-17c-4-1-9-.5-12 2.5z" fill="currentColor"/><circle cx="37" cy="11" r="3.2" fill="#facc15"/></svg>' +
+          '</span>gb<b style="color:#2563eb;font-weight:800">learning</b></div>' +
           '<h1>Đăng nhập giáo viên</h1>' +
           '<p>Chỉ giáo viên mới xem và sửa được danh sách học viên.</p>' +
           '<label for="lg-email">Email</label>' +
