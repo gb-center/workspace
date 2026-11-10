@@ -83,12 +83,14 @@ mark.v{background:none;color:inherit}
 .card p{margin:8px 0;line-height:1.5;font-size:16px}
 .card p.score{font-size:44px;font-weight:700;margin:6px 0}
 .err{color:var(--badl)}
+.mv{display:none}
 .sbar{position:sticky;bottom:-80px;display:flex;gap:10px;justify-content:flex-end;align-items:center;background:#fff;border-top:1px solid var(--line);padding:12px 0;margin-top:10px}
 .sdone{font-size:15px;color:var(--okl);font-weight:600}
 .brow{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
 .pill{white-space:nowrap;border:0;border-radius:22px;background:#111;color:#fff;height:44px;padding:0 24px;font-size:16px;font-weight:600}
 .pill.ghost{background:var(--soft);color:#111}
 @media (max-width:900px){#main{flex-direction:column}#passage{width:100%;height:45%}#split{display:none}.brand{display:none}}
+@media (max-width:700px){#app{grid-template-rows:auto 1fr auto}#hd{height:auto;flex-wrap:wrap;gap:4px 8px;padding:6px 10px}.tabs{order:3;flex:1 0 100%;margin:0;justify-content:space-between}.tab{flex:1;padding:8px 6px 8px;font-size:15px}.tools{margin-left:auto;flex-wrap:wrap}.who2,.hide-m{display:none}#main[data-v="p"] #qs,#main[data-v="q"] #passage{display:none}#passage,#qs{width:100%;flex:1;min-height:0}#passage{padding:14px 16px 30px}#qs{padding:14px 16px 80px}.mv{display:flex;order:4;flex:1 0 100%;gap:8px;padding-bottom:6px}.mvb{flex:1;height:38px;border:0;border-radius:19px;background:var(--soft);font-size:15px;font-weight:600}.mvb.on{background:#111;color:#fff}.chips,.opts,.ex{margin-left:0}h2{font-size:calc(var(--fs) + 4px)}.sbar{bottom:-80px}.card{padding:20px}.brow{flex-wrap:wrap}}
 </style></head>
 <body><div id="app"><header id="hd"></header>
 <div id="main"><div id="passage"></div><div id="split" title="Drag to resize"></div><div id="qs"></div></div>
@@ -313,7 +315,9 @@ mark.v{background:none;color:inherit}
       foot.appendChild(grp);
     });
   }
+  function setView(v) { $("#main").setAttribute("data-v", v); document.querySelectorAll(".mvb").forEach(function (b) { b.classList.toggle("on", b.dataset.v === v); }); }
   function go(n) {
+    setView("q");
     var m = QMAP[n]; if (m.pi !== state.p) { state.p = m.pi; paint(); }
     var id = m.g.kind === "multi" ? m.g.firstq : n, e = document.getElementById("q" + id);
     if (e) e.scrollIntoView({ block: "center", behavior: "smooth" });
@@ -491,8 +495,10 @@ mark.v{background:none;color:inherit}
     if (!TEACH) tools.appendChild(ibtn("reset", "Retake the whole test", retakeAll));
     tools.appendChild(ibtn("full", "Full screen", function () {
       try { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); } catch (e) { }
-    }));
+    }, "hide-m"));
     $("#hd").appendChild(h("div", { cls: "brand", text: D.title })); $("#hd").appendChild(tabs); $("#hd").appendChild(tools);
+    var mv = h("div", { cls: "mv" }); ["p", "q"].forEach(function (v) { mv.appendChild(h("button", { cls: "mvb" + (v === "p" ? " on" : ""), "data-v": v, text: v === "p" ? "Passage" : "Questions", onclick: function () { setView(v); } })); });
+    $("#hd").appendChild(mv); $("#main").setAttribute("data-v", "p");
     setupSplit(); if (TEACH) setupVocab();
     paint();
     if (!TEACH) login();
