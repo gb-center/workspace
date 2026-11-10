@@ -393,7 +393,7 @@
       const BASE_MONDAY = new Date(2026, 8, 7);   // tuần 1 bắt đầu thứ 2 07/09/2026
       const STATUS_TXT = { planned: 'Chưa dạy', done: 'Đã dạy', cancel: 'Hủy', makeup: 'Bù', holiday: 'Nghỉ lễ' };
       const DEF_BLOCKED = ['07:00 - 22:30', '08:00 - 17:00', '08:00 - 17:00', '08:00 - 17:00', '08:00 - 19:00', '20:30 - 22:00', '18:00 - 22:30'];
-      const st = { c: null, classes: [], counts: {}, sessions: [], blocked: DEF_BLOCKED.slice(), week: 1, selDay: 0, busy: false, view: 'schedule', mats: [], lib: [], libAsg: [], libProg: '' };
+      const st = { c: null, classes: [], counts: {}, sessions: [], blocked: DEF_BLOCKED.slice(), week: 1, selDay: 0, busy: false, view: 'schedule', mats: [], lib: [], libAsg: [], libProg: '', scanAll: [], scanAt: 0 };
 
       const pad = n => String(n).padStart(2, '0');
       const ymd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
@@ -595,6 +595,36 @@
           (g[key] = g[key] || { kind: x.kind === 'lesson' ? 'lesson' : 'homework', asg: true, skill: x.skill || '', page: x.page_path || '', code: x.assignment_code, title: x.assignment_name || x.assignment_code, week_start: wk, due_at: row.due_at || x.due_at, class_ids: [] }).class_ids.push(row.class_id);
         });
         st.libAsg = Object.keys(g).map(k => g[k]);
+        await scanRepo();
+      }
+      const SCAN_DIR = { ielts: 'ielts', toeic: 'toeic', gs: 'gs', gt: 'comm' };
+      async function scanRepo() {
+        if (Date.now() - st.scanAt < 120000) return;
+        try {
+          const b = new URL(LMS.siteBase), owner = b.hostname.split('.')[0], repo = b.pathname.replace(/\//g, '');
+          const r = await fetch('https://api.github.com/repos/' + owner + '/' + repo + '/git/trees/main?recursive=1');
+          if (!r.ok) return;
+          const j = await r.json(), out = [];
+          (j.tree || []).forEach(t => {
+            const m = t.type === 'blob' && /^(ielts|toeic|gs|gt)\/w(\d{1,2})\/([^\/]+)\.html$/i.exec(t.path);
+            if (m) out.push({ scan: true, kind: 'lesson', skill: '', path: t.path.toLowerCase(), url: LMS.siteBase + t.path, prog: SCAN_DIR[m[1].toLowerCase()], week_start: ymd(weekDates(Number(m[2]))[0]), class_ids: [], title: m[3].replace(/[-_]+/g, ' ').replace(/^./, c => c.toUpperCase()) });
+          });
+          await Promise.all(out.slice(0, 60).map(async x => {
+            try {
+              const rr = await fetch(x.url, { cache: 'no-store' }); if (!rr.ok || !rr.body) return;
+              const rd = rr.body.getReader(), ch = await rd.read(); rd.cancel();
+              const t = /<title>([^<]*)<\/title>/i.exec(new TextDecoder().decode(ch.value || new Uint8Array()));
+              if (t && t[1].trim()) x.title = t[1].trim();
+            } catch (e) { }
+          }));
+          st.scanAll = out; st.scanAt = Date.now();
+        } catch (e) { }
+      }
+      function scanItems() {
+        const base = '/' + new URL(LMS.siteBase).pathname.replace(/\//g, '') + '/', known = new Set();
+        const add = u => { try { known.add(new URL(u, location.href).pathname.toLowerCase().replace(base, '')); } catch (e) { } };
+        st.lib.forEach(m => add(m.url)); st.libAsg.forEach(m => { if (m.page) add(m.page); });
+        return st.scanAll.filter(x => !known.has(x.path));
       }
       function previewAsg(code) {
         const m = st.libAsg.find(x => x.code === code); if (!m || !m.page) return;
@@ -614,9 +644,9 @@
         sel.innerHTML = '<option value="">Tất cả lớp</option>' + matClasses().map(c => `<option value="${c.id}">${esc(c.class_code)}</option>`).join('');
         sel.value = cur;
         const q = $('lib-search').value.trim().toLowerCase(), cid = Number(sel.value) || 0, kind = $('lib-kind').value;
-        const base = st.lib.concat(st.libAsg).filter(m => (!q || m.title.toLowerCase().includes(q)) && (!cid || (m.class_ids || []).includes(cid)) && (!kind || m.kind === kind) && (!$('lib-skill').value || m.skill === $('lib-skill').value));
+        const base = st.lib.concat(st.libAsg).concat(scanItems()).filter(m => (!q || m.title.toLowerCase().includes(q)) && (!cid || (m.class_ids || []).includes(cid)) && (!kind || m.kind === kind) && (!$('lib-skill').value || m.skill === $('lib-skill').value));
         const PL = { ielts: 'IELTS', toeic: 'TOEIC', gs: 'Global Success', ac12: 'AC12', comm: 'Giao tiếp' };
-        const progsOf = m => [...new Set((m.class_ids || []).map(id => { const c = st.classes.find(x => x.id === id); return c ? LMS.score.programOf(c.class_code) : ''; }).filter(Boolean))];
+        const progsOf = m => m.scan ? [m.prog] : [...new Set((m.class_ids || []).map(id => { const c = st.classes.find(x => x.id === id); return c ? LMS.score.programOf(c.class_code) : ''; }).filter(Boolean))];
         const present = Object.keys(PL).filter(k => base.some(m => progsOf(m).includes(k)));
         if (st.libProg && !present.includes(st.libProg)) st.libProg = '';
         $('lib-tabs').innerHTML = present.length > 1 ? [['', 'Tất cả']].concat(present.map(k => [k, PL[k]])).map(t => `<button type="button" class="ptab" role="tab" data-ptab="${t[0]}" aria-pressed="${st.libProg === t[0]}">${t[1]}</button>`).join('') : '';
@@ -628,6 +658,11 @@
           if (k) { const n = weekNoOf(k), d = weekDates(n); head = `Tuần ${pad(n)} <span class="font-normal text-slate-500">(${pad(d[0].getDate())}.${pad(d[0].getMonth() + 1)} – ${pad(d[6].getDate())}.${pad(d[6].getMonth() + 1)})</span>`; }
           return `<div class="bg-white rounded-2xl border border-slate-200 p-4"><h2 class="text-sm font-bold text-slate-900 mb-3">${head}</h2>
             <div class="space-y-2">${byWeek[k].map(m => {
+              if (m.scan) {
+                return `<div class="mat-item"><div class="min-w-0 flex-1"><a class="mat-title" href="${esc(m.url)}" target="_blank" rel="noopener">${esc(m.title)}</a>
+                  <div class="text-xs text-slate-500 mt-1">Mới trên GitHub · <span class="text-rose-700">Chưa giao cho lớp nào</span></div></div>
+                  <button type="button" class="icon-btn" data-add-scan="${esc(m.path)}" aria-label="Thêm vào học liệu"><i data-lucide="plus" class="w-4 h-4"></i></button></div>`;
+              }
               if (m.asg) {
                 const due = m.due_at ? new Date(m.due_at) : null;
                 return `<div class="mat-item"><div class="min-w-0 flex-1"><div style="font-weight:700;color:var(--t-primary);overflow-wrap:anywhere">${esc(m.title)}</div>
@@ -700,7 +735,7 @@
           pre = g.length ? 'gs' + g.join('-') + '-' : 'gs-';
         }
         const file = (pre && name.indexOf(pre) === 0 ? '' : pre) + name + '.html';
-        return { url: LMS.siteBase + 'hoc-lieu/' + prog + '/w' + pad(weekNoOf($('dm-week').value)) + '/' + file };
+        return { url: LMS.siteBase + prog + '/w' + pad(weekNoOf($('dm-week').value)) + '/' + file };
       }
       function updateSuggest() {
         const s = suggestUrl(); sugUrl = s.url || '';
@@ -723,15 +758,15 @@
         } catch (e) { return { ok: false, why: ctl.signal.aborted ? 'quá thời gian chờ' : 'không kết nối được tới địa chỉ này' }; }
         finally { clearTimeout(to); }
       }
-      function openMat(id) {
+      function openMat(id, pf) {
         $('dm-err').textContent = '';
         const m = id ? (st.mats.find(x => x.id === Number(id)) || st.lib.find(x => x.id === Number(id))) : null;
         $('dm-id').value = m ? m.id : '';
-        const wk = m ? toMon(m.week_start) : (st.view === 'lib' ? ymd(weekDates(NOW_WEEK)[0]) : weekKey());
+        const wk = m ? toMon(m.week_start) : pf ? pf.week_start : (st.view === 'lib' ? ymd(weekDates(NOW_WEEK)[0]) : weekKey());
         $('dm-week').innerHTML = weekOptions(wk); $('dm-week').value = wk;
         $('dm-title').textContent = m ? 'Sửa mục học liệu' : 'Thêm mục học liệu';
-        $('dm-kind').value = m ? m.kind : 'lesson'; $('dm-skill').value = (m && m.skill) || '';
-        $('dm-name').value = m ? m.title : ''; $('dm-url').value = m ? m.url : ''; $('dm-url').dataset.orig = m ? m.url : '';
+        $('dm-kind').value = m ? m.kind : (pf ? pf.kind : 'lesson'); $('dm-skill').value = (m && m.skill) || '';
+        $('dm-name').value = m ? m.title : (pf ? pf.title : ''); $('dm-url').value = m ? m.url : (pf ? pf.url : ''); $('dm-url').dataset.orig = m ? m.url : '';
         const sel = new Set(m ? m.class_ids : []);
         const cls = matClasses(); (m ? m.class_ids : []).forEach(cid => { const c = st.classes.find(x => x.id === cid); if (c && c.is_archived) cls.push(c); });
         $('dm-classes').innerHTML = cls.map(c => `<label class="pickrow"><input type="checkbox" value="${c.id}"${sel.has(c.id) ? ' checked' : ''}><span>${esc(c.class_code)}</span></label>`).join('');
@@ -1047,7 +1082,7 @@
         addEventListener('hashchange', () => setView(location.hash === '#lib' ? 'lib' : 'schedule'));
         $('btn-add-mat').addEventListener('click', () => openMat(null));
         $('view-mat').addEventListener('click', e => { const d = e.target.closest('[data-del-mat]'); if (d) return removeMat(d.dataset.delMat); const b = e.target.closest('[data-edit-mat]'); if (b) openMat(b.dataset.editMat); });
-        $('view-lib').addEventListener('click', e => { const d = e.target.closest('[data-del-mat]'); if (d) return removeMat(d.dataset.delMat); const b = e.target.closest('[data-edit-mat]'); if (b) return openMat(b.dataset.editMat); const a = e.target.closest('[data-edit-asg]'); if (a) return openAsg(a.dataset.editAsg); const pv = e.target.closest('[data-prev-asg]'); if (pv) return previewAsg(pv.dataset.prevAsg); const rn = e.target.closest('[data-rename-asg]'); if (rn) return renameAsg(rn.dataset.renameAsg); const pt = e.target.closest('[data-ptab]'); if (pt) { st.libProg = pt.dataset.ptab; renderLib(); } });
+        $('view-lib').addEventListener('click', e => { const d = e.target.closest('[data-del-mat]'); if (d) return removeMat(d.dataset.delMat); const b = e.target.closest('[data-edit-mat]'); if (b) return openMat(b.dataset.editMat); const a = e.target.closest('[data-edit-asg]'); if (a) return openAsg(a.dataset.editAsg); const pv = e.target.closest('[data-prev-asg]'); if (pv) return previewAsg(pv.dataset.prevAsg); const rn = e.target.closest('[data-rename-asg]'); if (rn) return renameAsg(rn.dataset.renameAsg); const sc = e.target.closest('[data-add-scan]'); if (sc) { const it = st.scanAll.find(x => x.path === sc.dataset.addScan); if (it) return openMat(null, it); } const pt = e.target.closest('[data-ptab]'); if (pt) { st.libProg = pt.dataset.ptab; renderLib(); } });
         ['lib-search', 'lib-class', 'lib-kind', 'lib-skill'].forEach(id => $(id).addEventListener(id === 'lib-search' ? 'input' : 'change', renderLib));
         $('dlg-mat').querySelector('form').addEventListener('submit', saveMat);
         $('dm-del').addEventListener('click', deleteMat);
