@@ -184,8 +184,7 @@
         }).sort((a, b) => {
           const d = state.sort.dir;
           if (state.sort.key === 'name') {
-            const given = n => String(n).trim().split(/\s+/).pop();
-            return (natural(given(a.student_name), given(b.student_name)) || natural(a.student_name, b.student_name)) * d;
+            return natural(a.student_name, b.student_name) * d;
           }
           const ca = classOf(a), cb = classOf(b);
           if (!ca && cb) return 1; if (ca && !cb) return -1;
