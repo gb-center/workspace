@@ -51,13 +51,11 @@
 .srow{display:grid;grid-template-columns:84px 56px 140px 96px 130px 1fr 40px;align-items:center;gap:12px;padding:10px 12px}
 @media(max-width:760px){.srow{grid-template-columns:auto auto 1fr 1fr}.srow-note{grid-column:1/-2}.srow button{grid-column:4;justify-self:end}}
 
-.att-row{display:inline-flex;gap:8px;justify-content:center}
-.att-hl{display:flex;gap:8px;justify-content:center;margin-top:3px}
-.att-hl span{width:40px;text-align:center;font-size:.6875rem;font-weight:700;color:#64748b}
-.att-sq{width:40px;height:40px;border-radius:10px;border:1.5px solid #cbd5e1;background:#fff;color:transparent;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
-.att-sq svg{width:20px;height:20px;display:block}
-.att-sq.present{background:#e0f2fe;border-color:#7dd3fc;color:#075985}
-.att-sq.absent{background:#ffe4e6;border-color:#fda4af;color:#9f1239}
+.att-row{display:inline-flex;gap:6px;justify-content:center}
+.att-hl{display:flex;gap:6px;justify-content:center;margin-top:3px}
+.att-hl span{width:28px;text-align:center;font-size:.6875rem;font-weight:700;color:#64748b}
+.att-sq{width:28px;height:28px;border:0;background:none;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;border-radius:50%}
+.att-sq svg{width:22px;height:22px;display:block}
 .att-opt{min-height:56px;border-radius:14px;border:1.5px solid var(--t-line,#cbd5e1);background:#fff;color:var(--t-ink,#0f172a);font-weight:800;font-size:1rem;cursor:pointer}
 #da-present[aria-pressed="true"]{background:#e0f2fe;border-color:#7dd3fc;color:#075985}
 #da-absent[aria-pressed="true"]{background:#ffe4e6;border-color:#fda4af;color:#9f1239}
@@ -479,8 +477,9 @@
       body.innerHTML = S.students.map(st => {
         const att = sess.length ? '<div class="att-row">' + sess.map(s => {
           const v = S.att[s.id + '|' + st.id] || '', cls = v === 'absent' ? 'absent' : (v ? 'present' : ''), lb = sessionLabel(s);
-          const ic = v === 'absent' ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>'
-            : (v ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>' : '');
+          const ic = v === 'absent' ? '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#f44858"/><path d="M8 8l8 8M16 8l-8 8" fill="none" stroke="#8c1818" stroke-width="2.6" stroke-linecap="round"/></svg>'
+            : (v ? '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#7dc943"/><path d="M6.8 12.6l3.6 3.6 6.8-7" fill="none" stroke="#3f7a1c" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+            : '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#fff" stroke="#cbd5e1" stroke-width="1.6"/></svg>');
           return `<button type="button" data-att="${s.id}|${st.id}" class="att-sq ${cls}" aria-label="${esc(st.student_name)}, ${lb}: ${v === 'absent' ? 'Vắng' : v ? 'Có mặt' : 'Chưa điểm danh'}">${ic}</button>`;
         }).join('') + '</div>' : '<span class="text-slate-300">–</span>';
         return `<tr class="hover:bg-slate-50">
