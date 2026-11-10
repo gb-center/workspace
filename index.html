@@ -70,6 +70,8 @@
     .dlg label.pickrow{display:flex;align-items:center;gap:10px;min-height:44px;margin:0;padding:0 12px;border:1px solid var(--t-border);border-radius:12px;background:#fff;font-size:.9375rem;font-weight:600;cursor:pointer}
     .pickrow input{width:20px;height:20px;flex:none}
     .mat-item{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--t-border);border-radius:12px;background:#fff}
+    .ptab{border:1px solid var(--t-border);background:#fff;border-radius:999px;padding:6px 14px;font-weight:700;font-size:.875rem;color:#475569;cursor:pointer;min-height:36px}
+    .ptab[aria-pressed=true]{background:var(--t-primary);border-color:var(--t-primary);color:#fff}
     .mat-item a.mat-title{font-weight:700;color:var(--t-primary);overflow-wrap:anywhere}
     .mat-item a.mat-title:hover{text-decoration:underline}
     @media (max-width:720px){
@@ -195,6 +197,7 @@
           <option value="vocabulary">Vocabulary</option>
         </select>
       </div>
+      <div id="lib-tabs" class="flex flex-wrap gap-2" role="tablist" aria-label="Chương trình"></div>
       <div id="lib-list" class="space-y-4"></div>
     </section>
     <div id="page-msg" role="alert" class="text-sm text-rose-700"></div>
@@ -390,7 +393,7 @@
       const BASE_MONDAY = new Date(2026, 8, 7);   // tuần 1 bắt đầu thứ 2 07/09/2026
       const STATUS_TXT = { planned: 'Chưa dạy', done: 'Đã dạy', cancel: 'Hủy', makeup: 'Bù', holiday: 'Nghỉ lễ' };
       const DEF_BLOCKED = ['07:00 - 22:30', '08:00 - 17:00', '08:00 - 17:00', '08:00 - 17:00', '08:00 - 19:00', '20:30 - 22:00', '18:00 - 22:30'];
-      const st = { c: null, classes: [], counts: {}, sessions: [], blocked: DEF_BLOCKED.slice(), week: 1, selDay: 0, busy: false, view: 'schedule', mats: [], lib: [], libAsg: [] };
+      const st = { c: null, classes: [], counts: {}, sessions: [], blocked: DEF_BLOCKED.slice(), week: 1, selDay: 0, busy: false, view: 'schedule', mats: [], lib: [], libAsg: [], libProg: '' };
 
       const pad = n => String(n).padStart(2, '0');
       const ymd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
@@ -579,7 +582,7 @@
       async function loadLib() {
         const [r, a, ac] = await Promise.all([
           st.c.from('week_materials').select('id,week_start,kind,skill,title,url,class_ids,sort_order').order('week_start', { ascending: false }).order('sort_order').order('id'),
-          st.c.from('assignments').select('id,assignment_code,assignment_name,week_start,due_at,kind').eq('is_active', true),
+          st.c.from('assignments').select('id,assignment_code,assignment_name,week_start,due_at,kind,skill,page_path').eq('is_active', true),
           st.c.from('assignment_classes').select('assignment_id,class_id,week_start,due_at').eq('is_active', true)
         ]);
         if (r.error) throw r.error; if (a.error) throw a.error; if (ac.error) throw ac.error;
@@ -589,9 +592,21 @@
         (ac.data || []).forEach(row => {
           const x = am[row.assignment_id]; if (!x) return;
           const wk = toMon(row.week_start || x.week_start), key = x.id + '|' + wk;
-          (g[key] = g[key] || { kind: x.kind === 'lesson' ? 'lesson' : 'homework', asg: true, code: x.assignment_code, title: x.assignment_name || x.assignment_code, week_start: wk, due_at: row.due_at || x.due_at, class_ids: [] }).class_ids.push(row.class_id);
+          (g[key] = g[key] || { kind: x.kind === 'lesson' ? 'lesson' : 'homework', asg: true, skill: x.skill || '', page: x.page_path || '', code: x.assignment_code, title: x.assignment_name || x.assignment_code, week_start: wk, due_at: row.due_at || x.due_at, class_ids: [] }).class_ids.push(row.class_id);
         });
         st.libAsg = Object.keys(g).map(k => g[k]);
+      }
+      function previewAsg(code) {
+        const m = st.libAsg.find(x => x.code === code); if (!m || !m.page) return;
+        const u = new URL(m.page, location.href); u.searchParams.set('s', '0000'); window.open(u.href, '_blank', 'noopener');
+      }
+      async function renameAsg(code) {
+        const m = st.libAsg.find(x => x.code === code); if (!m) return;
+        const nn = window.prompt('Tên học liệu', m.title); if (nn === null) return;
+        const v = nn.trim(); if (!v || v === m.title) return;
+        const r = await st.c.from('assignments').update({ assignment_name: v }).eq('assignment_code', code);
+        if (r.error) { $('page-msg').textContent = LMS.friendlyError(r.error); return; }
+        await loadLib(); renderLib();
       }
       function renderLib() {
         if (st.view !== 'lib') return;
@@ -599,7 +614,13 @@
         sel.innerHTML = '<option value="">Tất cả lớp</option>' + matClasses().map(c => `<option value="${c.id}">${esc(c.class_code)}</option>`).join('');
         sel.value = cur;
         const q = $('lib-search').value.trim().toLowerCase(), cid = Number(sel.value) || 0, kind = $('lib-kind').value;
-        const list = st.lib.concat(st.libAsg).filter(m => (!q || m.title.toLowerCase().includes(q)) && (!cid || (m.class_ids || []).includes(cid)) && (!kind || m.kind === kind) && (!$('lib-skill').value || m.skill === $('lib-skill').value));
+        const base = st.lib.concat(st.libAsg).filter(m => (!q || m.title.toLowerCase().includes(q)) && (!cid || (m.class_ids || []).includes(cid)) && (!kind || m.kind === kind) && (!$('lib-skill').value || m.skill === $('lib-skill').value));
+        const PL = { ielts: 'IELTS', toeic: 'TOEIC', gs: 'Global Success', ac12: 'AC12', comm: 'Giao tiếp' };
+        const progsOf = m => [...new Set((m.class_ids || []).map(id => { const c = st.classes.find(x => x.id === id); return c ? LMS.score.programOf(c.class_code) : ''; }).filter(Boolean))];
+        const present = Object.keys(PL).filter(k => base.some(m => progsOf(m).includes(k)));
+        if (st.libProg && !present.includes(st.libProg)) st.libProg = '';
+        $('lib-tabs').innerHTML = present.length > 1 ? [['', 'Tất cả']].concat(present.map(k => [k, PL[k]])).map(t => `<button type="button" class="ptab" role="tab" data-ptab="${t[0]}" aria-pressed="${st.libProg === t[0]}">${t[1]}</button>`).join('') : '';
+        const list = st.libProg ? base.filter(m => progsOf(m).includes(st.libProg)) : base;
         const byWeek = {}; list.forEach(m => { const k = m.week_start || ''; (byWeek[k] = byWeek[k] || []).push(m); });
         const keys = Object.keys(byWeek).sort().reverse();
         $('lib-list').innerHTML = keys.length ? keys.map(k => {
@@ -610,7 +631,9 @@
               if (m.asg) {
                 const due = m.due_at ? new Date(m.due_at) : null;
                 return `<div class="mat-item"><div class="min-w-0 flex-1"><div style="font-weight:700;color:var(--t-primary);overflow-wrap:anywhere">${esc(m.title)}</div>
-                  <div class="text-xs text-slate-500 mt-1">${m.kind === 'lesson' ? 'Bài học' : 'Bài tập'} · Đề${due ? ' · Hạn ' + pad(due.getDate()) + '/' + pad(due.getMonth() + 1) : ''} · ${targetsText(m)}</div></div>
+                  <div class="text-xs text-slate-500 mt-1">${kindText(m)} · Đề${due ? ' · Hạn ' + pad(due.getDate()) + '/' + pad(due.getMonth() + 1) : ''} · ${targetsText(m)}</div></div>
+                  ${m.page ? `<button type="button" class="icon-btn" data-prev-asg="${esc(m.code)}" aria-label="Xem thử bài làm"><i data-lucide="eye" class="w-4 h-4"></i></button>` : ''}
+                  <button type="button" class="icon-btn" data-rename-asg="${esc(m.code)}" aria-label="Sửa tên"><i data-lucide="pencil" class="w-4 h-4"></i></button>
                   <button type="button" class="icon-btn" data-edit-asg="${esc(m.code)}" aria-label="Giao lại bài"><i data-lucide="send" class="w-4 h-4"></i></button></div>`;
               }
               return `<div class="mat-item"><div class="min-w-0 flex-1">
@@ -1024,7 +1047,7 @@
         addEventListener('hashchange', () => setView(location.hash === '#lib' ? 'lib' : 'schedule'));
         $('btn-add-mat').addEventListener('click', () => openMat(null));
         $('view-mat').addEventListener('click', e => { const d = e.target.closest('[data-del-mat]'); if (d) return removeMat(d.dataset.delMat); const b = e.target.closest('[data-edit-mat]'); if (b) openMat(b.dataset.editMat); });
-        $('view-lib').addEventListener('click', e => { const d = e.target.closest('[data-del-mat]'); if (d) return removeMat(d.dataset.delMat); const b = e.target.closest('[data-edit-mat]'); if (b) return openMat(b.dataset.editMat); const a = e.target.closest('[data-edit-asg]'); if (a) openAsg(a.dataset.editAsg); });
+        $('view-lib').addEventListener('click', e => { const d = e.target.closest('[data-del-mat]'); if (d) return removeMat(d.dataset.delMat); const b = e.target.closest('[data-edit-mat]'); if (b) return openMat(b.dataset.editMat); const a = e.target.closest('[data-edit-asg]'); if (a) return openAsg(a.dataset.editAsg); const pv = e.target.closest('[data-prev-asg]'); if (pv) return previewAsg(pv.dataset.prevAsg); const rn = e.target.closest('[data-rename-asg]'); if (rn) return renameAsg(rn.dataset.renameAsg); const pt = e.target.closest('[data-ptab]'); if (pt) { st.libProg = pt.dataset.ptab; renderLib(); } });
         ['lib-search', 'lib-class', 'lib-kind', 'lib-skill'].forEach(id => $(id).addEventListener(id === 'lib-search' ? 'input' : 'change', renderLib));
         $('dlg-mat').querySelector('form').addEventListener('submit', saveMat);
         $('dm-del').addEventListener('click', deleteMat);
