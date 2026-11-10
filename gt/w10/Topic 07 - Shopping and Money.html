@@ -1,0 +1,908 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<style id="visual-polish">
+:root{--ink:#202a35;--mut:#687581;--line:#dce2e5;--acc:#315b67;--good:#287a58;--bad:#b64c45;--blue:#edf3f4;--mint:#edf3ef;--peach:#f5f0eb;--lilac:#f0eff3;--sun:#f6f3e9;--blue-b:#d7e2e4;--mint-b:#d9e5dc;--peach-b:#e8ddd2;--lilac-b:#dfdce5;--sun-b:#e8e2d0;--font:Inter,"Aptos","Segoe UI",-apple-system,system-ui,sans-serif}
+body,html{background:#f7f8f7;color:var(--ink)}
+.app{background:#f7f8f7}
+header{background:rgba(250,251,250,.94);border-bottom:1px solid #e7ebea;padding:.65rem 1.4rem}
+#segs{background:#f7f8f7;padding:.5rem 1.4rem .8rem}
+#segs i{height:.28rem;background:#dfe5e4}#segs i.cur{height:.38rem;margin-top:-.05rem;background:var(--acc)}
+main{background:#f7f8f7;padding:1.3rem clamp(1rem,3vw,2.5rem) 2rem}
+.slide{gap:1.2rem}
+h1{font-size:clamp(2.35rem,4vw,4.3rem);letter-spacing:-.045em;font-weight:750;line-height:1.02}
+h2{letter-spacing:-.025em;font-weight:730}
+h3{letter-spacing:-.01em}
+.tag{background:#e7eeee;color:#36545d;font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;padding:.32rem .72rem;border-radius:.35rem}
+.lead{color:#65727a;line-height:1.55;max-width:66ch}
+.blk,.tap,.opt,.ck{border-radius:.85rem;border:1px solid var(--line);box-shadow:0 2px 8px rgba(26,43,48,.035)}
+.blk{padding:1.05rem 1.2rem}
+.tap{background:#fff!important;border:1px solid var(--line)!important;border-left:3px solid #b6c8c9!important;padding:1rem 1.1rem;transition:border-color .18s,transform .18s,box-shadow .18s}
+.tap:hover,.opt:hover,.ck:hover{border-color:#9bb2b5!important;box-shadow:0 5px 16px rgba(26,43,48,.07);transform:translateY(-1px)}
+.tap .a{border-top:1px solid var(--line);border-style:solid}
+.b-blue,.b-mint,.b-peach,.b-lilac,.b-sun{--c:#fff;--cb:var(--line);background:#fff!important}
+.opt{background:#fff;border-width:1px;padding:.8rem 1rem}.opt b{background:#edf2f2;color:#385963}
+.opt.sel{background:#f0f5f4;border-color:#7d9c9f}.opt.ok{background:#edf5ef;border-color:#91b59b}.opt.no{background:#fbefed;border-color:#d5a09a}
+.chip{border:1px solid var(--line);border-radius:.55rem;background:#fff;font-weight:650}.chip.on{background:var(--acc);border-color:var(--acc)}
+.ib{border:1px solid var(--line);border-radius:.65rem;background:#fff}.ib.on{background:var(--acc);border-color:var(--acc)}
+footer{background:#fbfcfb;border-top:1px solid #e1e7e5;padding:.55rem 1.2rem}
+.art{width:min(19rem,32vw);min-width:9rem;aspect-ratio:16/10;overflow:hidden;border-radius:.9rem;background:#e9eeee;position:relative;box-shadow:0 8px 22px rgba(31,49,54,.10);padding:0;display:block}
+.art.big{width:min(34rem,47vw);aspect-ratio:16/9;padding:0}
+.art.photo-art{display:grid;grid-template-columns:repeat(var(--photo-cols,2),minmax(0,1fr));gap:3px;background:#e6ebea}
+.art.photo-art[data-count="1"]{display:block}
+.art .photo-tile{position:relative;min-width:0;min-height:0;overflow:hidden;background:#e9eeee}
+.art .real-photo{width:100%;height:100%;min-height:0;display:block;object-fit:cover;filter:saturate(.88) contrast(1.02)}
+.art.photo-art[data-count="3"] .photo-tile:first-child{grid-row:span 2}
+.art.photo-art[data-count="3"]{grid-template-columns:1.15fr 1fr;grid-template-rows:1fr 1fr}
+.art.photo-art[data-count="2"]{grid-template-columns:1fr 1fr}
+.art.photo-art[data-count="1"] .photo-tile{height:100%}
+.photo-credit{z-index:2}
+.photo-credit{position:absolute;right:.45rem;bottom:.4rem;padding:.18rem .42rem;border-radius:.25rem;background:rgba(20,30,34,.58);font-size:.58rem;line-height:1.2;color:#fff}
+.photo-credit a{color:#fff;text-decoration:none}
+.photo-credit a:hover{text-decoration:underline}
+/* Remove the decorative cartoon pictograms; keep the interface controls and audio icons. */
+.ico{display:none!important}
+.wc .tap{align-items:center}.wc .wtx{padding:.15rem 0}.bubble{gap:.5rem}
+.pc .ico.l{display:none!important}
+.rcpt{border:1px dashed #cbd4d3;box-shadow:0 3px 12px rgba(20,40,40,.04)}
+textarea{border:1px solid var(--line);border-radius:.65rem}
+.fb{border:1px solid var(--line)}
+@media(max-width:760px){main{padding:1rem}.art{width:100%;max-width:100%;aspect-ratio:16/7}.art.big{width:100%;max-width:100%;aspect-ratio:16/8}.hd{gap:.9rem}.photo-credit{font-size:.55rem}}
+</style>
+
+
+<style id="modern-speaking-theme">
+:root{
+ --ink:#17232f;--mut:#647381;--line:#dce3e8;--acc:#176b72;
+ --good:#24734e;--bad:#b54747;
+ --blue:#f1f5f7;--mint:#f1f6f3;--peach:#f7f4ef;--lilac:#f3f3f7;--sun:#f7f6ef;
+ --blue-b:#dce5e9;--mint-b:#dce8e0;--peach-b:#e9e1d7;--lilac-b:#e2e2e9;--sun-b:#e9e6d8;
+ --font:Inter,"Aptos","Segoe UI",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+}
+html,body,.app,main{background:#f5f7f8;color:var(--ink)}
+header{background:rgba(255,255,255,.96);border-bottom:1px solid #e3e8eb}
+#segs{background:#f5f7f8}
+#segs i{background:#dfe5e8}
+#segs i.cur{background:var(--acc)}
+main{padding:clamp(1rem,2.6vw,2.4rem) clamp(1rem,4vw,3.8rem) 2rem}
+.slide{gap:clamp(1rem,2vw,1.5rem)}
+h1{font-size:clamp(2.5rem,5vw,4.8rem);letter-spacing:-.055em;line-height:.98;font-weight:760}
+h2{font-size:clamp(1.55rem,2.5vw,2.15rem);letter-spacing:-.035em;font-weight:730;line-height:1.12}
+h3{font-weight:700;letter-spacing:-.015em}
+p,.lead{line-height:1.58}
+.lead{color:#62717e;max-width:68ch}
+.tag{background:#e8eff1;color:#31545a;border-radius:5px;font-size:.68rem;letter-spacing:.11em;font-weight:750;padding:.35rem .65rem}
+.blk,.tap,.opt,.ck{border:1px solid var(--line);border-radius:12px;box-shadow:0 2px 7px rgba(24,42,52,.035)}
+.blk{padding:1.1rem 1.2rem}
+.blk.b-blue,.blk.b-mint,.blk.b-peach,.blk.b-lilac,.blk.b-sun{background:#fff!important}
+.tap{background:#fff!important;border:1px solid var(--line)!important;border-left:3px solid #b9cbd0!important;border-radius:10px;padding:1rem 1.1rem}
+.tap:hover,.opt:hover,.ck:hover{border-color:#9bb4b9!important;box-shadow:0 7px 18px rgba(24,42,52,.075);transform:translateY(-1px)}
+.tap .a{border-top:1px solid #e7ecef}
+.opt{background:#fff;border-radius:9px}
+.opt b{background:#edf2f4;color:#34555d;border-radius:5px}
+.opt.sel{background:#f0f6f6;border-color:#83a9ad}
+.opt.ok{background:#edf6f0;border-color:#9bbba4}
+.opt.no{background:#fbf0ef;border-color:#d9a5a0}
+.chip{border:1px solid var(--line);border-radius:8px;background:#fff}
+.chip.on,.ib.on{background:var(--acc);border-color:var(--acc)}
+.ib{border:1px solid var(--line);border-radius:9px;background:#fff}
+footer{background:#fff;border-top:1px solid #e0e6e9}
+.art{display:none!important}
+.art.purposeful-photo{
+ display:block!important;position:relative;overflow:hidden;
+ width:min(31rem,39vw);min-width:14rem;aspect-ratio:16/10;
+ padding:0!important;border-radius:14px;background:#e8edef;
+ box-shadow:0 12px 28px rgba(23,39,48,.11);
+}
+.art.purposeful-photo.big{width:min(38rem,44vw);aspect-ratio:16/10}
+.art.purposeful-photo .real-photo{display:block;width:100%;height:100%;object-fit:cover;filter:none}
+.art.purposeful-photo .photo-credit{
+ position:absolute;right:.55rem;bottom:.5rem;z-index:2;
+ padding:.22rem .45rem;border-radius:4px;background:rgba(14,25,31,.68);
+ color:#fff;font-size:.58rem
+}
+.art.purposeful-photo .photo-credit a{color:#fff;text-decoration:none}
+.hd{gap:clamp(1rem,2.4vw,2rem)}
+.hdt{gap:.7rem}
+.wc .tap{border-left:1px solid var(--line)!important}
+.bubble{gap:.6rem}
+.rcpt{border-radius:10px}
+textarea{border:1px solid var(--line);border-radius:9px}
+.fb{border-radius:9px}
+@media(max-width:760px){
+ .art.purposeful-photo,.art.purposeful-photo.big{width:100%;max-width:100%;aspect-ratio:16/8}
+ .hd{grid-template-columns:1fr}
+}
+</style>
+
+<style id="user-requested-polish">
+.visual-prompt{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8rem}.visual-card{overflow:hidden;border:1px solid var(--line);border-radius:12px;background:#fff;box-shadow:0 3px 12px #1727300d}.visual-card img{display:block;width:100%;height:clamp(135px,18vw,210px);object-fit:cover;background:#e8edef}.visual-copy{padding:.8rem}.scenario-img{width:100%;height:clamp(135px,17vw,205px);object-fit:cover;border-radius:9px;margin-bottom:.5rem}.review-card{border:1px solid var(--line);border-radius:12px;padding:1rem;background:white;display:grid;gap:.55rem}.review-answer{display:none;color:#78847f}.review-card.shown .review-answer{display:block}.review-card button{border:1px solid var(--line);border-radius:8px;padding:.6rem;background:#f7f9fa;text-align:left;font:inherit}.lang-lines{display:grid;gap:.35rem}.lang-line{padding:.4rem .5rem;border-bottom:1px solid var(--line)}.item-choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.6rem;margin:.5rem 0}.item-choice{border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#fff}.item-choice img{width:100%;height:120px;object-fit:cover;display:block}.item-choice span{display:block;padding:.5rem;font-weight:650}#spPhoto{width:100%;height:160px;object-fit:cover;border-radius:8px;margin:.4rem 0}#spGo.dice-button{width:3.5rem;height:3.5rem;background:#176b72;border:0;border-radius:14px;box-shadow:0 5px 0 #10535a,0 9px 15px #176b7230;transform:translateY(-2px)}#spGo.dice-button svg{width:2.3rem;height:2.3rem;stroke:white;fill:white;stroke-width:1.2}@media(max-width:760px){.visual-prompt,.item-choices{grid-template-columns:1fr}.visual-card img{height:185px}}
+.compare-card{display:flex;flex-direction:column}.compare-options{display:grid;grid-template-columns:1fr 1fr;gap:.55rem;padding:0 .8rem}.compare-option{border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#f8fafb}.compare-option img{display:block;width:100%;height:clamp(110px,13vw,155px);object-fit:cover}.compare-option span{display:block;padding:.4rem .5rem;font-size:.88rem}.compare-option b{color:#176b72}.visual-prompt#cmpBox{grid-template-columns:repeat(2,minmax(0,1fr))}.tm{min-width:9.5rem!important;text-align:left!important}.tm #tmState{display:block;font-size:.8rem;font-weight:800;line-height:1.2;white-space:nowrap}.timer-track{height:.55rem;margin-top:.32rem;border-radius:99px;background:#edf1ee;overflow:hidden}.timer-track i{display:block;width:100%;height:100%;border-radius:inherit;background:#a8c2b7;transform-origin:left center;transition:transform .35s linear,background .2s}.tm[aria-valuenow="0"] .timer-track i{background:#d1a58e}.tm.countup .timer-track i{animation:timer-pulse 1.4s ease-in-out infinite alternate;transform:scaleX(.55)!important}@keyframes timer-pulse{to{opacity:.5;transform:scaleX(.9)!important}}@media(max-width:760px){.visual-prompt#cmpBox{grid-template-columns:1fr}.compare-option img{height:160px}}
+/* Timer visibility */
+footer .grp:last-child{background:#f7f8f6;border:1px solid #e7ebe8;border-radius:10px;padding:.3rem .4rem;gap:.42rem;box-shadow:none}
+footer .grp:last-child .tm{font-size:1.2rem;font-weight:850;color:#52645e;min-width:4.5rem;padding:.15rem .3rem}
+footer .grp:last-child .timer-label{font-size:.66rem;font-weight:850;letter-spacing:.1em;color:#78847f}
+footer .grp:last-child .ib{width:2.9rem;height:2.9rem;border-color:#e0e7e3}
+button.chip[data-tm]{background:#f4f7f5;border-color:#dfe8e3;color:#526c63;font-weight:750}
+button.chip[data-tm]:hover,button.chip[data-tm].on{background:#e4eee9;border-color:#cbdcd3;color:#456459}
+@media(max-width:640px){footer{padding:.4rem .6rem;gap:.4rem}footer .grp:last-child{order:-1;width:100%;justify-content:center;margin:0;padding:.35rem .5rem}footer .grp:last-child .tm{font-size:1.25rem}}
+</style></head><body>
+<title>Shopping and Money</title>
+<style>
+:root{--ink:#1c2333;--mut:#5b6578;--line:#d5dce8;--acc:#1e3a5f;--good:#17894b;--bad:#d23b35;
+--blue:#e8f1fb;--mint:#e4f5ec;--peach:#fdece0;--lilac:#eee8fa;--sun:#fff4d1;
+--blue-d:#7fb0e6;--mint-d:#5cc49a;--peach-d:#f2a679;--lilac-d:#a58ee0;--sun-d:#f1c243;
+--blue-b:#bcd5f1;--mint-b:#b5e0c9;--peach-b:#f5cfb4;--lilac-b:#d3c7f0;--sun-b:#f2e0a0;
+--fs:clamp(18px,min(1.55vw,2.4vh),32px);
+--font:Aptos,"Segoe UI",-apple-system,"SF Pro Text",system-ui,sans-serif;color-scheme:light}
+*{box-sizing:border-box}
+html{font-size:var(--fs)}
+html,body{margin:0;height:100%;background:#fff;color:var(--ink);font-family:var(--font);-webkit-text-size-adjust:100%;overscroll-behavior:none}
+button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+svg.i{display:block;flex:none}
+.app{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr) auto;height:100%;padding-left:env(safe-area-inset-left,0);padding-right:env(safe-area-inset-right,0)}
+/* header */
+header{display:flex;align-items:center;gap:.8rem;padding:.5rem 1.2rem;background:rgba(255,255,255,.85);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.hl{display:flex;align-items:center;gap:.7rem;min-width:0;flex:1}
+.sec{flex:none;padding:.2rem .8rem;border-radius:99px;font-weight:700;font-size:.85rem;color:var(--ink)}
+.ttl{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.ib{width:2.6rem;height:2.6rem;min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:.9rem;border:2px solid var(--line);background:#fff;padding:0;flex:none}
+.ib svg{width:1.3rem;height:1.3rem;stroke:var(--ink);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ib.on{background:var(--acc);border-color:var(--acc)}
+.ib.on svg{stroke:#fff}
+.ib[disabled]{opacity:.35}
+.grp{display:flex;gap:.4rem;align-items:center}
+#segs{display:flex;gap:3px;padding:0 1.2rem .6rem;background:rgba(255,255,255,.85)}
+#segs i{flex:1;height:.4rem;border-radius:99px;background:var(--line)}
+#segs i.cur{height:.55rem;margin-top:-.075rem}
+/* stage */
+main{position:relative;overflow:auto;-webkit-overflow-scrolling:touch;padding:1rem 1.6rem 1.6rem;touch-action:pan-y;background:#fff}
+#ink{position:absolute;left:0;top:0;pointer-events:none;z-index:5}
+.slide{display:none;flex-direction:column;gap:1.1rem;min-height:100%}
+.slide.on{display:flex}
+.slide[data-c=blue]{--c:var(--blue);--cb:var(--blue-b);--cd:var(--blue-d)}
+.slide[data-c=mint]{--c:var(--mint);--cb:var(--mint-b);--cd:var(--mint-d)}
+.slide[data-c=peach]{--c:var(--peach);--cb:var(--peach-b);--cd:var(--peach-d)}
+.slide[data-c=lilac]{--c:var(--lilac);--cb:var(--lilac-b);--cd:var(--lilac-d)}
+.slide[data-c=sun]{--c:var(--sun);--cb:var(--sun-b);--cd:var(--sun-d)}
+footer{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem 1rem;padding:.5rem 1.2rem;border-top:2px solid var(--line);background:#fff}
+footer .sp{flex:1}
+.cnt{font-weight:700;min-width:4.5rem;text-align:center}
+.tm{font-weight:700;font-variant-numeric:tabular-nums;min-width:3.6rem;text-align:center}
+.chip{min-height:44px;padding:0 1rem;border-radius:99px;border:2px solid var(--line);background:#fff;font-weight:700}
+.chip.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.pen{display:none;gap:.4rem;align-items:center}
+.pen.show{display:flex}
+/* type */
+h1{font-size:2.5rem;line-height:1.08;margin:0;font-weight:800}
+h2{font-size:1.7rem;line-height:1.15;margin:0;font-weight:800}
+h3{font-size:1.1rem;margin:0 0 .35rem;font-weight:800}
+p{margin:0}
+.lead{color:var(--mut)}
+.tag{display:inline-block;padding:.15rem .75rem;border-radius:99px;background:var(--cb,var(--blue-b));font-weight:700;font-size:.85rem;width:fit-content}
+/* hero */
+.hd{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:1.2rem;align-items:center}
+.hdt{display:flex;flex-direction:column;gap:.5rem;min-width:0}
+.art{display:flex;gap:.5rem;align-items:center;padding:.7rem 1rem;border-radius:1.4rem;background:var(--c,var(--blue))}
+.art .ar{width:4.4rem;height:4.4rem}
+.art.big{padding:.4rem}
+.art.big .ar{width:26rem;max-width:44vw;height:auto;aspect-ratio:240/140}
+@media (max-width:760px){.hd{grid-template-columns:1fr}.art{justify-self:start}}
+/* grids */
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+.g4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem}
+.top{align-items:start}
+@media (max-width:900px){.g3,.g4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.row{display:flex;gap:1rem;flex-wrap:wrap;align-items:center}
+.col{display:flex;flex-direction:column;gap:.7rem}
+/* blocks */
+.blk{border-radius:1.2rem;padding:1rem 1.2rem;background:var(--c,var(--blue))}
+.b-blue{--c:var(--blue);--cb:var(--blue-b)}.b-mint{--c:var(--mint);--cb:var(--mint-b)}.b-peach{--c:var(--peach);--cb:var(--peach-b)}.b-lilac{--c:var(--lilac);--cb:var(--lilac-b)}.b-sun{--c:var(--sun);--cb:var(--sun-b)}
+.blk .ex,.ex{font-style:italic}
+.tap{display:block;width:100%;text-align:left;border:2px solid var(--cb,var(--line));border-radius:1.2rem;padding:.9rem 1.1rem;background:var(--c,#fff);min-height:44px}
+.tap.n{background:#fff;border-color:var(--line)}
+.tap .a{display:none;margin-top:.5rem;padding-top:.5rem;border-top:2px dashed var(--cb,var(--line))}
+.tap.shown .a{display:block}
+.tap .q{font-weight:700}
+.hint{color:var(--mut);font-size:.9rem}
+.good{color:var(--good);font-weight:700}
+.vi{color:var(--acc)}
+.no-vi .vi{display:none}
+.ex{font-style:italic}
+.sp1{display:flex;align-items:center;gap:.6rem;min-height:44px}
+/* icon holders */
+.ico{flex:none;width:3.4rem;height:3.4rem;border-radius:1rem;background:#fff;padding:.3rem}
+.ico.l{width:5rem;height:5rem;border-radius:1.4rem;padding:.4rem}
+.wc{display:flex;gap:.5rem;align-items:flex-start}
+.wc .tap{flex:1;display:flex;gap:.8rem;align-items:flex-start}
+.wtx{display:block;min-width:0}
+.w{font-size:1.2rem;font-weight:800;display:block;line-height:1.2}
+.ipa{color:var(--mut);display:block}
+.pc{text-align:center}
+.pc .ico.l{margin:0 auto .4rem;width:5.6rem;height:5.6rem}
+.step{display:flex;align-items:center;gap:.8rem}
+.num{width:2.2rem;height:2.2rem;border-radius:50%;background:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:800;flex:none}
+.plan .tap{display:flex;gap:.8rem;align-items:center}
+/* quiz */
+.opt{display:flex;gap:.7rem;align-items:flex-start;width:100%;text-align:left;border:2px solid var(--line);border-radius:1.1rem;padding:.7rem 1rem;background:#fff;min-height:44px}
+.opt b{flex:none;width:1.8rem;height:1.8rem;border-radius:50%;background:var(--blue);display:inline-flex;align-items:center;justify-content:center}
+.opt.sel{border-color:var(--acc);background:var(--blue)}
+.opt.ok{border-color:var(--good);background:var(--mint)}
+.opt.no{border-color:var(--bad);background:#fdeceb}
+.fb{padding:.7rem 1rem;border-radius:1rem;background:var(--sun);display:none}
+.fb.show{display:block}
+.fb.ok{background:var(--mint)}
+.fb.no{background:#fdeceb}
+.dots{display:flex;gap:.4rem}
+.dots i{width:.8rem;height:.8rem;border-radius:50%;background:var(--line)}
+.dots i.cur{background:var(--acc)}.dots i.done{background:var(--good)}
+.qtxt{font-size:1.25rem;font-weight:700;line-height:1.35}
+/* receipt, table */
+.rcpt{font-family:"SF Mono",Menlo,Consolas,monospace;background:#fff;border:2px dashed var(--line);border-radius:.8rem;padding:1rem 1.2rem}
+.rcpt div{display:flex;justify-content:space-between;gap:1rem}
+.rcpt hr{border:0;border-top:2px dashed var(--line);margin:.5rem 0}
+table{border-collapse:collapse;width:100%;table-layout:fixed;border-radius:1rem;overflow:hidden}
+td,th{padding:.6rem .8rem;text-align:left;border-bottom:2px solid #fff;overflow-wrap:anywhere;background:var(--c)}
+th{font-weight:800;background:var(--cb)}
+td:first-child{font-weight:700}
+.tcol{display:flex;gap:.5rem;align-items:center}
+.tcol .ico{width:2.4rem;height:2.4rem;padding:.15rem}
+textarea{font:inherit;font-size:1rem;width:100%;min-height:5rem;border:2px solid var(--line);border-radius:.9rem;padding:.7rem;resize:vertical;background:#fff}
+.ck{display:flex;align-items:center;gap:.8rem;min-height:44px;border:2px solid var(--line);border-radius:1.1rem;padding:.5rem 1rem;background:#fff;width:100%;text-align:left}
+.ck i{width:1.6rem;height:1.6rem;border-radius:50%;border:2px solid var(--line);flex:none;display:inline-flex;align-items:center;justify-content:center}
+.ck.on{background:var(--mint);border-color:var(--mint-b)}
+.ck.on i{background:var(--good);border-color:var(--good)}
+.ck.on i::after{content:"";width:.5rem;height:.9rem;border:solid #fff;border-width:0 3px 3px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.bubble{display:flex;gap:.7rem;align-items:flex-start}
+.bubble .t{border-radius:1.2rem;padding:.7rem 1rem;background:var(--c,var(--blue))}
+#menu{position:fixed;inset:0;background:rgba(255,255,255,.97);z-index:20;display:none;overflow:auto;padding:1.5rem}
+#menu.show{display:block}
+#menu .inner{max-width:60rem;margin:0 auto;display:flex;flex-direction:column;gap:.5rem}
+#menu button.m{display:flex;gap:.8rem;align-items:center;text-align:left;border:2px solid var(--line);border-radius:1rem;background:#fff;padding:.5rem 1rem;min-height:44px}
+#menu button.m.cur{background:var(--blue);border-color:var(--blue-b)}
+.tw{--c:var(--sun);--cb:var(--sun-b)}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="i-sale" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><g transform="rotate(-18 32 32)"><path d="M6 32 L16 18 H58 V46 H16 Z" fill="#ffe08a" /><circle cx="16" cy="32" r="3.2" fill="#ffffff"/><circle cx="32" cy="28" r="3" fill="#ffffff"/><circle cx="46" cy="38" r="3" fill="#ffffff"/><path d="M46 25 L32 41" fill="none"/></g></g></symbol><symbol id="i-discount" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><polygon points="32.0,4.0 37.7,10.7 46.0,7.8 47.6,16.4 56.2,18.0 53.3,26.3 60.0,32.0 53.3,37.7 56.2,46.0 47.6,47.6 46.0,56.2 37.7,53.3 32.0,60.0 26.3,53.3 18.0,56.2 16.4,47.6 7.8,46.0 10.7,37.7 4.0,32.0 10.7,26.3 7.8,18.0 16.4,16.4 18.0,7.8 26.3,10.7" fill="#f9cfb2"/><circle cx="32" cy="32" r="15" fill="#ffffff"/><circle cx="26.6" cy="27.5" r="2.3400000000000003" fill="#ffffff"/><circle cx="37.4" cy="36.5" r="2.3400000000000003" fill="#ffffff"/><path d="M37.4 24.8L26.6 39.2" fill="none"/></g></symbol><symbol id="i-bargain" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M14 24 H50 L47 57 H17 Z" fill="#bfe8d1" /><path d="M24 24 C24 6 40 6 40 24" fill="none"/><polygon points="32.0,31.0 34.6,37.4 41.5,37.9 36.3,42.4 37.9,49.1 32.0,45.5 26.1,49.1 27.7,42.4 22.5,37.9 29.4,37.4" fill="#ffe08a"/></g></symbol><symbol id="i-receipt" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M15 5 H49 V59 L44 55 L39.5 59 L34.5 55 L29.5 59 L24.5 55 L19.5 59 L15 55 Z" fill="#ffffff" /><path d="M22 17 H42 M22 25 H42 M22 33 H34" fill="none"/><path d="M38 45 H42" fill="none"/><path d="M22 43 H31" fill="none" /></g></symbol><symbol id="i-refund" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><circle cx="32" cy="32" r="15" fill="#ffe08a"/><circle cx="32" cy="32" r="8" fill="#ffffff"/><path d="M32 29 V35" fill="none"/><path d="M53 22 A23 23 0 1 0 55 36" fill="none"/><polygon points="46,14 58,16 53,27" fill="#1c2333"/></g></symbol><symbol id="i-cashier" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><rect x="6" y="38" width="52" height="20" rx="3" fill="#f9cfb2"/><circle cx="20" cy="17" r="8" fill="#fbd9bf"/><path d="M7 38 Q7 27 20 27 Q33 27 33 38 Z" fill="#d9ccf2" /><rect x="36" y="26" width="20" height="12" rx="2" fill="#cfe1f7"/><rect x="39" y="29" width="10" height="5" rx="0" fill="#ffffff"/><path d="M12 46 H52" fill="none"/></g></symbol><symbol id="i-instock" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><polygon points="8,22 32,10 56,22 32,34" fill="#ffe08a"/><polygon points="8,22 32,34 32,58 8,46" fill="#f9cfb2"/><polygon points="56,22 32,34 32,58 56,46" fill="#f2b48d"/><circle cx="48" cy="48" r="11" fill="#bfe8d1"/><path d="M43 48 L47 52 L54 43" fill="none"/></g></symbol><symbol id="i-outstock" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><rect x="8" y="8" width="48" height="44" rx="3" fill="#ffffff"/><path d="M8 24 H56 M8 38 H56" fill="none"/><rect x="14" y="14" width="10" height="10" rx="1" fill="#dfe5ee"/><circle cx="46" cy="48" r="11" fill="#f4a09a"/><path d="M41 43 L51 53 M51 43 L41 53" fill="none"/></g></symbol><symbol id="i-afford" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><circle cx="24" cy="16" r="9" fill="#ffe08a"/><rect x="6" y="22" width="52" height="34" rx="6" fill="#f9cfb2"/><path d="M6 32 H58" fill="none"/><circle cx="46" cy="43" r="5" fill="#ffe08a"/><path d="M44 43 H48" fill="none"/></g></symbol><symbol id="i-budget" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><circle cx="32" cy="32" r="24" fill="#cfe1f7"/><path d="M32 32 L32 8 A24 24 0 0 1 53.8 42 Z" fill="#bfe8d1" /><path d="M32 32 L53.8 42 A24 24 0 0 1 16 49 Z" fill="#ffe08a" /></g></symbol><symbol id="i-spend" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><rect x="4" y="26" width="34" height="30" rx="5" fill="#f9cfb2"/><path d="M4 36 H38" fill="none"/><circle cx="30" cy="46" r="3.5" fill="#ffe08a"/><circle cx="50" cy="16" r="9" fill="#ffe08a"/><path d="M50 12 V20" fill="none"/><path d="M38 22 Q42 12 41 14" fill="none"/><polygon points="36,24 44,24 40,16" fill="#1c2333"/></g></symbol><symbol id="i-save" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><ellipse cx="30" cy="36" rx="22" ry="16" fill="#f8c3c0"/><polygon points="42,24 49,11 54,26" fill="#f8c3c0"/><rect x="51" y="31" width="9" height="11" rx="3" fill="#f4a09a"/><circle cx="44" cy="32" r="2" fill="#1c2333"/><rect x="16" y="48" width="7" height="9" rx="2" fill="#f8c3c0"/><rect x="36" y="48" width="7" height="9" rx="2" fill="#f8c3c0"/><path d="M23 21 H35" fill="none"/><circle cx="29" cy="9" r="6" fill="#ffe08a"/><path d="M9 33 Q3 30 7 25" fill="none"/></g></symbol><symbol id="i-waste" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M16 22 H48 L45 58 H19 Z" fill="#dfe5ee" /><path d="M12 22 H52 M26 22 V16 H38 V22 M26 30 V50 M32 30 V50 M38 30 V50" fill="none"/><circle cx="46" cy="9" r="6" fill="#ffe08a"/><path d="M40 12 L36 18" fill="none"/></g></symbol><symbol id="i-change" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><ellipse cx="20" cy="50" rx="14" ry="5" fill="#ffe08a"/><ellipse cx="20" cy="42" rx="14" ry="5" fill="#ffe08a"/><ellipse cx="20" cy="34" rx="14" ry="5" fill="#ffe08a"/><g transform="rotate(-12 42 20)"><rect x="26" y="10" width="32" height="18" rx="3" fill="#bfe8d1"/><circle cx="42" cy="19" r="5" fill="#ffffff"/></g><circle cx="46" cy="48" r="9" fill="#ffe08a"/><circle cx="46" cy="48" r="4" fill="#ffffff"/></g></symbol><symbol id="i-worth" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><polygon points="32,57 7,25 17,9 47,9 57,25" fill="#cfe1f7"/><path d="M7 25 H57 M17 9 L24 25 L32 57 L40 25 L47 9" fill="none"/><polygon points="53.0,3.0 54.8,8.2 60.0,10.0 54.8,11.8 53.0,17.0 51.2,11.8 46.0,10.0 51.2,8.2" fill="#ffe08a"/></g></symbol><symbol id="i-delivery" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><rect x="4" y="16" width="36" height="30" rx="3" fill="#ffe08a"/><path d="M22 16 V46" fill="none"/><path d="M40 26 H52 L60 36 V46 H40 Z" fill="#f9cfb2" /><rect x="44" y="29" width="8" height="7" rx="1" fill="#cfe1f7"/><circle cx="16" cy="50" r="6.5" fill="#dfe5ee"/><circle cx="48" cy="50" r="6.5" fill="#dfe5ee"/></g></symbol><symbol id="i-secondhand" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M20 8 L6 17 L12 29 L19 25 V56 H45 V25 L52 29 L58 17 L44 8 Q32 17 20 8 Z" fill="#bfe8d1" /><path d="M26 34 A7 7 0 0 1 38 33" fill="none"/><polygon points="37,28 41,36 33,35" fill="#1c2333"/><path d="M38 46 A7 7 0 0 1 26 47" fill="none"/><polygon points="27,52 23,44 31,45" fill="#1c2333"/></g></symbol><symbol id="i-reasonable" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M32 8 V52 M18 56 H46 M12 20 H52" fill="none"/><circle cx="32" cy="8" r="3" fill="#ffe08a"/><path d="M14 20 L5 36 M14 20 L24 36 M50 20 L40 36 M50 20 L59 36" fill="none"/><path d="M4 36 H25 A10.5 10.5 0 0 1 4 36 Z" fill="#bfe8d1" /><path d="M39 36 H60 A10.5 10.5 0 0 1 39 36 Z" fill="#bfe8d1" /></g></symbol><symbol id="i-overpriced" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><g transform="rotate(-18 32 36)"><path d="M6 38 L16 24 H58 V52 H16 Z" fill="#f4a09a" /><circle cx="16" cy="38" r="3.2" fill="#ffffff"/><path d="M28 32 H48 M28 44 H42" fill="none"/></g><polygon points="45,3 55,14 49,14 49,24 41,24 41,14 35,14" fill="#ffe08a"/></g></symbol><symbol id="i-impulse" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M4 10 H12 L18 38 H48 L54 18 H14" fill="none"/><circle cx="24" cy="50" r="4.5" fill="#dfe5ee"/><circle cx="44" cy="50" r="4.5" fill="#dfe5ee"/><polygon points="38,2 24,26 34,26 28,42 48,16 37,16 44,2" fill="#ffe08a"/></g></symbol><symbol id="i-tea" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><rect x="14" y="14" width="36" height="7" rx="3" fill="#ffffff"/><path d="M17 21 H47 L43 58 H21 Z" fill="#f9cfb2" /><path d="M34 14 L40 3" fill="none"/><circle cx="27" cy="50" r="3" fill="#1c2333"/><circle cx="35" cy="52" r="3" fill="#1c2333"/><circle cx="31" cy="45" r="3" fill="#1c2333"/></g></symbol><symbol id="i-pho" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M20 6 Q16 12 20 18 M30 4 Q26 10 30 16 M40 6 Q36 12 40 18" fill="none"/><path d="M6 30 H58 A26 26 0 0 1 6 30 Z" fill="#cfe1f7" /><ellipse cx="32" cy="30" rx="26" ry="5" fill="#ffe08a"/><path d="M38 22 L56 8 M44 24 L60 12" fill="none"/></g></symbol><symbol id="i-sneaker" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M5 40 L9 20 Q20 24 28 18 L34 27 Q48 29 59 38 V47 H5 Z" fill="#bfe8d1" /><rect x="5" y="46" width="54" height="8" rx="4" fill="#ffffff"/><path d="M28 18 L24 26 M33 24 L28 31 M38 28 L33 35" fill="none"/></g></symbol><symbol id="i-earbuds" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><ellipse cx="24" cy="20" rx="5" ry="9" fill="#ffffff"/><ellipse cx="40" cy="20" rx="5" ry="9" fill="#ffffff"/><rect x="10" y="28" width="44" height="28" rx="12" fill="#d9ccf2"/><path d="M10 40 H54" fill="none"/><circle cx="32" cy="48" r="2.5" fill="#ffffff"/></g></symbol><symbol id="i-phone" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><rect x="17" y="5" width="30" height="54" rx="6" fill="#cfe1f7"/><rect x="21" y="11" width="22" height="34" rx="2" fill="#ffffff"/><circle cx="32" cy="52" r="2.5" fill="#ffffff"/><path d="M26 20 H38 M26 27 H38 M26 34 H33" fill="none"/></g></symbol><symbol id="i-ticket" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M6 16 H58 V28 A4 4 0 0 0 58 36 V48 H6 V36 A4 4 0 0 0 6 28 Z" fill="#ffe08a" /><path d="M42 18 V24 M42 30 V34 M42 40 V46" fill="none"/><polygon points="23.0,23.0 25.4,28.8 31.6,29.2 26.8,33.2 28.3,39.3 23.0,36.0 17.7,39.3 19.2,33.2 14.4,29.2 20.6,28.8" fill="#ffffff"/></g></symbol><symbol id="i-jacket" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M22 7 L9 15 L5 44 L16 46 V57 H48 V46 L59 44 L55 15 L42 7 L32 15 Z" fill="#d9ccf2" /><path d="M32 15 V57 M16 46 V30" fill="none"/><rect x="37" y="40" width="8" height="10" rx="1" fill="#ffffff"/></g></symbol><symbol id="i-headphones" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M12 38 V32 A20 20 0 0 1 52 32 V38" fill="none"/><rect x="7" y="34" width="13" height="20" rx="5" fill="#f9cfb2"/><rect x="44" y="34" width="13" height="20" rx="5" fill="#f9cfb2"/></g></symbol><symbol id="i-bag" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M20 24 C20 5 44 5 44 24" fill="none"/><rect x="8" y="24" width="48" height="32" rx="4" fill="#f9cfb2"/><rect x="27" y="29" width="10" height="7" rx="2" fill="#ffe08a"/></g></symbol><symbol id="i-person" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><circle cx="32" cy="20" r="11" fill="#fbd9bf"/><path d="M8 58 Q8 36 32 36 Q56 36 56 58 Z" fill="#bfe8d1" /></g></symbol><symbol id="i-cart" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M4 10 H12 L18 38 H48 L54 18 H14" fill="none"/><circle cx="24" cy="50" r="4.5" fill="#dfe5ee"/><circle cx="44" cy="50" r="4.5" fill="#dfe5ee"/><polygon points="38,2 24,26 34,26 28,42 48,16 37,16 44,2" fill="#ffe08a"/></g></symbol><symbol id="i-coin" viewBox="0 0 64 64"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><circle cx="32" cy="32" r="22" fill="#ffe08a"/><circle cx="32" cy="32" r="14" fill="#ffffff"/><path d="M32 25 V39" fill="none"/></g></symbol><symbol id="i-shopfront" viewBox="0 0 240 140"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><rect x="30" y="48" width="180" height="80" rx="2" fill="#fff4d1"/><rect x="20" y="20" width="25" height="28" fill="#bfe8d1"/><circle cx="32.5" cy="48" r="12.5" fill="#bfe8d1"/><rect x="45" y="20" width="25" height="28" fill="#fff"/><circle cx="57.5" cy="48" r="12.5" fill="#fff"/><rect x="70" y="20" width="25" height="28" fill="#bfe8d1"/><circle cx="82.5" cy="48" r="12.5" fill="#bfe8d1"/><rect x="95" y="20" width="25" height="28" fill="#fff"/><circle cx="107.5" cy="48" r="12.5" fill="#fff"/><rect x="120" y="20" width="25" height="28" fill="#bfe8d1"/><circle cx="132.5" cy="48" r="12.5" fill="#bfe8d1"/><rect x="145" y="20" width="25" height="28" fill="#fff"/><circle cx="157.5" cy="48" r="12.5" fill="#fff"/><rect x="170" y="20" width="25" height="28" fill="#bfe8d1"/><circle cx="182.5" cy="48" r="12.5" fill="#bfe8d1"/><rect x="195" y="20" width="25" height="28" fill="#fff"/><circle cx="207.5" cy="48" r="12.5" fill="#fff"/><path d="M20 20 H220" fill="none"/><rect x="44" y="66" width="84" height="48" rx="3" fill="#cfe1f7"/><path d="M44 92 H128" fill="none"/><rect x="54" y="74" width="14" height="18" rx="2" fill="#f9cfb2"/><rect x="76" y="78" width="14" height="14" rx="2" fill="#ffe08a"/><rect x="98" y="72" width="16" height="20" rx="2" fill="#d9ccf2"/><rect x="144" y="64" width="48" height="64" rx="3" fill="#f9cfb2"/><circle cx="182" cy="98" r="3" fill="#ffffff"/><rect x="150" y="72" width="36" height="14" rx="3" fill="#ffffff"/><text x="168" y="83" text-anchor="middle" font-size="10" font-family="Aptos,system-ui,sans-serif" font-weight="700" fill="#1c2333" stroke="none">open</text><path d="M10 128 H230" fill="none"/></g></symbol><symbol id="i-market" viewBox="0 0 240 140"><g stroke="#1c2333" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><polygon points="120,14 30,60 75,60" fill="#f9cfb2"/><polygon points="120,14 75,60 120,60" fill="#ffffff"/><polygon points="120,14 120,60 165,60" fill="#f9cfb2"/><polygon points="120,14 165,60 210,60" fill="#ffffff"/><path d="M30 60 A90 52 0 0 1 210 60" fill="none"/><path d="M120 60 V124" fill="none"/><rect x="36" y="88" width="168" height="10" rx="2" fill="#ffe08a"/><path d="M48 98 V126 M192 98 V126" fill="none"/><rect x="50" y="70" width="30" height="18" rx="2" fill="#f9cfb2"/><circle cx="58" cy="74" r="5" fill="#f7a45a"/><circle cx="70" cy="74" r="5" fill="#f7a45a"/><rect x="150" y="70" width="34" height="18" rx="2" fill="#bfe8d1"/><circle cx="160" cy="72" r="5" fill="#f4a09a"/><circle cx="174" cy="72" r="5" fill="#f4a09a"/><rect x="84" y="72" width="26" height="16" rx="2" fill="#cfe1f7"/><path d="M90 72 L97 66 L104 72" fill="none"/><rect x="176" y="36" width="44" height="22" rx="3" fill="#ffffff"/><text x="198" y="52" text-anchor="middle" font-size="12" font-family="Aptos,system-ui,sans-serif" font-weight="700" fill="#1c2333" stroke="none">20k</text><path d="M10 128 H230" fill="none"/></g></symbol></defs></svg>
+<div class="app" id="app">
+<header>
+ <button class="ib" id="bMenu" aria-label="Menu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+ <div class="hl"><span class="sec" id="hSec"></span><span class="ttl" id="hTitle"></span></div>
+ <div class="grp">
+  <button class="ib on" id="bVi" aria-label="Vietnamese"><svg viewBox="0 0 24 24"><path d="M4 5h9M8.5 3v2M6 5c.5 4 3 7 6 8M12 5c-.5 3.500-3 6.500-7 8.500M13 20l4-9 4 9M14.500 17h5"/></svg></button>
+  <button class="ib" id="bSlow" aria-label="Slow speech"><span style="font-weight:800;font-size:.8rem">1x</span></button>
+  <button class="ib" id="bPen" aria-label="Pencil"><svg viewBox="0 0 24 24"><path d="M4 20l1-4L16 5l3 3L8 19z"/><path d="M14 7l3 3"/></svg></button>
+  <button class="ib" id="bFs" aria-label="Full screen"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+ </div>
+</header>
+<div id="segs"></div>
+<main id="stage"><canvas id="ink"></canvas>
+
+<!-- 1 title -->
+<section class="slide" data-t="Welcome" data-sec="Start" data-c="blue">
+ <div class="hd">
+  <div class="hdt"><div class="tag">Lesson 7 · Speaking practice · Level B1</div>
+  <h1>Shopping and money</h1>
+  <p class="lead">Talk about what you buy, what things cost, and how to solve problems in a shop. You will compare, bargain, return an item and give your opinion.</p></div>
+  <div class="art big" data-art="shopfront"></div>
+ </div>
+ <div class="g3">
+  <div class="blk b-blue"><div class="bubble"><svg class="ico i"><use href="#i-sale"/></svg><div><h3>20 words</h3><p>shops, money, prices</p></div></div></div>
+  <div class="blk b-mint"><div class="bubble"><svg class="ico i"><use href="#i-reasonable"/></svg><div><h3>Language</h3><p>too, enough, cheaper than</p></div></div></div>
+  <div class="blk b-peach"><div class="bubble"><svg class="ico i"><use href="#i-bag"/></svg><div><h3>Main task</h3><p>Buy it, bargain, return it</p></div></div></div>
+ </div>
+</section>
+
+<!-- 2 news -->
+<section class="slide" data-t="News of the week" data-sec="Start" data-c="blue">
+ <div class="hd"><div class="hdt"><div class="tag">News of the week</div><h2>Show your homework from lesson 6</h2></div><div class="art" data-art="tea,receipt"></div></div>
+ <div class="g2">
+  <div class="blk b-blue"><h3>Your sentences</h3><p>Read your written homework. Your teacher asks two questions about it.</p></div>
+  <div class="blk b-mint"><h3>Real-life task</h3><p>Tell your teacher what you did this week in a restaurant or café. What did you say in English?</p></div>
+ </div>
+ <div class="blk b-sun"><h3>Speak for one minute</h3><p>Start like this: This week I … / One thing I learned was … / I found it easy / difficult to …</p></div>
+ <div class="row"><button class="chip" data-tm="60">1:00</button><span class="hint">Press a time, then use the play button below.</span></div>
+</section>
+
+<!-- 3 plan -->
+<section class="slide plan" data-t="Today's plan" data-sec="Start" data-c="blue">
+ <div class="hd"><div class="hdt"><div class="tag">Today's plan</div><h2>Goal: talk about shopping and money, compare prices and solve problems in a shop</h2></div><div class="art" data-art="bag,budget,delivery"></div></div>
+ <div class="g2" id="planBox"></div>
+ <p class="hint">Tap a step to jump to it.</p>
+</section>
+
+<!-- 4 warm-up -->
+<section class="slide" data-t="Warm-up: the shopping rescue" data-sec="Warm-up" data-c="peach">
+ <div class="hd"><div class="hdt"><div class="tag">Warm-up</div><h2>The 90-second shopping rescue</h2><p class="lead">Three last-minute missions and a limited budget. Choose what you would buy first, estimate the price, and explain what you would leave out.</p></div><div class="art" data-art="sale,tea,sneaker"></div></div>
+ <div class="visual-prompt"><article class="visual-card"><img src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=82" alt="Clothes in a shop"><div class="visual-copy"><h3>Sudden rain</h3><p>You have 500,000đ and need something warm for tonight. What do you choose?</p></div></article><article class="visual-card"><img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=900&q=82" alt="Smartphone"><div class="visual-copy"><h3>Battery emergency</h3><p>Your phone is dying before a long trip. Spend, borrow or wait?</p></div></article><article class="visual-card"><img src="https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?auto=format&fit=crop&w=900&q=82" alt="Wrapped gift"><div class="visual-copy"><h3>Gift in 20 minutes</h3><p>You need a small gift for a friend. What is worth the money?</p></div></article></div>
+ <div class="row"><button class="chip" data-tm="90">1:30</button><span class="hint">Pick a mission, estimate a price and ask a follow-up question.</span></div><details><summary class="hint">Optional price guessing</summary><div class="g3" id="priceBox" style="margin-top:.6rem"></div></details>
+ <div class="g2">
+  <button class="tap b-blue"><span class="q">When did you last buy something? What was it?</span><span class="a">Was it worth it? Did you plan it, or was it an impulse buy?</span></button>
+  <button class="tap b-mint"><span class="q">Do you like shopping? Why or why not?</span><span class="a">Who do you usually go with? Where do you go?</span></button>
+ </div>
+</section>
+
+<!-- 5-7 words -->
+<section class="slide" data-t="Words 1: at the shop" data-sec="Words" data-c="mint"><div class="hd"><div class="hdt"><div class="tag">Words 1 of 3</div><h2 id="wt0"></h2><p class="lead">Say the word, then tap the card to check. Tap the speaker to listen.</p></div><div class="art" data-art="sale,receipt,cashier"></div></div><div class="g3 top" id="wb0"></div></section>
+<section class="slide" data-t="Words 2: money" data-sec="Words" data-c="mint"><div class="hd"><div class="hdt"><div class="tag">Words 2 of 3</div><h2 id="wt1"></h2><p class="lead">Say the word, then tap the card to check. Tap the speaker to listen.</p></div><div class="art" data-art="save,change,budget"></div></div><div class="g3 top" id="wb1"></div></section>
+<section class="slide" data-t="Words 3: prices and online" data-sec="Words" data-c="mint"><div class="hd"><div class="hdt"><div class="tag">Words 3 of 3</div><h2 id="wt2"></h2><p class="lead">Say the word, then tap the card to check. Tap the speaker to listen.</p></div><div class="art" data-art="delivery,secondhand,worth"></div></div><div class="g3 top" id="wb2"></div></section>
+
+<!-- recall and use -->
+<section class="slide" data-t="Vocabulary review: recall and use" data-sec="Words" data-c="mint"><div class="hd"><div class="hdt"><div class="tag">Vocabulary · Recall, then use</div><h2>Retrieve it without the word list</h2><p class="lead">Say the word or phrase from memory, reveal it, then make a true sentence about your own shopping habits.</p></div><div class="art"></div></div><div class="g3" id="vocabReview"></div><div class="row"><button class="chip" data-tm="180">3:00</button><span class="hint">Say your own sentence before revealing each answer.</span></div></section>
+<!-- Vocabulary practice -->
+<section class="slide" data-t="Vocabulary practice: retrieve the word" data-sec="Practice" data-c="sun">
+ <div class="hd"><div class="hdt"><div class="tag">Vocabulary practice · Retrieval</div><h2>Which word fits the situation?</h2><p class="lead">Say the word before you tap each card. Then use it in a new sentence.</p></div><div class="art" data-art="receipt,refund"></div></div>
+ <div class="g2" id="clueBox"></div>
+</section>
+
+<!-- 8 LF too enough -->
+<section class="slide" data-t="Language focus 1: too and enough" data-sec="Language focus" data-c="lilac">
+ <div class="hd"><div class="hdt"><div class="tag">Language focus 1 · Picture talk</div><h2>Too and enough: react to the situation</h2><p class="lead">Look at each photo. Say how the person might feel and why. Use too, enough, too much or too many when it fits.</p></div><div class="art" data-art="overpriced,jacket"></div></div>
+ <div class="g3">
+  <div class="blk b-peach"><h3>too + adjective</h3><p>more than you want or can accept</p><p class="ex">This bag is too expensive.</p></div>
+  <div class="blk b-mint"><h3>adjective + enough</h3><p>as much as you need</p><p class="ex">It isn't big enough for my laptop.</p></div>
+  <div class="blk b-sun"><h3>too much / too many / enough + noun</h3><p class="ex">I spend too much money.</p><p class="ex">We have enough time.</p></div>
+ </div>
+ <div class="g3" id="teBox"></div>
+</section>
+
+<!-- 9 LF comparing -->
+<section class="slide" data-t="Language focus 2: comparing prices" data-sec="Language focus" data-c="lilac">
+ <div class="hd"><div class="hdt"><div class="tag">Language focus 2 · Picture talk</div><h2>Compare things you might actually buy</h2><p class="lead">Choose a topic, compare the options in the photo and explain which you would choose.</p></div><div class="art" data-art="reasonable,sneaker"></div></div>
+ <div class="g3">
+  <div class="blk b-blue"><h3>cheaper than</h3><p class="ex">The market is cheaper than the mall.</p><p class="ex">much / a bit / slightly cheaper</p></div>
+  <div class="blk b-mint"><h3>more expensive than</h3><p class="ex">Online shoes are more expensive than secondhand ones.</p></div>
+  <div class="blk b-peach"><h3>as … as / not as … as</h3><p class="ex">This shop is as good as that one.</p><p class="ex">Cheap shops aren't always as safe as big brands.</p></div>
+ </div>
+ <div class="blk b-sun"><h3>the cheapest, the most reasonable</h3><p class="ex">This is the cheapest shop in town, but the most reasonable one is across the street.</p></div>
+ <div class="visual-prompt" id="cmpBox"></div>
+</section>
+
+<!-- 10 toolkit -->
+<section class="slide" data-t="Language focus 3: shop talk" data-sec="Language focus" data-c="lilac">
+ <div class="hd"><div class="hdt"><div class="tag">Language focus 3</div><h2>Shop talk toolkit</h2><p class="lead">Choose a phrase for your role-play. Read it aloud, then adapt it to your situation.</p></div><div class="art" data-art="cashier,bag,receipt"></div></div>
+ <div class="g3 top" id="toolBox"></div>
+</section>
+
+<!-- shadow -->
+<section class="slide" data-t="Listen and repeat" data-sec="Language focus" data-c="lilac">
+ <div class="hd"><div class="hdt"><div class="tag">Language focus 4 · Say it aloud</div><h2>Say it, then make it your own</h2><p class="lead">Read each sentence aloud, then change one part to make it true for you. Tap a sentence when you are happy with it.</p></div><div class="art" data-art="earbuds,person"></div></div>
+ <div id="shBox" class="g2"></div>
+</section>
+
+<!-- 11 quiz -->
+<section class="slide" data-t="Practice 1: which one fits?" data-sec="Practice" data-c="sun">
+ <div class="hd"><div class="hdt"><div class="tag">Practice 1 · Language check</div><h2>Choose the phrase that fits</h2><p class="lead">Read the situation, choose a natural phrase, then explain why the other options do not fit.</p><div class="dots" id="qDots"></div></div><div class="art" data-art="bag,sale"></div></div>
+ <div id="quiz"></div>
+</section>
+
+<!-- 13 ask -->
+<section class="slide" data-t="Practice 3: ask the right question" data-sec="Practice" data-c="sun">
+ <div class="hd"><div class="hdt"><div class="tag">Practice 3</div><h2>Ask the right question</h2><p class="lead">You are the customer. Read the answer from the shop assistant. What did you ask? Say it, then tap to check.</p></div><div class="art" data-art="cashier,sneaker"></div></div>
+ <div class="g2" id="askBox"></div>
+</section>
+
+<!-- build dialogue -->
+<section class="slide" data-t="Practice 4: build and act the dialogue" data-sec="Practice" data-c="sun">
+ <div class="hd"><div class="hdt"><div class="tag">Practice 4 · Build, then act</div><h2>Put the dialogue in order, then act it out</h2><p class="lead">Tap the lines in the right order. Tap a number to take a line back. Check when all eight lines are in.</p></div><div class="art" data-art="sneaker,cashier"></div></div>
+ <div class="g2 top">
+  <div><h3>Your dialogue</h3><div id="dSlots" class="col" style="gap:.5rem"></div></div>
+  <div><h3>Lines</h3><div id="dPool" class="col" style="gap:.5rem"></div>
+   <div class="row" style="margin-top:.8rem"><button class="ib" id="dCheck" aria-label="Check"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></button><span class="hint" id="dMsg"></span></div></div>
+ </div>
+ <div class="blk b-mint" id="dAct" style="display:none">
+  <h3>Act it out</h3>
+  <p class="hint" id="dRole"></p>
+  <div class="bubble" style="margin:.6rem 0"><svg class="ico i" id="dWho"><use href="#i-cashier"/></svg><div class="t" id="dLine" style="font-size:1.25rem;font-weight:700;background:#fff"></div></div>
+  <div class="row"><button class="ib" id="dSay" aria-label="Listen"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9zM16 9a4 4 0 010 6"/></svg></button><button class="ib" id="dNext" aria-label="Next line"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button><button class="chip" id="dSwap">Swap roles</button><button class="chip" id="dHide">Hide my lines</button><button class="chip" id="dRestart">Restart</button></div>
+ </div>
+</section>
+
+<!-- speaking 1 -->
+<section class="slide" data-t="Speaking practice 1: questions" data-sec="Speaking practice" data-c="peach">
+ <div class="hd"><div class="hdt"><div class="tag">Speaking practice 1 of 3</div><h2>Answer in three steps: answer, example, feeling</h2><p class="lead">Use today's words. Tap a question to see a follow-up and words you can use.</p></div><div class="art" data-art="phone,save,secondhand"></div></div>
+ <div class="g2" id="sqBox"></div><div class="row"><button class="chip" data-tm="120">2:00</button><span class="hint">Answer, give an example and say how you feel.</span></div>
+ <div class="blk b-sun"><h3>Word tracker: tap each word when you use it</h3><div class="row" style="gap:.5rem" id="tracker"></div></div>
+</section>
+
+<!-- receipt -->
+<section class="slide" data-t="Speaking practice 2: the receipt" data-sec="Speaking practice" data-c="peach">
+ <div class="hd"><div class="hdt"><div class="tag">Speaking practice 2 of 3</div><h2>The bill is wrong: explain what happened</h2><p class="lead">Situation: You and a friend ordered one iced coffee, one chicken sandwich and one peach tea. You showed your student card. This is the receipt for your table.</p></div><div class="art" data-art="tea,receipt"></div></div>
+ <div class="g2 top">
+  <div class="rcpt">
+   <div><b>Green Corner Café</b><span>Table 5 · 12:40</span></div><hr>
+   <div><span>2 × iced coffee</span><span>70,000đ</span></div>
+   <div><span>1 × chicken sandwich</span><span>45,000đ</span></div>
+   <div><span>1 × chocolate cake</span><span>40,000đ</span></div>
+   <div><span>1 × peach tea</span><span>30,000đ</span></div>
+   <div><span>1 × bottled water</span><span>15,000đ</span></div>
+   <div><span>1 × brownie</span><span>25,000đ</span></div><hr>
+   <div><span>Student discount</span><span>0đ</span></div>
+   <div><b>Total</b><b>225,000đ</b></div>
+  </div>
+  <div class="col">
+   <div class="blk b-blue"><h3>Your task</h3><p>1. Compare the receipt with what you ordered.</p><p>2. Identify the extra items and missing student discount.</p><p>3. Explain the correct bill to the cashier and ask them to fix it.</p><p><b>Discount:</b> 10% on the items you ordered.</p></div><div class="blk b-mint"><h3>Useful language</h3><div class="lang-lines"><div class="lang-line">Excuse me, I think there's a mistake.</div><div class="lang-line">We only ordered …</div><div class="lang-line">We didn't order …</div><div class="lang-line">Could you check the bill again?</div><div class="lang-line">We should get a 10% student discount.</div><div class="lang-line">Could you recalculate the total, please?</div></div></div><div class="row"><button class="chip" data-tm="180">3:00</button><span class="hint">Explain the problem and agree on the corrected total.</span></div>
+  </div>
+ </div>
+</section>
+
+<!-- compare -->
+<section class="slide" data-t="Speaking practice 3: compare ways to buy" data-sec="Speaking practice" data-c="peach">
+ <div class="hd"><div class="hdt"><div class="tag">Speaking practice 3 of 3</div><h2>Three ways to buy the same sneakers</h2><p class="lead">Choose one offer for yourself and defend your choice using price, convenience and risk.</p></div><div class="art" data-art="sneaker,delivery,secondhand"></div></div>
+ <table>
+  <tr><th></th><th>Mall shop</th><th>Online shop</th><th>Secondhand</th></tr>
+  <tr><td>Price</td><td>1,500,000đ</td><td>1,100,000đ</td><td>600,000đ</td></tr>
+  <tr><td>Try on?</td><td>Yes</td><td>No</td><td>Yes</td></tr>
+  <tr><td>Delivery</td><td>Take them home</td><td>3 days</td><td>Take them home</td></tr>
+  <tr><td>Refund?</td><td>Yes, with receipt</td><td>Yes, in 7 days</td><td>No</td></tr>
+ </table>
+ <div class="g2">
+  <div class="blk b-blue"><h3>Your task (2 minutes)</h3><p>Compare the three ways. Use cheaper than, more expensive than, as … as. Then tell your teacher which way is best for you and why.</p></div>
+  <div class="blk b-mint"><h3>Start like this</h3><p class="ex">The mall shop is the most expensive, but … / Buying online is cheaper than …, however …</p></div>
+ </div><div class="row"><button class="chip" data-tm="120">2:00</button><span class="hint">Choose the timer, then press play in the footer.</span></div>
+</section>
+
+<!-- spin -->
+<section class="slide" data-t="Spin and speak" data-sec="Speaking practice" data-c="peach">
+ <div class="hd"><div class="hdt"><div class="tag">Speaking practice · Spin and speak</div><h2>Roll for a situation, a goal and three useful words</h2><p class="lead">1. Roll the die. 2. Study the picture. 3. Plan for 10 seconds. 4. Speak for 45 seconds and tap each word as you use it.</p></div><div class="art" data-art="impulse,bargain"></div></div>
+ <div class="g3 top">
+  <div class="blk b-blue"><h3>Situation</h3><img id="spPhoto" src="https://images.unsplash.com/photo-1521335629791-ce4aec67dd47?auto=format&fit=crop&w=900&q=82" alt="Shopper choosing clothes"><div id="spS" style="font-size:1.05rem;min-height:3.5rem">Roll to reveal a situation</div></div>
+  <div class="blk b-mint"><h3>Use these words</h3><div class="row" style="gap:.5rem" id="spW"></div></div>
+  <div class="blk b-peach"><h3>Language challenge</h3><div id="spR" style="font-size:1.15rem;min-height:3.5rem">Press spin</div></div>
+ </div>
+ <div class="row"><button class="ib dice-button" id="spGo" aria-label="Roll the die"><svg viewBox="0 0 48 48"><rect x="5" y="5" width="38" height="38" rx="9"/><circle cx="15" cy="15" r="2.7"/><circle cx="33" cy="15" r="2.7"/><circle cx="24" cy="24" r="2.7"/><circle cx="15" cy="33" r="2.7"/><circle cx="33" cy="33" r="2.7"/></svg></button><button class="chip" data-tm="10">Plan 0:10</button><button class="chip" data-tm="45">Speak 0:45</button><span class="hint" id="spN">Tap each word when you use it. Rolls: 0</span></div>
+ <button class="tap b-sun"><span class="q">Tap for a follow-up</span><span class="a">Your teacher asks two questions: Why? What would you do differently next time?</span></button>
+</section>
+
+<!-- rp1 -->
+<section class="slide" data-t="Role-play 1: buying a jacket" data-sec="Main task" data-c="blue">
+ <div class="hd"><div class="hdt"><div class="tag">Main task · Role-play 1</div><h2>Buying an item</h2><p class="lead">Choose one of three pictured options. Your budget is 800,000đ.</p></div><div class="art" data-art="jacket,sale"></div></div>
+ <div class="g2">
+  <div class="blk b-blue"><h3>Choose one</h3><div class="item-choices"><div class="item-choice"><img src="https://images.unsplash.com/photo-1543076447-215ad9ba6923?auto=format&fit=crop&w=700&q=82" alt="Jacket"><span>Jacket · 800,000đ</span></div><div class="item-choice"><img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=700&q=82" alt="Hoodie"><span>Hoodie · 650,000đ</span></div><div class="item-choice"><img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&w=700&q=82" alt="Raincoat"><span>Raincoat · 500,000đ</span></div></div><p>Ask about size, colour and price. Try it on, bargain and decide within budget.</p><div class="row" style="margin-top:.7rem"><button class="chip" data-tm="120">2:00</button><span class="hint">Set a timer for the customer–assistant conversation.</span></div></div><div class="blk b-mint"><h3>Useful language</h3><div class="lang-lines"><div class="lang-line">How much is this?</div><div class="lang-line">Do you have it in a bigger size?</div><div class="lang-line">Can I try it on?</div><div class="lang-line">It's a bit out of my budget.</div><div class="lang-line">Could you give me a discount?</div><div class="lang-line">I'll take it. / I'll think about it.</div></div></div>
+ </div>
+ <button class="tap tw"><span class="q">Tap for a surprise twist</span><span class="a"><b>Twist:</b> The jacket costs 1,100,000đ and your size is out of stock. The assistant says the discount is only for members. What do you do?</span></button>
+</section>
+
+<!-- rp2 -->
+<section class="slide" data-t="Role-play 2: returning an item" data-sec="Main task" data-c="blue">
+ <div class="hd"><div class="hdt"><div class="tag">Main task · Role-play 2</div><h2>Returning an item</h2><p class="lead">You bought one pictured item yesterday and it has a fault. Choose the item and explain the problem to a busy shop assistant.</p></div><div class="art" data-art="headphones,refund"></div></div>
+ <div class="g2">
+  <div class="blk b-blue"><h3>Choose the faulty item</h3><div class="item-choices"><div class="item-choice"><img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=700&q=82" alt="Headphones"><span>Headphones · one side is silent</span></div><div class="item-choice"><img src="https://images.unsplash.com/photo-1608156639585-b3a032ef9689?auto=format&fit=crop&w=700&q=82" alt="Earbuds"><span>Earbuds · will not charge</span></div><div class="item-choice"><img src="https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=700&q=82" alt="Speaker"><span>Speaker · crackling sound</span></div></div><p>Explain the fault and choose a refund or replacement.</p><div class="row" style="margin-top:.7rem"><button class="chip" data-tm="120">2:00</button><span class="hint">Set a timer for the customer–assistant conversation.</span></div></div><div class="blk b-mint"><h3>Useful language</h3><div class="lang-lines"><div class="lang-line">I'd like to return this.</div><div class="lang-line">It doesn't work.</div><div class="lang-line">I bought it yesterday, and here's the receipt.</div><div class="lang-line">Could I have a refund, please?</div><div class="lang-line">Could I exchange it for another one?</div></div></div>
+ </div>
+ <button class="tap tw"><span class="q">Tap for a surprise twist</span><span class="a"><b>Twist:</b> You cannot find your receipt, and the assistant offers a coupon instead of a refund. Explain why you do not want it and find another solution.</span></button>
+</section>
+
+<!-- bot -->
+<section class="slide" data-t="Role-play 3: bargaining at the market" data-sec="Main task" data-c="blue">
+ <div class="hd"><div class="hdt"><div class="tag">Main task · Role-play 3 · Choose your answers</div><h2>Bargaining at the market</h2><p class="lead">Choose an item, then negotiate using one of three strategies: ask for a discount, compare another offer, or request a bundle. Say your answer before selecting it.</p></div><div class="art big" data-art="market"></div></div>
+ <div class="item-choices"><div class="item-choice"><img src="https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=700&q=82" alt="Leather bag"><span>Bag · 500,000đ</span></div><div class="item-choice"><img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=700&q=82" alt="Sneakers"><span>Sneakers · 700,000đ</span></div><div class="item-choice"><img src="https://images.unsplash.com/photo-1551232864-3f0890e580d9?auto=format&fit=crop&w=700&q=82" alt="Denim jacket"><span>Denim jacket · 650,000đ</span></div></div><div id="botLog" class="col" style="gap:.5rem"></div>
+ <div class="blk b-blue" id="botNow"></div>
+ <div id="botOpts" class="col" style="gap:.5rem"></div>
+ <div class="row"><button class="chip" data-tm="180">3:00</button><span class="hint">Set a target price, negotiate and decide if it is worth it.</span><button class="chip" id="botRe">Start again</button></div>
+</section>
+
+<!-- free -->
+<section class="slide" data-t="Free speaking" data-sec="Free speaking" data-c="lilac">
+ <div class="hd"><div class="hdt"><div class="tag">Free speaking</div><h2>Choose one topic and speak for two minutes</h2></div><div class="art" data-art="bargain,save"></div></div>
+ <div class="g2">
+  <button class="tap b-blue"><span class="q">The best bargain I ever got</span><span class="a">What was it? Where did you buy it? How much was it? Why was it a bargain?</span></button>
+  <button class="tap b-mint"><span class="q">Are you a spender or a saver?</span><span class="a">What do you spend money on? What are you saving up for? What advice would you give to a friend?</span></button>
+  <button class="tap b-peach"><span class="q">Online shopping or shopping in shops?</span><span class="a">Which do you prefer? Compare price, choice, delivery and returns.</span></button>
+  <button class="tap b-lilac"><span class="q">Should teenagers have their own budget?</span><span class="a">Give two reasons and one example. Say what could go wrong.</span></button>
+ </div>
+ <div class="row"><button class="chip" data-tm="120">2:00</button><span class="hint">Press the time, then play. Your teacher takes notes for the error clinic.</span></div>
+</section>
+
+<!-- error clinic -->
+<section class="slide" data-t="Error clinic" data-sec="Error clinic" data-c="mint">
+ <div class="hd"><div class="hdt"><div class="tag">Error clinic</div><h2>Fix each sentence</h2><p class="lead">Say the correct sentence, then tap to check.</p></div><div class="art" data-art="worth,receipt"></div></div>
+ <div class="g2" id="errBox"></div>
+ <div class="blk b-sun"><h3>Your own mistakes today</h3><textarea aria-label="Your own mistakes today" placeholder="Write or use the Pencil."></textarea></div>
+</section>
+
+
+<!-- interactive decision challenge -->
+<section class="slide" data-t="Interactive challenge: choose the best deal" data-sec="Speaking practice" data-c="peach">
+ <div class="hd"><div class="hdt"><div class="tag">Interactive challenge · Decision-making</div><h2>Which deal would you choose?</h2><p class="lead">Choose an option, explain your decision aloud, then reveal the challenge from your teacher.</p></div><div class="art" data-art="sneaker,delivery,secondhand"></div></div>
+ <div class="g3 top">
+  <button class="tap b-blue dealOpt" data-deal="A"><span class="q">A · Buy in the mall</span><br><b>1,500,000đ</b><span class="a">Brand new · Try it on · Refund with receipt · Take it home today</span></button>
+  <button class="tap b-mint dealOpt" data-deal="B"><span class="q">B · Buy online</span><br><b>1,100,000đ</b><span class="a">Brand new · Free delivery · Arrives in 3 days · Refund within 7 days</span></button>
+  <button class="tap b-peach dealOpt" data-deal="C"><span class="q">C · Buy secondhand</span><br><b>600,000đ</b><span class="a">Good condition · Try it on · No refund · Take it home today</span></button>
+ </div>
+ <div class="blk b-sun" id="dealFeedback"><h3>Your decision</h3><p>Choose A, B or C. Your budget is 1,200,000đ. Be ready to explain why your choice is the best value.</p></div>
+ <div class="row"><button class="chip" id="dealTwist">Give me a surprise twist</button><button class="chip" id="dealReset">Reset</button></div>
+ <div class="hint">Teacher prompts: Is the cheapest option always the best? What matters more: price, quality or convenience? What would change your mind?</div>
+</section>
+
+<!-- interactive budget challenge -->
+<section class="slide" data-t="Interactive challenge: shopping on a budget" data-sec="Speaking practice" data-c="peach">
+ <div class="hd"><div class="hdt"><div class="tag">Interactive challenge · Budgeting</div><h2>You have 2,000,000đ. What will you buy?</h2><p class="lead">Select the items you want. Stay within budget and explain what you need, what you can afford and what you decide not to buy.</p></div><div class="art" data-art="budget,bag,sale"></div></div>
+ <div class="g3" id="budgetItems">
+  <button class="ck budgetItem" data-price="650000"><i></i><span>Backpack · 650,000đ</span></button>
+  <button class="ck budgetItem" data-price="900000"><i></i><span>Sneakers · 900,000đ</span></button>
+  <button class="ck budgetItem" data-price="250000"><i></i><span>Sunglasses · 250,000đ</span></button>
+  <button class="ck budgetItem" data-price="180000"><i></i><span>T-shirt · 180,000đ</span></button>
+  <button class="ck budgetItem" data-price="120000"><i></i><span>Water bottle · 120,000đ</span></button>
+  <button class="ck budgetItem" data-price="750000"><i></i><span>Jacket · 750,000đ</span></button>
+ </div>
+ <div class="blk b-blue"><div class="row" style="justify-content:space-between"><b>Your total</b><h2 id="budgetTotal">0đ</h2></div><p id="budgetStatus" class="hint">Budget: 2,000,000đ · Select items to build your shopping basket.</p></div>
+ <div class="row"><button class="chip" id="budgetTwist">Add a surprise</button><button class="chip" id="budgetReset">Clear basket</button></div>
+ <div class="blk b-sun" id="budgetPrompt"><h3>Explain your choices</h3><p>Which item is the most useful? Which one is not essential? Are you saving enough money?</p></div>
+</section>
+
+<!-- adaptive roleplay -->
+<section class="slide" data-t="Adaptive role-play: difficult customer service" data-sec="Speaking practice" data-c="peach">
+ <div class="hd"><div class="hdt"><div class="tag">Adaptive role-play · Teacher controls the twist</div><h2>Return a damaged product</h2><p class="lead">You are the customer. Read the shop assistant's response, say your own reply aloud, then choose the closest response to unlock the next turn.</p></div><div class="art" data-art="refund,receipt,cashier"></div></div>
+ <div class="blk b-blue" id="adaptiveTeacher"><span class="hint">SHOP ASSISTANT</span><h3 id="adaptiveLine">I'm sorry, but we don't offer refunds for discounted products.</h3></div>
+ <div class="g2" id="adaptiveOptions">
+  <button class="opt" data-next="polite"><b>A</b><span>I understand, but the product is damaged. Could you check it again?</span></button>
+  <button class="opt" data-next="rude"><b>B</b><span>That's not my problem. Give me my money back.</span></button>
+  <button class="opt" data-next="exchange"><b>C</b><span>Could I exchange it for another one instead?</span></button>
+ </div>
+ <div class="blk b-mint" id="adaptiveFeedback"><h3>Teacher's next move</h3><p>Choose a response to continue the conversation. Try to be clear, polite and firm.</p></div>
+ <div class="row"><button class="chip" id="adaptiveTwist">Make it more difficult</button><button class="chip" id="adaptiveRestart">Restart role-play</button><button class="chip" id="adaptiveSwap">Swap roles</button></div>
+ <div class="hint">Teacher tip: don't accept the first solution immediately. Ask for evidence, offer an alternative or challenge the student's reasoning.</div>
+</section>
+
+<!-- wrap -->
+<section class="slide" data-t="Can you do it now?" data-sec="Wrap-up" data-c="peach">
+ <div class="hd"><div class="hdt"><div class="tag">Wrap-up</div><h2>Can you do it now?</h2></div><div class="art" data-art="worth,save"></div></div>
+ <div class="g2 top">
+  <div class="col" id="ckBox"></div>
+  <div class="blk b-peach"><h3>Homework</h3>
+   <p><b>Write:</b> Compare two places where you shop (online and in a shop, or market and mall). Write 8–10 sentences. Use at least 6 of today's words and underline them.</p><br>
+   <p><b>Real life:</b> Next time you buy something, check the price in two places. Notice the receipt and any discount, then tell your teacher about it in lesson 8.</p><br>
+   <p><b>For lesson 8 (Clothes and appearance):</b> Bring a photo of your favourite outfit.</p></div>
+ </div>
+</section>
+
+</main>
+<footer>
+ <div class="grp"><button class="ib" id="bPrev" aria-label="Previous"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+ <div class="cnt" id="cnt">1 / 1</div>
+ <button class="ib" id="bNext" aria-label="Next"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button></div>
+ <div class="sp"></div>
+ <div class="pen" id="penBar">
+  <button class="ib on" data-tool="pen" aria-label="Pen"><svg viewBox="0 0 24 24"><path d="M4 20l1-4L16 5l3 3L8 19z"/></svg></button>
+  <button class="ib" data-tool="hl" aria-label="Highlighter"><svg viewBox="0 0 24 24"><path d="M9 14l7-9 3 3-9 7zM6 20h6M9 14l-3 3 2 2 3-3"/></svg></button>
+  <button class="ib" data-tool="er" aria-label="Eraser"><svg viewBox="0 0 24 24"><path d="M5 15l8-9 6 6-6 7H8zM9 19h11"/></svg></button>
+  <button class="ib" id="bUndo" aria-label="Undo"><svg viewBox="0 0 24 24"><path d="M9 7L4 12l5 5M4 12h10a6 6 0 010 8"/></svg></button>
+  <button class="ib" id="bClr" aria-label="Clear page"><svg viewBox="0 0 24 24"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/></svg></button>
+ </div>
+ <div class="grp">
+  <span class="timer-label">TIMER</span><div class="tm" id="tm" role="progressbar" aria-label="Timer" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><span id="tmState">Ready</span><div class="timer-track"><i id="tmProgress"></i></div></div>
+  <button class="ib" id="bTp" aria-label="Start timer"><svg viewBox="0 0 24 24" id="tpIcon"><path d="M8 5l11 7-11 7z"/></svg></button>
+  <button class="ib" id="bTr" aria-label="Reset timer"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 108-8M4 4v5h5"/></svg></button>
+ </div>
+</footer>
+</div>
+<div id="menu"><div class="inner" id="menuInner"></div></div>
+
+<script>
+var WORDS=[["At the shop", [["sale", "/seɪl/", "n", "đợt giảm giá", "The shoe shop has a big sale this weekend."], ["discount", "/ˈdɪskaʊnt/", "n", "giảm giá, chiết khấu", "Students get a ten percent discount here."], ["bargain", "/ˈbɑːɡɪn/", "n", "món hời", "These jeans were only 150,000đ. What a bargain!"], ["receipt", "/rɪˈsiːt/", "n", "hóa đơn, biên lai", "Keep your receipt in case you want to return it."], ["refund", "/ˈriːfʌnd/", "n", "tiền hoàn lại", "The shop gave me a full refund."], ["cashier", "/kæˈʃɪə/", "n", "nhân viên thu ngân", "The cashier checked the price twice."], ["in stock", "/ɪn ˈstɒk/", "phr", "còn hàng", "Do you have this jacket in stock?"], ["out of stock", "/aʊt əv ˈstɒk/", "phr", "hết hàng", "Sorry, the black one is out of stock."]]], ["Money", [["afford", "/əˈfɔːd/", "v", "đủ tiền để mua", "I can't afford a new laptop right now."], ["budget", "/ˈbʌdʒɪt/", "n", "ngân sách", "My budget for a gift is 500,000đ."], ["spend", "/spend/", "v", "tiêu (tiền)", "I spend too much money on coffee."], ["save up", "/seɪv ˈʌp/", "phr v", "để dành tiền", "I'm saving up for a new phone."], ["waste", "/weɪst/", "v", "lãng phí", "Don't waste money on things you don't need."], ["change", "/tʃeɪndʒ/", "n", "tiền thừa", "Keep the change."], ["worth it", "/ˈwɜːθ ɪt/", "phr", "đáng tiền", "The jacket was expensive, but it's worth it."]]], ["Prices and online shopping", [["delivery", "/dɪˈlɪvəri/", "n", "giao hàng", "Delivery takes two or three days."], ["secondhand", "/ˌsekəndˈhænd/", "adj", "đồ cũ, đã qua sử dụng", "I bought a secondhand bike from my cousin."], ["reasonable", "/ˈriːznəbl/", "adj", "hợp lý (về giá)", "The prices in this shop are reasonable."], ["overpriced", "/ˌəʊvəˈpraɪst/", "adj", "đắt quá giá trị", "The drinks at the cinema are overpriced."], ["impulse buy", "/ˈɪmpʌls baɪ/", "n", "món mua bốc đồng", "That candle was an impulse buy."]]]];
+var PRICES=[["tea", "Milk tea (large)", "40,000 – 50,000đ"], ["pho", "A bowl of phở at a street shop", "50,000 – 65,000đ"], ["sneaker", "A pair of sneakers (mid-range brand)", "1,200,000 – 2,000,000đ"], ["earbuds", "Wireless earbuds", "300,000 – 1,500,000đ"], ["phone", "A new smartphone (mid-range)", "7,000,000 – 12,000,000đ"], ["ticket", "A cinema ticket", "80,000 – 120,000đ"]];
+var TOOENOUGH=[
+ ["https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=900&q=82","A shopper compares a high-priced jacket with a limited budget.","This jacket is too expensive for me. / I don't have enough money for it.","too + adjective; adjective + enough"],
+ ["https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=82","A shoe feels tight when the shopper tries it on.","These shoes aren't comfortable enough. / They're too small.","adjective + enough; too + adjective"],
+ ["https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=900&q=82","A crowded café makes it difficult for two friends to talk.","It's too noisy to talk. / There aren't enough seats.","too + adjective; enough + noun"],
+ ["https://images.unsplash.com/photo-1551232864-3f0890e580d9?auto=format&fit=crop&w=900&q=82","A shopper carries several bags after buying too many things.","I bought too many things. / I spent too much money.","too many + plural noun; too much + uncountable noun"],
+ ["https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=900&q=82","A shop is closing while a shopper is still browsing.","I don't have enough time to decide.","enough + noun"],
+ ["https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?auto=format&fit=crop&w=900&q=82","A small gift is within the shopper's budget.","It's affordable enough for me. / I have enough money for it.","adjective + enough; enough + noun"]
+];
+var CMP=[
+ ["Clothing","Which would you choose for everyday wear: the jacket or the shirt?",["https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=700&q=82","Light jacket"],["https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=700&q=82","Basic T-shirt"],"The jacket is more useful than … / I would choose … because …"],
+ ["Technology","Would you rather buy the phone or the laptop for study?",["https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=700&q=82","Smartphone"],["https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=700&q=82","Laptop"],"The phone is more portable than … / … is better for studying because …"],
+ ["Food","Pick one lunch: a rice bowl or a noodle soup. Which feels like better value?",["https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=700&q=82","Rice bowl"],["https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=700&q=82","Noodle soup"],"The rice bowl looks more filling than … / I think … is worth the money."],
+ ["Drinks","Choose a drink for a hot afternoon: iced coffee or fruit tea?",["https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=700&q=82","Iced coffee"],["https://images.unsplash.com/photo-1513558161293-cdaf765edfd4?auto=format&fit=crop&w=700&q=82","Fruit tea"],"… is sweeter than … / … is the more refreshing option for me."]
+];
+var TOOLKIT=[["Asking and trying on", ["How much is this? / How much are these?", "Do you have this in a bigger size?", "Do you have it in another colour?", "Can I try it on?"]], ["Bargaining and deciding", ["It's a bit out of my budget.", "Could you give me a discount?", "What's your best price?", "I'll take it. / I'll think about it."]], ["Paying and returning", ["Can I pay by card?", "Keep the change.", "I'd like to return this.", "Could I have a refund? I've got the receipt."]]];
+var SHADOW=[["How much are these jeans?", "Ask about a different thing."], ["They're a bit out of my budget.", "Say it about a different item."], ["Do you have this in a bigger size?", "Ask about another colour."], ["Would it be possible to get a discount?", "Say it with a different thing you want to buy."], ["I'd like to return this and get a refund.", "Say what is wrong with it."], ["I've been saving up for this for months.", "Say what you are saving up for."], ["It's expensive, but I think it's worth it.", "Say it about something you own."], ["I'll think about it and come back later.", "Say why you are not sure."]];
+var CLUES=[["A piece of paper that shows what you bought and how much you paid.", "receipt"], ["You get your money back.", "refund"], ["The person who takes your money at the till.", "cashier"], ["A price that is lower than usual for a short time.", "sale"], ["The shop still has the item.", "in stock"], ["You don't have enough money to buy it.", "can't afford it"], ["You see it, you love it, you buy it. You didn't plan it.", "impulse buy"], ["It was expensive, but the quality is great and you are happy.", "worth it"]];
+var ASKS=[["It's 350,000đ.", "How much is it?"], ["Yes, we have it in blue and black.", "Do you have it in another colour?"], ["Of course. The fitting room is on your left.", "Can I try it on?"], ["Sorry, size M is out of stock.", "Do you have this in size M? / Do you know when it will be in stock again?"], ["Yes, you can pay by card or in cash.", "Can I pay by card?"], ["I can give you ten percent off, but that's my best price.", "Could you give me a discount? / What's your best price?"]];
+var SQ=[["Do you prefer shopping online or in shops? Why?", "Follow-up: What was the last problem you had with an online order?", "delivery, in stock, refund"], ["Are you good at saving money? What are you saving up for?", "Follow-up: How much do you spend in a normal week?", "save up, budget, afford"], ["Tell me about a bargain you got.", "Follow-up: Where did you find it? Would you buy it again?", "bargain, sale, discount, reasonable"], ["Have you ever bought something that was a waste of money?", "Follow-up: Did you try to get a refund?", "waste, impulse buy, refund, overpriced"], ["Do you buy secondhand things? Would you?", "Follow-up: What is OK to buy secondhand, and what is not?", "secondhand, worth it, reasonable"], ["Should teenagers have a monthly budget? Why?", "Follow-up: Who should decide what they spend?", "budget, spend, afford, waste"]];
+var TRACK=["sale", "discount", "bargain", "receipt", "refund", "cashier", "in stock", "out of stock", "afford", "budget", "spend", "save up", "waste", "change", "worth it", "delivery", "secondhand", "reasonable", "overpriced", "impulse buy"];
+var CANDO=["I can talk about what I buy and how much I spend.", "I can use today's 20 words about shops and money.", "I can use too, enough and cheaper than.", "I can ask for a size, a discount or a refund politely.", "I can bargain, compare options and solve a shopping problem in a conversation."];
+var PLAN=[["News of the week", "8 min · homework from lesson 6", 1], ["Warm-up", "6 min · visual shopping rescue", 3], ["Words", "12 min · learn, recall and use", 4], ["Language focus", "12 min · too, enough, comparing, shop talk", 9], ["Practice", "12 min · vocabulary, language check and dialogue", 8], ["Speaking practice", "14 min · questions, receipt, compare, spin", 16], ["Main task", "20 min · choose an item, return it, bargain", 20], ["Speak and fix", "6 min · free speaking and error clinic", 23], ["Interactive challenges", "10 min · choose a deal, manage a budget, solve a problem", 25]];
+var QUIZ=[{"q": "You want to know the price of a bag. You ask: “___ is this bag?”", "o": ["How many", "How much", "How long", "How old"], "a": 1, "w": ["“How many” asks about a number of things, not a price. / “How many” hỏi số lượng, không hỏi giá.", "“How much” asks about price. / “How much” dùng để hỏi giá tiền.", "“How long” asks about time or length. / “How long” hỏi thời gian hoặc độ dài.", "“How old” asks about age. / “How old” hỏi tuổi."], "lv": "Nhận biết"}, {"q": "The shirt costs 600,000đ. You only have 400,000đ. “This shirt is ___ expensive for me.”", "o": ["enough", "much", "more", "too"], "a": 3, "w": ["“Enough” means as much as you need. It does not fit a problem with price here. / “Enough” nghĩa là đủ, không hợp với ý quá đắt.", "“Much” cannot go directly before an adjective like this. / Không dùng “much” trước tính từ kiểu này; “too much expensive” là sai.", "“More expensive” needs “than”. / “More expensive” cần có “than”.", "“Too + adjective” means more than you want or can accept. / “Too + tính từ” nghĩa là quá mức chấp nhận được."], "lv": "Thông hiểu"}, {"q": "The shoes are size 38. Your feet are size 40. “They aren't big ___.”", "o": ["enough", "too", "much", "more"], "a": 0, "w": ["“Adjective + enough”: they aren't big enough. / “Enough” đứng sau tính từ.", "“Too” goes before an adjective: too small. / “Too” đứng trước tính từ.", "“Much” does not fit after the adjective. / “Much” không dùng ở đây.", "“More” is for comparing: bigger than … / “More” dùng để so sánh."], "lv": "Thông hiểu"}, {"q": "Your friend asks: “Why didn't you buy the new phone?” You say: “I couldn't ___ it. It cost 20 million đồng.”", "o": ["spend", "save", "afford", "waste"], "a": 2, "w": ["“Spend” means use money, but “couldn't spend it” does not say you had too little money. / “Spend” là tiêu tiền, không nói được việc thiếu tiền.", "“Save” means keep money. / “Save” là để dành.", "“Can't afford” = you don't have enough money to buy it. / “Can't afford” = không đủ tiền mua.", "“Waste” means use money badly. / “Waste” là lãng phí."], "lv": "Vận dụng"}, {"q": "Shop A sells a bag for 200,000đ. Shop B sells the same bag for 250,000đ. Which sentence is correct?", "o": ["Shop B is more cheap than Shop A.", "Shop A is the more cheap.", "Shop B is as cheap as Shop A.", "Shop A isn't as expensive as Shop B."], "a": 3, "w": ["“Cheap” is a short adjective: cheaper, not more cheap. It is also the wrong shop. / Tính từ ngắn: cheaper; và nói sai cửa hàng.", "“The more cheap” is not a correct form. / Dạng này không đúng.", "“As cheap as” means the same price, but the prices are different. / “As cheap as” là giá bằng nhau.", "Correct. Shop A costs less, so it isn't as expensive as Shop B. / Đúng, A rẻ hơn B."], "lv": "Vận dụng"}, {"q": "You bought headphones yesterday. They don't work. You have the receipt. What is the best thing to say?", "o": ["Excuse me, I'd like to return these headphones and get a refund. They don't work, and here's my receipt.", "Give me my money back now.", "These are overpriced, so I want a discount.", "I changed my mind, so I'll keep them and save up."], "a": 0, "w": ["Correct. It is polite, says the problem, the request and shows the receipt. / Lịch sự, nêu rõ vấn đề, yêu cầu và có hóa đơn.", "This sounds rude and gives no reason. / Nghe thô lỗ và không nêu lý do.", "The problem is that they don't work, not the price. A discount does not solve it. / Vấn đề là máy hỏng, giảm giá không giải quyết được.", "This does not solve the problem. The headphones still don't work. / Không giải quyết được việc máy hỏng."], "lv": "Vận dụng cao"}];
+var ERRS=[["This bag is too much expensive.", "This bag is too expensive.", "Dùng “too + tính từ”, không thêm “much”.", "Thông hiểu"], ["It's not enough big for me.", "It's not big enough for me.", "“Enough” đứng sau tính từ.", "Thông hiểu"], ["How many is this shirt?", "How much is this shirt?", "Hỏi giá dùng “How much”.", "Nhận biết"], ["I want a discount.", "Could I have a discount, please? / Could you give me a discount?", "Dùng câu hỏi lịch sự thay vì “I want”.", "Vận dụng"], ["She spent 300,000đ for the dress.", "She spent 300,000đ on the dress.", "“Spend money on something”.", "Thông hiểu"], ["The shoes are more cheap than the bag.", "The shoes are cheaper than the bag.", "Tính từ ngắn thêm -er, không dùng “more”.", "Thông hiểu"]];
+var DLG=[["A", "Hello. Can I help you?"], ["C", "Yes, I'm looking for some white sneakers in size 40."], ["A", "Let me check. Yes, we have these. They're 900,000đ."], ["C", "That's a bit too expensive for me. Do you have anything cheaper?"], ["A", "These grey ones are on sale. They're only 650,000đ."], ["C", "Great. Can I try them on?"], ["A", "Of course. How do they feel?"], ["C", "They're perfect. I'll take them. Can I pay by card?"]];
+var SPIN={"s": ["Find a bargain at a busy weekend market.", "Your friend wants a jacket above your budget.", "Choose a last-minute gift for someone who loves cooking.", "An online order arrives late before a trip.", "Your phone is broken: repair, replace or borrow?", "You regret an impulse buy and still have the receipt.", "You and a friend both want limited-edition shoes.", "Sell a secondhand tablet to someone worried about its condition."], "r": ["Use too or enough at least once.", "Compare two things with than.", "Say what you would do and why.", "Use a polite request: Could you …?", "Give your opinion: I think … because …", "Include a problem and a solution."], "w": ["sale", "discount", "bargain", "receipt", "refund", "cashier", "in stock", "out of stock", "afford", "budget", "spend", "save up", "waste", "change", "worth it", "delivery", "secondhand", "reasonable", "overpriced", "impulse buy"]};
+var BOT={"n0": {"s": "Hello! Are you looking for something special today?", "o": [["Yes, I'm looking for a leather bag. How much is that one?", "n1"], ["Just looking, thanks.", "n0b"]]}, "n0b": {"s": "No problem. Tell me if you need help. By the way, everything in this corner is on sale.", "o": [["Oh, really? How much is the brown bag?", "n1"], ["I'll come back later, thank you.", "e1"]]}, "n1": {"s": "That one is 500,000đ. It's real leather, very good quality.", "o": [["That's a bit out of my budget. Could you give me a discount?", "n2"], ["OK, I'll take it.", "e2"], ["It seems overpriced. The shop next door is cheaper.", "n3"]]}, "n2": {"s": "Hmm. I can do 450,000đ. That's my best price today.", "o": [["Could you make it 400,000đ? I'll buy it right now.", "n4"], ["Could you include a small wallet at 450,000đ?", "n6"], ["OK, 450,000đ. I'll take it.", "e2"]]},
+"n6": {"s": "I can include the wallet, but the total would be 480,000đ. Is that fair?", "o": [["Deal. The bag and wallet are worth 480,000đ to me.", "e2"], ["Could you include it for 450,000đ?", "n4"], ["No, thanks. I'll compare the other stall first.", "e1"]]}, "n3": {"s": "Cheaper, but is the quality the same? Look, I'll give you ten percent off.", "o": [["Thanks. Can I pay by card?", "n5"], ["No, thanks. I'll check the other shop first.", "e1"]]}, "n4": {"s": "400,000đ is too low for me. Let's say 430,000đ and I'll add a free keyring.", "o": [["Deal. I'll take it.", "e2"], ["Sorry, that's still too much. Thank you anyway.", "e1"]]}, "n5": {"s": "I'm afraid we only take cash at this stall. There's a cash machine next door.", "o": [["I see. I'll go there and come back.", "e2"], ["That's inconvenient. I'll shop somewhere that takes cards.", "e1"]]}, "e1": {"end": "You walked away. Was it a good decision? Tell your teacher why."}, "e2": {"end": "You bought it! Tell your teacher: was it a bargain or an impulse buy? What did you pay, and was it worth it?"}};
+(function(){
+"use strict";
+var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function store(k,v){try{if(v===undefined){return JSON.parse(localStorage.getItem(k))}localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}}
+var SP='<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9zM16 9a4 4 0 010 6M18.500 6.500a8 8 0 010 11"/></svg>';
+function ic(id,cls){return '<svg class="i '+(cls||"ico")+'"><use href="#i-'+id+'"/></svg>'}
+var SECCOL={"Start":"blue","Warm-up":"peach","Words":"mint","Language focus":"lilac","Practice":"sun","Speaking practice":"peach","Main task":"blue","Free speaking":"lilac","Error clinic":"mint","Wrap-up":"peach"};
+var ICON={"sale":"sale","discount":"discount","bargain":"bargain","receipt":"receipt","refund":"refund","cashier":"cashier","in stock":"instock","out of stock":"outstock","afford":"afford","budget":"budget","spend":"spend","save up":"save","waste":"waste","change":"change","worth it":"worth","delivery":"delivery","secondhand":"secondhand","reasonable":"reasonable","overpriced":"overpriced","impulse buy":"impulse"};
+/* speech */
+var slow=false;
+function say(t){try{var s=window.speechSynthesis;if(!s)return;s.cancel();var u=new SpeechSynthesisUtterance(t);u.lang="en-US";u.rate=slow?0.6:0.95;s.speak(u)}catch(e){}}
+$("#bSlow").onclick=function(){slow=!slow;this.classList.toggle("on",slow);this.firstChild.textContent=slow?"0.6x":"1x"};
+$("#bVi").onclick=function(){var on=document.body.classList.toggle("no-vi");this.classList.toggle("on",!on)};
+/* Purposeful photographic prompts: only show a photo when it directly supports the speaking task. */
+var PHOTO={
+ store:{src:"https://images.unsplash.com/photo-1768118422722-286a586b889f?auto=format&fit=crop&fm=jpg&q=82&w=1400",alt:"Clothing store with mannequins and merchandise",credit:"Photo: Unsplash",href:"https://unsplash.com/"},
+ receipt:{src:"https://hsprinter.com/media/news/api-9a96439403264d4a94d53f91eeb30964.jpg",alt:"A printed receipt being handed to a customer at checkout",credit:"Photo: HSPOS",href:"https://hsprinter.com/"},
+ boutique:{src:"https://images.unsplash.com/photo-1769107805412-90d9191d53e9?auto=format&fit=crop&fm=jpg&q=82&w=1400",alt:"Contemporary clothing boutique with garments on display",credit:"Photo: Unsplash",href:"https://unsplash.com/"},
+ headphones:{src:"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1200&q=85",alt:"Over-ear headphones shown as a retail product",credit:"Photo: Unsplash",href:"https://unsplash.com/"},
+ market:{src:"https://usedkicks.nl/cdn/shop/files/20230930_131154.jpg?v=1733855334&width=1800",alt:"Secondhand sneaker market and resale shop",credit:"Photo: Usedkicks",href:"https://usedkicks.nl/pages/over-usedkicks"},
+ shoes:{src:"https://images.unsplash.com/photo-1760302318620-261f5e4d1940?auto=format&fit=crop&fm=jpg&q=82&w=1400",alt:"Sneakers displayed in a modern shoe store",credit:"Photo: Unsplash",href:"https://unsplash.com/"}
+};
+var PURPOSEFUL_PHOTOS={
+ "Welcome":"store",
+ "Something is wrong with this receipt":"receipt",
+ "Buying a jacket":"boutique",
+ "Returning an item":"headphones",
+ "Role-play 3: bargaining at the market":"market",
+ "Speaking practice 3: compare ways to buy":"shoes",
+ "Which deal would you choose?":"shoes"
+};
+$$('.slide').forEach(function(slide){
+ var key=PURPOSEFUL_PHOTOS[slide.dataset.t];
+ var art=slide.querySelector('.art');
+ if(!key||!art){if(art)art.remove();return;}
+ var ph=PHOTO[key];
+ art.classList.add('photo-art','purposeful-photo');
+ art.setAttribute('role','img');
+ art.setAttribute('aria-label',ph.alt);
+ art.innerHTML='<img class="real-photo" src="'+ph.src+'" alt="'+ph.alt.replace(/"/g,'&quot;')+'" loading="lazy"><span class="photo-credit"><a href="'+ph.href+'" target="_blank" rel="noopener">'+ph.credit+'</a></span>';
+});
+/* Decorative art is intentionally omitted from the remaining slides. */
+/* content */
+var wcol=["b-blue","b-mint","b-peach"];
+WORDS.forEach(function(g,gi){
+ $("#wt"+gi).textContent=g[0];
+ $("#wb"+gi).innerHTML=g[1].map(function(w,k){
+  return '<div class="wc"><button class="tap '+wcol[(k+gi)%3]+'">'+ic(ICON[w[0]],"ico")+'<span class="wtx"><span class="w">'+esc(w[0])+'</span><span class="ipa">'+esc(w[1])+'</span><span class="a"><span class="hint">'+esc(w[2])+'</span><br><span class="vi">'+esc(w[3])+'</span><br><span class="ex">'+esc(w[4])+'</span></span></span></button><button class="ib sayb" data-say="'+esc(w[0])+'" aria-label="Listen">'+SP+'</button></div>'}).join("")});
+function cards(id,arr,fn){$("#"+id).innerHTML=arr.map(fn).join("")}
+cards("priceBox",PRICES,function(p,i){return '<button class="tap pc '+wcol[i%3]+'">'+ic(p[0],"ico l")+'<span class="q">'+esc(p[1])+'</span><span class="a">About <b>'+esc(p[2])+'</b></span></button>'});
+var VOCABREVIEW=[["You get your money back after returning an item.","refund","Have you ever asked for one?"],["A planned amount of money you can spend.","budget","What is a realistic budget for a gift?"],["An unplanned purchase.","impulse buy","What have you nearly bought on impulse?"],["A price that feels fair for the quality.","reasonable","Where do you find reasonable prices?"],["Money paid to send an order to you.","delivery","Would you wait three days for delivery?"],["An item that has been used before.","secondhand","What would you happily buy secondhand?"]];
+cards("vocabReview",VOCABREVIEW,function(x,i){return '<article class="review-card"><b>Clue '+(i+1)+'</b><p>'+esc(x[0])+'</p><button type="button" class="reveal-vocab">Say the word first · Reveal</button><div class="review-answer"><b>'+esc(x[1])+'</b><br>'+esc(x[2])+'</div></article>'});
+$("#vocabReview").addEventListener("click",function(e){var b=e.target.closest(".reveal-vocab");if(b)b.closest(".review-card").classList.toggle("shown")});
+cards("teBox",TOOENOUGH,function(x,i){return '<article class="blk '+wcol[i%3]+'"><img class="scenario-img" src="'+x[0]+'" alt="'+esc(x[1])+'" loading="lazy"><h3>Scenario '+(i+1)+'</h3><p>'+esc(x[1])+'</p><button class="tap" style="margin-top:.5rem"><span class="q">How might the person feel? What would you say?</span><span class="a"><span class="good">'+esc(x[2])+'</span><br><span class="hint">Focus: '+esc(x[3])+'</span></span></button></article>'});
+cards("cmpBox",CMP,function(x,i){return '<article class="visual-card compare-card"><div class="visual-copy"><h3>'+esc(x[0])+'</h3><p>'+esc(x[1])+'</p></div><div class="compare-options"><div class="compare-option"><img src="'+x[2][0]+'" alt="Option A: '+esc(x[2][1])+'" loading="lazy"><span><b>A</b> · '+esc(x[2][1])+'</span></div><div class="compare-option"><img src="'+x[3][0]+'" alt="Option B: '+esc(x[3][1])+'" loading="lazy"><span><b>B</b> · '+esc(x[3][1])+'</span></div></div><div class="visual-copy"><p><b>Your choice:</b> Which would you buy, and why?</p><p class="hint">'+esc(x[4])+'</p></div></article>'});
+var TI=["cashier","budget","receipt"];
+cards("toolBox",TOOLKIT,function(g,i){return '<div class="blk '+wcol[i%3]+'"><h3>'+esc(g[0])+'</h3><div class="lang-lines">'+g[1].map(function(p){return '<div class="lang-line">'+esc(p)+'</div>'}).join("")+'</div></div>'});
+cards("clueBox",CLUES,function(x,i){return '<button class="tap '+wcol[i%3]+'"><span class="q">'+esc(x[0])+'</span><span class="a"><span class="good">'+esc(x[1])+'</span></span></button>'});
+cards("askBox",ASKS,function(x,i){return '<button class="tap '+wcol[i%3]+'"><span class="q">“'+esc(x[0])+'”</span><span class="a"><span class="good">'+esc(x[1])+'</span></span></button>'});
+cards("sqBox",SQ,function(x,i){return '<button class="tap '+wcol[i%3]+'"><span class="q">'+esc(x[0])+'</span><span class="a">'+esc(x[1])+'<br><span class="hint">Words: '+esc(x[2])+'</span></span></button>'});
+cards("errBox",ERRS,function(x,i){return '<button class="tap '+wcol[i%3]+'"><span class="q">'+esc(x[0])+'</span><span class="a"><span class="good">'+esc(x[1])+'</span><br><span class="vi">'+esc(x[2])+'</span></span></button>'});
+$("#tracker").innerHTML=TRACK.map(function(w){return '<button class="chip">'+esc(w)+'</button>'}).join("");
+$("#ckBox").innerHTML=CANDO.map(function(t){return '<button class="ck"><i></i><span>'+esc(t)+'</span></button>'}).join("");
+var slides=$$(".slide");
+$("#planBox").innerHTML=PLAN.map(function(p,i){return '<button class="tap '+wcol[i%3]+'" data-go="'+p[2]+'"><span class="step"><span class="num">'+(i+1)+'</span><span><b>'+esc(p[0])+'</b><br><span class="hint">'+esc(p[1])+'</span></span></span></button>'}).join("");
+/* quiz */
+var qi=0,qdone=[];
+function renderQ(){
+ var q=QUIZ[qi],L="ABCD";
+ $("#qDots").innerHTML=QUIZ.map(function(_,i){return '<i class="'+(i===qi?'cur':(qdone[i]?'done':''))+'"></i>'}).join("");
+ $("#quiz").innerHTML='<p class="qtxt" style="margin-bottom:.9rem">'+(qi+1)+'. '+esc(q.q)+'</p><div class="g2">'+q.o.map(function(o,i){return '<button class="opt" data-i="'+i+'"><b>'+L[i]+'</b><span>'+esc(o)+'</span></button>'}).join("")+'</div><div class="fb" id="fb" style="margin-top:.8rem"></div><div class="row" style="margin-top:.8rem"><button class="ib" id="qCheck" aria-label="Check"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></button><button class="ib" id="qNext" aria-label="Next question" style="display:none"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button><span class="hint" id="qRes"></span></div>';
+ var sel=-1;
+ $$("#quiz .opt").forEach(function(b){b.onclick=function(){if(qdone[qi])return;$$("#quiz .opt").forEach(function(x){x.classList.remove("sel","no")});b.classList.add("sel");sel=+b.dataset.i;$("#fb").className="fb"}});
+ $("#qCheck").onclick=function(){
+  if(sel<0||qdone[qi])return;
+  var b=$$("#quiz .opt")[sel],fb=$("#fb");
+  if(sel===q.a){b.classList.remove("sel");b.classList.add("ok");qdone[qi]=true;fb.className="fb show ok";fb.innerHTML="<b>Correct.</b> "+esc(q.w[sel]);
+   $("#qNext").style.display="inline-flex";$("#qCheck").style.display="none";
+   if(qi===QUIZ.length-1){$("#qNext").style.display="none";$("#qRes").textContent="Finished. Now say each sentence aloud."}
+   $$("#qDots i")[qi].className="done";
+  }else{b.classList.remove("sel");b.classList.add("no");fb.className="fb show no";fb.innerHTML=esc(q.w[sel]);sel=-1}
+ };
+ $("#qNext").onclick=function(){qi++;renderQ()};
+}
+renderQ();
+document.addEventListener("click",function(e){
+ var s=e.target.closest(".sayb");if(s){e.stopPropagation();say(s.dataset.say);return}
+ var go=e.target.closest("[data-go]");if(go){show(+go.dataset.go);return}
+ var t=e.target.closest(".tap");if(t&&t.querySelector(".a")){t.classList.toggle("shown");return}
+ var c=e.target.closest(".ck");if(c){c.classList.toggle("on");saveState();return}
+ var ch=e.target.closest("#tracker .chip");if(ch){ch.classList.toggle("on");return}
+ var tm=e.target.closest("[data-tm]");if(tm){setTimer(+tm.dataset.tm);return}
+},true);
+/* navigation */
+var cur=0;
+$("#segs").innerHTML=slides.map(function(){return "<i></i>"}).join("");
+function show(i){
+ cur=Math.max(0,Math.min(slides.length-1,i));
+ slides.forEach(function(s,k){s.classList.toggle("on",k===cur)});
+ var sl=slides[cur],col=SECCOL[sl.dataset.sec]||"blue";
+ $("#hSec").textContent=sl.dataset.sec;$("#hSec").style.background="var(--"+col+"-b)";
+ $("#hTitle").textContent=sl.dataset.t;
+ $$("#segs i").forEach(function(x,k){var c=SECCOL[slides[k].dataset.sec]||"blue";x.style.background=k<=cur?"var(--"+c+"-d)":"";x.classList.toggle("cur",k===cur)});
+ $("#cnt").textContent=(cur+1)+" / "+slides.length;
+ $("#bPrev").disabled=cur===0;$("#bNext").disabled=cur===slides.length-1;
+ $("#stage").scrollTop=0;$("#menu").classList.remove("show");
+ redraw();saveState();
+}
+$("#bPrev").onclick=function(){show(cur-1)};$("#bNext").onclick=function(){show(cur+1)};
+document.addEventListener("keydown",function(e){if(e.key==="ArrowRight")show(cur+1);if(e.key==="ArrowLeft")show(cur-1)});
+$("#menuInner").innerHTML='<h2 style="margin-bottom:.5rem">Menu</h2>'+slides.map(function(s,i){return '<button class="m" data-i="'+i+'"><span class="num" style="background:var(--'+(SECCOL[s.dataset.sec]||"blue")+'-b)">'+(i+1)+'</span><span><b>'+esc(s.dataset.t)+'</b> <span class="hint">'+esc(s.dataset.sec)+'</span></span></button>'}).join("")+'<button class="chip" id="mClose" style="margin-top:.5rem">Close</button>';
+$("#bMenu").onclick=function(){$$("#menu .m").forEach(function(b){b.classList.toggle("cur",+b.dataset.i===cur)});$("#menu").classList.add("show")};
+$("#menu").onclick=function(e){var b=e.target.closest(".m");if(b){show(+b.dataset.i)}else if(e.target.id==="mClose"||e.target.id==="menu"){$("#menu").classList.remove("show")}};
+function saveState(){store("gs7",{cur:cur,ck:$$(".ck").map(function(c){return c.classList.contains("on")})})}
+/* timer */
+var tLeft=0,tTotal=0,tRun=false,tInt=null,tUp=true;
+function renderTimer(state){
+ var bar=$("#tmProgress"),box=$("#tm");$("#tmState").textContent=state;
+ var ratio=tUp?1:(tTotal?Math.max(0,tLeft/tTotal):1);bar.style.transform="scaleX("+ratio+")";
+ box.classList.toggle("countup",tUp&&tRun);box.setAttribute("aria-valuenow",Math.round(ratio*100));
+}
+function setTimer(sec){tLeft=sec;tTotal=sec;tUp=false;tStop();renderTimer("Ready · "+(sec<60?sec+" sec":Math.round(sec/60)+" min"))}
+function tStop(){tRun=false;clearInterval(tInt);$("#tpIcon").innerHTML='<path d="M8 5l11 7-11 7z"/>';$("#bTp").setAttribute("aria-label","Start timer")}
+function beep(){try{var a=new (window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.frequency.value=880;g.gain.value=.15;o.start();setTimeout(function(){o.stop()},500)}catch(e){}}
+$("#bTp").onclick=function(){
+ if(tRun){tStop();renderTimer(tUp?"Paused":"Paused");return}
+ tRun=true;$("#tpIcon").innerHTML='<path d="M7 5v14M17 5v14"/>';renderTimer(tUp?"Timing":"In progress");
+ tInt=setInterval(function(){
+  if(tUp){tLeft++}else{tLeft--;if(tLeft<=0){tLeft=0;tStop();renderTimer("Time!");beep();return}}
+  renderTimer(tUp?"Timing":"In progress")},1000)};
+$("#bTr").onclick=function(){tStop();tLeft=0;tTotal=0;tUp=true;renderTimer("Ready")};
+var fsOK=document.fullscreenEnabled||document.webkitFullscreenEnabled;
+if(!fsOK){$("#bFs").style.display="none"}
+$("#bFs").onclick=function(){var d=document,el=d.documentElement;if(d.fullscreenElement||d.webkitFullscreenElement){(d.exitFullscreen||d.webkitExitFullscreen).call(d)}else{(el.requestFullscreen||el.webkitRequestFullscreen).call(el)}};
+/* pencil */
+var cv=$("#ink"),cx=cv.getContext("2d"),penOn=false,tool="pen",strokes={},drawing=null;
+function sk(){return strokes[cur]||(strokes[cur]=[])}
+function fit(){var st=$("#stage");cv.style.width="0px";cv.style.height="0px";var w=st.scrollWidth,h=st.scrollHeight,r=window.devicePixelRatio||1;cv.style.width=w+"px";cv.style.height=h+"px";cv.width=w*r;cv.height=h*r;cx.setTransform(r,0,0,r,0,0);redraw()}
+function paint(s){
+ if(!s.p.length)return;
+ cx.save();cx.lineCap="round";cx.lineJoin="round";
+ if(s.t==="er"){cx.globalCompositeOperation="destination-out";cx.lineWidth=26;cx.strokeStyle="#000"}
+ else if(s.t==="hl"){cx.globalAlpha=.35;cx.lineWidth=22;cx.strokeStyle="#f5c518"}
+ else{cx.lineWidth=3;cx.strokeStyle="#1e3a5f"}
+ cx.beginPath();cx.moveTo(s.p[0][0],s.p[0][1]);for(var i=1;i<s.p.length;i++)cx.lineTo(s.p[i][0],s.p[i][1]);
+ if(s.p.length===1)cx.lineTo(s.p[0][0]+.1,s.p[0][1]);cx.stroke();cx.restore()}
+function redraw(){cx.clearRect(0,0,cv.width,cv.height);sk().forEach(paint)}
+function pos(e){var r=cv.getBoundingClientRect();return [e.clientX-r.left,e.clientY-r.top]}
+var stage=$("#stage"),penMoved=false;
+stage.addEventListener("pointerdown",function(e){
+ if(!penOn||e.pointerType==="touch")return;
+ if(e.target.closest("textarea"))return;
+ drawing={t:tool,p:[pos(e)]};sk().push(drawing);penMoved=false;try{stage.setPointerCapture(e.pointerId)}catch(_){}
+ e.preventDefault()});
+stage.addEventListener("pointermove",function(e){if(!drawing)return;penMoved=true;drawing.p.push(pos(e));redraw();e.preventDefault()});
+function endDraw(){drawing=null}
+stage.addEventListener("pointerup",endDraw);stage.addEventListener("pointercancel",endDraw);
+stage.addEventListener("click",function(e){if(penOn&&penMoved){e.stopPropagation();e.preventDefault();penMoved=false}},true);
+$("#bPen").onclick=function(){penOn=!penOn;this.classList.toggle("on",penOn);$("#penBar").classList.toggle("show",penOn)};
+$$("[data-tool]").forEach(function(b){b.onclick=function(){tool=b.dataset.tool;$$("[data-tool]").forEach(function(x){x.classList.toggle("on",x===b)})}});
+$("#bUndo").onclick=function(){sk().pop();redraw()};
+$("#bClr").onclick=function(){strokes[cur]=[];redraw()};
+window.addEventListener("resize",function(){fit()});
+var fitT=null;new MutationObserver(function(){clearTimeout(fitT);fitT=setTimeout(fit,60)}).observe(stage,{subtree:true,attributes:true,attributeFilter:["class"]});
+/* shadowing */
+$("#shBox").innerHTML=SHADOW.map(function(x,i){return '<button class="ck" style="align-items:flex-start"><i></i><span><b>'+esc(x[0])+'</b><br><span class="hint">Your turn: '+esc(x[1])+'</span></span></button>'}).join("");
+/* build dialogue */
+var dOrder=[3,6,0,5,2,7,1,4],dPlaced=[],dOK=false,dStep=0,dRole="C",dHide=false;
+function dRender(){
+ $("#dSlots").innerHTML=DLG.map(function(_,i){var has=dPlaced[i]!==undefined;return '<button class="opt'+(has?' sel':'')+'" data-s="'+i+'"><b>'+(i+1)+'</b><span>'+(has?esc(DLG[dPlaced[i]][1]):'<span class="hint">tap a line</span>')+'</span></button>'}).join("");
+ $("#dPool").innerHTML=dOrder.filter(function(k){return dPlaced.indexOf(k)<0}).map(function(k){return '<button class="opt" data-l="'+k+'"><span>'+esc(DLG[k][1])+'</span></button>'}).join("");
+}
+function dAct(){
+ var l=DLG[dStep],mine=l[0]===dRole;
+ $("#dRole").textContent="You are the "+(dRole==="C"?"customer":"shop assistant")+". Line "+(dStep+1)+" of "+DLG.length+(mine?" · your turn":" · listen");
+ $("#dLine").textContent=(mine&&dHide)?"…":l[1];
+ $("#dWho").innerHTML='<use href="#i-'+(l[0]==="A"?"cashier":"person")+'"/>';
+ if(!mine)say(l[1]);
+ $("#dNext").disabled=dStep>=DLG.length-1;
+}
+$("#dSlots").onclick=function(e){if(dOK)return;var b=e.target.closest("[data-s]");if(!b)return;dPlaced=dPlaced.slice(0,+b.dataset.s);$("#dMsg").textContent="";dRender()};
+$("#dPool").onclick=function(e){var b=e.target.closest("[data-l]");if(!b||dOK)return;if(dPlaced.length<DLG.length){dPlaced.push(+b.dataset.l);$("#dMsg").textContent="";dRender()}};
+$("#dCheck").onclick=function(){
+ if(dOK)return;
+ if(dPlaced.length<DLG.length){$("#dMsg").textContent="Put all eight lines in first.";return}
+ var bad=0;$$("#dSlots .opt").forEach(function(b,i){var good=dPlaced[i]===i;b.classList.toggle("ok",good);b.classList.toggle("no",!good);if(!good)bad++});
+ if(bad===0){dOK=true;$("#dMsg").textContent="Perfect. Now act it out.";$("#dAct").style.display="block";dStep=0;dAct()}
+ else $("#dMsg").textContent=bad+" line"+(bad>1?"s are":" is")+" in the wrong place. Tap a number to take a line back."};
+$("#dNext").onclick=function(){if(dStep<DLG.length-1){dStep++;dAct()}};
+$("#dSay").onclick=function(){say(DLG[dStep][1])};
+$("#dSwap").onclick=function(){dRole=dRole==="C"?"A":"C";dStep=0;dAct()};
+$("#dHide").onclick=function(){dHide=!dHide;this.classList.toggle("on",dHide);dAct()};
+$("#dRestart").onclick=function(){dStep=0;dAct()};
+dRender();
+/* spin */
+var spN=0;
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+var SPINIMG=["https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=82","https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=900&q=82","https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?auto=format&fit=crop&w=900&q=82","https://images.unsplash.com/photo-1511556820780-d912e42b4980?auto=format&fit=crop&w=900&q=82","https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=900&q=82","https://images.unsplash.com/photo-1551232864-3f0890e580d9?auto=format&fit=crop&w=900&q=82","https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=82","https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=900&q=82"];
+function spinOnce(){
+ var si=Math.floor(Math.random()*SPIN.s.length);$("#spS").textContent=SPIN.s[si];$("#spPhoto").src=SPINIMG[si];$("#spPhoto").alt="Visual prompt: "+SPIN.s[si];$("#spR").textContent=pick(SPIN.r);
+ var pool=SPIN.w.slice(),w=[];while(w.length<3){w.push(pool.splice(Math.floor(Math.random()*pool.length),1)[0])}
+ $("#spW").innerHTML=w.map(function(x){return '<button class="chip">'+esc(x)+'</button>'}).join("")}
+$("#spGo").onclick=function(){var n=0,iv=setInterval(function(){spinOnce();if(++n>=8){clearInterval(iv);spN++;$("#spN").textContent="Tap each word when you use it. Rolls: "+spN}},90)};
+document.addEventListener("click",function(e){var c=e.target.closest("#spW .chip");if(c)c.classList.toggle("on")},true);
+
+/* interactive 1-to-1 challenges */
+var dealChoice="";
+var dealTwists=[
+ "The online seller messages you: delivery may take ten days. Would you still choose it?",
+ "Your friend says secondhand shoes may have hidden damage. How would you check?",
+ "The mall shop offers a 15% discount, but only if you buy today. Is it worth it?"
+];
+var dealTwistIndex=0;
+$$(".dealOpt").forEach(function(b){
+ b.addEventListener("click",function(){
+  $$(".dealOpt").forEach(function(x){x.classList.remove("shown","on")});
+  b.classList.add("on","shown");dealChoice=b.dataset.deal;
+  var msg={A:"You chose the most expensive option, but it is still within your budget. Explain why trying the shoes on and having an easy return policy matter to you.",B:"You chose the online option and stayed within budget. Explain whether the lower price is worth waiting three days and not trying the shoes on.",C:"You chose the cheapest option. You save the most money, but there is no refund. Explain how you would check the condition before paying."};
+  $("#dealFeedback").innerHTML="<h3>You chose option "+dealChoice+"</h3><p>"+msg[dealChoice]+"</p><p><b>Teacher asks:</b> Would you recommend this option to a friend? Why or why not?</p>";
+ });
+});
+$("#dealTwist").onclick=function(){
+ if(!dealChoice){$("#dealFeedback").innerHTML="<h3>Choose first</h3><p>Select a deal before receiving a surprise twist.</p>";return}
+ $("#dealFeedback").innerHTML="<h3>Surprise twist</h3><p>"+dealTwists[dealTwistIndex%dealTwists.length]+"</p><p><b>Your task:</b> Respond spontaneously and explain whether you will change your decision.</p>";
+ dealTwistIndex++;
+};
+$("#dealReset").onclick=function(){dealChoice="";$$(".dealOpt").forEach(function(x){x.classList.remove("shown","on")});$("#dealFeedback").innerHTML="<h3>Your decision</h3><p>Choose A, B or C. Your budget is 1,200,000đ. Be ready to explain why your choice is the best value.</p>";};
+function updateBudget(){
+ var total=0;$$(".budgetItem.on").forEach(function(b){total+=Number(b.dataset.price)});
+ $("#budgetTotal").textContent=total.toLocaleString("en-US")+"đ";
+ $("#budgetStatus").textContent=total>2000000?"Over budget by "+(total-2000000).toLocaleString("en-US")+"đ. What will you remove?": "Budget: 2,000,000đ · Remaining: "+(2000000-total).toLocaleString("en-US")+"đ";
+ $("#budgetStatus").style.color=total>2000000?"#d23b35":"";
+}
+$$(".budgetItem").forEach(function(b){b.addEventListener("click",function(){b.classList.toggle("on");updateBudget()})});
+$("#budgetTwist").onclick=function(){
+ $("#budgetPrompt").innerHTML="<h3>Surprise!</h3><p>Your friend asks you to buy a gift worth 300,000đ. You must also save at least 200,000đ. Adjust your basket and explain your new plan.</p>";
+};
+$("#budgetReset").onclick=function(){$$(".budgetItem").forEach(function(b){b.classList.remove("on")});updateBudget();$("#budgetPrompt").innerHTML="<h3>Explain your choices</h3><p>Which item is the most useful? Which one is not essential? Are you saving enough money?</p>";};
+var adaptiveStep=0,adaptiveHard=false,adaptiveRole="customer";
+var adaptiveTurns=[
+ {line:"I'm sorry, but we don't offer refunds for discounted products.",opts:[
+  ["I understand, but the product is damaged. Could you check it again?","polite","That's reasonable. Could you show me the damage so I can check it?"],
+  ["That's not my problem. Give me my money back.","rude","I want to help, but please speak politely. Do you have your receipt?"],
+  ["Could I exchange it for another one instead?","exchange","Possibly. Do you have the receipt, and would you prefer the same model?"]]},
+ {line:"I can offer you store credit, but I can't give you cash.",opts:[
+  ["I'd prefer a replacement because I need the product today.","replacement","Let me check whether we have another one in stock."],
+  ["Why should I accept store credit? I paid in cash.","challenge","I understand. Can you explain what outcome you would consider fair?"],
+  ["Could you speak to the manager, please?","manager","The manager is available. Can you explain the problem again?"]]},
+ {line:"The manager says we can replace it, but you must wait five days.",opts:[
+  ["Five days is inconvenient. Is there a faster solution?","fast","I can check another branch. Would you be able to collect it there?"],
+  ["All right. Could you confirm the replacement in writing?","confirm","Of course. I'll prepare a confirmation for you."],
+  ["I don't think that's acceptable. What else can you offer?","alternative","We may be able to offer a partial refund. Would that help?"]]}
+];
+function renderAdaptive(){
+ var t=adaptiveTurns[Math.min(adaptiveStep,adaptiveTurns.length-1)];
+ $("#adaptiveLine").textContent=adaptiveRole==="customer"?"SHOP ASSISTANT: "+t.line:"CUSTOMER: "+t.line;
+ $("#adaptiveOptions").innerHTML=t.opts.map(function(o,i){return '<button class="opt" data-next="'+o[1]+'"><b>'+"ABC"[i]+'</b><span>'+o[0]+'</span></button>'}).join("");
+}
+$("#adaptiveOptions").onclick=function(e){
+ var b=e.target.closest("[data-next]");if(!b)return;
+ var t=adaptiveTurns[Math.min(adaptiveStep,adaptiveTurns.length-1)],o=t.opts.filter(function(x){return x[1]===b.dataset.next})[0];
+ $("#adaptiveFeedback").innerHTML="<h3>Teacher responds</h3><p>"+o[2]+"</p><p><b>Now continue:</b> Ask a follow-up question, explain your reason or suggest another solution.</p>";
+ adaptiveStep=Math.min(adaptiveStep+1,adaptiveTurns.length-1);
+ if(adaptiveStep===adaptiveTurns.length-1) $("#adaptiveFeedback").innerHTML+="<p><b>Final challenge:</b> Agree on a solution and summarise what has been decided.</p>";
+ renderAdaptive();
+};
+$("#adaptiveTwist").onclick=function(){
+ adaptiveHard=!adaptiveHard;
+ $("#adaptiveFeedback").innerHTML=adaptiveHard?"<h3>Difficulty increased</h3><p>The shop assistant is busy and says: “I have other customers waiting. Can you make your decision now?” Stay calm and respond politely but firmly.</p>":"<h3>Normal difficulty</h3><p>The shop assistant is willing to listen. Explain the problem and suggest a fair solution.</p>";
+};
+$("#adaptiveRestart").onclick=function(){adaptiveStep=0;adaptiveHard=false;adaptiveRole="customer";renderAdaptive();$("#adaptiveFeedback").innerHTML="<h3>Teacher's next move</h3><p>Choose a response to continue the conversation. Try to be clear, polite and firm.</p>";};
+$("#adaptiveSwap").onclick=function(){adaptiveRole=adaptiveRole==="customer"?"shop assistant":"customer";$("#adaptiveFeedback").innerHTML="<h3>Role switched</h3><p>You are now the "+adaptiveRole+". Read the other person's line and respond naturally.</p>";renderAdaptive();};
+renderAdaptive();
+
+/* bot */
+var botHist=[],BOTCUR="n0";
+function botGo(id){
+ var n=BOT[id];
+ if(n.end){$("#botNow").innerHTML='<div class="bubble">'+ic("worth","ico")+'<div><h3>The end</h3><p>'+esc(n.end)+'</p></div></div>';$("#botOpts").innerHTML="";return}
+ $("#botNow").innerHTML='<div class="bubble">'+ic("person","ico")+'<div style="flex:1"><b>Stall owner</b><p>'+esc(n.s)+'</p></div><button class="ib sayb" data-say="'+esc(n.s)+'" aria-label="Listen">'+SP+'</button></div>';
+ say(n.s);
+ $("#botOpts").innerHTML=n.o.map(function(o,i){return '<button class="opt" data-n="'+o[1]+'" data-t="'+esc(o[0])+'"><b>'+(i+1)+'</b><span>'+esc(o[0])+'</span></button>'}).join("");
+}
+$("#botOpts").onclick=function(e){var b=e.target.closest(".opt");if(!b)return;botHist.push([BOT[BOTCUR].s,b.dataset.t]);BOTCUR=b.dataset.n;
+ $("#botLog").innerHTML=botHist.map(function(h){return '<div class="blk b-lilac" style="padding:.5rem 1rem"><span class="hint">Owner:</span> '+esc(h[0])+'<br><span class="hint">You:</span> <b>'+esc(h[1])+'</b></div>'}).join("");botGo(BOTCUR)};
+$("#botRe").onclick=function(){botHist=[];BOTCUR="n0";$("#botLog").innerHTML="";botGo("n0")};
+botGo("n0");
+/* start */
+var st=store("gs7");
+if(st&&st.ck){$$(".ck").forEach(function(c,i){c.classList.toggle("on",!!st.ck[i])})}
+show(st&&typeof st.cur==="number"?st.cur:0);
+setTimeout(fit,50);
+})();
+</script>
+
+</body></html>
