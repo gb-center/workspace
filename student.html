@@ -156,7 +156,7 @@
     const hm = n => { n = Math.max(0, n); return pad(Math.floor(n / 60)) + ':' + pad(n % 60); };
     function renderHome() {
       const d = S.data, cls = d.class, now = new Date(), todayKey = ymd(now), nowHM = pad(now.getHours()) + ':' + pad(now.getMinutes());
-      $('hello').textContent = 'Xin chào, ' + d.student_name; $('hello-sub').textContent = cls ? 'Lớp ' + cls.name : 'Chưa xếp lớp';
+      $('hello').textContent = 'Xin chào, ' + d.student_name; document.title = 'Trang học viên | ' + d.student_name; $('hello-sub').textContent = cls ? 'Lớp ' + cls.name : 'Chưa xếp lớp';
       $('btn-back').classList.add('hidden');
       if (!cls) { $('app').innerHTML = '<div class="card text-sm text-slate-600">Bạn chưa được xếp lớp. Hỏi giáo viên nhé.</div>'; return; }
       const sess = d.sessions || [];
@@ -263,7 +263,7 @@
 
     function renderAssignment() {
       const a = S.a; $('btn-class').classList.add('hidden'); $('btn-home').classList.add('hidden'); $('btn-back').classList.remove('hidden'); $('btn-back').href = '#' + encodeURIComponent(S.code);
-      $('hello').textContent = a.name; $('hello-sub').textContent = a.student_name;
+      $('hello').textContent = a.name; $('hello-sub').textContent = a.student_name; document.title = 'Trang học viên | ' + a.student_name;
       const qs = a.questions || [];
       $('app').innerHTML = `<div class="narrow"><section class="card"><div class="text-xs text-slate-500 mb-1">${qs.length} câu${a.due_at ? ' · Hạn ' + new Date(a.due_at).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : ''}. Điểm chỉ tính lần làm đầu tiên; nộp muộn vẫn được nhận nhưng có đánh dấu.</div>
         <div id="qs">${qs.map((q, i) => `<div class="qbox" data-q="${esc(q.id)}"><div class="text-sm font-bold text-slate-800 mb-2" style="overflow-wrap:anywhere">Câu ${i + 1}. ${esc(q.text)}</div>
