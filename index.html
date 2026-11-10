@@ -597,17 +597,18 @@
         st.libAsg = Object.keys(g).map(k => g[k]);
         await scanRepo();
       }
+      const SCAN_BASE = new URL('./', location.href).href;
       const SCAN_DIR = { ielts: 'ielts', toeic: 'toeic', gs: 'gs', gt: 'comm' };
       async function scanRepo() {
         if (Date.now() - st.scanAt < 120000) return;
         try {
-          const b = new URL(LMS.siteBase), owner = b.hostname.split('.')[0], repo = b.pathname.replace(/\//g, '');
+          const b = new URL(SCAN_BASE), owner = b.hostname.split('.')[0], repo = b.pathname.replace(/\//g, '');
           const r = await fetch('https://api.github.com/repos/' + owner + '/' + repo + '/git/trees/main?recursive=1');
           if (!r.ok) return;
           const j = await r.json(), out = [];
           (j.tree || []).forEach(t => {
             const m = t.type === 'blob' && /^(ielts|toeic|gs|gt)\/w(\d{1,2})\/([^\/]+)\.html$/i.exec(t.path);
-            if (m) out.push({ scan: true, kind: 'lesson', skill: '', path: t.path.toLowerCase(), url: LMS.siteBase + t.path, prog: SCAN_DIR[m[1].toLowerCase()], week_start: ymd(weekDates(Number(m[2]))[0]), class_ids: [], title: m[3].replace(/[-_]+/g, ' ').replace(/^./, c => c.toUpperCase()) });
+            if (m) out.push({ scan: true, kind: 'lesson', skill: '', path: t.path.toLowerCase(), url: SCAN_BASE + t.path, prog: SCAN_DIR[m[1].toLowerCase()], week_start: ymd(weekDates(Number(m[2]))[0]), class_ids: [], title: m[3].replace(/[-_]+/g, ' ').replace(/^./, c => c.toUpperCase()) });
           });
           await Promise.all(out.slice(0, 60).map(async x => {
             try {
@@ -621,7 +622,7 @@
         } catch (e) { }
       }
       function scanItems() {
-        const base = '/' + new URL(LMS.siteBase).pathname.replace(/\//g, '') + '/', known = new Set();
+        const base = '/' + new URL(SCAN_BASE).pathname.replace(/\//g, '') + '/', known = new Set();
         const add = u => { try { known.add(new URL(u, location.href).pathname.toLowerCase().replace(base, '')); } catch (e) { } };
         st.lib.forEach(m => add(m.url)); st.libAsg.forEach(m => { if (m.page) add(m.page); });
         return st.scanAll.filter(x => !known.has(x.path));
@@ -735,7 +736,7 @@
           pre = g.length ? 'gs' + g.join('-') + '-' : 'gs-';
         }
         const file = (pre && name.indexOf(pre) === 0 ? '' : pre) + name + '.html';
-        return { url: LMS.siteBase + prog + '/w' + pad(weekNoOf($('dm-week').value)) + '/' + file };
+        return { url: SCAN_BASE + prog + '/w' + pad(weekNoOf($('dm-week').value)) + '/' + file };
       }
       function updateSuggest() {
         const s = suggestUrl(); sugUrl = s.url || '';
