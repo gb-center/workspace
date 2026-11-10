@@ -228,7 +228,7 @@ h2{margin:0 0 14px;font-size:calc(var(--fs) + 8px);line-height:1.25}
           var err = h("div", { cls: "ov solid" }, h("div", { cls: "card" },
             h("h3", { text: D.title }),
             h("p", { cls: "err", text: errText(e) }),
-            h("div", { cls: "brow" }, h("button", { cls: "pill", text: "Try again", onclick: function () { err.remove(); login(); } }))
+            h("div", { cls: "brow" }, h("button", { cls: "pill", text: "Try again", onclick: function () { err.remove(); store("sc", ""); try { window.history.replaceState({}, document.title, window.location.pathname); } catch (e) { } login(); } }))
           ));
           document.body.appendChild(err);
         }
