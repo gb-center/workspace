@@ -287,7 +287,7 @@
   else initThemePopover();
 
   /* ---------- Đường dẫn học liệu & mã học sinh ---------- */
-  var SITE_BASE = 'https://gb-center.github.io/workspace/';
+  var SITE_BASE = 'https://gb-learninghub.github.io/workspace/';
   /* Tên không dấu, chữ thường, nối bằng gạch ngang: "Unit 4 - Đọc hiểu" -> "unit-4-doc-hieu" */
   function slug(v) {
     return String(v == null ? '' : v).toLowerCase().replace(/đ/g, 'd').normalize('NFD').replace(/[̀-ͯ]/g, '')
@@ -298,7 +298,7 @@
     if (!u || !code) return u;
     try {
       var x = new URL(u, location.href);
-      if (x.host !== 'gb-center.github.io' && x.host !== location.host) return u;
+      if (x.host !== 'gb-learninghub.github.io' && x.host !== location.host) return u;
       x.searchParams.set('s', code);
       return x.href;
     } catch (e) { return u; }
