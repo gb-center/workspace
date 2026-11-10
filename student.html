@@ -47,7 +47,7 @@
     .bar i{display:block;height:100%;border-radius:9999px;background:#16a34a}
     .sk-title{display:flex;align-items:center;gap:8px;font-size:.8125rem;font-weight:800;color:var(--t-ink);margin-bottom:10px}
     .sk-title svg{width:16px;height:16px;color:var(--t-primary)}
-    .sk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr));gap:10px}
+    .sk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(70px,1fr));gap:10px}
     .sk{border-radius:16px;padding:12px 10px;text-align:center;min-height:88px}
     .sk .sl{display:flex;align-items:center;justify-content:center;gap:6px;font-size:.875rem;font-weight:800;color:var(--t-ink)}
     .sk .sl svg{width:18px;height:18px}
@@ -76,6 +76,8 @@
     .card h2{display:flex;align-items:center;gap:10px;font-size:.9375rem;font-weight:800;color:var(--t-ink);margin-bottom:12px}
     .card h2 svg{box-sizing:border-box;width:32px;height:32px;padding:8px;border-radius:50%;background:var(--t-tint);color:var(--t-primary);flex:none}
     .row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:10px 12px;border-radius:14px;background:#fff;border:1px solid var(--t-border)}
+    .srow{flex-wrap:wrap;gap:6px 8px}.srow .c-day{width:4.5rem}.srow .c-date{width:3rem}.srow .c-time{width:auto}.srow .row-tags{flex-wrap:nowrap}
+    .row.live{background:#fef9c3;border-color:#fde68a}
     .c-day{display:inline-block;width:5.25rem;font-weight:700}
     .c-date{display:inline-block;width:3.25rem;font-weight:700}
     .hrow .c-day,.hrow .c-date{width:auto}
@@ -129,6 +131,7 @@
     const dayCols = k => { const d = dOf(k); return '<strong class="c-day">' + DAY[d.getDay()] + '</strong><strong class="c-date">' + pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '</strong>'; };
     const fmtDay = k => { const d = dOf(k); return DAY[d.getDay()] + ', ' + pad(d.getDate()) + '/' + pad(d.getMonth() + 1); };
     const isHttp = u => /^https?:\/\//i.test(u || '');
+    const sessState = (s, n) => { const k = ymd(n), h = pad(n.getHours()) + ':' + pad(n.getMinutes()); if (s.date < k || (s.date === k && h >= s.end)) return 'past'; if (s.date === k && h >= s.start) return 'live'; return 'soon'; };
     const S = { c: null, code: '', data: null, a: null, answers: {}, t0: 0, busy: false };
 
     function mondayKey(d) { const dow = d.getDay() === 0 ? 6 : d.getDay() - 1; return ymd(new Date(d.getFullYear(), d.getMonth(), d.getDate() - dow)); }
@@ -188,8 +191,8 @@
         </div></section>`;
 
       const schedHtml = `<section class="card g-sched"><h2><i data-lucide="calendar-days"></i>Lịch học tuần này</h2><div class="space-y-2">${thisWeek.length ? thisWeek.map(s => {
-        const st = STATUS[s.status] || STATUS.planned;
-        return `<div class="row">${dayCols(s.date)}<span class="c-time font-semibold text-sky-700">${s.start} - ${s.end}</span><span class="row-tags"><span class="tag ${st[1]}">${st[0]}</span>${s.attendance === 'absent' ? '<span class="tag bg-rose-50 text-rose-700">Vắng</span>' : ''}${s.mode === 'online' ? (joinOpen(s) ? joinBtn('row') : '<span class="tag bg-sky-50 text-sky-700">Online</span>') : ''}</span>${s.lesson ? `<span class="text-xs text-slate-500" style="flex:1 1 100%">${esc(s.lesson)}</span>` : ''}</div>`;
+        const st = STATUS[s.status] || STATUS.planned, ps = s.status === 'planned' ? sessState(s, now) : '';
+        return `<div class="row srow${ps === 'live' ? ' live' : ''}">${dayCols(s.date)}<span class="c-time font-semibold text-sky-700">${s.start} - ${s.end}</span><span class="row-tags">${s.status === 'planned' && ps !== 'soon' ? '' : `<span class="tag ${st[1]}">${st[0]}</span>`}${s.attendance === 'absent' ? '<span class="tag bg-rose-50 text-rose-700">Vắng</span>' : ''}${s.mode === 'online' ? (joinOpen(s) ? joinBtn('row') : '<span class="tag bg-sky-50 text-sky-700" title="Online" aria-label="Online" style="display:inline-flex;align-items:center"><i data-lucide="video" class="w-3.5 h-3.5"></i></span>') : ''}</span>${s.lesson ? `<span class="text-xs text-slate-500" style="flex:1 1 100%">${esc(s.lesson)}</span>` : ''}</div>`;
       }).join('') : '<div class="text-sm text-slate-500">Tuần này không có buổi học.</div>'}</div></section>`;
 
       const asg = d.assignments || [];
@@ -330,7 +333,7 @@
       $('app').addEventListener('input', e => { const i = e.target.closest('[data-fill]'); if (i) S.answers[i.closest('.qbox').dataset.q] = i.value; });
       window.addEventListener('hashchange', route);
       const sig = () => { const d = S.data; if (!d) return ''; const n = new Date(), k = ymd(n), h = pad(n.getHours()) + ':' + pad(n.getMinutes());
-        return (d.sessions || []).map(s => s.mode === 'online' && s.date === k && h >= hm(toMin(s.start) - 15) && h < s.end ? 1 : 0).join(''); };
+        return (d.sessions || []).map(s => (s.mode === 'online' && s.date === k && h >= hm(toMin(s.start) - 15) && h < s.end ? 1 : 0) + sessState(s, n)).join(''); };
       let last = null;
       setInterval(() => { if (!S.data || $('btn-back').classList.contains('hidden') === false) return; const g = sig(); if (last === null) { last = g; return; } if (g !== last) { last = g; renderHome(); } }, 30000);
     }
