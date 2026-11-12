@@ -739,12 +739,21 @@
 .t-daybar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 20px!important}
 .t-daybar h2{margin:0!important}
 .t-slot{display:flex;flex-direction:column;gap:12px}
-.t-slot-head{display:flex;align-items:center;gap:12px}
-.t-slot select.field{width:auto;background-image:none!important;padding:0 16px!important;text-align:center;text-align-last:center}
-.t-row{display:flex;flex-direction:column;gap:12px;padding-top:12px;border-top:1px solid var(--t-border)}
-.t-row-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;cursor:pointer}
-.t-cname{font-size:1rem;color:var(--t-ink)}
-.t-chip{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:999px;border:1px solid var(--t-border);background:#fff;font-size:.75rem;font-weight:700;color:var(--t-primary)}
+.t-slot-head{display:flex;align-items:center;gap:8px;min-height:44px;cursor:pointer}
+.t-slot select.field.t-status{width:auto;min-height:44px;border:0!important;background:transparent!important;background-image:none!important;box-shadow:none!important;padding:0 8px!important;font-size:.9375rem;font-weight:800;text-align:left;cursor:pointer}
+.t-status[data-st="planned"]{color:#2563eb}
+.t-status[data-st="done"]{color:#059669}
+.t-status[data-st="cancel"]{color:#e11d48}
+.t-status[data-st="makeup"]{color:#d97706}
+.t-status[data-st="holiday"]{color:#64748b}
+.t-status[data-st="mixed"]{color:#475569}
+.t-status option{color:#172235;font-weight:600}
+.t-row{display:flex;flex-direction:column;gap:12px;padding-top:10px;border-top:1px solid var(--t-border)}
+.t-row-head{display:grid;grid-template-columns:36px minmax(120px,240px) minmax(0,1fr);align-items:center;gap:10px;min-height:48px;cursor:pointer}
+.t-cname{font-size:1rem;color:var(--t-ink);overflow-wrap:anywhere;line-height:1.25}
+.t-sum{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0}
+.t-sum .tag,.t-sum .t-chip{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:32px;padding:0 12px;border-radius:999px;font-size:.75rem;font-weight:700;line-height:1;white-space:nowrap}
+.t-chip{border:1px solid var(--t-border);background:#fff;color:var(--t-primary)}
 .t-chip svg{width:14px;height:14px}
 .t-modal{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(15,31,55,.35)}
 .t-modal-box{width:min(420px,100%);max-height:80dvh;overflow:auto;background:#fff;border-radius:17px;padding:18px;display:flex;flex-direction:column;gap:12px}
@@ -757,7 +766,6 @@
 .t-chev[aria-expanded="true"] svg{transform:rotate(180deg)}
 .t-time{font-weight:800;font-size:1rem;color:var(--t-primary);min-width:104px;font-variant-numeric:tabular-nums}
 .t-cls{display:flex;flex-direction:column;flex:1;min-width:140px;color:var(--t-ink)}.t-cls span{font-size:.75rem;color:var(--t-muted)}
-.t-sum{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
 .t-card select.field{width:auto}
 .t-fields input.field,.t-fields textarea.field,.t-form input.field{width:100%;box-sizing:border-box;font-size:16px}
 .t-body{display:flex;flex-direction:column;gap:14px}
@@ -1227,7 +1235,7 @@ a.t-open:hover span{text-decoration:underline}
       return groups.map(g => {
         const first = g.s[0], same = g.s.every(x => x.status === first.status);
         const label = hhmm(first.start_time) + (first.end_time ? ' – ' + hhmm(first.end_time) : '');
-        return `<section class="card t-slot"><div class="t-slot-head"><div class="t-time">${label}</div><select class="field" data-f="status" data-sids="${g.s.map(x => x.id).join(',')}" aria-label="Trạng thái buổi">${same ? '' : '<option value="" selected disabled>Nhiều trạng thái</option>'}${Object.keys(STATUS).map(k => `<option value="${k}" ${same && k === first.status ? 'selected' : ''}>${STATUS[k][0]}</option>`).join('')}</select></div>${g.s.map(tRow).join('')}</section>`;
+        return `<section class="card t-slot"><div class="t-slot-head"><div class="t-time">${label}</div><select class="field t-status" data-st="${same ? first.status : 'mixed'}" data-f="status" data-sids="${g.s.map(x => x.id).join(',')}" aria-label="Trạng thái buổi">${same ? '' : '<option value="" selected disabled>Nhiều trạng thái</option>'}${Object.keys(STATUS).map(k => `<option value="${k}" ${same && k === first.status ? 'selected' : ''}>${STATUS[k][0]}</option>`).join('')}</select></div>${g.s.map(tRow).join('')}</section>`;
       }).join('');
     }
     function tRoster(cid) {
@@ -1308,6 +1316,8 @@ a.t-open:hover span{text-decoration:underline}
       const app = $('app');
       app.addEventListener('click', async e => {
         if (!T.on) return;
+        const sh = e.target.closest('.t-slot-head');
+        if (sh && !e.target.closest('select, a, input, textarea, button')) { const rows = [...sh.closest('.t-slot').querySelectorAll('.t-row')], anyOpen = rows.some(r => !r.querySelector('.t-body').hidden); rows.forEach(r => { const open = !r.querySelector('.t-body').hidden; if (open === anyOpen) tToggle(r.dataset.sid); }); return; }
         const head = e.target.closest('.t-row-head');
         if (head && !e.target.closest('select, a, input, textarea, [data-t]:not([data-t="toggle"])')) { tToggle(head.closest('.t-row').dataset.sid); return; }
         const b = e.target.closest('[data-t]'); if (!b || b.tagName === 'FORM' || b.tagName === 'INPUT') return;
