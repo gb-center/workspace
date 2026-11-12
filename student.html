@@ -889,7 +889,8 @@
 </style>
 <style id="teacher-css">
 .t-content{display:flex;flex-direction:column;gap:14px;flex:1 1 auto;min-height:0}
-.student-main>.t-daybar{flex:none;margin-bottom:14px}
+.student-main>.t-daybar,.t-stick>.t-daybar{flex:none;margin-bottom:14px}
+@media(min-width:781px){.t-content{scrollbar-width:none;scrollbar-gutter:auto;padding-right:0!important}.t-content::-webkit-scrollbar{display:none}}
 @media(min-width:781px){
 .student-shell-inner-tabs .student-main{padding-bottom:24px!important}
 .student-shell-inner-tabs .student-main-content:not(.t-content){flex:1 1 auto;display:flex;flex-direction:column;padding-bottom:0!important}
@@ -1529,7 +1530,7 @@ a.t-open:hover span{text-decoration:underline}
       const tdy = ymd(new Date()), days = [...new Set(list.map(s => s.session_date))].sort((a, b) => (b === tdy) - (a === tdy));
       const icon = kind === 'lesson' ? 'presentation' : 'file-check-2', title = kind === 'lesson' ? 'Bài học' : 'Bài tập';
       const cards = days.map(d => {
-        const day = list.filter(s => s.session_date === d), key = kind + d, closed = matchMedia('(max-width:780px)').matches ? !T.dayOpenM.has(key) : T.dayClosed.has(key);
+        const day = list.filter(s => s.session_date === d), key = kind + d, closed = !T.dayOpenM.has(key);
         const rows = day.map(s => {
           const id = s.class_id, cl = s.classes || {};
           const ms = T.mats.filter(m => m.kind === kind && matFor(m, id, s.session_date));
