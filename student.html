@@ -739,39 +739,37 @@
     .student-overview-highlight .g-prog>.goal-pair>.goal:nth-child(2) .gl svg{color:#b38324!important}
   </style>
 <style id="teacher-css">
-.t-wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
-.t-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.t-bar input[type=date]{margin-left:auto;font-size:16px;min-height:44px;padding:0 10px;border:1px solid #e2e8f0;border-radius:12px;background:#fff}
-.t-ic{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;border:1px solid #e2e8f0;background:#fff;color:#334155;flex:none}
-.t-ic i,.t-ic svg{width:18px;height:18px}
-.t-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 16px;border-radius:12px;border:1px solid #e2e8f0;background:#fff;font-weight:700;color:#0b1f44}
-.t-days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-.t-day{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0;min-height:64px;border-radius:14px;border:1px solid #e2e8f0;background:#fff;color:#475569}
-.t-day span{font-size:12px;font-weight:600}.t-day b{font-size:18px;color:#0b1f44}
-.t-day i{font-style:normal;font-size:12px;font-weight:700;min-height:16px;color:#2563eb}
-.t-day.today b{text-decoration:underline}
-.t-day.on{background:#0b1f44;border-color:#0b1f44}.t-day.on span,.t-day.on b,.t-day.on i{color:#fff}
-.t-title{font-size:18px;font-weight:800;color:#0b1f44;margin:4px 0 0}
-.t-card{background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:14px}
+.t-content{display:flex;flex-direction:column;gap:14px}
+.t-daybar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 20px!important}
+.t-daybar h2{margin:0!important}
+.t-card{display:flex;flex-direction:column;gap:14px}
 .t-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.t-time{font-weight:800;font-size:18px;color:#0b1f44;min-width:96px}
-.t-cls{display:flex;flex-direction:column;flex:1;min-width:140px}.t-cls span{font-size:13px;color:#64748b}
-.t-head select,.t-fields input,.t-fields textarea,.t-form input{font-size:16px;border:1px solid #e2e8f0;border-radius:10px;padding:0 10px;min-height:44px;background:#fff;width:100%}
+.t-time{font-weight:800;font-size:1rem;color:var(--t-primary);min-width:112px;font-variant-numeric:tabular-nums}
+.t-cls{display:flex;flex-direction:column;flex:1;min-width:140px;color:var(--t-ink)}.t-cls span{font-size:.75rem;color:var(--t-muted)}
+.t-head select,.t-fields input,.t-fields textarea,.t-form input{font-size:16px;border:1px solid var(--t-border);border-radius:10px;padding:0 10px;min-height:44px;background:#fff;width:100%;color:var(--t-ink)}
 .t-head select{width:auto}
 .t-fields textarea{padding:10px;min-height:64px}
-.t-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.t-grid h3{font-size:14px;font-weight:800;margin:0 0 6px;color:#0b1f44}
-.t-mat{display:flex;align-items:center;gap:6px;padding:4px 0}
-.t-open{display:flex;align-items:center;gap:8px;flex:1;min-width:0;font-weight:600;color:#1e3a8a;min-height:44px}
-.t-open i,.t-open svg{width:16px;height:16px;flex:none}.t-open span{overflow-wrap:anywhere}
-.t-tag{font-size:12px;padding:2px 8px;border-radius:999px;background:#f1f5f9;color:#475569;white-space:nowrap}
-.t-none{font-size:14px;color:#94a3b8;margin:0 0 6px}
-.t-form{display:flex;gap:6px;margin-top:6px}.t-form .t-btn{padding:0;width:44px}
+.t-grid{display:grid;grid-template-columns:1fr;gap:14px}
+.t-card *,.t-card input,.t-card textarea,.t-card select{box-sizing:border-box}
+.t-grid h3{display:flex;align-items:center;gap:8px;font-size:.8125rem;font-weight:800;margin:0 0 6px;color:var(--t-primary)}
+.t-grid h3 svg{width:15px;height:15px}
+.t-mat{display:flex;align-items:center;gap:6px;padding:2px 0}
+.t-open{display:flex;align-items:center;gap:8px;flex:1;min-width:0;font-weight:600;font-size:.875rem;color:var(--t-accent);min-height:44px}
+.t-open svg{width:16px;height:16px;flex:none}.t-open span{overflow-wrap:anywhere}
+.t-ic{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;border:1px solid var(--t-border);background:#fff;color:#334155;flex:none}
+.t-ic svg{width:17px;height:17px}
+.t-none{font-size:.8125rem;color:#94a3b8;margin:0 0 6px}
+.t-form{display:flex;gap:6px;margin-top:6px}
 .t-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.t-fields label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700;color:#475569}
+.t-fields label{display:flex;flex-direction:column;gap:4px;font-size:.75rem;font-weight:700;color:var(--t-muted)}
 .t-wide{grid-column:1/-1}
 .t-save{display:flex;justify-content:flex-end}
-@media(max-width:720px){.t-grid,.t-fields{grid-template-columns:1fr}}
+.t-class{display:grid;grid-template-columns:200px 1fr;gap:14px;padding:12px 0;border-top:1px solid var(--t-border)}
+.t-class:first-of-type{border-top:0}
+.t-class-name{display:flex;flex-direction:column}.t-class-name span{font-size:.75rem;color:var(--t-muted)}
+.t-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+.t-stats b{display:block;font-size:1.25rem;color:var(--t-primary)}.t-stats span{font-size:.75rem;color:var(--t-muted)}
+@media(max-width:720px){.t-fields,.t-class{grid-template-columns:1fr}}
 </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
@@ -1089,7 +1087,7 @@
 
     /* ---------- Điều hướng bằng # ---------- */
     /* ---------- Giáo viên: lịch dạy theo ngày (student.html#teacher/YYYY-MM-DD) ---------- */
-    const T = { on: false, bound: false, monday: '', date: '', sess: [], mats: [], asg: [] };
+    const T = { on: false, bound: false, view: 'day', monday: '', date: '', sess: [], mats: [], asg: [] };
     const addDays = (k, n) => { const d = dOf(k); d.setDate(d.getDate() + n); return ymd(d); };
     const hhmm = t => String(t || '').slice(0, 5);
     const safeUrl = u => /^\s*javascript:/i.test(u || '') ? '#' : (u || '#');
@@ -1108,44 +1106,69 @@
       T.monday = monday; T.sess = a.data || []; T.mats = b.data || []; T.asg = c.data || [];
     }
 
-    function tMat(m, cid) {
+    function tMat(m, cid, edit) {
       const shared = (m.class_ids || []).length > 1;
-      return `<div class="t-mat"><a class="t-open" href="${esc(safeUrl(m.url))}" target="_blank" rel="noopener"><i data-lucide="external-link"></i><span>${esc(m.title)}</span></a>${shared ? '<span class="t-tag">Dùng chung</span>' : ''}<button type="button" class="t-ic" data-t="mat-edit" data-id="${m.id}" aria-label="Sửa tài liệu"><i data-lucide="pencil"></i></button><button type="button" class="t-ic" data-t="mat-del" data-id="${m.id}" data-cid="${cid}" aria-label="Xóa khỏi lớp này"><i data-lucide="trash-2"></i></button></div>`;
+      return `<div class="t-mat"><a class="t-open" href="${esc(safeUrl(m.url))}" target="_blank" rel="noopener"><i data-lucide="external-link"></i><span>${esc(m.title)}</span></a>${shared ? '<span class="tag bg-slate-100 text-slate-600">Dùng chung</span>' : ''}${edit ? `<button type="button" class="t-ic" data-t="mat-edit" data-id="${m.id}" aria-label="Sửa tài liệu"><i data-lucide="pencil"></i></button><button type="button" class="t-ic" data-t="mat-del" data-id="${m.id}" data-cid="${cid}" aria-label="Xóa khỏi lớp này"><i data-lucide="trash-2"></i></button>` : ''}</div>`;
+    }
+    function tAsg(x) {
+      const a = x.assignments, due = x.due_at ? ' · Hạn ' + new Date(x.due_at).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : '';
+      return `<div class="t-mat"><span class="t-open"><i data-lucide="clipboard-list"></i><span>${esc(a.assignment_name)}${due}</span></span><span class="tag bg-blue-50 text-blue-700">Bài online</span></div>`;
     }
     function tForm(kind, cid) {
-      return `<form class="t-form" data-t="mat-form" data-kind="${kind}" data-cid="${cid}"><input type="hidden" name="id"><input name="title" placeholder="Tên tài liệu" required><input name="url" placeholder="Link" required><button type="submit" class="t-btn" aria-label="Lưu tài liệu"><i data-lucide="plus"></i></button></form>`;
+      return `<form class="t-form" data-t="mat-form" data-kind="${kind}" data-cid="${cid}"><input type="hidden" name="id"><input name="title" placeholder="Tên tài liệu" required><input name="url" placeholder="Link" required><button type="submit" class="t-ic" aria-label="Lưu tài liệu"><i data-lucide="plus"></i></button></form>`;
     }
     function tCard(s) {
       const cid = s.class_id, cl = s.classes || {};
       const mats = k => T.mats.filter(m => m.kind === k && (m.class_ids || []).includes(cid));
       const asg = T.asg.filter(x => x.class_id === cid && x.assignments);
-      const st = STATUS[s.status] || STATUS.planned;
-      const asgHtml = asg.map(x => { const a = x.assignments; const due = x.due_at ? ' · Hạn ' + new Date(x.due_at).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : ''; return `<div class="t-mat"><span class="t-open"><i data-lucide="clipboard-list"></i><span>${esc(a.assignment_name)}${due}</span></span><span class="t-tag">Bài online</span></div>`; }).join('');
-      return `<section class="t-card" data-sid="${s.id}" data-cid="${cid}">
-        <div class="t-head"><div class="t-time">${hhmm(s.start_time)}${s.end_time ? '–' + hhmm(s.end_time) : ''}</div><div class="t-cls"><b>${esc(cl.class_name || cl.class_code || '')}</b><span>${esc(cl.class_code || '')}${s.session_no ? ' · Buổi ' + s.session_no : ''}${s.mode === 'online' ? ' · Online' : ''}</span></div>
+      return `<section class="card t-card" data-sid="${s.id}" data-cid="${cid}">
+        <div class="t-head"><div class="t-time">${hhmm(s.start_time)}${s.end_time ? ' – ' + hhmm(s.end_time) : ''}</div><div class="t-cls"><b>${esc(cl.class_name || cl.class_code || '')}</b><span>${esc(cl.class_code || '')}${s.session_no ? ' · Buổi ' + s.session_no : ''}${s.mode === 'online' ? ' · Online' : ' · Trực tiếp'}</span></div>
           <select data-f="status" aria-label="Trạng thái buổi">${Object.keys(STATUS).map(k => `<option value="${k}" ${k === s.status ? 'selected' : ''}>${STATUS[k][0]}</option>`).join('')}</select></div>
         <div class="t-grid">
-          <div><h3>Bài học</h3>${mats('lesson').map(m => tMat(m, cid)).join('') || '<p class="t-none">Chưa có tài liệu tuần này.</p>'}${tForm('lesson', cid)}</div>
-          <div><h3>Bài tập</h3>${mats('homework').map(m => tMat(m, cid)).join('')}${asgHtml || ''}${(!mats('homework').length && !asg.length) ? '<p class="t-none">Chưa có bài tập tuần này.</p>' : ''}${tForm('homework', cid)}</div>
+          <div><h3><i data-lucide="presentation"></i>Bài học</h3>${mats('lesson').map(m => tMat(m, cid, true)).join('') || '<p class="t-none">Tuần này chưa có bài học.</p>'}${tForm('lesson', cid)}</div>
+          <div><h3><i data-lucide="file-check-2"></i>Bài tập</h3>${mats('homework').map(m => tMat(m, cid, true)).join('')}${asg.map(tAsg).join('')}${(!mats('homework').length && !asg.length) ? '<p class="t-none">Tuần này chưa có bài tập.</p>' : ''}${tForm('homework', cid)}</div>
         </div>
         <div class="t-fields"><label>Nội dung buổi<input data-f="lesson" value="${esc(s.lesson || '')}"></label><label>Bài tập về nhà<input data-f="homework" value="${esc(s.homework || '')}"></label><label class="t-wide">Ghi chú<textarea data-f="note" rows="2">${esc(s.note || '')}</textarea></label></div>
         <div class="t-save"><button type="button" class="btn-primary" data-t="sess-save" data-id="${s.id}"><i data-lucide="save" class="w-4 h-4"></i><span>Lưu buổi học</span></button></div>
       </section>`;
     }
+    function tWeekList(kind) {
+      const ids = [...new Set(T.sess.map(s => s.class_id))];
+      const rows = ids.map(id => {
+        const first = T.sess.find(s => s.class_id === id), cl = first.classes || {};
+        const ms = T.mats.filter(m => m.kind === kind && (m.class_ids || []).includes(id));
+        const asg = kind === 'homework' ? T.asg.filter(x => x.class_id === id && x.assignments) : [];
+        return `<div class="t-class"><div class="t-class-name"><b>${esc(cl.class_name || cl.class_code || '')}</b><span>${fmtDay(first.session_date)}</span></div><div>${ms.map(m => tMat(m, id, false)).join('')}${asg.map(tAsg).join('') || ''}${(!ms.length && !asg.length) ? '<p class="t-none">Chưa có.</p>' : ''}</div></div>`;
+      });
+      const icon = kind === 'lesson' ? 'presentation' : 'file-check-2';
+      return `<section class="card"><h2><i data-lucide="${icon}"></i>${kind === 'lesson' ? 'Bài học' : 'Bài tập'} các lớp trong tuần</h2>${rows.join('') || '<div class="text-sm text-slate-500">Tuần này chưa có buổi học nào.</div>'}</section>`;
+    }
     function drawTeacher() {
       const y = window.scrollY, today = ymd(new Date());
-      const days = Array.from({ length: 7 }, (_, i) => addDays(T.monday, i));
+      restoreHeaderActions(); document.body.classList.add('student-dashboard-view');
+      const days = Array.from({ length: 7 }, (_, i) => addDays(T.monday, i)), mon = dOf(T.monday), sun = dOf(days[6]);
       const cnt = k => T.sess.filter(s => s.session_date === k).length;
       const list = T.sess.filter(s => s.session_date === T.date);
-      const strip = days.map(k => { const d = dOf(k); return `<button type="button" class="t-day ${k === T.date ? 'on' : ''} ${k === today ? 'today' : ''}" data-t="day" data-date="${k}"><span>${['CN','T2','T3','T4','T5','T6','T7'][d.getDay()]}</span><b>${pad(d.getDate())}</b><i>${cnt(k) || ''}</i></button>`; }).join('');
-      $('app').innerHTML = `<div class="t-wrap"><div class="t-bar"><button type="button" class="t-ic" data-t="wk" data-step="-7" aria-label="Tuần trước"><i data-lucide="chevron-left"></i></button><button type="button" class="t-btn" data-t="today">Hôm nay</button><button type="button" class="t-ic" data-t="wk" data-step="7" aria-label="Tuần sau"><i data-lucide="chevron-right"></i></button><input type="date" data-t="pick" value="${T.date}" aria-label="Chọn ngày"></div>
-        <div class="t-days">${strip}</div><h2 class="t-title">${fmtDay(T.date)} · ${list.length} lớp</h2>
-        ${list.map(tCard).join('') || '<div class="card text-center text-sm text-slate-500">Không có lớp nào ngày này.</div>'}</div>`;
+      const wk = Math.floor((mon - BASE_MONDAY) / 6048e5) + 1;
+      const range = `${pad(mon.getDate())}.${pad(mon.getMonth() + 1)} – ${pad(sun.getDate())}.${pad(sun.getMonth() + 1)}.${sun.getFullYear()}`;
+      const titles = { day: 'Lịch dạy', lessons: 'Bài học tuần', homework: 'Bài tập tuần' };
+      const nav = (k, label, icon) => `<button type="button" class="${T.view === k ? 'active' : ''}" data-t="view" data-view="${k}" ${T.view === k ? 'aria-current="page"' : ''}><i data-lucide="${icon}"></i><span>${label}</span></button>`;
+      const cal = days.map((k, i) => `<button type="button" class="week-calendar-day${cnt(k) ? ' has-session' : ''}${k === today ? ' today' : ''}${k === T.date ? ' selected' : ''}" data-t="day" data-date="${k}" aria-label="${fmtDay(k)}, ${cnt(k)} lớp" title="${fmtDay(k)} · ${cnt(k)} lớp"><span>${['T2','T3','T4','T5','T6','T7','CN'][i]}</span><b>${pad(dOf(k).getDate())}</b></button>`).join('');
+      const done = T.sess.filter(s => s.status === 'done').length, left = T.sess.filter(s => s.status === 'planned' || s.status === 'makeup').length;
+      const body = T.view === 'lessons' ? tWeekList('lesson') : T.view === 'homework' ? tWeekList('homework')
+        : `<section class="card t-daybar"><h2><i data-lucide="calendar-days"></i>${fmtDay(T.date)}</h2><span class="tag bg-slate-100 text-slate-600">${list.length} lớp</span></section>${list.map(tCard).join('') || '<section class="card text-center text-sm text-slate-500">Không có lớp nào ngày này.</section>'}`;
+      const rail = `<section class="card"><div class="week-calendar-head"><span class="week-calendar-title"><i data-lucide="calendar-days"></i>Tuần ${wk}</span><span class="week-calendar-range">${range}</span></div><div class="week-calendar" role="grid" aria-label="Chọn ngày">${cal}</div></section>
+        <section class="card"><h2><i data-lucide="bar-chart-3"></i>Tổng kết tuần</h2><div class="t-stats"><div><b>${T.sess.length}</b><span>Buổi</span></div><div><b>${done}</b><span>Đã dạy</span></div><div><b>${left}</b><span>Sắp tới</span></div></div></section>`;
+      $('app').innerHTML = `<div class="student-shell student-shell-inner-tabs"><div class="student-welcome"><div class="student-welcome-left"><img class="student-welcome-logo" src="logo-wordmark-gold-navy.png" alt="gblearninghub"><span class="student-welcome-brand-divider" aria-hidden="true"></span></div><div class="student-welcome-title"><h1>${titles[T.view]}</h1><p>Khu vực giảng dạy</p></div><div class="student-welcome-right"><div class="student-welcome-actions"><div class="overview-week-controls" role="group" aria-label="Chọn tuần"><button type="button" class="icon-btn" data-t="wk" data-step="-7" aria-label="Tuần trước"><i data-lucide="chevron-left" class="w-4 h-4"></i></button><span class="overview-week-label"><b>Tuần ${pad(wk)}</b><span>${range}</span></span><button type="button" class="icon-btn" data-t="wk" data-step="7" aria-label="Tuần sau"><i data-lucide="chevron-right" class="w-4 h-4"></i></button><button type="button" class="icon-btn" data-t="today" aria-label="Về hôm nay" title="Hôm nay"><i data-lucide="calendar-check" class="w-4 h-4"></i></button></div></div><div class="student-welcome-tools"></div></div></div>
+        <aside class="student-sidebar" aria-label="Điều hướng giáo viên"><div class="student-brand"><img src="logo-wordmark-gold-navy.png" alt="gblearninghub"></div><nav class="student-nav">${nav('day', 'Lịch dạy', 'calendar-days')}${nav('lessons', 'Bài học', 'presentation')}${nav('homework', 'Bài tập', 'pencil-line')}</nav></aside>
+        <div class="student-workspace"><section class="student-main" aria-label="Nội dung giảng dạy"><div class="student-main-content t-content">${body}</div></section><aside class="student-rail" aria-label="Lịch tuần">${rail}</aside></div></div>`;
+      const tools = document.querySelector('.student-welcome-tools');
+      if (tools) ['btn-home', 'btn-theme'].forEach(id => { const el = $(id); if (el) tools.appendChild(el); });
       icons(); window.scrollTo(0, y);
     }
     async function renderTeacher(dateArg) {
       T.on = true; restoreHeaderActions();
-      $('hello').textContent = 'Giáo viên'; $('hello-sub').textContent = 'Lịch dạy theo ngày';
+      $('hello').textContent = 'Giáo viên'; $('hello-sub').textContent = 'Khu vực giảng dạy'; document.title = 'Giáo viên | gblearning';
       ['btn-class', 'btn-back'].forEach(id => $(id).classList.add('hidden')); $('btn-home').classList.remove('hidden');
       $('app').innerHTML = '<div class="card text-center text-sm text-slate-500">Đang tải...</div>';
       try {
@@ -1164,7 +1187,8 @@
         const b = e.target.closest('[data-t]'); if (!b || b.tagName === 'FORM' || b.tagName === 'INPUT') return;
         const k = b.dataset.t;
         try {
-          if (k === 'day') { location.hash = '#teacher/' + b.dataset.date; }
+          if (k === 'view') { T.view = b.dataset.view; drawTeacher(); window.scrollTo(0, 0); }
+          else if (k === 'day') { T.view = 'day'; location.hash = '#teacher/' + b.dataset.date; }
           else if (k === 'wk') { location.hash = '#teacher/' + addDays(T.date, Number(b.dataset.step)); }
           else if (k === 'today') { location.hash = '#teacher/' + ymd(new Date()); }
           else if (k === 'sess-save') {
@@ -1176,8 +1200,8 @@
           }
           else if (k === 'mat-edit') {
             const m = T.mats.find(x => x.id === Number(b.dataset.id)); if (!m) return;
-            const f = b.closest('.t-grid > div').querySelector('.t-form');
-            const q = f.elements; q.id.value = m.id; q.title.value = m.title; q.url.value = m.url; q.title.focus();
+            const q = b.closest('.t-grid > div').querySelector('.t-form').elements;
+            q.id.value = m.id; q.title.value = m.title; q.url.value = m.url; q.title.focus();
           }
           else if (k === 'mat-del') {
             const m = T.mats.find(x => x.id === Number(b.dataset.id)), cid = Number(b.dataset.cid); if (!m) return;
@@ -1188,7 +1212,6 @@
           }
         } catch (err) { LMS.alert(errText(err)); }
       });
-      app.addEventListener('change', e => { if (T.on && e.target.dataset.t === 'pick' && e.target.value) location.hash = '#teacher/' + e.target.value; });
       app.addEventListener('submit', async e => {
         const f = e.target.closest('[data-t="mat-form"]'); if (!T.on || !f) return; e.preventDefault();
         try {
