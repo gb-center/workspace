@@ -721,7 +721,7 @@
       }
       function previewAsg(code) {
         const m = st.libAsg.find(x => x.code === code); if (!m || !m.page) return;
-        const u = new URL(m.page, location.href); u.searchParams.set('s', '0000'); window.open(u.href, '_blank', 'noopener');
+        const u = new URL(m.page, location.href); u.searchParams.set('s', '0000'); location.href = u.href;
       }
       async function renameAsg(code) {
         const m = st.libAsg.find(x => x.code === code); if (!m) return;
@@ -762,7 +762,7 @@
           return `<details class="lib-week-group bg-white rounded-2xl border border-slate-200" data-week-group="${collapseKey}" ${st.libCollapsed[collapseKey] ? '' : 'open'}><summary class="lib-week-summary"><span><span class="lib-week-title">${head}</span><small>${byWeek[k].length} mục</small></span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
             <div class="lib-week-items space-y-2">${byWeek[k].map(m => {
               if (m.scan) {
-                return `<div class="mat-item"><div class="min-w-0 flex-1"><a class="mat-title" href="${esc(m.url)}" target="_blank" rel="noopener">${esc(m.title)}</a>
+                return `<div class="mat-item"><div class="min-w-0 flex-1"><a class="mat-title" href="${esc(m.url)}">${esc(m.title)}</a>
                   <div class="text-xs text-slate-500 mt-1">Mới trên GitHub · <span class="text-rose-700">Chưa giao cho lớp nào</span></div></div>
                   <button type="button" class="icon-btn" data-add-scan="${esc(m.path)}" aria-label="Thêm vào học liệu"><i data-lucide="plus" class="w-4 h-4"></i></button></div>`;
               }
@@ -775,7 +775,7 @@
                   <button type="button" class="icon-btn" data-edit-asg="${esc(m.code)}" aria-label="Giao lại bài"><i data-lucide="send" class="w-4 h-4"></i></button></div>`;
               }
               return `<div class="mat-item"><div class="min-w-0 flex-1">
-                <a class="mat-title" href="${isHttp(m.url) ? esc(m.url) : '#'}" target="_blank" rel="noopener">${esc(m.title)}</a>
+                <a class="mat-title" href="${isHttp(m.url) ? esc(m.url) : '#'}">${esc(m.title)}</a>
                 <div class="text-xs text-slate-500 mt-1">${kindText(m)} · ${targetsText(m)}</div></div>
                 <button type="button" class="icon-btn" data-edit-mat="${m.id}" aria-label="Sửa mục"><i data-lucide="pencil" class="w-4 h-4"></i></button>
                 <button type="button" class="icon-btn" data-del-mat="${m.id}" aria-label="Xóa mục" style="color:#be123c"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`;
@@ -792,7 +792,7 @@
       }
       function matItem(m) {
         return `<div class="mat-item"><div class="min-w-0 flex-1">
-          <a class="mat-title" href="${isHttp(m.url) ? esc(m.url) : '#'}" target="_blank" rel="noopener">${esc(m.title)}</a>
+          <a class="mat-title" href="${isHttp(m.url) ? esc(m.url) : '#'}">${esc(m.title)}</a>
           <div class="text-xs text-slate-500 mt-1">${targetsText(m)}</div></div>
           <button type="button" class="icon-btn" data-edit-mat="${m.id}" aria-label="Sửa mục"><i data-lucide="pencil" class="w-4 h-4"></i></button>
                 <button type="button" class="icon-btn" data-del-mat="${m.id}" aria-label="Xóa mục" style="color:#be123c"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`;

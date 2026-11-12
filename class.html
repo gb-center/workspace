@@ -110,7 +110,7 @@
       </div>
       <div class="flex flex-wrap items-center gap-3 shrink-0">
         <div class="flex items-center gap-1">
-          <a id="btn-meet" href="https://meet.google.com" target="_self" class="hero-btn solid">
+          <a id="btn-meet" href="https://meet.google.com" target="_blank" rel="noopener" class="hero-btn solid">
             <i data-lucide="video" class="w-4 h-4"></i><span>Vào lớp Online</span>
           </a>
           <button type="button" id="edit-meet" class="teacher-feature hidden p-2 text-white bg-white/10 hover:bg-white/20 rounded-lg transition" title="Đổi link lớp online (dùng chung)">
@@ -118,7 +118,7 @@
           </button>
         </div>
         <div class="flex items-center gap-1">
-          <a id="btn-drive" href="https://drive.google.com" target="_self" class="hero-btn ghost">
+          <a id="btn-drive" href="https://drive.google.com" target="_blank" rel="noopener" class="hero-btn ghost">
             <i data-lucide="folder" class="w-4 h-4"></i><span>Drive bài giảng</span>
           </a>
           <button type="button" id="edit-class" class="teacher-feature hidden p-2 text-white bg-white/10 hover:bg-white/20 rounded-lg transition" title="Sửa tên lớp và link Drive">
@@ -433,7 +433,7 @@
       return `<div class="link-item-row flex items-center gap-2" data-kind="${kind}">
         <input data-field="title" value="${esc(item.title)}" placeholder="Tên ${kind === 'lesson' ? 'bài học' : 'bài tập'} (không bắt buộc)" class="min-w-0 flex-1 text-xs p-2.5 bg-white border border-slate-200 rounded-lg">
         <input data-field="url" value="${esc(item.url)}" placeholder="${kind === 'lesson' ? 'Dán link Google Slides...' : 'Dán link bài tập...'}" class="min-w-0 flex-[2] text-xs p-2.5 bg-white border border-slate-200 rounded-lg">
-        ${isHttp(item.url) ? `<a href="${esc(item.url)}" target="_blank" rel="noopener" class="icon-btn" aria-label="Mở link"><i data-lucide="external-link" class="w-4 h-4"></i></a>` : ''}
+        ${isHttp(item.url) ? `<a href="${esc(item.url)}" class="icon-btn" aria-label="Mở link"><i data-lucide="external-link" class="w-4 h-4"></i></a>` : ''}
         <button type="button" class="icon-btn danger remove-link-row" aria-label="Xóa dòng"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`;
     }
     function fillLinks(id, items, kind) {
@@ -444,7 +444,7 @@
     const collect = id => [...document.querySelectorAll('#' + id + ' .link-item-row')].map(r => ({
       title: r.querySelector('[data-field="title"]').value.trim(), url: r.querySelector('[data-field="url"]').value.trim() })).filter(x => x.title || x.url);
     const roList = (items, label) => { const l = (items || []).filter(x => x.title || x.url); return l.length ? l.map((x, i) => isHttp(x.url)
-      ? `<a class="flex items-center gap-2 rounded-lg bg-white border border-slate-200 px-3 py-2 text-xs text-sky-800 font-semibold" style="min-height:44px;overflow-wrap:anywhere" href="${esc(x.url)}" target="_blank" rel="noopener"><span class="flex-1">${esc(x.title || label + ' ' + (i + 1))}</span><i data-lucide="external-link" class="w-4 h-4"></i></a>`
+      ? `<a class="flex items-center gap-2 rounded-lg bg-white border border-slate-200 px-3 py-2 text-xs text-sky-800 font-semibold" style="min-height:44px;overflow-wrap:anywhere" href="${esc(x.url)}"><span class="flex-1">${esc(x.title || label + ' ' + (i + 1))}</span><i data-lucide="external-link" class="w-4 h-4"></i></a>`
       : `<div class="rounded-lg bg-white border border-slate-200 px-3 py-2 text-xs text-slate-700" style="min-height:44px">${esc(x.title || label + ' ' + (i + 1))}</div>`).join('') : '<p class="text-[11px] text-slate-400">Chưa có.</p>'; };
     function openLinksDlg(kind) {
       const l = S.links[weekKey()] || { lessons: [], homeworks: [] };
@@ -455,7 +455,7 @@
       const l = S.links[weekKey()] || { lessons: [], homeworks: [] };
       $('lesson-links-list').innerHTML = roList(l.lessons, 'Bài học'); $('hw-links-list').innerHTML = roList(l.homeworks, 'Bài tập');
       const sh = (S.shared || {})[weekKey()] || { lessons: [], homeworks: [] };
-      const shHtml = list => list.length ? '<p class="text-[11px] text-slate-400 pt-1">Giao từ tab Bài học theo tuần (sửa ở trang Tổng quan)</p>' + list.map(x => `<a class="flex items-center gap-2 rounded-lg bg-white border border-slate-200 px-3 py-2 text-xs text-sky-800 font-semibold" style="min-height:44px;overflow-wrap:anywhere" href="${isHttp(x.url) ? esc(x.url) : '#'}" target="_blank" rel="noopener">${esc(x.title)}</a>`).join('') : '';
+      const shHtml = list => list.length ? '<p class="text-[11px] text-slate-400 pt-1">Giao từ tab Bài học theo tuần (sửa ở trang Tổng quan)</p>' + list.map(x => `<a class="flex items-center gap-2 rounded-lg bg-white border border-slate-200 px-3 py-2 text-xs text-sky-800 font-semibold" style="min-height:44px;overflow-wrap:anywhere" href="${isHttp(x.url) ? esc(x.url) : '#'}">${esc(x.title)}</a>`).join('') : '';
       $('lesson-shared').innerHTML = shHtml(sh.lessons); $('hw-shared').innerHTML = shHtml(sh.homeworks);
     }
     async function saveLinks(e) {
@@ -528,7 +528,7 @@
           <span class="text-xs font-semibold text-sky-700">${t5(s.start_time)} - ${t5(s.end_time)}</span>
           <span class="h-st ${STATUS_CLS[s.status]}">${STATUS_TXT[s.status]}</span>
           <span class="h-note min-w-0 text-xs" style="overflow-wrap:anywhere">${s.lesson ? `<span class="text-slate-600">${esc(s.lesson)}</span>` : ''}${s.note ? ` <span class="text-slate-400">${esc(s.note)}</span>` : ''}</span></div>`).join('');
-        const resHtml = res.length ? `<div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2">${res.map(r => `<a class="flex items-center gap-2 rounded-lg bg-sky-50/70 px-3 py-2 text-xs text-sky-800 hover:bg-sky-100" href="${isHttp(r.x.url) ? esc(r.x.url) : '#'}" target="_blank" rel="noopener"><strong>${r.k}</strong><span style="overflow-wrap:anywhere">${esc(r.x.title || r.f)}</span></a>`).join('')}</div>` : '';
+        const resHtml = res.length ? `<div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2">${res.map(r => `<a class="flex items-center gap-2 rounded-lg bg-sky-50/70 px-3 py-2 text-xs text-sky-800 hover:bg-sky-100" href="${isHttp(r.x.url) ? esc(r.x.url) : '#'}"><strong>${r.k}</strong><span style="overflow-wrap:anywhere">${esc(r.x.title || r.f)}</span></a>`).join('')}</div>` : '';
         out.push(`<details class="rounded-xl border border-slate-200 bg-slate-50/60 overflow-hidden" ${n === cur ? 'open' : ''}>
           <summary class="flex cursor-pointer list-none items-center gap-3 px-4 py-3"><span class="text-sm font-bold text-slate-800">Tuần ${pad(n)}</span><span class="text-xs text-slate-500">${shortDate(start)} – ${shortDate(end)}</span>
           <button type="button" data-week="${Math.round((start - todayMon) / (7 * 864e5))}" class="ml-auto text-xs font-semibold text-sky-700 underline" style="min-height:36px">Mở tuần này</button></summary>

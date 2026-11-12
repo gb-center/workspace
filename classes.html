@@ -93,7 +93,7 @@
       const roster=students.filter(x=>Number(x.class_id)===Number(id));
       $('student-dlg-title').textContent='Học viên lớp '+cls.class_code;
       $('student-dlg-subtitle').textContent=roster.length?`${roster.length} học viên`:'Chưa có học viên trong lớp này.';
-      $('class-student-list').innerHTML=roster.length?roster.map(x=>`<div class="class-student-row">${x.student_code?`<a class="class-student-name" href="student.html#${encodeURIComponent(x.student_code)}" target="_blank" rel="noopener">${esc(x.student_name||'Chưa có tên')}</a>`:`<span class="class-student-name">${esc(x.student_name||'Chưa có tên')}</span>`}<span class="class-student-code">${esc(x.student_code||'Chưa có mã')}</span></div>`).join(''):'<p class="roster-empty">Lớp chưa có học viên.</p>';
+      $('class-student-list').innerHTML=roster.length?roster.map(x=>`<div class="class-student-row">${x.student_code?`<a class="class-student-name" href="student.html#${encodeURIComponent(x.student_code)}">${esc(x.student_name||'Chưa có tên')}</a>`:`<span class="class-student-name">${esc(x.student_name||'Chưa có tên')}</span>`}<span class="class-student-code">${esc(x.student_code||'Chưa có mã')}</span></div>`).join(''):'<p class="roster-empty">Lớp chưa có học viên.</p>';
       $('student-dlg').hidden=false;lucide.createIcons();$('student-dlg-close').focus();
     }
     async function saveNote(input){

@@ -820,7 +820,7 @@
       const list = (items || []).filter(x => x && (x.url || x.title));
       if (!list.length) return '';
       return list.map((x, i) => isHttp(x.url)
-        ? `<a class="row" href="${esc(LMS.withStudent(x.url, S.code))}" target="_blank" rel="noopener" style="text-decoration:none;color:var(--t-primary);font-weight:700;min-height:48px"><i data-lucide="${icon}" class="w-4 h-4"></i><span style="overflow-wrap:anywhere">${esc(x.title || label + ' ' + (i + 1))}</span><i data-lucide="arrow-up-right" class="w-4 h-4" style="margin-left:auto"></i></a>`
+        ? `<a class="row" href="${esc(LMS.withStudent(x.url, S.code))}" style="text-decoration:none;color:var(--t-primary);font-weight:700;min-height:48px"><i data-lucide="${icon}" class="w-4 h-4"></i><span style="overflow-wrap:anywhere">${esc(x.title || label + ' ' + (i + 1))}</span><i data-lucide="arrow-up-right" class="w-4 h-4" style="margin-left:auto"></i></a>`
         : `<div class="row"><span>${esc(x.title || label + ' ' + (i + 1))}</span></div>`).join('');
     }
 
@@ -890,7 +890,7 @@
         const state = a.attempts ? `Đã làm ${a.attempts} lần${a.first_score != null ? ' · Điểm lần đầu: ' + a.first_score + '/' + (a.first_total || a.question_count) : ''}` : 'Chưa làm';
         return `<div class="row"><div style="flex:1 1 200px;min-width:0"><div class="font-bold text-slate-800" style="overflow-wrap:anywhere">${esc(a.name)}</div>
           <div class="text-xs text-slate-500">${a.question_count ? a.question_count + ' câu · ' : ''}${state}${due ? ' · Hạn ' + pad(due.getDate()) + '/' + pad(due.getMonth() + 1) + (late ? ' (đã quá hạn)' : '') : ''}</div></div>
-          ${a.page_path ? `<a class="icon-btn" href="${esc(LMS.withStudent(new URL(a.page_path, location.href).href, S.code))}" target="_blank" rel="noopener" aria-label="${a.attempts ? 'Làm lại' : 'Làm bài'}" title="${a.attempts ? 'Làm lại' : 'Làm bài'}"><i data-lucide="external-link" class="w-4 h-4"></i></a>` : `<a class="icon-btn" href="#${encodeURIComponent(S.code)}/${encodeURIComponent(a.code)}" aria-label="${a.attempts ? 'Làm lại' : 'Làm bài'}" title="${a.attempts ? 'Làm lại' : 'Làm bài'}"><i data-lucide="external-link" class="w-4 h-4"></i></a>`}</div>`;
+          ${a.page_path ? `<a class="icon-btn" href="${esc(LMS.withStudent(new URL(a.page_path, location.href).href, S.code))}" aria-label="${a.attempts ? 'Làm lại' : 'Làm bài'}" title="${a.attempts ? 'Làm lại' : 'Làm bài'}"><i data-lucide="external-link" class="w-4 h-4"></i></a>` : `<a class="icon-btn" href="#${encodeURIComponent(S.code)}/${encodeURIComponent(a.code)}" aria-label="${a.attempts ? 'Làm lại' : 'Làm bài'}" title="${a.attempts ? 'Làm lại' : 'Làm bài'}"><i data-lucide="external-link" class="w-4 h-4"></i></a>`}</div>`;
       };
       const wkOf = a => a.week_start ? mondayKey(dOf(a.week_start)) : mondayKey(now);
       const materialMap = {};
@@ -1108,7 +1108,7 @@
 
     function tMat(m, cid, edit) {
       const shared = (m.class_ids || []).length > 1;
-      return `<div class="t-mat"><a class="t-open" href="${esc(safeUrl(m.url))}" target="_blank" rel="noopener"><i data-lucide="external-link"></i><span>${esc(m.title)}</span></a>${shared ? '<span class="tag bg-slate-100 text-slate-600">Dùng chung</span>' : ''}${edit ? `<button type="button" class="t-ic" data-t="mat-edit" data-id="${m.id}" aria-label="Sửa tài liệu"><i data-lucide="pencil"></i></button><button type="button" class="t-ic" data-t="mat-del" data-id="${m.id}" data-cid="${cid}" aria-label="Xóa khỏi lớp này"><i data-lucide="trash-2"></i></button>` : ''}</div>`;
+      return `<div class="t-mat"><a class="t-open" href="${esc(safeUrl(m.url))}"><i data-lucide="external-link"></i><span>${esc(m.title)}</span></a>${shared ? '<span class="tag bg-slate-100 text-slate-600">Dùng chung</span>' : ''}${edit ? `<button type="button" class="t-ic" data-t="mat-edit" data-id="${m.id}" aria-label="Sửa tài liệu"><i data-lucide="pencil"></i></button><button type="button" class="t-ic" data-t="mat-del" data-id="${m.id}" data-cid="${cid}" aria-label="Xóa khỏi lớp này"><i data-lucide="trash-2"></i></button>` : ''}</div>`;
     }
     function tAsg(x) {
       const a = x.assignments, due = x.due_at ? ' · Hạn ' + new Date(x.due_at).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : '';
