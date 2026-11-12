@@ -738,7 +738,19 @@
 .t-rail{overflow-y:auto!important}
 .t-daybar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 20px!important}
 .t-daybar h2{margin:0!important}
-.t-card{display:flex;flex-direction:column;gap:14px}
+.t-slot{display:flex;flex-direction:column;gap:12px}
+.t-slot-head{display:flex;align-items:center;gap:12px}
+.t-slot select.field{width:auto;background-image:none!important;padding:0 16px!important;text-align:center;text-align-last:center}
+.t-row{display:flex;flex-direction:column;gap:12px;padding-top:12px;border-top:1px solid var(--t-border)}
+.t-row-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;cursor:pointer}
+.t-cname{font-size:1rem;color:var(--t-ink)}
+.t-chip{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:999px;border:1px solid var(--t-border);background:#fff;font-size:.75rem;font-weight:700;color:var(--t-primary)}
+.t-chip svg{width:14px;height:14px}
+.t-modal{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(15,31,55,.35)}
+.t-modal-box{width:min(420px,100%);max-height:80dvh;overflow:auto;background:#fff;border-radius:17px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.t-modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.t-modal-head h3{margin:0;font-size:1rem;font-weight:800;color:var(--t-primary)}
+.t-roster{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px;font-size:.9375rem;color:var(--t-ink)}
 .t-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;cursor:pointer}
 .t-chev{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;border:0;background:var(--t-soft);color:var(--t-primary);flex:none}
 .t-chev svg{width:18px;height:18px;transition:transform .15s}
@@ -772,12 +784,9 @@ a.t-open:hover span{text-decoration:underline}
 .t-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
 .t-stats b{display:block;font-size:1.25rem;color:var(--t-primary)}.t-stats span{font-size:.75rem;color:var(--t-muted)}
 .t-tt{display:flex;flex-direction:column;gap:8px;margin-top:12px}
-.t-tt-day{display:grid;grid-template-columns:92px 1fr;gap:8px;align-items:start}
-.t-tt-label{text-align:left;font-size:.75rem;font-weight:800;color:var(--t-muted);min-height:28px;border:0;background:transparent;padding:0}
-.t-tt-label.on{color:var(--t-primary)}
-.t-tt-list{display:flex;flex-wrap:wrap;gap:4px 10px}
-.t-tt-row{display:flex;gap:6px;font-size:.75rem;color:var(--t-ink)}.t-tt-row span{color:var(--t-muted);font-variant-numeric:tabular-nums}
-.t-tt-row.done{opacity:.5}
+.t-tt-title{font-size:.75rem;font-weight:800;color:var(--t-primary)}
+.t-tt-slot{font-size:.875rem;font-weight:700;color:var(--t-ink);font-variant-numeric:tabular-nums;padding:6px 10px;border-radius:10px;background:var(--t-soft)}
+.t-tt-slot.done{opacity:.5}
 .t-next{display:flex;flex-direction:column;gap:2px;margin-bottom:10px;color:var(--t-ink)}.t-next span{font-size:.8125rem;color:var(--t-muted)}
 .t-next .t-when{font-weight:800;color:var(--t-accent)}
 .t-chk{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:.8125rem;padding:4px 0;color:var(--t-ink)}
@@ -1106,7 +1115,7 @@ a.t-open:hover span{text-decoration:underline}
 
     /* ---------- Điều hướng bằng # ---------- */
     /* ---------- Giáo viên: lịch dạy theo ngày (student.html#teacher/YYYY-MM-DD) ---------- */
-    const T = { on: false, bound: false, view: 'day', monday: '', date: '', openFor: '', open: new Set(), sess: [], mats: [], asg: [], next: null, sub: null };
+    const T = { on: false, bound: false, view: 'day', monday: '', date: '', openFor: '', open: new Set(), sess: [], mats: [], asg: [], next: null, sub: null, stu: {} };
     const addDays = (k, n) => { const d = dOf(k); d.setDate(d.getDate() + n); return ymd(d); };
     const hhmm = t => String(t || '').slice(0, 5);
     const safeUrl = u => /^\s*javascript:/i.test(u || '') ? '#' : (u || '#');
@@ -1122,6 +1131,8 @@ a.t-open:hover span{text-decoration:underline}
         S.c.from('assignment_classes').select('assignment_id,class_id,due_at,assignments(assignment_name,assignment_code,kind,page_path)').eq('week_start', monday).eq('is_active', true)
       ]);
       for (const r of [a, b, c]) if (r.error) throw r.error;
+      const cids = [...new Set((a.data || []).map(x => x.class_id))]; T.stu = {};
+      if (cids.length) { const st = await S.c.from('students').select('id,student_name,class_id').in('class_id', cids).eq('is_active', true).order('student_name'); if (st.error) throw st.error; (st.data || []).forEach(x => (T.stu[x.class_id] = T.stu[x.class_id] || []).push(x)); }
       T.monday = monday; T.sess = a.data || []; T.mats = b.data || []; T.asg = c.data || [];
     }
     /* Lớp gần nhất sắp tới (xuyên các tuần) + kiểm tra đã có bài học / bài tập chưa */
@@ -1191,15 +1202,15 @@ a.t-open:hover span{text-decoration:underline}
     function tForm(kind, cid) {
       return `<form class="t-form" data-t="mat-form" data-kind="${kind}" data-cid="${cid}"><input class="field" type="hidden" name="id"><input class="field" name="title" placeholder="Tên tài liệu" required><input class="field" name="url" placeholder="Link" required><button type="submit" class="t-ic" aria-label="Lưu tài liệu"><i data-lucide="plus"></i></button></form>`;
     }
-    function tCard(s) {
+    function tRow(s) {
       const cid = s.class_id, cl = s.classes || {}, open = T.open.has(s.id);
       const mats = k => T.mats.filter(m => m.kind === k && (m.class_ids || []).includes(cid));
       const asg = T.asg.filter(x => x.class_id === cid && x.assignments);
-      const nL = mats('lesson').length, nH = mats('homework').length + asg.length;
-      return `<section class="card t-card" data-sid="${s.id}" data-cid="${cid}">
-        <div class="t-head"><button type="button" class="t-chev" data-t="toggle" data-sid="${s.id}" aria-expanded="${open}" aria-label="Mở hoặc thu gọn lớp"><i data-lucide="chevron-down"></i></button>
-          <div class="t-time">${hhmm(s.start_time)}${s.end_time ? ' – ' + hhmm(s.end_time) : ''}</div><div class="t-cls"><b>${esc(cl.class_name || cl.class_code || '')}</b><span>${esc(cl.class_code || '')}${s.session_no ? ' · Buổi ' + s.session_no : ''}${s.mode === 'online' ? ' · Online' : ' · Trực tiếp'}</span><div class="t-sum"><span class="tag ${nL ? 'bg-slate-100 text-slate-600' : 'bg-amber-50 text-amber-700'}">${nL} bài học</span><span class="tag ${nH ? 'bg-slate-100 text-slate-600' : 'bg-amber-50 text-amber-700'}">${nH} bài tập</span></div></div>
-          <select class="field" data-f="status" data-sid="${s.id}" aria-label="Trạng thái buổi">${Object.keys(STATUS).map(k => `<option value="${k}" ${k === s.status ? 'selected' : ''}>${STATUS[k][0]}</option>`).join('')}</select></div>
+      const nL = mats('lesson').length, nH = mats('homework').length + asg.length, n = (T.stu[cid] || []).length;
+      return `<div class="t-row" data-sid="${s.id}" data-cid="${cid}">
+        <div class="t-row-head"><button type="button" class="t-chev" data-t="toggle" data-sid="${s.id}" aria-expanded="${open}" aria-label="Mở hoặc thu gọn lớp"><i data-lucide="chevron-down"></i></button>
+          <b class="t-cname">${esc(cl.class_name || cl.class_code || '')}</b>
+          <div class="t-sum"><button type="button" class="t-chip" data-t="roster" data-cid="${cid}" aria-label="Xem danh sách học viên"><i data-lucide="users"></i>${n} học viên</button><span class="tag bg-slate-100 text-slate-600">${s.mode === 'online' ? 'Online' : 'Trực tiếp'}</span><span class="tag ${nL ? 'bg-slate-100 text-slate-600' : 'bg-amber-50 text-amber-700'}">${nL} bài học</span><span class="tag ${nH ? 'bg-slate-100 text-slate-600' : 'bg-amber-50 text-amber-700'}">${nH} bài tập</span></div></div>
         <div class="t-body" ${open ? '' : 'hidden'}>
           <div class="t-grid">
             <div><h3><i data-lucide="presentation"></i>Bài học</h3>${mats('lesson').map(m => tMat(m, cid, true)).join('') || '<p class="t-none">Tuần này chưa có bài học.</p>'}${tForm('lesson', cid)}</div>
@@ -1207,8 +1218,25 @@ a.t-open:hover span{text-decoration:underline}
           </div>
           <div class="t-fields"><label>Nội dung buổi<input class="field" data-f="lesson" value="${esc(s.lesson || '')}"></label><label>Bài tập về nhà<input class="field" data-f="homework" value="${esc(s.homework || '')}"></label><label class="t-wide">Ghi chú<textarea class="field" data-f="note" rows="2">${esc(s.note || '')}</textarea></label></div>
           <div class="t-save"><button type="button" class="btn-primary" data-t="sess-save" data-id="${s.id}"><i data-lucide="save" class="w-4 h-4"></i><span>Lưu buổi học</span></button></div>
-        </div>
-      </section>`;
+        </div></div>`;
+    }
+    /* Mỗi khung giờ là 1 thẻ: giờ + trạng thái ở trên, mỗi lớp trong khung giờ đó là 1 hàng */
+    function tSlots(list) {
+      const groups = [];
+      list.forEach(s => { const key = hhmm(s.start_time) + '|' + hhmm(s.end_time); let g = groups.find(x => x.key === key); if (!g) { g = { key, s: [] }; groups.push(g); } g.s.push(s); });
+      return groups.map(g => {
+        const first = g.s[0], same = g.s.every(x => x.status === first.status);
+        const label = hhmm(first.start_time) + (first.end_time ? ' – ' + hhmm(first.end_time) : '');
+        return `<section class="card t-slot"><div class="t-slot-head"><div class="t-time">${label}</div><select class="field" data-f="status" data-sids="${g.s.map(x => x.id).join(',')}" aria-label="Trạng thái buổi">${same ? '' : '<option value="" selected disabled>Nhiều trạng thái</option>'}${Object.keys(STATUS).map(k => `<option value="${k}" ${same && k === first.status ? 'selected' : ''}>${STATUS[k][0]}</option>`).join('')}</select></div>${g.s.map(tRow).join('')}</section>`;
+      }).join('');
+    }
+    function tRoster(cid) {
+      const cl = (T.sess.find(s => s.class_id === cid) || {}).classes || {}, list = T.stu[cid] || [];
+      const o = document.createElement('div'); o.className = 't-modal';
+      o.innerHTML = `<div class="t-modal-box" role="dialog" aria-modal="true" aria-label="Danh sách học viên"><div class="t-modal-head"><h3>${esc(cl.class_name || cl.class_code || '')} · ${list.length} học viên</h3><button type="button" class="t-ic" data-x aria-label="Đóng"><i data-lucide="x"></i></button></div><ol class="t-roster">${list.map(x => `<li>${esc(x.student_name)}</li>`).join('') || '<li class="t-none">Lớp chưa có học viên.</li>'}</ol></div>`;
+      const key = e => { if (e.key === 'Escape') close(); }, close = () => { document.removeEventListener('keydown', key); o.remove(); };
+      o.addEventListener('click', e => { if (e.target === o || e.target.closest('[data-x]')) close(); });
+      document.addEventListener('keydown', key); document.body.appendChild(o); icons();
     }
     function tWeekList(kind) {
       const ids = [...new Set(T.sess.map(s => s.class_id))];
@@ -1241,10 +1269,11 @@ a.t-open:hover span{text-decoration:underline}
       const titles = { day: 'Lịch dạy', lessons: 'Bài học tuần', submissions: 'Bài nộp' };
       const nav = (k, label, icon) => `<button type="button" class="${T.view === k ? 'active' : ''}" data-t="view" data-view="${k}" ${T.view === k ? 'aria-current="page"' : ''}><i data-lucide="${icon}"></i><span>${label}</span></button>`;
       const cal = days.map((k, i) => `<button type="button" class="week-calendar-day${cnt(k) ? ' has-session' : ''}${k === today ? ' today' : ''}${k === T.date ? ' selected' : ''}" data-t="day" data-date="${k}" aria-label="${fmtDay(k)}, ${cnt(k)} lớp" title="${fmtDay(k)} · ${cnt(k)} lớp"><span>${['T2','T3','T4','T5','T6','T7','CN'][i]}</span><b>${pad(dOf(k).getDate())}</b></button>`).join('');
-      const tt = days.filter(k => cnt(k)).map(k => `<div class="t-tt-day"><button type="button" class="t-tt-label${k === T.date ? ' on' : ''}" data-t="day" data-date="${k}">${fmtDay(k)}</button><div class="t-tt-list">${T.sess.filter(s => s.session_date === k).map(s => `<div class="t-tt-row${s.status === 'done' ? ' done' : ''}"><span>${hhmm(s.start_time)}</span><b>${esc((s.classes || {}).class_code || '')}</b></div>`).join('')}</div></div>`).join('') || '<div class="text-sm text-slate-500">Tuần này chưa có buổi học.</div>';
+      const slots = []; list.forEach(x => { const key = hhmm(x.start_time) + ' – ' + hhmm(x.end_time); let g = slots.find(z => z.key === key); if (!g) { g = { key, all: [] }; slots.push(g); } g.all.push(x); });
+      const tt = slots.length ? `<div class="t-tt-title">${fmtDay(T.date)}</div>${slots.map(g => `<div class="t-tt-slot${g.all.every(x => x.status === 'done') ? ' done' : ''}">${g.key}</div>`).join('')}` : `<div class="text-sm text-slate-500">${fmtDay(T.date)}: không có buổi học.</div>`;
       const done = T.sess.filter(s => s.status === 'done').length, left = T.sess.filter(s => s.status === 'planned' || s.status === 'makeup').length;
       const body = T.view === 'lessons' ? tWeekList('lesson') : T.view === 'submissions' ? tSubView()
-        : `<section class="card t-daybar"><h2><i data-lucide="calendar-days"></i>${fmtDay(T.date)}</h2><span class="tag bg-slate-100 text-slate-600">${list.length} lớp</span></section>${list.map(tCard).join('') || '<section class="card text-center text-sm text-slate-500">Không có lớp nào ngày này.</section>'}`;
+        : `<section class="card t-daybar"><h2><i data-lucide="calendar-days"></i>${fmtDay(T.date)}</h2><span class="tag bg-slate-100 text-slate-600">${list.length} lớp</span></section>${tSlots(list) || '<section class="card text-center text-sm text-slate-500">Không có lớp nào ngày này.</section>'}`;
       const rail = `<section class="card"><h2><i data-lucide="bar-chart-3"></i>Tổng kết tuần</h2><div class="t-stats"><div><b>${T.sess.length}</b><span>Buổi</span></div><div><b>${done}</b><span>Đã dạy</span></div><div><b>${left}</b><span>Sắp tới</span></div></div></section>
         <section class="card"><div class="week-calendar-head"><span class="week-calendar-title"><i data-lucide="calendar-days"></i>Thời khóa biểu tuần ${wk}</span><span class="week-calendar-range">${range}</span></div><div class="week-calendar" role="grid" aria-label="Chọn ngày">${cal}</div><div class="t-tt">${tt}</div></section>
         ${tNextCard()}`;
@@ -1270,7 +1299,7 @@ a.t-open:hover span{text-decoration:underline}
     }
     async function tRefresh() { await Promise.all([loadTeacherWeek(T.monday, true), loadNext()]); if (T.view === 'submissions') await loadSubs(); drawTeacher(); }
     function tToggle(sid) {
-      const card = $('app').querySelector('.t-card[data-sid="' + sid + '"]'); if (!card) return;
+      const card = $('app').querySelector('.t-row[data-sid="' + sid + '"]'); if (!card) return;
       const body = card.querySelector('.t-body'), btn = card.querySelector('.t-chev'), open = body.hidden;
       body.hidden = !open; btn.setAttribute('aria-expanded', String(open)); open ? T.open.add(Number(sid)) : T.open.delete(Number(sid));
     }
@@ -1279,19 +1308,20 @@ a.t-open:hover span{text-decoration:underline}
       const app = $('app');
       app.addEventListener('click', async e => {
         if (!T.on) return;
-        const head = e.target.closest('.t-head');
-        if (head && !e.target.closest('select, a, input, textarea, [data-t]:not([data-t="toggle"])')) { tToggle(head.closest('.t-card').dataset.sid); return; }
+        const head = e.target.closest('.t-row-head');
+        if (head && !e.target.closest('select, a, input, textarea, [data-t]:not([data-t="toggle"])')) { tToggle(head.closest('.t-row').dataset.sid); return; }
         const b = e.target.closest('[data-t]'); if (!b || b.tagName === 'FORM' || b.tagName === 'INPUT') return;
         const k = b.dataset.t;
         try {
           if (k === 'toggle') tToggle(b.dataset.sid);
+          else if (k === 'roster') tRoster(Number(b.dataset.cid));
           else if (k === 'view') { T.view = b.dataset.view; if (T.view === 'submissions') { drawTeacher(); await loadSubs(); } drawTeacher(); window.scrollTo(0, 0); }
           else if (k === 'sub-refresh') { await loadSubs(); drawTeacher(); LMS.toast('Đã tải lại bài nộp'); }
           else if (k === 'day') { T.view = 'day'; location.hash = '#teacher/' + b.dataset.date; }
           else if (k === 'wk') { location.hash = '#teacher/' + addDays(T.date, Number(b.dataset.step)); }
           else if (k === 'today') { location.hash = '#teacher/' + ymd(new Date()); }
           else if (k === 'sess-save') {
-            const card = b.closest('.t-card'), v = f => card.querySelector('[data-f="' + f + '"]').value.trim();
+            const card = b.closest('.t-row'), v = f => card.querySelector('[data-f="' + f + '"]').value.trim();
             const patch = { lesson: v('lesson') || null, homework: v('homework') || null, note: v('note') || null };
             const r = await S.c.from('sessions').update(patch).eq('id', Number(b.dataset.id)); if (r.error) throw r.error;
             const s = T.sess.find(x => x.id === Number(b.dataset.id)); if (s) Object.assign(s, patch);
@@ -1314,8 +1344,9 @@ a.t-open:hover span{text-decoration:underline}
       app.addEventListener('change', async e => {
         const sel = T.on && e.target.closest('select[data-f="status"]'); if (!sel) return;
         try {
-          const id = Number(sel.dataset.sid), r = await S.c.from('sessions').update({ status: sel.value }).eq('id', id); if (r.error) throw r.error;
-          const s = T.sess.find(x => x.id === id); if (s) s.status = sel.value;
+          if (!sel.value) return;
+          const ids = sel.dataset.sids.split(',').map(Number), r = await S.c.from('sessions').update({ status: sel.value }).in('id', ids); if (r.error) throw r.error;
+          T.sess.forEach(x => { if (ids.includes(x.id)) x.status = sel.value; });
           LMS.toast('Đã cập nhật trạng thái'); await loadNext(); drawTeacher();
         } catch (err) { LMS.alert(errText(err)); }
       });
