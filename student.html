@@ -774,7 +774,7 @@
   body.student-dashboard-view .student-shell:not(.student-shell-inner-tabs) .student-welcome-right{justify-self:stretch;justify-content:space-between}
   body.student-dashboard-view .student-shell:not(.student-shell-inner-tabs) .student-welcome-actions{flex:1;justify-content:center}
   body.student-dashboard-view .student-welcome-right{justify-content:space-between}
-  body.student-dashboard-view .student-nav{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;overflow:visible}
+  body.student-dashboard-view .student-nav{display:grid!important;grid-template-columns:none!important;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px;overflow:visible}
   body.student-dashboard-view .student-nav button{flex-direction:column;justify-content:center;gap:3px!important;min-height:52px!important;padding:6px 0!important;font-size:.625rem!important;letter-spacing:-.01em;border-radius:12px!important;text-align:center;white-space:nowrap}
   body.student-dashboard-view .student-nav button svg{width:20px!important;height:20px!important}
   body.student-dashboard-view,body.student-dashboard-view #app{background:#f5f6f8!important}
@@ -851,12 +851,15 @@
   body.student-dashboard-view .m-week{display:flex!important;justify-content:center;background:#fff;border:1px solid #e3e8ef;border-radius:14px;padding:4px}
   body.student-dashboard-view .m-week .overview-week-controls{color:#061633}
   body.student-dashboard-view .m-week .icon-btn{color:#061633!important}
+  body.student-dashboard-view .m-week .t-thisweek{color:#061633!important;font-weight:700;background:transparent!important}body.student-dashboard-view .m-week .t-thisweek.on{color:#94a3b8!important}
   body.student-dashboard-view .m-week .overview-week-label,body.student-dashboard-view .m-week .overview-week-label b{color:#061633!important}
 }
 </style>
 <style id="teacher-css">
 .t-content{display:flex;flex-direction:column;gap:14px;flex:1 1 auto;min-height:0}
 .student-main>.t-daybar{flex:none;margin-bottom:14px}
+.student-nav button.m-only{display:none}.t-rail-m{display:none}
+@media(max-width:780px){body.student-dashboard-view .student-nav button.m-only{display:flex!important}body.student-dashboard-view .t-rail-m{display:flex!important;flex-direction:column;gap:12px;overflow:visible!important}body.student-dashboard-view aside.t-rail{display:none!important}}
 .t-rail{overflow:hidden!important;overscroll-behavior:none}
 @media(min-width:1051px){.t-rail>.card:nth-child(2){flex:1 1 0!important;min-height:0;display:flex;flex-direction:column}.t-rail>.card:nth-child(2) .t-tt{flex:1 1 0;height:auto;min-height:0}}
 @media(max-width:1050px){.t-rail{overflow:visible!important}}
@@ -1512,21 +1515,22 @@ a.t-open:hover span{text-decoration:underline}
       if (T.openFor !== T.date) { T.openFor = T.date; T.open = new Set(); T.slotOpen = new Set(); T.pick = null; }
       const wk = Math.floor((mon - BASE_MONDAY) / 6048e5) + 1;
       const range = `${pad(mon.getDate())}.${pad(mon.getMonth() + 1)} – ${pad(sun.getDate())}.${pad(sun.getMonth() + 1)}.${sun.getFullYear()}`;
-      const titles = { day: 'Lịch dạy', lessons: 'Bài học tuần', submissions: 'Bài nộp' };
-      const nav = (k, label, icon) => `<button type="button" class="${T.view === k ? 'active' : ''}" data-t="view" data-view="${k}" ${T.view === k ? 'aria-current="page"' : ''}><i data-lucide="${icon}"></i><span>${label}</span></button>`;
+      const wkCtl = `<div class="overview-week-controls" role="group" aria-label="Chọn tuần"><button type="button" class="icon-btn" data-t="wk" data-step="-7" aria-label="Tuần trước"><i data-lucide="chevron-left" class="w-4 h-4"></i></button><span class="overview-week-label"><b>Tuần ${pad(wk)}</b><span>${range}</span></span><button type="button" class="icon-btn" data-t="wk" data-step="7" aria-label="Tuần sau"><i data-lucide="chevron-right" class="w-4 h-4"></i></button><button type="button" class="t-thisweek${T.monday === mondayKey(new Date()) ? ' on' : ''}" data-t="today" aria-label="Về tuần hiện tại" title="Tuần hiện tại">Tuần này</button></div>`;
+      const titles = { day: 'Lịch dạy', lessons: 'Bài học tuần', submissions: 'Bài nộp', rail: 'Tổng quan' };
+      const nav = (k, label, icon, cls = '') => `<button type="button" class="${T.view === k ? 'active' : ''} ${cls}" data-t="view" data-view="${k}" ${T.view === k ? 'aria-current="page"' : ''}><i data-lucide="${icon}"></i><span>${label}</span></button>`;
       const cal = days.map((k, i) => `<button type="button" class="week-calendar-day${cnt(k) ? ' has-session' : ''}${k === today ? ' today' : ''}${k === T.date ? ' selected' : ''}" data-t="day" data-date="${k}" aria-label="${fmtDay(k)}, ${cnt(k)} lớp" title="${fmtDay(k)} · ${cnt(k)} lớp"><span>${['T2','T3','T4','T5','T6','T7','CN'][i]}</span><b>${pad(dOf(k).getDate())}</b></button>`).join('');
       const slots = []; list.forEach(x => { const key = hhmm(x.start_time) + ' – ' + hhmm(x.end_time); let g = slots.find(z => z.key === key); if (!g) { g = { key, all: [] }; slots.push(g); } g.all.push(x); });
       const tt = slots.length ? `<div class="t-tt-title">${fmtDay(T.date)}</div>${slots.map(g => `<button type="button" class="t-tt-slot${g.all.every(x => x.status === 'done') ? ' done' : ''}${T.pick === g.key ? ' picked' : ''}" data-t="pick" data-key="${g.key}" aria-pressed="${T.pick === g.key}">${g.key}<span class="t-tt-cls">${g.all.map(x => esc((x.classes && (x.classes.class_name || x.classes.class_code)) || '')).join(' · ')}</span></button>`).join('')}` : `<div class="text-sm text-slate-500">${fmtDay(T.date)}: không có buổi học.</div>`;
       const done = T.sess.filter(s => s.status === 'done').length, left = T.sess.filter(s => s.status === 'planned' || s.status === 'makeup').length;
-      const body = T.view === 'lessons' ? tWeekList('lesson') : T.view === 'submissions' ? tSubView()
+      const body = T.view === 'rail' ? '' : T.view === 'lessons' ? tWeekList('lesson') : T.view === 'submissions' ? tSubView()
         : `<section class="card t-daybar"><h2><i data-lucide="calendar-days"></i>${fmtDay(T.date)}</h2><span class="tag bg-slate-100 text-slate-600">${list.length} lớp</span></section>${tSlots(list) || '<section class="card text-center text-sm text-slate-500">Không có lớp nào ngày này.</section>'}`;
       const hm = body.match(/^<section class="card t-daybar">[\s\S]*?<\/section>/), head = hm ? hm[0] : '', rest = body.slice(head.length);
       const rail = `<section class="card"><h2><i data-lucide="bar-chart-3"></i>Tổng kết tuần</h2><div class="t-stats"><div class="t-stat c-all"><b>${T.sess.length}</b><span>Buổi</span></div><div class="t-stat c-done"><b>${done}</b><span>Đã dạy</span></div><div class="t-stat c-left"><b>${left}</b><span>Sắp tới</span></div></div></section>
         <section class="card"><div class="week-calendar-head"><span class="week-calendar-title"><i data-lucide="calendar-days"></i>Thời khóa biểu tuần ${wk}</span><span class="week-calendar-range">${range}</span></div><div class="week-calendar" role="grid" aria-label="Chọn ngày">${cal}</div><div class="t-tt">${tt}</div></section>
         ${T.pick && slots.find(g => g.key === T.pick) ? tPickCard(slots.find(g => g.key === T.pick).all) : tNextCard()}`;
-      $('app').innerHTML = `<div class="student-shell student-shell-inner-tabs"><div class="student-welcome"><div class="student-welcome-left"><img class="student-welcome-logo" src="logo-wordmark-gold-navy.png" alt="gblearninghub"><span class="student-welcome-brand-divider" aria-hidden="true"></span></div><div class="student-welcome-title"><h1>${titles[T.view]}</h1><p>Khu vực giảng dạy</p></div><div class="student-welcome-right"><div class="student-welcome-actions"><div class="overview-week-controls" role="group" aria-label="Chọn tuần"><button type="button" class="icon-btn" data-t="wk" data-step="-7" aria-label="Tuần trước"><i data-lucide="chevron-left" class="w-4 h-4"></i></button><span class="overview-week-label"><b>Tuần ${pad(wk)}</b><span>${range}</span></span><button type="button" class="icon-btn" data-t="wk" data-step="7" aria-label="Tuần sau"><i data-lucide="chevron-right" class="w-4 h-4"></i></button><button type="button" class="t-thisweek${T.monday === mondayKey(new Date()) ? ' on' : ''}" data-t="today" aria-label="Về tuần hiện tại" title="Tuần hiện tại">Tuần này</button></div></div><div class="student-welcome-tools"></div></div></div>
-        <aside class="student-sidebar" aria-label="Điều hướng giáo viên"><div class="student-brand"><img src="logo-wordmark-gold-navy.png" alt="gblearninghub"></div><nav class="student-nav">${nav('day', 'Lịch dạy', 'calendar-days')}${nav('lessons', 'Bài học', 'presentation')}${nav('submissions', 'Bài nộp', 'inbox')}</nav></aside>
-        <div class="student-workspace"><section class="student-main" aria-label="Nội dung giảng dạy">${head}<div class="student-main-content t-content">${rest}</div></section><aside class="student-rail t-rail" aria-label="Tổng kết và lịch tuần">${rail}</aside></div></div>`;
+      $('app').innerHTML = `<div class="student-shell student-shell-inner-tabs"><div class="student-welcome"><div class="student-welcome-left"><img class="student-welcome-logo" src="logo-wordmark-gold-navy.png" alt="gblearninghub"><span class="student-welcome-brand-divider" aria-hidden="true"></span></div><div class="student-welcome-title"><h1>${titles[T.view]}</h1><p>Khu vực giảng dạy</p></div><div class="student-welcome-right"><div class="student-welcome-actions">${wkCtl}</div><div class="student-welcome-tools"></div></div></div>
+        <aside class="student-sidebar" aria-label="Điều hướng giáo viên"><div class="student-brand"><img src="logo-wordmark-gold-navy.png" alt="gblearninghub"></div><nav class="student-nav">${nav('rail', 'Tổng quan', 'layout-dashboard', 'm-only')}${nav('day', 'Lịch dạy', 'calendar-days')}${nav('lessons', 'Bài học', 'presentation')}${nav('submissions', 'Bài nộp', 'inbox')}</nav></aside>
+        <div class="student-workspace"><section class="student-main" aria-label="Nội dung giảng dạy">${head}<div class="m-week">${wkCtl}</div><div class="student-main-content t-content">${T.view === 'rail' ? `<div class="t-rail t-rail-m">${rail}</div>` : rest}</div></section><aside class="student-rail t-rail" aria-label="Tổng kết và lịch tuần">${rail}</aside></div></div>`;
       const tools = document.querySelector('.student-welcome-tools');
       if (tools) ['btn-home', 'btn-theme'].forEach(id => { const el = $(id); if (el) tools.appendChild(el); });
       icons(); window.scrollTo(0, y);
