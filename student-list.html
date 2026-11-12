@@ -21,31 +21,32 @@
     .edlg[hidden]{display:none}
     .edlg-card{width:min(560px,100%);max-height:calc(100dvh - 32px);overflow:auto}
         .sortbtn{background:none;border:0;padding:6px 0;font:inherit;color:inherit;cursor:pointer;display:inline-flex;gap:4px;align-items:center;min-height:36px;text-transform:inherit;letter-spacing:inherit}
+    .tuition-mode-btn[aria-pressed="true"]{background:var(--t-primary);border-color:var(--t-primary);color:#fff}
     </style>
+  <link rel="stylesheet" href="lms-polish.css">
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col relative">
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col relative student-list-page">
   <nav id="lms-nav" aria-label="Điều hướng chính">
-    <div class="nav-brand"><img src="logo-wordmark.png" alt="gblearninghub" style="height:24px;width:auto;max-width:100%;display:block"></div>
-    <a href="index.html" aria-label="Tổng quan"><i data-lucide="layout-dashboard"></i><span>Tổng quan</span></a>
+    <div class="nav-brand"><img src="logo-wordmark-gold-navy.png" alt="gblearninghub" style="height:24px;width:auto;max-width:100%;display:block"></div>
+    <a href="index.html#overview" aria-label="Tổng quan"><i data-lucide="layout-dashboard"></i><span>Tổng quan</span></a>
+    <a href="index.html#schedule" aria-label="Lịch tuần"><i data-lucide="calendar-days"></i><span>Lịch tuần</span></a>
+    <a href="classes.html" aria-label="Lớp học"><i data-lucide="book-open-check"></i><span>Lớp học</span></a>
     <a href="student-list.html" aria-current="page" aria-label="Học viên"><i data-lucide="users"></i><span>Học viên</span></a>
     <a href="index.html#lib" aria-label="Học liệu"><i data-lucide="library"></i><span>Học liệu</span></a>
+    <a href="tuition.html" aria-label="Học phí"><i data-lucide="wallet"></i><span>Học phí</span></a>
   </nav>
 
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-30">
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 page-title-header">
     <div class="w-full max-w-none mx-auto px-3 sm:px-5 lg:px-7 py-3 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-xl bg-sky-600 flex items-center justify-center text-white"><i data-lucide="users" class="w-4 h-4"></i></div>
-        <h1 class="text-base font-bold text-slate-900">Danh sách học viên</h1>
-      </div>
-      <div class="header-tools flex items-center gap-2">
-        <button id="btn-theme" type="button" aria-label="Tùy chỉnh màu chủ đề" aria-haspopup="dialog" aria-expanded="false"><i data-lucide="palette" class="w-5 h-5"></i></button>
+      <h1 class="page-header-title">Danh sách học viên</h1>
+      <div class="page-header-actions">
+        
       </div>
     </div>
   </header>
 
-  <main class="flex-1 w-full max-w-none mx-auto px-3 sm:px-5 lg:px-7 py-4 sm:py-6 space-y-6">
-    <section class="panel-overview rounded-2xl p-5 sm:p-6" aria-label="Tổng quan học viên">
-      <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2 mb-4"><i data-lucide="layout-dashboard" class="w-4 h-4"></i><span>Tổng quan</span></h3>
+  <main class="flex-1 w-full max-w-none mx-auto px-3 sm:px-5 lg:px-7 py-4 sm:py-6 space-y-6 student-list-main">
+    <section class="student-stat-strip" aria-label="Tổng quan học viên">
       <div class="grid grid-cols-3 gap-3">
         <div class="stat-tile"><div class="stat-n" id="total-count">–</div><div class="stat-l">Tổng học viên</div></div>
         <div class="stat-tile"><div class="stat-n" id="assigned-count">–</div><div class="stat-l">Đã xếp lớp</div></div>
@@ -53,7 +54,7 @@
       </div>
     </section>
 
-    <section class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6" aria-label="Danh sách">
+    <section class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 student-list-panel" aria-label="Danh sách">
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-4">
         <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2 whitespace-nowrap"><i data-lucide="list" class="w-4 h-4"></i><span>Học viên</span></h3>
         <div class="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:items-center">
@@ -63,13 +64,14 @@
           <button id="btn-export" type="button" class="btn-soft" aria-label="Xuất CSV"><i data-lucide="download" class="w-4 h-4"></i><span>Xuất CSV</span></button>
         </div>
       </div>
-      <div class="overflow-x-auto">
+      <div class="overflow-x-auto student-table-scroll">
         <table class="stack w-full text-left text-sm">
+          <colgroup id="student-columns"><col data-column="student"><col data-column="class"><col data-column="tuition"><col data-column="status"><col data-column="note"><col data-column="actions"></colgroup>
           <thead>
             <tr class="text-[11px] text-slate-400 font-bold border-b border-slate-100">
               <th class="py-2.5 px-2"><button type="button" class="sortbtn" data-sort="name">Học viên <span class="sarr"></span></button></th>
               <th class="py-2.5 px-2"><button type="button" class="sortbtn" data-sort="class">Lớp <span class="sarr"></span></button></th>
-              <th class="py-2.5 px-2">Học phí tháng</th>
+              <th class="py-2.5 px-2">Học phí</th>
               <th class="py-2.5 px-2">Trạng thái</th>
               <th class="py-2.5 px-2">Ghi chú</th>
               <th class="py-2.5 px-2 text-right">Thao tác</th>
@@ -100,9 +102,18 @@
             <option value="inactive">Tạm ngưng</option>
           </select>
         </div>
-        <div>
+        <div class="sm:col-span-2">
+          <input id="student-tuition-mode" type="hidden" value="monthly">
+          <span class="field-label">Cách tính học phí</span>
+          <div id="tuition-mode-options" class="flex gap-2" role="group" aria-label="Cách tính học phí"><button type="button" class="tuition-mode-btn btn-soft" data-tuition-mode="monthly" aria-pressed="true">Theo tháng</button><button type="button" class="tuition-mode-btn btn-soft" data-tuition-mode="session" aria-pressed="false">Theo buổi</button></div>
+        </div>
+        <div id="student-tuition-monthly-wrap">
           <label class="field-label" for="student-tuition">Học phí hàng tháng (đồng)</label>
           <input id="student-tuition" type="text" inputmode="numeric" class="field w-full" placeholder="0" autocomplete="off">
+        </div>
+        <div id="student-tuition-session-wrap" class="hidden">
+          <label class="field-label" for="student-session-rate">Học phí mỗi buổi (đồng)</label>
+          <input id="student-session-rate" type="text" inputmode="numeric" class="field w-full" placeholder="200,000" autocomplete="off">
         </div>
         <div class="sm:col-span-2">
           <label class="field-label" for="student-note">Ghi chú</label>
@@ -144,24 +155,43 @@
     (function () {
       const $ = id => document.getElementById(id);
       const esc = LMS.esc, SCORE = LMS.score;
-      const state = { client: null, classes: [], students: [], q: '', cls: 'all', busy: false, sort: { key: 'class', dir: 1 } };
+      const state = { client: null, classes: [], students: [], tuitionRules: {}, q: '', cls: 'all', busy: false, sort: { key: 'class', dir: 1 } };
 
       const natural = (a, b) => String(a).localeCompare(String(b), 'vi', { numeric: true });
       const vnd = n => Number(n || 0).toLocaleString('vi-VN') + ' đ';
+      const monthKeyNow = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); };
+      const DEFAULT_TUITION_START = '2026-11';
+      function tuitionRuleFor(student, month) {
+        const saved = state.tuitionRules[student.id];
+        if (saved && Array.isArray(saved.history)) {
+          const row = saved.history.filter(x => x.from <= month).sort((a, b) => a.from.localeCompare(b.from)).pop();
+          if (row) return row;
+        }
+        if (saved && saved.mode) return saved;
+        return { mode: 'monthly', amount: Number(student.monthly_tuition || 0) };
+      }
       const classOf = s => state.classes.find(c => c.id === s.class_id);
       const find = id => state.students.find(s => s.id === Number(id));
       const icons = () => { if (window.lucide) lucide.createIcons(); };
 
       function setMsg(t) { $('form-msg').textContent = t || ''; }
+      function updateTuitionFields() {
+        const perSession = $('student-tuition-mode').value === 'session';
+        $('student-tuition-monthly-wrap').classList.toggle('hidden', perSession);
+        $('student-tuition-session-wrap').classList.toggle('hidden', !perSession);
+        document.querySelectorAll('[data-tuition-mode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tuitionMode === $('student-tuition-mode').value)));
+      }
 
       async function load() {
-        const [c, s] = await Promise.all([
+        const [c, s, tr] = await Promise.all([
           state.client.from('classes').select('id,class_code,class_name').order('class_code'),
-          state.client.from('students').select('id,student_code,student_name,class_id,is_active,note,monthly_tuition').order('id')
+          state.client.from('students').select('id,student_code,student_name,class_id,is_active,note,monthly_tuition').order('id'),
+          state.client.from('app_settings').select('value').eq('key', 'student_tuition_rules').maybeSingle()
         ]);
         if (c.error) throw c.error;
-        if (s.error) throw s.error;
+        if (s.error) throw s.error; if (tr.error) throw tr.error;
         state.classes = (c.data || []).slice().sort((a, b) => natural(a.class_code, b.class_code));
+        state.tuitionRules = tr.data && tr.data.value && typeof tr.data.value === 'object' ? tr.data.value : {};
         state.students = (s.data || []).map(r => Object.assign({}, r, { monthly_tuition: Number(r.monthly_tuition || 0) }));
       }
 
@@ -195,8 +225,46 @@
         });
       }
 
+      function syncStudentColumns() {
+        const table = $('rows').closest('table');
+        const cols = [...$('student-columns').querySelectorAll('col')];
+        if (window.matchMedia('(max-width: 640px)').matches) {
+          table.style.width = ''; table.style.tableLayout = '';
+          cols.forEach(c => c.style.width = '');
+          return;
+        }
+        const ctx = document.createElement('canvas').getContext('2d');
+        const family = getComputedStyle(table).fontFamily || 'Arial, sans-serif';
+        const measure = (text, weight = 400, size = 14, mono = false) => {
+          ctx.font = `${weight} ${size}px ${mono ? 'ui-monospace, SFMono-Regular, Menlo, monospace' : family}`;
+          return ctx.measureText(String(text || '')).width;
+        };
+        const maxText = (items, weight, size, mono = false) => items.reduce((max, x) => Math.max(max, measure(x, weight, size, mono)), 0);
+        const students = state.students, classes = state.classes;
+        const names = maxText(students.map(s => s.student_name), 600, 14);
+        const codes = maxText(students.map(s => s.student_code), 400, 13, true) + 48;
+        const classNames = maxText(classes.map(c => c.class_name || c.class_code), 400, 13);
+        const fees = maxText(students.map(s => { const rule = tuitionRuleFor(s, monthKeyNow()); return rule.mode === 'session' ? vnd(rule.rate) + ' / buổi' : vnd(rule.amount ?? s.monthly_tuition); }), 600, 13);
+        const notes = maxText(students.map(s => s.note || '—'), 400, 13);
+        const targets = students.some(s => { const cls = classOf(s); return SCORE.KINDS[SCORE.programOf(cls && cls.class_code)]; });
+        const widths = [
+          Math.min(360, Math.max(190, Math.ceil(Math.max(names, codes, measure('Học viên', 700, 13)) + 28))),
+          Math.min(300, Math.max(145, Math.ceil(Math.max(classNames, measure('Lớp', 700, 13)) + 30))),
+          Math.min(210, Math.max(130, Math.ceil(Math.max(fees, measure('Học phí', 700, 13)) + 30))),
+          Math.max(122, Math.ceil(measure('Tạm ngưng', 600, 12) + 30)),
+          Math.min(360, Math.max(170, Math.ceil(Math.max(notes, measure('Ghi chú', 700, 13)) + 30))),
+          targets ? 156 : 108
+        ];
+        const tableAvailable = table.parentElement.clientWidth;
+        widths[4] += Math.max(0, tableAvailable - widths.reduce((a, b) => a + b, 0));
+        cols.forEach((col, i) => col.style.width = `${widths[i]}px`);
+        table.style.tableLayout = 'fixed';
+        table.style.width = `${Math.max(tableAvailable, widths.reduce((a, b) => a + b, 0))}px`;
+      }
+
       function render() {
         fillClassSelects();
+        syncStudentColumns();
         document.querySelectorAll('.sortbtn').forEach(b => { const on = b.dataset.sort === state.sort.key; b.querySelector('.sarr').textContent = on ? (state.sort.dir === 1 ? '↑' : '↓') : '↕'; b.style.opacity = on ? '1' : '.55'; b.setAttribute('aria-label', 'Sắp xếp theo ' + b.dataset.sort); });
         const all = state.students;
         $('total-count').textContent = all.length;
@@ -218,7 +286,7 @@
               </div>
             </td>
             <td class="py-3 px-2 text-xs text-slate-600">${clsCell}</td>
-            <td class="py-3 px-2 text-xs font-semibold text-slate-700">${vnd(s.monthly_tuition)}</td>
+            <td class="py-3 px-2 text-xs font-semibold text-slate-700">${tuitionRuleFor(s, monthKeyNow()).mode === 'session' ? vnd(tuitionRuleFor(s, monthKeyNow()).rate) + ' / buổi' : vnd(tuitionRuleFor(s, monthKeyNow()).amount ?? s.monthly_tuition)}</td>
             <td class="py-3 px-2"><button type="button" data-act="status" data-id="${s.id}" title="Bấm để đổi trạng thái" aria-label="Trạng thái ${esc(s.student_name)}: ${s.is_active ? 'Đang học' : 'Tạm ngưng'}. Bấm để đổi" class="text-[11px] px-2 py-1 rounded-full cursor-pointer ${s.is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}" style="border:0;min-height:28px">${s.is_active ? 'Đang học' : 'Tạm ngưng'}</button></td>
             <td class="py-3 px-2 text-xs text-slate-500">${esc(s.note || '—')}</td>
             <td class="cell-actions py-3 px-2"><div class="flex justify-end">
@@ -231,9 +299,11 @@
         icons();
       }
 
+      window.addEventListener('resize', () => requestAnimationFrame(syncStudentColumns));
+
       function resetForm() {
         $('student-form').reset();
-        $('student-id').value = ''; $('student-tuition').value = '';
+        $('student-id').value = ''; $('student-tuition').value = ''; $('student-session-rate').value = ''; $('student-tuition-mode').value = 'monthly'; updateTuitionFields();
         $('editor-title').textContent = 'Thêm học viên';
         $('code-row').classList.add('hidden'); setMsg('');
       }
@@ -248,6 +318,7 @@
         $('student-status').value = s.is_active ? 'active' : 'inactive';
         $('student-note').value = s.note || '';
         $('student-tuition').value = Number(s.monthly_tuition || 0).toLocaleString('en-US');
+        const rule = tuitionRuleFor(s, monthKeyNow()); $('student-tuition-mode').value = rule.mode || 'monthly'; $('student-tuition').value = Number(rule.amount ?? s.monthly_tuition ?? 0).toLocaleString('en-US'); $('student-session-rate').value = rule.rate ? Number(rule.rate).toLocaleString('en-US') : ''; updateTuitionFields();
         $('editor-title').textContent = 'Sửa học viên';
         $('code-view').textContent = s.student_code; $('code-row').classList.remove('hidden'); setMsg('');
         openEditor();
@@ -264,23 +335,38 @@
         const name = $('student-name').value.trim();
         if (!name) { setMsg('Nhập họ tên học viên.'); $('student-name').focus(); return; }
         const classId = $('student-class').value;
+        const id = $('student-id').value, mode = $('student-tuition-mode').value;
+        const sessionRateInput = Math.max(0, Number(String($('student-session-rate').value).replace(/\D/g, '') || 0));
+        if (mode === 'session' && sessionRateInput <= 0) { setMsg('Nhập học phí mỗi buổi lớn hơn 0.'); $('student-session-rate').focus(); return; }
+        const existing = id ? find(id) : null;
         const payload = {
           student_name: name,
           class_id: classId ? Number(classId) : null,
           is_active: $('student-status').value === 'active',
           note: $('student-note').value.trim() || null,
-          monthly_tuition: Math.max(0, Number(String($('student-tuition').value).replace(/\D/g, '') || 0))
+          monthly_tuition: mode === 'monthly' ? Math.max(0, Number(String($('student-tuition').value).replace(/\D/g, '') || 0)) : Number(existing && existing.monthly_tuition || 0)
         };
-        const id = $('student-id').value;
         state.busy = true; $('btn-save').disabled = true; setMsg('');
         const res = id
           ? await state.client.from('students').update(payload).eq('id', Number(id))
-          : await state.client.from('students').insert(payload);
+          : await state.client.from('students').insert(payload).select('id').single();
         state.busy = false; $('btn-save').disabled = false;
         if (res.error) {
           setMsg(res.error.code === '23505' ? 'Học viên này đã có trong lớp đã chọn.' : LMS.friendlyError(res.error));
           return;
         }
+        const savedId = Number(id || (res.data && res.data.id));
+        const oldRule = existing ? tuitionRuleFor(existing, monthKeyNow()) : { mode: 'monthly', amount: 0 };
+        const stored = state.tuitionRules[savedId] || {};
+        const history = Array.isArray(stored.history) ? stored.history.slice() : [{ from: existing ? DEFAULT_TUITION_START : monthKeyNow(), mode: oldRule.mode || 'monthly', amount: Number(oldRule.amount ?? existing?.monthly_tuition ?? 0), rate: Number(oldRule.rate || 0) }];
+        const effective = mode === 'session'
+          ? { from: monthKeyNow(), mode: 'session', rate: sessionRateInput }
+          : { from: monthKeyNow(), mode: 'monthly', amount: Math.max(0, Number(String($('student-tuition').value).replace(/\D/g, '') || 0)) };
+        const sameMonth = history.findIndex(x => x.from === effective.from);
+        if (sameMonth >= 0) history[sameMonth] = effective; else history.push(effective);
+        state.tuitionRules[savedId] = { history: history.sort((a, b) => a.from.localeCompare(b.from)) };
+        const ruleSave = await state.client.from('app_settings').upsert({ key: 'student_tuition_rules', value: state.tuitionRules });
+        if (ruleSave.error) { if (!id) $('student-id').value = savedId; setMsg(LMS.friendlyError(ruleSave.error)); return; }
         closeEditor();
         await reload(id ? 'Đã cập nhật học viên.' : 'Đã thêm học viên.');
       }
@@ -327,8 +413,8 @@
       }
 
       function exportCsv() {
-        const rows = [['Mã học viên', 'Họ tên', 'Lớp', 'Học phí hàng tháng (VND)', 'Trạng thái', 'Ghi chú']]
-          .concat(visible().map(s => [s.student_code, s.student_name, (classOf(s) || {}).class_name || '', s.monthly_tuition || 0, s.is_active ? 'Đang học' : 'Tạm ngưng', s.note || '']));
+        const rows = [['Mã học viên', 'Họ tên', 'Lớp', 'Cách tính học phí', 'Mức phí', 'Trạng thái', 'Ghi chú']]
+          .concat(visible().map(s => { const r = tuitionRuleFor(s, monthKeyNow()); return [s.student_code, s.student_name, (classOf(s) || {}).class_name || '', r.mode === 'session' ? 'Theo buổi' : 'Theo tháng', r.mode === 'session' ? r.rate || 0 : r.amount ?? s.monthly_tuition ?? 0, s.is_active ? 'Đang học' : 'Tạm ngưng', s.note || '']; }));
         const csv = '\ufeff' + rows.map(r => r.map(v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"').join(',')).join('\r\n');
         const a = document.createElement('a');
         a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
@@ -408,6 +494,10 @@
         const tuition = $('student-tuition');
         tuition.addEventListener('focus', () => tuition.select());
         tuition.addEventListener('input', () => { const d = tuition.value.replace(/\D/g, ''); tuition.value = d ? Number(d).toLocaleString('en-US') : ''; });
+        const sessionRate = $('student-session-rate');
+        sessionRate.addEventListener('focus', () => sessionRate.select());
+        sessionRate.addEventListener('input', () => { const d = sessionRate.value.replace(/\D/g, ''); sessionRate.value = d ? Number(d).toLocaleString('en-US') : ''; });
+        $('tuition-mode-options').addEventListener('click', e => { const b = e.target.closest('[data-tuition-mode]'); if (!b) return; $('student-tuition-mode').value = b.dataset.tuitionMode; updateTuitionFields(); });
         $('rows').addEventListener('click', e => {
           const b = e.target.closest('[data-act]'); if (!b) return;
           const act = b.dataset.act, id = b.dataset.id;

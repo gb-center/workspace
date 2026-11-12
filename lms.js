@@ -29,7 +29,7 @@
     }
     return { h: h, s: Math.round(s * 100) };
   }
-  var DEF = hexFor(219, 60);
+  var DEF = window.LMS_THEME_DEFAULT || hexFor(219, 60);
 
   function applyTheme(hx) {
     if (!/^#[0-9a-f]{6}$/i.test(hx || '')) hx = DEF;
@@ -40,6 +40,13 @@
     st.setProperty('--t-tint', c(s, 94)); st.setProperty('--t-tint-2', c(s, 89)); st.setProperty('--t-soft', c(s, 97));
     st.setProperty('--t-border', c(s * 0.5, 92)); st.setProperty('--t-line', c(s * 0.4, 84)); st.setProperty('--t-muted', c(s * 0.3, 45));
     st.setProperty('--t-ink', c(s * 0.7, 14)); st.setProperty('--page-bg', c(Math.min(s, 65) * 0.95, 93));
+    var brand = window.LMS_THEME_BRAND;
+    if (brand) {
+      st.setProperty('--t-primary', brand.primary || '#0b1f44');
+      st.setProperty('--t-primary-2', brand.primary2 || '#18345f');
+      st.setProperty('--t-ink', brand.ink || brand.primary || '#0b1f44');
+      st.setProperty('--page-bg', brand.pageBg || '#ffffff');
+    }
   }
   function getTheme() { try { return localStorage.getItem(THEME_KEY) || DEF; } catch (e) { return DEF; } }
   function saveTheme(x) { try { localStorage.setItem(THEME_KEY, x); } catch (e) { /* bỏ qua */ } }
@@ -240,6 +247,30 @@
     return c.auth.signOut().then(done, done);
   }
 
+  /* ---------- Thanh điều hướng dùng chung ---------- */
+  function initSidebar() {
+    var nav = document.getElementById('lms-nav');
+    if (!nav) return;
+    var brand = nav.querySelector('.nav-brand');
+    if (brand) {
+      var full = brand.querySelector('img');
+      if (full) full.classList.add('nav-brand-full');
+    }
+    var logout = document.getElementById('btn-logout');
+    if (!logout) {
+      var tools = document.querySelector('header .page-header-actions, header .header-tools');
+      if (tools) {
+        logout = document.createElement('button'); logout.id = 'btn-logout'; logout.type = 'button';
+        logout.className = 'icon-btn'; logout.setAttribute('aria-label', 'Đăng xuất'); logout.title = 'Đăng xuất';
+        logout.innerHTML = '<i data-lucide="log-out" class="w-5 h-5"></i>'; tools.appendChild(logout);
+      }
+    }
+    if (logout && !logout.dataset.sidebarLogoutBound) {
+      logout.dataset.sidebarLogoutBound = '1';
+      logout.addEventListener('click', function () { if (window.LMS && LMS.signOut) LMS.signOut(); });
+    }
+  }
+
   /* ---------- Hộp chọn màu chủ đề ---------- */
   function initThemePopover() {
     var btn = document.getElementById('btn-theme');
@@ -283,8 +314,9 @@
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !pop.hidden) { close(); btn.focus(); } });
     window.addEventListener('resize', function () { if (!pop.hidden) place(); });
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initThemePopover);
-  else initThemePopover();
+  function initLmsChrome() { initSidebar(); initThemePopover(); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initLmsChrome);
+  else initLmsChrome();
 
   /* ---------- Đường dẫn học liệu & mã học sinh ---------- */
   var SITE_BASE = 'https://gb-learninghub.github.io/workspace/';

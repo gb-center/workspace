@@ -1,0 +1,194 @@
+/* Shared visual system for teacher LMS pages. Keep the supplied logo assets untouched. */
+:root{
+  --page-bg:#f5f6f8;
+  --t-primary:#1d3556;
+  --t-primary-2:#294a70;
+  --t-accent:#a77b2a;
+  --t-tint:#edf1f6;
+  --t-tint-2:#dce4ed;
+  --t-soft:#f6f7f9;
+  --t-border:#e2e6eb;
+  --t-line:#e8ebef;
+  --t-muted:#737e8c;
+  --t-ink:#202b3a;
+  --lms-bg:#f5f6f8;
+  --lms-ink:#202b3a;
+}
+html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{font-family:"Helvetica Neue",Arial,sans-serif!important;background:#f5f6f8!important;color:#202b3a!important;letter-spacing:0!important}
+body::before{display:none!important}
+body>header,header.bg-white{background:#fff!important;border-color:#e7e9ed!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+.page-header-title{color:#202b3a!important;font-weight:750!important;letter-spacing:-.025em}
+.page-header-subtitle{color:#7a8491!important}
+main{width:100%!important;max-width:none!important;margin:0!important;padding-left:clamp(18px,3vw,44px)!important;padding-right:clamp(18px,3vw,44px)!important;gap:18px!important}
+.rounded-2xl{border-radius:16px!important}
+.rounded-xl{border-radius:12px!important}
+main .bg-white.rounded-2xl{background:#fff!important;border:1px solid #e3e6eb!important;border-radius:16px!important;box-shadow:0 5px 18px rgba(25,38,55,.035)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+main .panel-overview{background:#f0f3f7!important;border:1px solid #e4e8ed!important;border-radius:16px!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+.stat-tile{position:relative;overflow:hidden;padding:16px 17px!important;border:1px solid #e5e8ec!important;border-top:2px solid #c8d1dc!important;border-radius:13px!important;background:#fff!important;box-shadow:none!important}
+.stat-tile:first-child{border-top-color:#b38324!important}
+.stat-n{color:#1d3556!important;font-size:1.65rem!important;line-height:1.1!important;font-weight:750!important;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.stat-l{margin-top:5px;color:#778392!important;font-size:.78rem!important;line-height:1.3!important}
+.hero-card{background:linear-gradient(115deg,#1d3556 0%,#29476a 100%)!important;border:0!important;border-left:4px solid #b38324!important;border-radius:16px!important;box-shadow:0 8px 22px rgba(24,45,72,.12)!important}
+.hero-card::after{display:none!important}
+.panel-soft{background:#f7f8fa!important;border:1px solid #e8ebef!important;border-radius:12px!important}
+.btn-primary,.btn-soft{min-height:42px!important;border-radius:10px!important;font-weight:650!important;letter-spacing:0!important}
+.btn-primary{background:#1d3556!important;box-shadow:0 2px 4px rgba(20,39,63,.12)}
+.btn-primary:hover{background:#294a70!important}
+.btn-soft{background:#fff!important;border-color:#dfe4ea!important;color:#34465d!important}
+.btn-soft:hover{background:#f3f5f7!important;border-color:#cbd3dd!important}
+.field{border-radius:10px!important;background:#fff!important;border-color:#dfe4ea!important}
+.icon-btn{border-radius:10px!important}
+table thead tr{background:#f6f7f9;color:#657184!important}
+table thead th{font-weight:650!important;text-transform:none!important;letter-spacing:0!important}
+table tbody tr{transition:background-color .14s ease}
+table tbody tr:hover{background:#f8f9fa}
+main h2,main h3{color:#26364a}
+.dlg .card,.edlg-card{border-radius:16px!important;box-shadow:0 18px 55px rgba(20,31,46,.16)!important}
+#lms-nav{background:#fff!important;border-color:#e7e9ed!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+#lms-nav>a[aria-current="page"]{background:#252a31!important;color:#fff!important}
+#lms-nav>a:not([aria-current="page"]):hover{background:#f2f3f5!important;color:#26364a!important}
+/* Overview cards use the same compact, restrained treatment as the other tabs. */
+.overview-stat{--stat-accent:#294a70!important;padding:16px 17px!important;border:1px solid #e3e7ec!important;border-radius:14px!important;background:#fff!important;box-shadow:0 4px 14px rgba(25,38,55,.035)!important;transform:none!important}
+.overview-stat-2{--stat-accent:#9a7126!important}.overview-stat-3{--stat-accent:#426c8e!important}.overview-stat-4{--stat-accent:#6b7890!important}
+.overview-stat:hover{border-color:#ccd5df!important;box-shadow:0 7px 18px rgba(25,38,55,.075)!important;transform:translateY(-1px)!important}
+.overview-stat-icon{border-radius:10px!important;background:#f0f3f7!important}
+.overview-stat>b{font-size:1.48rem!important}
+.overview-finance{border:1px solid #e5e5e1!important;border-left:3px solid #b38324!important;border-radius:14px!important;background:#fff!important;box-shadow:0 4px 14px rgba(25,38,55,.03)!important}
+.overview-panel{border:1px solid #e3e7ec!important;border-radius:14px!important;background:#fff!important;box-shadow:0 4px 14px rgba(25,38,55,.03)!important}
+@media(max-width:640px){main{padding-left:14px!important;padding-right:14px!important}.stat-tile{padding:13px!important}.overview-stat{padding:13px!important}}
+@media(prefers-reduced-motion:reduce){.overview-stat,button,a,table tbody tr{transition:none!important}}
+
+/* Keep class and student page chrome fixed; scroll within the record lists. */
+body.classes-page,body.student-list-page{height:100dvh;min-height:0;overflow:hidden;padding-bottom:0!important}
+body.classes-page>header,body.student-list-page>header{flex:none}
+body.classes-page>main.classes-main,body.student-list-page>main.student-list-main{height:calc(100dvh - 80px);min-height:0;max-height:calc(100dvh - 80px);flex:1 1 auto;display:grid;gap:12px!important;overflow:hidden;padding-top:20px!important;padding-bottom:16px!important}
+body.classes-page>main.classes-main{grid-template-rows:auto minmax(0,1fr) auto}
+body.student-list-page>main.student-list-main{grid-template-rows:auto minmax(0,1fr)}
+.classes-main>*,.student-list-main>*{min-height:0;margin:0!important}
+.class-stat-strip,.student-stat-strip{min-height:0;background:transparent!important;border:0!important;border-radius:0!important;padding:0!important;box-shadow:none!important}
+.class-stat-strip .stat-tile,.student-stat-strip .stat-tile{min-height:82px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center}
+.classes-list-panel,.student-list-panel{display:flex;flex-direction:column;overflow:hidden}
+.classes-list-panel>.classes-table-scroll,.student-list-panel>.student-table-scroll{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
+.classes-table-scroll::-webkit-scrollbar,.student-table-scroll::-webkit-scrollbar{width:7px;height:7px}
+.classes-table-scroll::-webkit-scrollbar-thumb,.student-table-scroll::-webkit-scrollbar-thumb{background:#cbd3dd;border-radius:8px}
+.classes-table-scroll thead,.student-table-scroll thead{position:sticky;top:0;z-index:3;background:#f6f7f9}
+@media(max-width:1023px){body.classes-page>main.classes-main,body.student-list-page>main.student-list-main{height:calc(100dvh - 80px - 92px);max-height:calc(100dvh - 80px - 92px)}}
+@media(max-width:640px){body.classes-page>main.classes-main,body.student-list-page>main.student-list-main{height:calc(100dvh - 72px - 92px);max-height:calc(100dvh - 72px - 92px)}}
+
+/* Keep the learning-material controls fixed and scroll only the week/material list. */
+html[data-lms-view="lib"] body{height:100dvh;min-height:0;overflow:hidden;padding-bottom:0!important}
+html[data-lms-view="lib"] body>header{flex:none}
+html[data-lms-view="lib"] body>main{height:calc(100dvh - 80px);max-height:calc(100dvh - 80px);min-height:0;flex:1 1 auto;display:flex;flex-direction:column;gap:12px!important;overflow:hidden;padding-top:20px!important;padding-bottom:16px!important}
+html[data-lms-view="lib"] #view-lib{box-sizing:border-box;min-height:0;flex:1;display:flex;flex-direction:column;gap:12px;overflow:hidden;padding:20px;border:1px solid #e2e6ec;border-radius:20px;background:#fff;box-shadow:0 4px 16px rgba(25,38,55,.045)}
+html[data-lms-view="lib"] #view-lib>*{flex:none;margin:0!important}
+html[data-lms-view="lib"] .lib-actions{display:flex;align-items:center;gap:10px}
+html[data-lms-view="lib"] .lib-actions>button{box-sizing:border-box;width:170px;height:44px;min-height:44px!important;justify-content:center;white-space:nowrap}
+html[data-lms-view="lib"] .lib-filter-row{display:flex;align-items:center;gap:10px;min-width:0}
+html[data-lms-view="lib"] .lib-filter-primary,html[data-lms-view="lib"] .lib-filter-secondary{display:flex;align-items:center;gap:8px;min-width:0}
+html[data-lms-view="lib"] .lib-filter-secondary{margin-left:auto}
+html[data-lms-view="lib"] .lib-filter-secondary select{flex:none}
+html[data-lms-view="lib"] #view-lib>.lib-list-scroll{height:0;min-height:0;max-height:none;flex:1 1 0%!important;overflow-y:auto!important;overscroll-behavior:contain;scrollbar-gutter:stable;padding:12px 10px 12px 12px;border:1px solid #e8ebef;border-radius:14px;background:#f7f8fa}
+html[data-lms-view="lib"] #lib-list{min-height:0;flex:none;overflow:visible;padding-right:0}
+html[data-lms-view="lib"] .lib-list-scroll::-webkit-scrollbar{width:7px}
+html[data-lms-view="lib"] .lib-list-scroll::-webkit-scrollbar-thumb{background:#cbd3dd;border-radius:8px}
+html[data-lms-view="lib"] #page-msg{flex:none;margin:0!important}
+@media(max-width:1023px){html[data-lms-view="lib"] body>main{height:calc(100dvh - 80px - 92px);max-height:calc(100dvh - 80px - 92px)}}
+@media(max-width:640px){html[data-lms-view="lib"] body>main{height:calc(100dvh - 72px - 92px);max-height:calc(100dvh - 72px - 92px)}html[data-lms-view="lib"] .lib-actions{width:100%}html[data-lms-view="lib"] .lib-actions>button{width:auto;flex:1 1 0}html[data-lms-view="lib"] .lib-filter-row,html[data-lms-view="lib"] .lib-filter-primary,html[data-lms-view="lib"] .lib-filter-secondary{width:100%;flex-wrap:wrap}html[data-lms-view="lib"] .lib-filter-secondary{margin-left:0}}
+
+/* Consistent page header: title on the left, page controls on the right. */
+body>header{height:80px!important;min-height:80px!important}
+body>header>div{height:80px!important;min-height:80px!important;display:flex;align-items:center;padding-left:clamp(18px,3vw,44px)!important;padding-right:clamp(18px,3vw,44px)!important}
+body>header .page-header-title,body>header.has-week .schedule-page-title{position:static!important;inset:auto!important;transform:none!important;display:block!important;flex:0 1 auto;max-width:min(48%,560px)!important;margin:0!important;text-align:left!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#202b3a!important;font-size:1.25rem!important;font-weight:750!important;line-height:1.2!important}
+body>header .page-header-subtitle{font-size:.76rem!important;font-weight:450!important;line-height:1.25!important}
+body>header .page-header-actions,body>header .header-tools{position:static!important;inset:auto!important;transform:none!important;display:flex;align-items:center;gap:8px;margin-left:auto!important}
+body>header.has-week .week-navigation{position:static!important;inset:auto!important;transform:none!important;display:flex;align-items:center;gap:4px;margin-left:auto}
+body>header.has-week .week-navigation .week-current{min-width:176px}
+body>header.has-week .header-tools{margin-left:8px!important}
+body>header.has-week #btn-logout{flex:none}
+/* Keep the page title, week selector, and account control on one shared vertical center. */
+body>header.has-week>div{box-sizing:border-box;align-items:center!important}
+body>header.has-week .schedule-page-title{align-self:center!important;line-height:1.15!important}
+body>header.has-week .week-navigation{align-self:center!important;height:58px;gap:4px}
+body>header.has-week .week-navigation .week-current{height:58px;min-height:58px;box-sizing:border-box;justify-content:center;gap:2px;padding:5px 12px}
+body>header.has-week .week-navigation .week-current-btn{min-height:26px;line-height:1.15}
+body>header.has-week .week-navigation .week-range{line-height:1.2}
+body>header.has-week .header-tools{align-self:center!important}
+/* Remove separator rules and helper subtitles consistently across all tabs. */
+body>header{border-bottom:0!important}
+body>header.bg-white,body>header.has-week{position:relative;z-index:30;background:#0b1f44!important;background-color:#0b1f44!important;border-bottom:1px solid #23385c!important;box-shadow:0 6px 16px rgba(10,25,52,.18)!important}
+body>header.bg-white .page-header-title,body>header.has-week .schedule-page-title{color:#c89a3a!important}
+body>header.has-week .week-navigation .week-current-btn{color:#e5c16b!important;background:transparent!important}
+body>header.has-week .week-navigation .week-range{color:#f0dca8!important}
+body>header .icon-btn,body>header .week-navigation .icon-btn{color:#e5c16b!important}
+body>header .icon-btn:hover,body>header .week-navigation .icon-btn:hover{background:rgba(255,255,255,.1)!important;border-color:rgba(229,193,107,.35)!important;color:#f0d58e!important}
+body>main{padding-top:20px!important}
+.page-header-subtitle,.student-welcome-title p{display:none!important}
+#lms-nav{border-right:0!important}
+#lms-nav .nav-brand{border-bottom:0!important}
+/* Align the sidebar wordmark and its divider with the main header edge. */
+@media(min-width:1024px){
+  #lms-nav{padding-top:0!important}
+  #lms-nav .nav-brand{box-sizing:border-box;flex:0 0 80px;min-height:80px;height:80px;padding:0 12px!important;margin:0 0 8px!important;align-items:center!important;border-bottom:0!important}
+  #lms-nav .nav-brand img{display:block;max-width:100%;object-fit:contain}
+}
+@media(max-width:640px){
+  body>header,body>header>div{height:72px!important;min-height:72px!important}
+  body>header>div{padding-left:14px!important;padding-right:14px!important}
+  .page-title-header:not(.has-week)>div{align-items:center!important;padding-top:0!important;padding-bottom:0!important}
+  body>header .page-header-title,body>header.has-week .schedule-page-title{max-width:42vw!important;font-size:1rem!important}
+  body>header .page-header-subtitle{display:none!important}
+  body>header .page-header-actions,body>header .header-tools{gap:3px}
+  body>header.has-week .week-navigation{gap:0}
+  body>header.has-week .week-navigation .week-current{min-width:76px;padding:4px 5px}
+  body>header.has-week .week-navigation .week-range{display:none}
+  body>header.has-week .week-navigation .icon-btn{width:32px;height:36px}
+  body>header.has-week #btn-logout{width:34px;height:36px}
+  body>header.has-week .header-tools{margin-left:3px!important}
+  body>header.has-week .week-navigation{height:36px}
+  body>header.has-week .week-navigation .week-current{height:36px;min-height:36px;padding:3px 5px}
+}
+table.stack thead th:last-child{padding-right:24px!important}
+table.stack tbody td.cell-actions{padding-right:24px!important}
+
+/* Class list interactions: linked class names, roster pop-up, and inline notes. */
+.class-name-link{display:flex;flex-direction:column;gap:3px;width:max-content;max-width:100%;color:#1d3556;text-decoration:none}
+.class-name-link>b{font-size:.92rem;font-weight:750;letter-spacing:-.01em}
+.class-name-link>small{color:#7b8490;font-size:.75rem;font-weight:450}
+.class-name-link:hover>b{text-decoration:underline;text-decoration-color:#b38324;text-underline-offset:3px}
+.class-roster-trigger{display:inline-flex;align-items:baseline;gap:6px;padding:4px 8px;border:1px solid #e3e8ee;border-radius:9px;background:#f7f8fa;color:#1d3556;cursor:pointer}
+.class-roster-trigger>b{font-size:.9rem;font-variant-numeric:tabular-nums}
+.class-roster-trigger>small{color:#788392;font-size:.7rem}
+.class-roster-trigger:hover{background:#edf1f6;border-color:#d3dce6}
+.class-note-field{width:min(100%,260px);min-height:38px;padding:7px 10px;border:1px solid transparent;border-radius:8px;background:transparent;color:#374457;font:inherit;font-size:.82rem}
+.class-note-field::placeholder{color:#9aa2ad}
+.class-note-field:hover,.class-note-field:focus{border-color:#dfe4ea;background:#fff}
+.class-note-field:disabled{opacity:.65}
+.roster-card{width:min(560px,100%);max-height:calc(100dvh - 32px);display:flex;flex-direction:column;gap:14px}
+.roster-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:12px;border-bottom:1px solid #edf0f3}
+.roster-head h2{margin:0;color:#202b3a;font-size:1.08rem;font-weight:750}
+.roster-head p{margin:4px 0 0;color:#778392;font-size:.78rem}
+.class-student-list{overflow:auto;display:flex;flex-direction:column;gap:5px}
+.class-student-row{display:grid;grid-template-columns:36px minmax(0,1fr) auto;align-items:center;gap:11px;padding:9px 8px;border-radius:10px}
+.class-student-row:hover{background:#f7f8fa}
+.roster-avatar{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#edf1f6;color:#294a70;font-size:.85rem;font-weight:700}
+.roster-name{min-width:0;display:flex;flex-direction:column;gap:3px}
+.roster-name>b,.roster-name b{overflow:hidden;color:#2c3a4d;font-size:.84rem;text-overflow:ellipsis;white-space:nowrap}
+.roster-name a{color:inherit;text-decoration:none}.roster-name a:hover{color:#1d3556;text-decoration:underline}
+.roster-name small{color:#858e9a;font-size:.72rem}
+.roster-status{padding:4px 8px;border-radius:999px;font-size:.68rem;font-weight:650;white-space:nowrap}
+.roster-status.is-active{background:#edf4ef;color:#52745d}.roster-status.is-inactive{background:#f4f1e9;color:#8b7542}
+.roster-empty{padding:20px 8px;text-align:center;color:#858e9a;font-size:.85rem}
+
+/* Keep the student table steady while sorting, filtering, or changing a row. */
+table.stack{table-layout:fixed}
+table.stack tbody td{vertical-align:top!important}
+table.stack tbody td.cell-main{vertical-align:top!important;padding-top:14px!important}
+table.stack tbody td.cell-main>a{display:block!important;min-height:0!important;line-height:1.35!important}
+table.stack tbody td.cell-main .code-chip{margin-top:5px!important}
+@media(min-width:641px){table.stack tbody td{padding-top:14px!important}}
+@media(max-width:640px){
+  table.stack{width:100%!important;min-width:0!important;table-layout:auto!important}
+  table.stack tbody tr{align-items:flex-start!important}
+  table.stack tbody td{align-self:flex-start!important;vertical-align:top!important}
+}
