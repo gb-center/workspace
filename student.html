@@ -219,6 +219,7 @@
     .tuition-head h2{min-width:0!important;flex:1 1 0!important;width:auto!important;font-size:.875rem!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tuition-head h2 svg{flex:none}.tuition-head #tuition-tag{flex:none}.tuition-head .tag{white-space:nowrap}
     .tuition-bar{height:8px;border-radius:9999px;background:#e5e9ef;overflow:hidden;margin-top:12px}.tuition-bar i{display:block;height:100%;background:#047857;border-radius:inherit}
     .tuition-bar-cap{display:flex;justify-content:space-between;gap:8px;margin-top:6px;font-size:.75rem;color:#818999}
+    .tuition-amts.compact{display:flex;justify-content:space-between;align-items:center}.tuition-amts.compact b{margin-right:0}
     .tuition-amts{display:grid;grid-template-columns:auto auto;justify-content:start;column-gap:28px;row-gap:3px;margin-top:10px;font-size:.875rem;color:#475569}.tuition-amts b{text-align:right;font-variant-numeric:tabular-nums;color:#26344d}.tuition-amts b.neg,.th-amt.neg{color:#be123c!important}.tuition-amts b.pos,.th-amt.pos{color:#047857!important}
     @media(max-width:700px){.tuition-history-row{grid-template-columns:repeat(3,minmax(0,1fr))!important}.tuition-history-row>div{grid-column:1/-1}.tuition-history-row>.tag{grid-column:1/-1;justify-self:start}}
     .th-amt{font-size:.875rem;font-weight:700;color:#26344d;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}.th-amt small{display:block;font-size:.6875rem;font-weight:500;color:#818999}
@@ -1149,7 +1150,7 @@ a.t-open:hover span{text-decoration:underline}
       const amtLines = (old, fee, paidNow, rest, date) => {
         if (!(Number(fee) > 0 || Number(old) > 0)) return '';
         const compact = !!document.querySelector('.student-rail #student-tuition');
-        if (compact) return Number(rest) > 0 ? `<div class="tuition-amts"><span>Chưa thanh toán</span><b class="neg">${vnd(rest)}</b></div>` : '';
+        if (compact) return Number(rest) > 0 ? `<div class="tuition-amts compact"><span>Chưa thanh toán</span><b class="neg">${vnd(rest)}</b></div>` : '';
         const pct = Number(fee) > 0 ? Math.min(100, Math.round(Number(paidNow) / Number(fee) * 100)) : 0;
         return `<div class="tuition-amts"><span>Tháng cũ</span><b class="${Number(old) > 0 ? 'neg' : ''}">${vnd(old)}</b><span>Tháng này</span><b>${vnd(fee)}</b><span>Đã đóng</span><b class="${Number(paidNow) > 0 ? 'pos' : ''}">${vnd(paidNow)}</b><span>Còn lại</span><b class="${Number(rest) > 0 ? 'neg' : 'pos'}">${vnd(rest)}</b></div><div class="tuition-bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div><div class="tuition-bar-cap"><span>Đã đóng ${pct}% học phí tháng này</span>${date ? `<span>Ngày đóng: ${esc(date)}</span>` : ''}</div>`;
       };
