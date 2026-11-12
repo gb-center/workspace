@@ -738,6 +738,13 @@
 .t-rail{overflow-y:auto!important}
 .t-daybar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 20px!important}
 .t-daybar h2{margin:0!important}
+.student-main .card.t-daybar{box-sizing:border-box;height:60px;min-height:60px;padding-top:0!important;padding-bottom:0!important}
+.t-daybar .t-ic{width:34px;height:34px;border:0!important}
+.student-main .card.t-daybar{background:var(--t-primary)!important;border-color:var(--t-primary)!important}
+.t-daybar h2,.t-daybar h2 svg{color:#fff!important}
+.student-main .card.t-daybar h2 svg{background:rgba(255,255,255,.16)!important}
+.t-daybar .tag{background:rgba(255,255,255,.18)!important;color:#fff!important}
+.t-daybar .t-ic{color:#fff!important;background:rgba(255,255,255,.16)!important}
 .t-slot{display:flex;flex-direction:column;gap:12px}
 .t-slot-head{display:flex;align-items:center;gap:8px;min-height:44px;cursor:pointer}
 .t-slot select.field.t-status{width:auto;min-height:44px;border:0!important;background:transparent!important;background-image:none!important;box-shadow:none!important;padding:0 8px!important;font-size:.9375rem;font-weight:800;text-align:left;cursor:pointer}
@@ -749,7 +756,7 @@
 .t-status[data-st="mixed"]{color:#475569}
 .t-status option{color:#172235;font-weight:600}
 .t-row{display:flex;flex-direction:column;gap:12px;padding-top:10px;border-top:1px solid var(--t-border)}
-.t-row-head{display:grid;grid-template-columns:36px minmax(120px,240px) minmax(0,1fr);align-items:center;gap:10px;min-height:48px;cursor:pointer}
+.t-row-head{display:grid;grid-template-columns:minmax(120px,240px) minmax(0,1fr);align-items:center;gap:10px;min-height:48px;cursor:pointer}
 .t-cname{font-size:1rem;color:var(--t-ink);overflow-wrap:anywhere;line-height:1.25}
 .t-sum{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0}
 .t-sum .tag,.t-sum .t-chip{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:32px;padding:0 12px;border-radius:999px;font-size:.75rem;font-weight:700;line-height:1;white-space:nowrap}
@@ -759,7 +766,10 @@
 .t-modal-box{width:min(420px,100%);max-height:80dvh;overflow:auto;background:#fff;border-radius:17px;padding:18px;display:flex;flex-direction:column;gap:12px}
 .t-modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .t-modal-head h3{margin:0;font-size:1rem;font-weight:800;color:var(--t-primary)}
-.t-roster{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px;font-size:.9375rem;color:var(--t-ink)}
+.t-roster{margin:0;padding:0;display:flex;flex-direction:column;font-size:.9375rem;color:var(--t-ink)}
+.t-roster-cap{display:flex;justify-content:space-between;padding-right:0;font-size:.75rem;font-weight:700;color:var(--t-muted);border-bottom:1px solid var(--t-border);padding-bottom:6px}
+.t-ros-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;cursor:pointer}
+.t-ros-chk{width:22px;height:22px;accent-color:#047857;flex:none;margin-right:12px;cursor:pointer}
 .t-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;cursor:pointer}
 .t-chev{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;border:0;background:var(--t-soft);color:var(--t-primary);flex:none}
 .t-chev svg{width:18px;height:18px;transition:transform .15s}
@@ -770,12 +780,16 @@
 .t-fields input.field,.t-fields textarea.field,.t-form input.field{width:100%;box-sizing:border-box;font-size:16px}
 .t-body{display:flex;flex-direction:column;gap:14px}
 .t-body[hidden]{display:none}
-.t-grid{display:grid;grid-template-columns:1fr;gap:14px}
+.t-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start}
+@media(max-width:700px){.t-grid{grid-template-columns:1fr}}
 .t-grid h3{display:flex;align-items:center;gap:8px;font-size:.8125rem;font-weight:800;margin:0 0 6px;color:var(--t-primary)}
 .t-grid h3 svg{width:15px;height:15px}
 .t-mat{display:flex;align-items:center;gap:6px;padding:2px 0}
 .t-open{display:flex;align-items:center;gap:8px;flex:1;min-width:0;font-weight:600;font-size:.875rem;color:var(--t-accent);min-height:44px;text-decoration:none}
 a.t-open:hover span{text-decoration:underline}
+.t-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.t-due{flex:none;width:136px;text-align:right;font-size:.8125rem;font-weight:600;color:var(--t-muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.t-mat .tag{flex:none;min-width:78px;text-align:center;justify-content:center}
 .t-open svg{width:16px;height:16px;flex:none}.t-open span{overflow-wrap:anywhere}
 .t-ic{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;border:1px solid var(--t-border);background:#fff;color:#334155;flex:none}
 .t-ic svg{width:17px;height:17px}
@@ -785,7 +799,10 @@ a.t-open:hover span{text-decoration:underline}
 .t-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .t-fields label{display:flex;flex-direction:column;gap:4px;font-size:.75rem;font-weight:700;color:var(--t-muted)}
 .t-wide{grid-column:1/-1}
-.t-save{display:flex;justify-content:flex-end}
+.t-slot:not(:has(.t-body:not([hidden]))) .t-save-btn{display:none}
+.t-row-head{cursor:pointer}
+.t-save-btn{background:var(--t-soft)!important;color:var(--t-primary)!important;margin-left:auto;width:44px;height:44px;min-height:44px;padding:0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center}
+.t-slot-body[hidden]{display:none!important}
 .t-class{display:grid;grid-template-columns:200px 1fr;gap:14px;padding:12px 0;border-top:1px solid var(--t-border)}
 .t-class:first-of-type{border-top:0}
 .t-class-name{display:flex;flex-direction:column}.t-class-name span{font-size:.75rem;color:var(--t-muted)}
@@ -797,10 +814,33 @@ a.t-open:hover span{text-decoration:underline}
 .t-stat.c-all{background:#f1ecff;color:#6d28d9}
 .t-stat.c-done{background:#e7f6ef;color:#047857}
 .t-stat.c-left{background:#e8f0ff;color:#1d4ed8}
-.t-tt{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.t-tt{display:flex;flex-direction:column;gap:8px;margin-top:12px;height:244px;overflow-y:auto;overscroll-behavior:contain;align-content:flex-start;scrollbar-width:thin}
+.t-tt>*{flex:0 0 auto}
+.t-rail>.card:last-child{min-height:184px;box-sizing:border-box}
 .t-tt-title{font-size:.75rem;font-weight:800;color:var(--t-primary)}
 .t-tt-slot{font-size:.875rem;font-weight:700;color:var(--t-ink);font-variant-numeric:tabular-nums;padding:6px 10px;border-radius:10px;background:var(--t-soft)}
 .t-tt-slot.done{opacity:.5}
+.t-rail .week-calendar-day.has-session span,.t-rail .week-calendar-day.has-session b{color:#0b1f44!important;font-weight:900!important}
+.t-rail .week-calendar-day:not(.has-session) span,.t-rail .week-calendar-day:not(.has-session) b{color:#94a3b8!important;font-weight:600!important}
+.t-rail .week-calendar-day{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:3px!important;width:100%!important;aspect-ratio:auto!important;height:60px!important;padding:6px 0 5px!important;border-radius:12px!important}
+.t-rail .week-calendar-day::after,.t-rail .week-calendar-day.selected::after{content:""!important;display:block!important;position:static!important;flex:none;width:6px;height:6px;margin:0!important;border-radius:50%;background:transparent}
+.t-rail .week-calendar-day.has-session::after,.t-rail .week-calendar-day.has-session.selected::after{background:#e0a100!important}
+.t-rail .week-calendar-day.selected{background:#f3f5f9!important;border-radius:12px!important}
+.t-rail .week-calendar-day.today span,.t-rail .week-calendar-day.today b{color:#d99a00!important}
+.t-tt-slot{display:block;width:100%;border:0;text-align:left;cursor:pointer;font-family:inherit}
+.t-tt-slot.picked{background:#f8f1df;box-shadow:inset 0 0 0 2px #e0a100}
+.t-pick+.t-pick{margin-top:12px;padding-top:12px;border-top:1px solid var(--t-border)}
+.t-rail>.card:last-child{max-height:340px;overflow-y:auto}
+.t-day-title{margin:14px 0 4px;padding:6px 10px;border-radius:10px;background:var(--t-soft);font-size:.75rem;font-weight:800;color:var(--t-primary)}
+.t-day-title:first-of-type{margin-top:0}
+.t-class.is-empty{opacity:.55}
+.t-card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:13px}.t-card-head h2{margin:0!important}
+.t-dayc-head{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:44px;cursor:pointer}.t-dayc-head h2{margin:0!important}
+.t-dayc-body{margin-top:10px}.t-dayc-body[hidden]{display:none!important}
+.t-dayc-body .t-class:first-child{border-top:0}
+.t-sub-head,.t-sub .t-bar{cursor:pointer}.t-sub-body[hidden]{display:none!important}
+.t-thisweek{height:36px;padding:0 10px;border:0!important;background:transparent!important;color:#e5c16b!important;font-size:.875rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit}
+.t-tt-cls{display:block;margin-top:2px;font-size:.75rem;font-weight:500;color:#64748b;font-variant-numeric:normal}
 .t-next{display:flex;flex-direction:column;gap:2px;margin-bottom:10px;color:var(--t-ink)}.t-next span{font-size:.8125rem;color:var(--t-muted)}
 .t-next .t-when{font-weight:800;color:var(--t-accent)}
 .t-chk{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:.8125rem;padding:4px 0;color:var(--t-ink)}
@@ -1129,25 +1169,41 @@ a.t-open:hover span{text-decoration:underline}
 
     /* ---------- Điều hướng bằng # ---------- */
     /* ---------- Giáo viên: lịch dạy theo ngày (student.html#teacher/YYYY-MM-DD) ---------- */
-    const T = { on: false, bound: false, view: 'day', monday: '', date: '', openFor: '', open: new Set(), sess: [], mats: [], asg: [], next: null, sub: null, stu: {} };
+    const T = { cache: new Map(), allStu: null, authed: false, nextAt: 0, subOpen: new Set(), dayClosed: new Set(), pick: null, slotOpen: new Set(), on: false, bound: false, view: 'day', monday: '', date: '', openFor: '', open: new Set(), sess: [], mats: [], asg: [], next: null, sub: null, stu: {} };
     const addDays = (k, n) => { const d = dOf(k); d.setDate(d.getDate() + n); return ymd(d); };
     const hhmm = t => String(t || '').slice(0, 5);
     const safeUrl = u => /^\s*javascript:/i.test(u || '') ? '#' : (u || '#');
 
-    async function loadTeacherWeek(monday, force) {
-      if (!force && T.monday === monday) return;
+    async function fetchWeek(monday) {
       const sun = addDays(monday, 6);
       const cols = 'id,class_id,session_no,session_date,start_time,end_time,status,lesson,homework,note,mode,classes(class_code,class_name)';
-      let a = await S.c.from('sessions').select(cols).gte('session_date', monday).lte('session_date', sun).order('session_date').order('start_time');
-      if (a.error && /homework/i.test(a.error.message || '')) a = await S.c.from('sessions').select(cols.replace('homework,', '')).gte('session_date', monday).lte('session_date', sun).order('session_date').order('start_time');
-      const [b, c] = await Promise.all([
+      const qs = c => S.c.from('sessions').select(c).gte('session_date', monday).lte('session_date', sun).order('session_date').order('start_time');
+      const [a0, b, c] = await Promise.all([
+        qs(cols),
         S.c.from('week_materials').select('id,kind,skill,title,url,class_ids,sort_order').eq('week_start', monday).order('sort_order').order('id'),
         S.c.from('assignment_classes').select('assignment_id,class_id,due_at,assignments(assignment_name,assignment_code,kind,page_path)').eq('week_start', monday).eq('is_active', true)
       ]);
+      let a = a0;
+      if (a.error && /homework/i.test(a.error.message || '')) a = await qs(cols.replace('homework,', ''));
       for (const r of [a, b, c]) if (r.error) throw r.error;
-      const cids = [...new Set((a.data || []).map(x => x.class_id))]; T.stu = {};
-      if (cids.length) { const st = await S.c.from('students').select('id,student_name,class_id').in('class_id', cids).eq('is_active', true).order('student_name'); if (st.error) throw st.error; (st.data || []).forEach(x => (T.stu[x.class_id] = T.stu[x.class_id] || []).push(x)); }
-      T.monday = monday; T.sess = a.data || []; T.mats = b.data || []; T.asg = c.data || [];
+      return { sess: a.data || [], mats: b.data || [], asg: c.data || [] };
+    }
+    function loadStudents(force) {
+      if (!force && T.allStu) return T.allStu;
+      T.allStu = Promise.resolve(S.c.from('students').select('id,student_name,class_id').eq('is_active', true).neq('student_code', '0000').order('student_name')).then(r => { if (r.error) { T.allStu = null; throw r.error; } return r.data || []; });
+      return T.allStu;
+    }
+    async function loadTeacherWeek(monday, force) {
+      if (!force && T.monday === monday) return;
+      if (force) T.cache.delete(monday);
+      const [w, stu] = await Promise.all([T.cache.has(monday) ? T.cache.get(monday) : fetchWeek(monday), loadStudents(force)]);
+      T.cache.set(monday, w);
+      T.stu = {}; const cids = new Set(w.sess.map(x => x.class_id));
+      stu.forEach(x => { if (cids.has(x.class_id)) (T.stu[x.class_id] = T.stu[x.class_id] || []).push(x); });
+      T.monday = monday; T.sess = w.sess; T.mats = w.mats; T.asg = w.asg;
+    }
+    function prefetchWeeks(monday) {
+      [addDays(monday, -7), addDays(monday, 7)].forEach(m => { if (!T.cache.has(m)) fetchWeek(m).then(w => { if (!T.cache.has(m)) T.cache.set(m, w); }).catch(() => {}); });
     }
     /* Lớp gần nhất sắp tới (xuyên các tuần) + kiểm tra đã có bài học / bài tập chưa */
     async function loadNext() {
@@ -1156,14 +1212,14 @@ a.t-open:hover span{text-decoration:underline}
         const r = await S.c.from('sessions').select('id,class_id,session_date,start_time,end_time,status,classes(class_code,class_name)').gte('session_date', k).in('status', ['planned', 'makeup']).order('session_date').order('start_time').limit(12);
         if (r.error) throw r.error;
         const n = (r.data || []).find(s => s.session_date > k || hhmm(s.end_time) > h);
-        if (!n) { T.next = null; return; }
+        if (!n) { T.next = null; T.nextAt = Date.now(); return; }
         const wk = mondayKey(dOf(n.session_date));
         const [m, a] = await Promise.all([
           S.c.from('week_materials').select('id,kind').eq('week_start', wk).contains('class_ids', [n.class_id]),
           S.c.from('assignment_classes').select('assignment_id').eq('week_start', wk).eq('class_id', n.class_id).eq('is_active', true)
         ]);
         const ms = m.data || [];
-        T.next = { s: n, lessons: ms.filter(x => x.kind === 'lesson').length, hw: ms.filter(x => x.kind === 'homework').length + (a.data || []).length };
+        T.next = { s: n, lessons: ms.filter(x => x.kind === 'lesson').length, hw: ms.filter(x => x.kind === 'homework').length + (a.data || []).length }; T.nextAt = Date.now();
       } catch (e) { T.next = null; }
     }
 
@@ -1183,22 +1239,29 @@ a.t-open:hover span{text-decoration:underline}
     const num = v => Number.isInteger(v) ? String(v) : v.toFixed(1);
     function tSubView() {
       const D = T.sub || { students: [], subs: [], writing: [], classes: [] };
-      const cards = T.asg.filter(x => x.assignments).map(x => {
-        const cls = D.classes.find(c => c.id === x.class_id) || {}, roster = D.students.filter(st => st.class_id === x.class_id);
-        const rows = roster.map(st => {
-          const sb = D.subs.filter(r => r.assignment_id === x.assignment_id && r.student_id === st.id), wr = D.writing.filter(r => r.assignment_id === x.assignment_id && r.student_id === st.id);
-          if (!sb.length && !wr.length) return { st, done: false };
-          const first = sb.filter(r => r.score != null).sort((a, b) => (a.attempt_no || 1) - (b.attempt_no || 1))[0];
-          const bands = wr.filter(r => r.band != null).map(r => Number(r.band));
-          return { st, done: true, late: sb.some(r => r.is_late) || wr.some(r => r.is_late), score: first ? Number(first.score) : null, band: bands.length ? bands.reduce((a, b) => a + b, 0) / bands.length : null, tries: sb.length ? Math.max(...sb.map(r => r.attempt_no || 1)) : 0 };
+      const fmtDue = d => d ? 'Hạn ' + new Date(d).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : 'Không có hạn';
+      const byA = new Map();
+      T.asg.filter(x => x.assignments).forEach(x => { if (!byA.has(x.assignment_id)) byA.set(x.assignment_id, { a: x.assignments, parts: [] }); byA.get(x.assignment_id).parts.push(x); });
+      const cards = [...byA.entries()].map(([aid, g]) => {
+        const groups = g.parts.map(x => {
+          const cls = D.classes.find(c => c.id === x.class_id) || {}, roster = D.students.filter(st => st.class_id === x.class_id);
+          const rows = roster.map(st => {
+            const sb = D.subs.filter(r => r.assignment_id === aid && r.student_id === st.id), wr = D.writing.filter(r => r.assignment_id === aid && r.student_id === st.id);
+            if (!sb.length && !wr.length) return { st, done: false };
+            const first = sb.filter(r => r.score != null).sort((a, b) => (a.attempt_no || 1) - (b.attempt_no || 1))[0];
+            const bands = wr.filter(r => r.band != null).map(r => Number(r.band));
+            return { st, done: true, late: sb.some(r => r.is_late) || wr.some(r => r.is_late), score: first ? Number(first.score) : null, band: bands.length ? bands.reduce((p, q) => p + q, 0) / bands.length : null, tries: sb.length ? Math.max(...sb.map(r => r.attempt_no || 1)) : 0 };
+          }).sort((p, q) => p.done - q.done);
+          return { x, cls, rows };
         });
-        const done = rows.filter(r => r.done), miss = rows.filter(r => !r.done), late = done.filter(r => r.late).length, sc = done.filter(r => r.score != null);
-        const avg = sc.length ? sc.reduce((a, r) => a + r.score, 0) / sc.length : null, pct = rows.length ? Math.round(done.length / rows.length * 100) : 0;
-        const due = x.due_at ? 'Hạn ' + new Date(x.due_at).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : 'Không có hạn';
-        return `<section class="card t-sub"><div class="t-sub-head"><div class="t-cls"><b>${esc(x.assignments.assignment_name)}</b><span>${esc(cls.class_name || cls.class_code || '')} · ${esc(due)}</span></div><div class="t-sum"><span class="tag ${done.length === rows.length && rows.length ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}">${done.length}/${rows.length} đã nộp</span>${late ? `<span class="tag bg-rose-50 text-rose-700">${late} nộp trễ</span>` : ''}${avg != null ? `<span class="tag bg-slate-100 text-slate-600">Điểm TB ${num(avg)}</span>` : ''}</div></div>
-          <div class="t-bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div>
-          ${miss.length ? `<div class="t-sub-title">Chưa nộp (${miss.length})</div><div class="t-chips">${miss.map(r => `<span class="tag bg-amber-50 text-amber-700">${esc(r.st.student_name)}</span>`).join('')}</div>` : (rows.length ? '<div class="t-sub-title">Cả lớp đã nộp</div>' : '<div class="t-none">Lớp chưa có học viên.</div>')}
-          ${done.length ? `<div class="t-sub-title">Đã nộp (${done.length})</div>${done.map(r => `<div class="t-sub-row"><span>${esc(r.st.student_name)}</span><span class="t-sub-meta">${r.score != null ? '<b>' + num(r.score) + '</b>' : ''}${r.band != null ? '<b>Band ' + num(r.band) + '</b>' : ''}${r.tries > 1 ? '<span class="tag bg-slate-100 text-slate-600">Lần ' + r.tries + '</span>' : ''}${r.late ? '<span class="tag bg-rose-50 text-rose-700">Trễ</span>' : ''}</span></div>`).join('')}` : ''}</section>`;
+        const all = groups.flatMap(z => z.rows), done = all.filter(r => r.done), late = done.filter(r => r.late).length, sc = done.filter(r => r.score != null);
+        const avg = sc.length ? sc.reduce((p, r) => p + r.score, 0) / sc.length : null, pct = all.length ? Math.round(done.length / all.length * 100) : 0;
+        const multi = groups.length > 1, name = c => esc(c.class_name || c.class_code || '');
+        const sub = multi ? groups.map(z => name(z.cls)).join(' · ') : name(groups[0].cls) + ' · ' + esc(fmtDue(groups[0].x.due_at));
+        const line = r => `<div class="t-sub-row"><span>${esc(r.st.student_name)}</span><span class="t-sub-meta">${r.done ? `${r.score != null ? '<b>' + num(r.score) + '</b>' : ''}${r.band != null ? '<b>Band ' + num(r.band) + '</b>' : ''}${r.tries > 1 ? '<span class="tag bg-slate-100 text-slate-600">Lần ' + r.tries + '</span>' : ''}${r.late ? '<span class="tag bg-rose-50 text-rose-700">Trễ</span>' : ''}${r.score == null && r.band == null && !r.late ? '<span class="tag bg-emerald-50 text-emerald-700">Đã nộp</span>' : ''}` : '<span class="tag bg-amber-50 text-amber-700">Chưa nộp</span>'}</span></div>`;
+        const list = groups.map(z => (multi ? `<div class="t-sub-title">${name(z.cls)} · ${esc(fmtDue(z.x.due_at))}</div>` : '') + (z.rows.map(line).join('') || '<div class="t-none">Lớp chưa có học viên.</div>')).join('');
+        return `<section class="card t-sub" data-aid="${aid}"><div class="t-sub-head" aria-expanded="${T.subOpen.has(String(aid))}"><div class="t-cls"><b>${esc(g.a.assignment_name)}</b><span>${sub}</span></div><div class="t-sum"><span class="tag ${done.length === all.length && all.length ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}">${done.length}/${all.length} đã nộp</span>${late ? `<span class="tag bg-rose-50 text-rose-700">${late} nộp trễ</span>` : ''}${avg != null ? `<span class="tag bg-slate-100 text-slate-600">Điểm TB ${num(avg)}</span>` : ''}</div></div>
+          <div class="t-bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div><div class="t-sub-body" ${T.subOpen.has(String(aid)) ? '' : 'hidden'}>${list}</div></section>`;
       });
       return `<section class="card t-daybar"><h2><i data-lucide="inbox"></i>Bài nộp trong tuần</h2><button type="button" class="t-ic" data-t="sub-refresh" aria-label="Tải lại bài nộp" title="Tải lại"><i data-lucide="refresh-cw"></i></button></section>${cards.join('') || '<section class="card text-center text-sm text-slate-500">Tuần này chưa giao bài online nào.</section>'}`;
     }
@@ -1208,10 +1271,10 @@ a.t-open:hover span{text-decoration:underline}
       return `<div class="t-mat"><a class="t-open" href="${esc(safeUrl(m.url))}"><i data-lucide="external-link"></i><span>${esc(m.title)}</span></a>${shared ? '<span class="tag bg-slate-100 text-slate-600">Dùng chung</span>' : ''}${edit ? `<button type="button" class="t-ic" data-t="mat-edit" data-id="${m.id}" aria-label="Sửa tài liệu"><i data-lucide="pencil"></i></button><button type="button" class="t-ic" data-t="mat-del" data-id="${m.id}" data-cid="${cid}" aria-label="Xóa khỏi lớp này"><i data-lucide="trash-2"></i></button>` : ''}</div>`;
     }
     function tAsg(x) {
-      const a = x.assignments, due = x.due_at ? ' · Hạn ' + new Date(x.due_at).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : '';
+      const a = x.assignments, due = x.due_at ? 'Hạn ' + new Date(x.due_at).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : '';
       let href = ''; if (a.page_path) { try { const u = new URL(a.page_path, location.href); u.searchParams.set('s', '0000'); href = u.href; } catch (e) { href = ''; } }
-      const inner = `<i data-lucide="clipboard-list"></i><span>${esc(a.assignment_name)}${due}</span>`;
-      return `<div class="t-mat">${href ? `<a class="t-open" href="${esc(href)}">${inner}</a>` : `<span class="t-open">${inner}</span>`}<span class="tag bg-blue-50 text-blue-700">Bài online</span></div>`;
+      const inner = `<i data-lucide="clipboard-list"></i><span class="t-name">${esc(a.assignment_name)}</span>`;
+      return `<div class="t-mat">${href ? `<a class="t-open" href="${esc(href)}">${inner}</a>` : `<span class="t-open">${inner}</span>`}<span class="t-due">${due}</span><span class="tag bg-blue-50 text-blue-700">Bài online</span></div>`;
     }
     function tForm(kind, cid) {
       return `<form class="t-form" data-t="mat-form" data-kind="${kind}" data-cid="${cid}"><input class="field" type="hidden" name="id"><input class="field" name="title" placeholder="Tên tài liệu" required><input class="field" name="url" placeholder="Link" required><button type="submit" class="t-ic" aria-label="Lưu tài liệu"><i data-lucide="plus"></i></button></form>`;
@@ -1222,16 +1285,12 @@ a.t-open:hover span{text-decoration:underline}
       const asg = T.asg.filter(x => x.class_id === cid && x.assignments);
       const nL = mats('lesson').length, nH = mats('homework').length + asg.length, n = (T.stu[cid] || []).length;
       return `<div class="t-row" data-sid="${s.id}" data-cid="${cid}">
-        <div class="t-row-head"><button type="button" class="t-chev" data-t="toggle" data-sid="${s.id}" aria-expanded="${open}" aria-label="Mở hoặc thu gọn lớp"><i data-lucide="chevron-down"></i></button>
+        <div class="t-row-head" aria-expanded="${open}">
           <b class="t-cname">${esc(cl.class_name || cl.class_code || '')}</b>
-          <div class="t-sum"><button type="button" class="t-chip" data-t="roster" data-cid="${cid}" aria-label="Xem danh sách học viên"><i data-lucide="users"></i>${n} học viên</button><span class="tag bg-slate-100 text-slate-600">${s.mode === 'online' ? 'Online' : 'Trực tiếp'}</span><span class="tag ${nL ? 'bg-slate-100 text-slate-600' : 'bg-amber-50 text-amber-700'}">${nL} bài học</span><span class="tag ${nH ? 'bg-slate-100 text-slate-600' : 'bg-amber-50 text-amber-700'}">${nH} bài tập</span></div></div>
+          <div class="t-sum"><button type="button" class="t-chip" data-t="roster" data-cid="${cid}" data-sid="${s.id}" aria-label="Xem danh sách học viên"><i data-lucide="users"></i>${n} học viên</button><span class="tag bg-slate-100 text-slate-600">${s.mode === 'online' ? 'Online' : 'Trực tiếp'}</span><span class="tag ${nL ? 'bg-slate-100 text-slate-600' : 'bg-amber-50 text-amber-700'}">${nL} bài học</span><span class="tag ${nH ? 'bg-slate-100 text-slate-600' : 'bg-amber-50 text-amber-700'}">${nH} bài tập</span></div></div>
         <div class="t-body" ${open ? '' : 'hidden'}>
-          <div class="t-grid">
-            <div><h3><i data-lucide="presentation"></i>Bài học</h3>${mats('lesson').map(m => tMat(m, cid, true)).join('') || '<p class="t-none">Tuần này chưa có bài học.</p>'}${tForm('lesson', cid)}</div>
-            <div><h3><i data-lucide="file-check-2"></i>Bài tập</h3>${mats('homework').map(m => tMat(m, cid, true)).join('')}${asg.map(tAsg).join('')}${nH ? '' : '<p class="t-none">Tuần này chưa có bài tập.</p>'}${tForm('homework', cid)}</div>
-          </div>
-          <div class="t-fields"><label>Nội dung buổi<input class="field" data-f="lesson" value="${esc(s.lesson || '')}"></label><label>Bài tập về nhà<input class="field" data-f="homework" value="${esc(s.homework || '')}"></label><label class="t-wide">Ghi chú<textarea class="field" data-f="note" rows="2">${esc(s.note || '')}</textarea></label></div>
-          <div class="t-save"><button type="button" class="btn-primary" data-t="sess-save" data-id="${s.id}"><i data-lucide="save" class="w-4 h-4"></i><span>Lưu buổi học</span></button></div>
+          ${(nL || nH) ? `<div class="t-grid"><div><h3><i data-lucide="presentation"></i>Bài học</h3>${nL ? mats('lesson').map(m => tMat(m, cid, false)).join('') : '<p class="t-none">Chưa có bài học.</p>'}</div><div><h3><i data-lucide="file-check-2"></i>Bài tập</h3>${nH ? mats('homework').map(m => tMat(m, cid, false)).join('') + asg.map(tAsg).join('') : '<p class="t-none">Chưa có bài tập.</p>'}</div></div>` : '<p class="t-none">Buổi học chưa có học liệu.</p>'}
+          <div class="t-fields"><label class="t-wide">Ghi chú<textarea class="field" data-f="note" rows="2">${esc(s.note || '')}</textarea></label></div>
         </div></div>`;
     }
     /* Mỗi khung giờ là 1 thẻ: giờ + trạng thái ở trên, mỗi lớp trong khung giờ đó là 1 hàng */
@@ -1241,27 +1300,52 @@ a.t-open:hover span{text-decoration:underline}
       return groups.map(g => {
         const first = g.s[0], same = g.s.every(x => x.status === first.status);
         const label = hhmm(first.start_time) + (first.end_time ? ' – ' + hhmm(first.end_time) : '');
-        return `<section class="card t-slot"><div class="t-slot-head"><div class="t-time">${label}</div><select class="field t-status" data-st="${same ? first.status : 'mixed'}" data-f="status" data-sids="${g.s.map(x => x.id).join(',')}" aria-label="Trạng thái buổi">${same ? '' : '<option value="" selected disabled>Nhiều trạng thái</option>'}${Object.keys(STATUS).map(k => `<option value="${k}" ${same && k === first.status ? 'selected' : ''}>${STATUS[k][0]}</option>`).join('')}</select></div>${g.s.map(tRow).join('')}</section>`;
+        return `<section class="card t-slot${T.slotOpen.has(g.key) ? ' is-open' : ''}" data-key="${g.key}"><div class="t-slot-head"><div class="t-time">${label}</div><select class="field t-status" data-st="${same ? first.status : 'mixed'}" data-f="status" data-sids="${g.s.map(x => x.id).join(',')}" aria-label="Trạng thái buổi">${same ? '' : '<option value="" selected disabled>Nhiều trạng thái</option>'}${Object.keys(STATUS).map(k => `<option value="${k}" ${same && k === first.status ? 'selected' : ''}>${STATUS[k][0]}</option>`).join('')}</select><button type="button" class="btn-primary t-save-btn" data-t="sess-save" aria-label="Lưu buổi học" title="Lưu buổi học"><i data-lucide="save" class="w-4 h-4"></i></button></div>${g.s.map(tRow).join('')}</section>`;
       }).join('');
     }
-    function tRoster(cid) {
+    async function tRoster(cid, sid) {
       const cl = (T.sess.find(s => s.class_id === cid) || {}).classes || {}, list = T.stu[cid] || [];
       const o = document.createElement('div'); o.className = 't-modal';
-      o.innerHTML = `<div class="t-modal-box" role="dialog" aria-modal="true" aria-label="Danh sách học viên"><div class="t-modal-head"><h3>${esc(cl.class_name || cl.class_code || '')} · ${list.length} học viên</h3><button type="button" class="t-ic" data-x aria-label="Đóng"><i data-lucide="x"></i></button></div><ol class="t-roster">${list.map(x => `<li>${esc(x.student_name)}</li>`).join('') || '<li class="t-none">Lớp chưa có học viên.</li>'}</ol></div>`;
+      o.innerHTML = `<div class="t-modal-box" role="dialog" aria-modal="true" aria-label="Danh sách học viên"><div class="t-modal-head"><h3>${esc(cl.class_name || cl.class_code || '')} · ${list.length} học viên</h3><button type="button" class="t-ic" data-x aria-label="Đóng"><i data-lucide="x"></i></button></div>${list.length ? '<div class="t-roster-cap"><span>Học viên</span><span>Điểm danh</span></div>' : ''}<div class="t-roster">${list.map(x => `<label class="t-ros-row"><span>${esc(x.student_name)}</span><input type="checkbox" class="t-ros-chk" data-stu="${x.id}" aria-label="Điểm danh ${esc(x.student_name)}"></label>`).join('') || '<p class="t-none">Lớp chưa có học viên.</p>'}</div></div>`;
       const key = e => { if (e.key === 'Escape') close(); }, close = () => { document.removeEventListener('keydown', key); o.remove(); };
       o.addEventListener('click', e => { if (e.target === o || e.target.closest('[data-x]')) close(); });
+      o.addEventListener('change', async e => {
+        const c = e.target.closest('.t-ros-chk'); if (!c) return;
+        const stu = Number(c.dataset.stu); c.disabled = true;
+        try {
+          const r = c.checked ? await S.c.from('attendance').upsert({ session_id: sid, student_id: stu, status: 'present', updated_at: new Date().toISOString() }) : await S.c.from('attendance').delete().eq('session_id', sid).eq('student_id', stu);
+          if (r.error) throw r.error;
+        } catch (err) { c.checked = !c.checked; LMS.toast('Không lưu được điểm danh'); }
+        c.disabled = false;
+      });
       document.addEventListener('keydown', key); document.body.appendChild(o); icons();
+      if (list.length) { const r = await S.c.from('attendance').select('student_id,status').eq('session_id', sid); (r.data || []).forEach(a => { const c = o.querySelector('.t-ros-chk[data-stu="' + a.student_id + '"]'); if (c && a.status === 'present') c.checked = true; }); }
     }
     function tWeekList(kind) {
-      const ids = [...new Set(T.sess.map(s => s.class_id))];
-      const rows = ids.map(id => {
-        const first = T.sess.find(s => s.class_id === id), cl = first.classes || {};
-        const ms = T.mats.filter(m => m.kind === kind && (m.class_ids || []).includes(id));
-        const asg = kind === 'homework' ? T.asg.filter(x => x.class_id === id && x.assignments) : [];
-        return `<div class="t-class"><div class="t-class-name"><b>${esc(cl.class_name || cl.class_code || '')}</b><span>${fmtDay(first.session_date)}</span></div><div>${ms.map(m => tMat(m, id, false)).join('')}${asg.map(tAsg).join('') || ''}${(!ms.length && !asg.length) ? '<p class="t-none">Chưa có.</p>' : ''}</div></div>`;
-      });
-      const icon = kind === 'lesson' ? 'presentation' : 'file-check-2';
-      return `<section class="card"><h2><i data-lucide="${icon}"></i>${kind === 'lesson' ? 'Bài học' : 'Bài tập'} các lớp trong tuần</h2>${rows.join('') || '<div class="text-sm text-slate-500">Tuần này chưa có buổi học nào.</div>'}</section>`;
+      const list = [...T.sess].sort((a, b) => (a.session_date + hhmm(a.start_time)).localeCompare(b.session_date + hhmm(b.start_time)));
+      const tdy = ymd(new Date()), days = [...new Set(list.map(s => s.session_date))].sort((a, b) => (b === tdy) - (a === tdy));
+      const icon = kind === 'lesson' ? 'presentation' : 'file-check-2', title = kind === 'lesson' ? 'Bài học' : 'Bài tập';
+      const cards = days.map(d => {
+        const day = list.filter(s => s.session_date === d), key = kind + d, closed = T.dayClosed.has(key);
+        const rows = day.map(s => {
+          const id = s.class_id, cl = s.classes || {};
+          const ms = T.mats.filter(m => m.kind === kind && (m.class_ids || []).includes(id));
+          const asg = kind === 'homework' ? T.asg.filter(x => x.class_id === id && x.assignments) : [];
+          const empty = !ms.length && !asg.length;
+          return `<div class="t-class${empty ? ' is-empty' : ''}"><div class="t-class-name"><b>${esc(cl.class_name || cl.class_code || '')}</b><span>${hhmm(s.start_time)} – ${hhmm(s.end_time)}</span></div><div>${empty ? '<p class="t-none">Chưa có.</p>' : ms.map(m => tMat(m, id, false)).join('') + asg.map(tAsg).join('')}</div></div>`;
+        }).join('');
+        return `<section class="card t-dayc" data-dkey="${key}"><div class="t-dayc-head" aria-expanded="${!closed}"><h2><i data-lucide="calendar-days"></i>${d === tdy ? 'Hôm nay - ' : ''}${fmtDay(d)}</h2><span class="tag bg-slate-100 text-slate-600">${day.length} lớp</span></div><div class="t-dayc-body" ${closed ? 'hidden' : ''}>${rows}</div></section>`;
+      }).join('');
+      return `<section class="card t-daybar"><h2><i data-lucide="${icon}"></i>${title} các lớp trong tuần</h2></section>${cards || '<section class="card text-center text-sm text-slate-500">Tuần này chưa có buổi học nào.</section>'}`;
+    }
+    function tPickCard(list) {
+      const one = s => {
+        const cid = s.class_id, cl = s.classes || {}, nL = T.mats.filter(m => m.kind === 'lesson' && (m.class_ids || []).includes(cid)).length;
+        const nH = T.mats.filter(m => m.kind === 'homework' && (m.class_ids || []).includes(cid)).length + T.asg.filter(x => x.class_id === cid && x.assignments).length;
+        const chk = (label, c) => `<div class="t-chk"><span>${label}</span><span class="tag ${c ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${c ? c + ' tài liệu' : 'Chưa có'}</span></div>`;
+        return `<div class="t-pick"><div class="t-next"><b>${esc(cl.class_name || cl.class_code || '')}</b><span>${fmtDay(s.session_date)} · ${hhmm(s.start_time)} – ${hhmm(s.end_time)}</span><span class="t-when">${esc((STATUS[s.status] || [s.status])[0])} · ${s.mode === 'online' ? 'Online' : 'Trực tiếp'} · ${(T.stu[cid] || []).length} học viên</span></div>${chk('Bài học', nL)}${chk('Bài tập', nH)}</div>`;
+      };
+      return `<section class="card"><div class="t-card-head"><h2><i data-lucide="info"></i>Thông tin buổi học</h2><button type="button" class="t-ic" data-t="pick-clear" aria-label="Xem lớp sắp tới" title="Lớp sắp tới"><i data-lucide="bell"></i></button></div>${list.map(one).join('')}<button type="button" class="t-btn" data-t="pick-open" data-key="${T.pick}">Xem buổi học</button></section>`;
     }
     function tNextCard() {
       const n = T.next; if (!n) return `<section class="card"><h2><i data-lucide="bell"></i>Lớp sắp tới</h2><div class="text-sm text-slate-500">Chưa có buổi học nào sắp tới.</div></section>`;
@@ -1277,21 +1361,21 @@ a.t-open:hover span{text-decoration:underline}
       const days = Array.from({ length: 7 }, (_, i) => addDays(T.monday, i)), mon = dOf(T.monday), sun = dOf(days[6]);
       const cnt = k => T.sess.filter(s => s.session_date === k).length;
       const list = T.sess.filter(s => s.session_date === T.date);
-      if (T.openFor !== T.date) { T.openFor = T.date; T.open = new Set(); const f = list.find(s => s.status === 'planned' || s.status === 'makeup'); if (f) T.open.add(f.id); }
+      if (T.openFor !== T.date) { T.openFor = T.date; T.open = new Set(); T.slotOpen = new Set(); T.pick = null; }
       const wk = Math.floor((mon - BASE_MONDAY) / 6048e5) + 1;
       const range = `${pad(mon.getDate())}.${pad(mon.getMonth() + 1)} – ${pad(sun.getDate())}.${pad(sun.getMonth() + 1)}.${sun.getFullYear()}`;
       const titles = { day: 'Lịch dạy', lessons: 'Bài học tuần', submissions: 'Bài nộp' };
       const nav = (k, label, icon) => `<button type="button" class="${T.view === k ? 'active' : ''}" data-t="view" data-view="${k}" ${T.view === k ? 'aria-current="page"' : ''}><i data-lucide="${icon}"></i><span>${label}</span></button>`;
       const cal = days.map((k, i) => `<button type="button" class="week-calendar-day${cnt(k) ? ' has-session' : ''}${k === today ? ' today' : ''}${k === T.date ? ' selected' : ''}" data-t="day" data-date="${k}" aria-label="${fmtDay(k)}, ${cnt(k)} lớp" title="${fmtDay(k)} · ${cnt(k)} lớp"><span>${['T2','T3','T4','T5','T6','T7','CN'][i]}</span><b>${pad(dOf(k).getDate())}</b></button>`).join('');
       const slots = []; list.forEach(x => { const key = hhmm(x.start_time) + ' – ' + hhmm(x.end_time); let g = slots.find(z => z.key === key); if (!g) { g = { key, all: [] }; slots.push(g); } g.all.push(x); });
-      const tt = slots.length ? `<div class="t-tt-title">${fmtDay(T.date)}</div>${slots.map(g => `<div class="t-tt-slot${g.all.every(x => x.status === 'done') ? ' done' : ''}">${g.key}</div>`).join('')}` : `<div class="text-sm text-slate-500">${fmtDay(T.date)}: không có buổi học.</div>`;
+      const tt = slots.length ? `<div class="t-tt-title">${fmtDay(T.date)}</div>${slots.map(g => `<button type="button" class="t-tt-slot${g.all.every(x => x.status === 'done') ? ' done' : ''}${T.pick === g.key ? ' picked' : ''}" data-t="pick" data-key="${g.key}" aria-pressed="${T.pick === g.key}">${g.key}<span class="t-tt-cls">${g.all.map(x => esc((x.classes && (x.classes.class_name || x.classes.class_code)) || '')).join(' · ')}</span></button>`).join('')}` : `<div class="text-sm text-slate-500">${fmtDay(T.date)}: không có buổi học.</div>`;
       const done = T.sess.filter(s => s.status === 'done').length, left = T.sess.filter(s => s.status === 'planned' || s.status === 'makeup').length;
       const body = T.view === 'lessons' ? tWeekList('lesson') : T.view === 'submissions' ? tSubView()
         : `<section class="card t-daybar"><h2><i data-lucide="calendar-days"></i>${fmtDay(T.date)}</h2><span class="tag bg-slate-100 text-slate-600">${list.length} lớp</span></section>${tSlots(list) || '<section class="card text-center text-sm text-slate-500">Không có lớp nào ngày này.</section>'}`;
       const rail = `<section class="card"><h2><i data-lucide="bar-chart-3"></i>Tổng kết tuần</h2><div class="t-stats"><div class="t-stat c-all"><b>${T.sess.length}</b><span>Buổi</span></div><div class="t-stat c-done"><b>${done}</b><span>Đã dạy</span></div><div class="t-stat c-left"><b>${left}</b><span>Sắp tới</span></div></div></section>
         <section class="card"><div class="week-calendar-head"><span class="week-calendar-title"><i data-lucide="calendar-days"></i>Thời khóa biểu tuần ${wk}</span><span class="week-calendar-range">${range}</span></div><div class="week-calendar" role="grid" aria-label="Chọn ngày">${cal}</div><div class="t-tt">${tt}</div></section>
-        ${tNextCard()}`;
-      $('app').innerHTML = `<div class="student-shell student-shell-inner-tabs"><div class="student-welcome"><div class="student-welcome-left"><img class="student-welcome-logo" src="logo-wordmark-gold-navy.png" alt="gblearninghub"><span class="student-welcome-brand-divider" aria-hidden="true"></span></div><div class="student-welcome-title"><h1>${titles[T.view]}</h1><p>Khu vực giảng dạy</p></div><div class="student-welcome-right"><div class="student-welcome-actions"><div class="overview-week-controls" role="group" aria-label="Chọn tuần"><button type="button" class="icon-btn" data-t="wk" data-step="-7" aria-label="Tuần trước"><i data-lucide="chevron-left" class="w-4 h-4"></i></button><span class="overview-week-label"><b>Tuần ${pad(wk)}</b><span>${range}</span></span><button type="button" class="icon-btn" data-t="wk" data-step="7" aria-label="Tuần sau"><i data-lucide="chevron-right" class="w-4 h-4"></i></button><button type="button" class="icon-btn" data-t="today" aria-label="Về hôm nay" title="Hôm nay"><i data-lucide="calendar-check" class="w-4 h-4"></i></button></div></div><div class="student-welcome-tools"></div></div></div>
+        ${T.pick && slots.find(g => g.key === T.pick) ? tPickCard(slots.find(g => g.key === T.pick).all) : tNextCard()}`;
+      $('app').innerHTML = `<div class="student-shell student-shell-inner-tabs"><div class="student-welcome"><div class="student-welcome-left"><img class="student-welcome-logo" src="logo-wordmark-gold-navy.png" alt="gblearninghub"><span class="student-welcome-brand-divider" aria-hidden="true"></span></div><div class="student-welcome-title"><h1>${titles[T.view]}</h1><p>Khu vực giảng dạy</p></div><div class="student-welcome-right"><div class="student-welcome-actions"><div class="overview-week-controls" role="group" aria-label="Chọn tuần"><button type="button" class="icon-btn" data-t="wk" data-step="-7" aria-label="Tuần trước"><i data-lucide="chevron-left" class="w-4 h-4"></i></button><span class="overview-week-label"><b>Tuần ${pad(wk)}</b><span>${range}</span></span><button type="button" class="icon-btn" data-t="wk" data-step="7" aria-label="Tuần sau"><i data-lucide="chevron-right" class="w-4 h-4"></i></button><button type="button" class="t-thisweek${T.monday === mondayKey(new Date()) ? ' on' : ''}" data-t="today" aria-label="Về tuần hiện tại" title="Tuần hiện tại">Tuần này</button></div></div><div class="student-welcome-tools"></div></div></div>
         <aside class="student-sidebar" aria-label="Điều hướng giáo viên"><div class="student-brand"><img src="logo-wordmark-gold-navy.png" alt="gblearninghub"></div><nav class="student-nav">${nav('day', 'Lịch dạy', 'calendar-days')}${nav('lessons', 'Bài học', 'presentation')}${nav('submissions', 'Bài nộp', 'inbox')}</nav></aside>
         <div class="student-workspace"><section class="student-main" aria-label="Nội dung giảng dạy"><div class="student-main-content t-content">${body}</div></section><aside class="student-rail t-rail" aria-label="Tổng kết và lịch tuần">${rail}</aside></div></div>`;
       const tools = document.querySelector('.student-welcome-tools');
@@ -1299,22 +1383,22 @@ a.t-open:hover span{text-decoration:underline}
       icons(); window.scrollTo(0, y);
     }
     async function renderTeacher(dateArg) {
-      T.on = true; restoreHeaderActions();
+      const redraw = !!$('app').querySelector('.t-content'); T.on = true; if (!redraw) restoreHeaderActions();
       $('hello').textContent = 'Giáo viên'; $('hello-sub').textContent = 'Khu vực giảng dạy'; document.title = 'Giáo viên | gblearning';
       ['btn-class', 'btn-back'].forEach(id => $(id).classList.add('hidden')); $('btn-home').classList.remove('hidden');
       if (!$('app').querySelector('.t-content')) $('app').innerHTML = '<div class="card text-center text-sm text-slate-500">Đang tải...</div>';
       try {
-        await LMS.requireTeacher();
+        if (!T.authed) { await LMS.requireTeacher(); T.authed = true; }
         T.date = /^\d{4}-\d{2}-\d{2}$/.test(dateArg || '') ? dateArg : ymd(new Date());
-        await Promise.all([loadTeacherWeek(mondayKey(dOf(T.date))), loadNext()]);
+        await Promise.all([loadTeacherWeek(mondayKey(dOf(T.date))), Date.now() - T.nextAt < 60000 ? null : loadNext()]);
         if (T.view === 'submissions') await loadSubs();
-        bindTeacher(); drawTeacher();
+        bindTeacher(); drawTeacher(); prefetchWeeks(T.monday);
       } catch (e) { showError(errText(e)); }
     }
     async function tRefresh() { await Promise.all([loadTeacherWeek(T.monday, true), loadNext()]); if (T.view === 'submissions') await loadSubs(); drawTeacher(); }
     function tToggle(sid) {
       const card = $('app').querySelector('.t-row[data-sid="' + sid + '"]'); if (!card) return;
-      const body = card.querySelector('.t-body'), btn = card.querySelector('.t-chev'), open = body.hidden;
+      const body = card.querySelector('.t-body'), btn = card.querySelector('.t-row-head'), open = body.hidden;
       body.hidden = !open; btn.setAttribute('aria-expanded', String(open)); open ? T.open.add(Number(sid)) : T.open.delete(Number(sid));
     }
     function bindTeacher() {
@@ -1322,6 +1406,10 @@ a.t-open:hover span{text-decoration:underline}
       const app = $('app');
       app.addEventListener('click', async e => {
         if (!T.on) return;
+        const sx = e.target.closest('.t-sub-head, .t-bar');
+        if (sx) { const c = sx.closest('.t-sub'), body = c.querySelector('.t-sub-body'), open = body.hidden, k = c.dataset.aid; body.hidden = !open; c.querySelector('.t-sub-head').setAttribute('aria-expanded', String(open)); open ? T.subOpen.add(k) : T.subOpen.delete(k); return; }
+        const dh = e.target.closest('.t-dayc-head');
+        if (dh) { const c = dh.closest('.t-dayc'), body = c.querySelector('.t-dayc-body'), open = body.hidden; body.hidden = !open; dh.setAttribute('aria-expanded', String(open)); open ? T.dayClosed.delete(c.dataset.dkey) : T.dayClosed.add(c.dataset.dkey); return; }
         const sh = e.target.closest('.t-slot-head');
         if (sh && !e.target.closest('select, a, input, textarea, button')) { const rows = [...sh.closest('.t-slot').querySelectorAll('.t-row')], anyOpen = rows.some(r => !r.querySelector('.t-body').hidden); rows.forEach(r => { const open = !r.querySelector('.t-body').hidden; if (open === anyOpen) tToggle(r.dataset.sid); }); return; }
         const head = e.target.closest('.t-row-head');
@@ -1330,17 +1418,21 @@ a.t-open:hover span{text-decoration:underline}
         const k = b.dataset.t;
         try {
           if (k === 'toggle') tToggle(b.dataset.sid);
-          else if (k === 'roster') tRoster(Number(b.dataset.cid));
+          else if (k === 'pick') { T.pick = T.pick === b.dataset.key ? null : b.dataset.key; drawTeacher(); }
+          else if (k === 'pick-clear') { T.pick = null; drawTeacher(); }
+          else if (k === 'pick-open') { T.view = 'day'; T.slotOpen.add(b.dataset.key); T.sess.filter(x => x.session_date === T.date && hhmm(x.start_time) + ' – ' + hhmm(x.end_time) === b.dataset.key).forEach(x => T.open.add(x.id)); drawTeacher(); window.scrollTo(0, 0); }
+          else if (k === 'roster') tRoster(Number(b.dataset.cid), Number(b.dataset.sid));
           else if (k === 'view') { T.view = b.dataset.view; if (T.view === 'submissions') { drawTeacher(); await loadSubs(); } drawTeacher(); window.scrollTo(0, 0); }
           else if (k === 'sub-refresh') { await loadSubs(); drawTeacher(); LMS.toast('Đã tải lại bài nộp'); }
           else if (k === 'day') { const d = b.dataset.date; T.view = 'day'; if (mondayKey(dOf(d)) === T.monday) { T.date = d; history.replaceState(null, '', '#teacher/' + d); drawTeacher(); } else location.hash = '#teacher/' + d; }
           else if (k === 'wk') { location.hash = '#teacher/' + addDays(T.date, Number(b.dataset.step)); }
           else if (k === 'today') { location.hash = '#teacher/' + ymd(new Date()); }
           else if (k === 'sess-save') {
-            const card = b.closest('.t-row'), v = f => card.querySelector('[data-f="' + f + '"]').value.trim();
-            const patch = { lesson: v('lesson') || null, homework: v('homework') || null, note: v('note') || null };
-            const r = await S.c.from('sessions').update(patch).eq('id', Number(b.dataset.id)); if (r.error) throw r.error;
-            const s = T.sess.find(x => x.id === Number(b.dataset.id)); if (s) Object.assign(s, patch);
+            for (const row of b.closest('.t-slot').querySelectorAll('.t-row')) {
+              const id = Number(row.dataset.sid), patch = { note: row.querySelector('[data-f="note"]').value.trim() || null };
+              const r = await S.c.from('sessions').update(patch).eq('id', id); if (r.error) throw r.error;
+              const x = T.sess.find(y => y.id === id); if (x) Object.assign(x, patch);
+            }
             LMS.toast('Đã lưu buổi học');
           }
           else if (k === 'mat-edit') {
