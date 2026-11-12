@@ -734,8 +734,11 @@
     .student-overview-highlight .g-prog>.goal-pair>.goal:nth-child(2) .gl svg{color:#b38324!important}
   </style>
 <style id="teacher-css">
-.t-content{display:flex;flex-direction:column;gap:14px}
-.t-rail{overflow-y:auto!important}
+.t-content{display:flex;flex-direction:column;gap:14px;flex:1 1 auto;min-height:0}
+.student-main>.t-daybar{flex:none;margin-bottom:14px}
+.t-rail{overflow:hidden!important;overscroll-behavior:none}
+@media(min-width:1051px){.t-rail>.card:nth-child(2){flex:1 1 0!important;min-height:0;display:flex;flex-direction:column}.t-rail>.card:nth-child(2) .t-tt{flex:1 1 0;height:auto;min-height:0}}
+@media(max-width:1050px){.t-rail{overflow:visible!important}}
 .t-daybar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 20px!important}
 .t-daybar h2{margin:0!important}
 .student-main .card.t-daybar{box-sizing:border-box;height:60px;min-height:60px;padding-top:0!important;padding-bottom:0!important}
@@ -1379,12 +1382,13 @@ a.t-open:hover span{text-decoration:underline}
       const done = T.sess.filter(s => s.status === 'done').length, left = T.sess.filter(s => s.status === 'planned' || s.status === 'makeup').length;
       const body = T.view === 'lessons' ? tWeekList('lesson') : T.view === 'submissions' ? tSubView()
         : `<section class="card t-daybar"><h2><i data-lucide="calendar-days"></i>${fmtDay(T.date)}</h2><span class="tag bg-slate-100 text-slate-600">${list.length} lớp</span></section>${tSlots(list) || '<section class="card text-center text-sm text-slate-500">Không có lớp nào ngày này.</section>'}`;
+      const hm = body.match(/^<section class="card t-daybar">[\s\S]*?<\/section>/), head = hm ? hm[0] : '', rest = body.slice(head.length);
       const rail = `<section class="card"><h2><i data-lucide="bar-chart-3"></i>Tổng kết tuần</h2><div class="t-stats"><div class="t-stat c-all"><b>${T.sess.length}</b><span>Buổi</span></div><div class="t-stat c-done"><b>${done}</b><span>Đã dạy</span></div><div class="t-stat c-left"><b>${left}</b><span>Sắp tới</span></div></div></section>
         <section class="card"><div class="week-calendar-head"><span class="week-calendar-title"><i data-lucide="calendar-days"></i>Thời khóa biểu tuần ${wk}</span><span class="week-calendar-range">${range}</span></div><div class="week-calendar" role="grid" aria-label="Chọn ngày">${cal}</div><div class="t-tt">${tt}</div></section>
         ${T.pick && slots.find(g => g.key === T.pick) ? tPickCard(slots.find(g => g.key === T.pick).all) : tNextCard()}`;
       $('app').innerHTML = `<div class="student-shell student-shell-inner-tabs"><div class="student-welcome"><div class="student-welcome-left"><img class="student-welcome-logo" src="logo-wordmark-gold-navy.png" alt="gblearninghub"><span class="student-welcome-brand-divider" aria-hidden="true"></span></div><div class="student-welcome-title"><h1>${titles[T.view]}</h1><p>Khu vực giảng dạy</p></div><div class="student-welcome-right"><div class="student-welcome-actions"><div class="overview-week-controls" role="group" aria-label="Chọn tuần"><button type="button" class="icon-btn" data-t="wk" data-step="-7" aria-label="Tuần trước"><i data-lucide="chevron-left" class="w-4 h-4"></i></button><span class="overview-week-label"><b>Tuần ${pad(wk)}</b><span>${range}</span></span><button type="button" class="icon-btn" data-t="wk" data-step="7" aria-label="Tuần sau"><i data-lucide="chevron-right" class="w-4 h-4"></i></button><button type="button" class="t-thisweek${T.monday === mondayKey(new Date()) ? ' on' : ''}" data-t="today" aria-label="Về tuần hiện tại" title="Tuần hiện tại">Tuần này</button></div></div><div class="student-welcome-tools"></div></div></div>
         <aside class="student-sidebar" aria-label="Điều hướng giáo viên"><div class="student-brand"><img src="logo-wordmark-gold-navy.png" alt="gblearninghub"></div><nav class="student-nav">${nav('day', 'Lịch dạy', 'calendar-days')}${nav('lessons', 'Bài học', 'presentation')}${nav('submissions', 'Bài nộp', 'inbox')}</nav></aside>
-        <div class="student-workspace"><section class="student-main" aria-label="Nội dung giảng dạy"><div class="student-main-content t-content">${body}</div></section><aside class="student-rail t-rail" aria-label="Tổng kết và lịch tuần">${rail}</aside></div></div>`;
+        <div class="student-workspace"><section class="student-main" aria-label="Nội dung giảng dạy">${head}<div class="student-main-content t-content">${rest}</div></section><aside class="student-rail t-rail" aria-label="Tổng kết và lịch tuần">${rail}</aside></div></div>`;
       const tools = document.querySelector('.student-welcome-tools');
       if (tools) ['btn-home', 'btn-theme'].forEach(id => { const el = $(id); if (el) tools.appendChild(el); });
       icons(); window.scrollTo(0, y);
