@@ -784,6 +784,16 @@
   body.student-dashboard-view .student-shell a.row>svg:last-child,body.student-dashboard-view .student-shell .row>a:last-child{flex:none;margin-left:auto}
   body.student-dashboard-view .student-shell .profile-avatar{background:#eef2f7!important;background-image:none!important}
   body.student-dashboard-view .student-shell .g-profile,body.student-dashboard-view .student-shell .g-profile *{background-image:none!important}
+}
+@media(min-width:781px){
+  body.student-dashboard-view .student-shell-inner-tabs .student-rail .profile-card{display:flex!important;align-items:stretch!important;padding:0!important;gap:0!important;overflow:hidden;min-height:96px!important;height:auto;border:1px solid var(--t-border)!important;border-radius:17px!important;background:#fff!important;box-shadow:none!important}
+  body.student-dashboard-view .student-shell-inner-tabs .student-rail .profile-avatar{flex:0 0 36%!important;width:36%!important;height:auto!important;min-height:0!important;border:0!important;border-radius:0!important;background:linear-gradient(145deg,#e8eef6 0%,#f8f2e4 100%)!important;color:#1d3556!important}
+  body.student-dashboard-view .student-shell-inner-tabs .student-rail .profile-avatar svg{width:34px;height:34px}
+  body.student-dashboard-view .student-shell-inner-tabs .student-rail .profile-info{flex:1;min-width:0;align-self:center;padding:14px 12px;gap:6px}
+  body.student-dashboard-view .student-shell-inner-tabs .student-rail .profile-name{font-size:.9375rem}
+  body.student-dashboard-view .student-shell-inner-tabs .student-rail .profile-meta{flex-direction:column;align-items:flex-start;gap:4px}
+}
+@media(max-width:780px){
   body.student-dashboard-view .student-rail[aria-label^="Hồ sơ"]{display:none!important}
   body.student-dashboard-view .student-shell>.student-welcome{box-shadow:none!important;border:0!important;border-radius:14px 14px 0 0!important}
   body.student-dashboard-view .student-shell>.student-sidebar{background:#0b1f44!important;border:0!important;padding:0 10px 10px!important;border-radius:0 0 14px 14px;box-shadow:0 6px 16px rgba(10,25,52,.18);position:relative;z-index:1}
@@ -868,6 +878,12 @@
 <style id="teacher-css">
 .t-content{display:flex;flex-direction:column;gap:14px;flex:1 1 auto;min-height:0}
 .student-main>.t-daybar{flex:none;margin-bottom:14px}
+@media(min-width:781px){
+.student-shell-inner-tabs .student-main{padding-bottom:24px!important}
+.student-shell-inner-tabs .student-main-content:not(.t-content){flex:1 1 auto;display:flex;flex-direction:column;padding-bottom:0!important}
+.student-shell-inner-tabs .student-main-section{flex:1 1 auto;display:flex;flex-direction:column}
+.student-shell-inner-tabs .student-main-section>.card{flex:1 1 auto}
+}
 .student-nav button.m-only{display:none}.t-rail-m{display:none}
 @media(max-width:780px){body.student-dashboard-view .student-nav button.m-only{display:flex!important}body.student-dashboard-view .t-rail-m{display:flex!important;flex-direction:column;gap:12px;overflow:visible!important}body.student-dashboard-view aside.t-rail{display:none!important}body.student-dashboard-view .t-rail-m .t-tt-slot{display:grid!important;grid-template-columns:118px minmax(0,1fr);align-items:center;column-gap:12px;padding:10px 12px}body.student-dashboard-view .t-rail-m .t-tt-cls{display:block;margin:0;font-size:.8125rem;font-weight:600;color:#475569;text-align:left;overflow-wrap:anywhere}}
 .t-stick{display:contents}
