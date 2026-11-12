@@ -189,6 +189,7 @@
     .student-main{display:flex;flex-direction:column;min-width:0;min-height:0;padding:30px 30px 26px;background:#fff;overflow:hidden}
     .student-welcome{grid-column:1/-1;grid-row:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,1fr) minmax(0,1fr);align-items:center;gap:14px;min-height:84px;margin:0;padding:10px 18px;border:1px solid #e3e8ef;border-radius:14px;background:#fff;box-shadow:0 3px 12px rgba(15,31,55,.07)}
     .student-welcome-left{display:flex;align-items:center;gap:14px;min-width:0}
+    .m-profile,.m-week,.t-mob{display:none}
     .student-welcome-logo{display:none;width:150px;max-width:15vw;height:auto;max-height:42px;object-fit:contain}
     .student-welcome-brand-divider{display:none}
     .student-welcome h1{margin:0;color:#0b1f44;font-size:1.65rem;font-weight:800;line-height:1.2}
@@ -745,6 +746,49 @@
 @media(max-width:780px){
   body.student-dashboard-view .student-shell{grid-template-columns:minmax(0,1fr)!important}
   body.student-dashboard-view .student-welcome,body.student-dashboard-view .student-sidebar,body.student-dashboard-view .student-workspace,body.student-dashboard-view .student-main,body.student-dashboard-view .student-main-content{min-width:0;max-width:100%;box-sizing:border-box}
+  body.student-dashboard-view .student-shell *,body.student-dashboard-view .student-shell *::before,body.student-dashboard-view .student-shell *::after{box-shadow:none!important;text-shadow:none!important}
+  body.student-dashboard-view .student-shell .card,body.student-dashboard-view .student-shell section.card{background-image:none!important;border-top-width:1px!important;border:1px solid #e3e8ef!important;border-radius:14px}
+  body.student-dashboard-view .student-shell .card::before,body.student-dashboard-view .student-shell .card::after{display:none!important}
+  body.student-dashboard-view .student-shell .g-hero{background:#0b1f44!important;background-image:none!important;border-color:#0b1f44!important}
+  body.student-dashboard-view .student-shell>.student-sidebar{box-shadow:none!important}
+  body.student-dashboard-view .student-shell>.student-welcome{height:auto!important;min-height:0!important}
+  body.student-dashboard-view .student-shell>.student-welcome,body.student-dashboard-view .student-shell>.student-sidebar{background:#061633!important}
+  body.student-dashboard-view .student-shell .g-hero{background:#061633!important;border-color:#061633!important}
+  body.student-dashboard-view .student-shell>.student-welcome{grid-template-columns:auto minmax(0,1fr)!important;grid-template-areas:"left title" "profile right"!important;align-items:center;gap:8px 10px!important;padding:12px 12px 6px!important}
+  body.student-dashboard-view .student-welcome-left{display:flex!important;grid-area:left;background:#fff;border-radius:10px;padding:6px 10px;align-items:center}
+  body.student-dashboard-view .student-welcome-logo{display:block!important;width:auto!important;max-width:none!important;height:20px;max-height:none!important}
+  body.student-dashboard-view .student-welcome-title{grid-area:title!important;justify-self:end;text-align:right!important;align-items:flex-end!important}
+  body.student-dashboard-view .student-welcome h1{color:#ffd45e!important;font-size:1rem!important;text-align:right}
+  body.student-dashboard-view .m-profile{display:flex;grid-area:profile;align-items:center;gap:9px;min-width:0}
+  body.student-dashboard-view .m-av{flex:none;width:36px;height:36px;border-radius:50%;background:#12295a;color:#ffd45e;display:flex;align-items:center;justify-content:center}
+  body.student-dashboard-view .m-av svg{width:20px;height:20px}
+  body.student-dashboard-view .m-pi{min-width:0;display:flex;flex-direction:column;gap:2px}
+  body.student-dashboard-view .m-pi b{color:#fff;font-size:.8125rem;font-weight:800;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  body.student-dashboard-view .m-pi span{display:flex;gap:6px;align-items:center;font-size:.6875rem;min-width:0}
+  body.student-dashboard-view .m-pi em{font-style:normal;color:#061633;background:#e8eefb;border-radius:6px;padding:1px 6px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px}
+  body.student-dashboard-view .m-pi i{font-style:normal;color:#b3c0dc}
+  body.student-dashboard-view .student-shell .g-profile{display:none!important}
+  body.student-dashboard-view .student-welcome-right{grid-area:right!important;justify-self:end}
+  body.student-dashboard-view .student-welcome .overview-week-controls,body.student-dashboard-view .student-welcome .overview-week-label b{color:#ffd45e!important}
+  body.student-dashboard-view .student-nav button.active{color:#ffd45e!important}
+  body.student-dashboard-view .student-shell:not(.student-shell-inner-tabs) .student-welcome-right{justify-self:stretch;justify-content:space-between}
+  body.student-dashboard-view .student-shell:not(.student-shell-inner-tabs) .student-welcome-actions{flex:1;justify-content:center}
+  body.student-dashboard-view .student-welcome-right{justify-content:space-between}
+  body.student-dashboard-view .student-nav{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;overflow:visible}
+  body.student-dashboard-view .student-nav button{flex-direction:column;justify-content:center;gap:3px!important;min-height:52px!important;padding:6px 0!important;font-size:.625rem!important;letter-spacing:-.01em;border-radius:12px!important;text-align:center;white-space:nowrap}
+  body.student-dashboard-view .student-nav button svg{width:20px!important;height:20px!important}
+  body.student-dashboard-view,body.student-dashboard-view #app{background:#f5f6f8!important}
+  body.student-dashboard-view .student-shell .row{display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;align-items:center;gap:10px}
+  body.student-dashboard-view .student-shell a.row>span:not(.tag){flex:1 1 auto;min-width:0}
+  body.student-dashboard-view .student-shell a.row>svg:last-child,body.student-dashboard-view .student-shell .row>a:last-child{flex:none;margin-left:auto}
+  body.student-dashboard-view .student-shell .profile-avatar{background:#eef2f7!important;background-image:none!important}
+  body.student-dashboard-view .student-shell .g-profile,body.student-dashboard-view .student-shell .g-profile *{background-image:none!important}
+  body.student-dashboard-view .student-rail[aria-label^="Hồ sơ"]{display:none!important}
+  body.student-dashboard-view .student-shell>.student-welcome{box-shadow:none!important;border:0!important;border-radius:14px 14px 0 0!important}
+  body.student-dashboard-view .student-shell>.student-sidebar{background:#0b1f44!important;border:0!important;padding:0 10px 10px!important;border-radius:0 0 14px 14px;box-shadow:0 6px 16px rgba(10,25,52,.18);position:relative;z-index:1}
+  body.student-dashboard-view .student-nav button{background:transparent!important;color:#b9c4d9!important;box-shadow:none!important}
+  body.student-dashboard-view .student-nav button svg{color:inherit!important}
+  body.student-dashboard-view .student-nav button.active{background:rgba(255,255,255,.14)!important;color:#f2c14e!important}
   body.student-dashboard-view .student-nav{display:flex;flex-direction:row;overflow-x:auto;flex-wrap:nowrap;gap:6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
   body.student-dashboard-view .student-nav::-webkit-scrollbar{display:none}
   body.student-dashboard-view .student-nav button{flex:none}
@@ -780,6 +824,30 @@
   .t-sub-row{grid-template-columns:minmax(0,1fr) auto!important}.t-sub-row .t-sr-cls,.t-sub-row .t-sr-code{grid-column:1}.t-sub-cap{display:none!important}
   .t-class{grid-template-columns:1fr!important;gap:6px}
   body.student-dashboard-view .overview-week-label>.week-name{display:inline!important;font-size:.8125rem!important;white-space:nowrap}
+  body.student-dashboard-view .student-shell>.student-welcome{background:#fff!important;border-bottom:1px solid #e3e8ef!important;grid-template-areas:"left title" "profile profile"!important;height:auto!important;min-height:0!important;padding:12px 12px 10px!important}
+  body.student-dashboard-view .student-shell>.student-welcome .student-welcome-right{display:none!important}
+  body.student-dashboard-view .student-welcome-left{background:transparent!important;padding:0!important}
+  body.student-dashboard-view .student-welcome h1{color:#061633!important;font-size:.9375rem!important;white-space:nowrap!important;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  body.student-dashboard-view .student-shell>.student-welcome{height:86px!important;box-sizing:border-box}
+  body.student-dashboard-view .m-av{background:#eef2f7;color:#061633}
+  body.student-dashboard-view .m-pi b{color:#061633}
+  body.student-dashboard-view .m-pi i{color:#64748b}
+  body.student-dashboard-view .m-pi em{background:#eef2f7}
+  body.student-dashboard-view .student-shell>.student-sidebar{padding:8px 10px 10px!important}
+  body.student-dashboard-view .student-nav button.active{background:rgba(255,255,255,.16)!important}
+  body.student-dashboard-view .student-shell>.student-welcome{align-items:center!important;align-content:center!important}
+  body.student-dashboard-view .student-shell>.student-welcome>.student-welcome-title,body.student-dashboard-view .student-shell>.student-welcome>.student-welcome-left{height:auto!important;min-height:0!important;align-self:center!important;display:flex!important;align-items:center!important;margin:0!important;padding:0!important}
+  body.student-dashboard-view .student-welcome-title p{display:none!important}
+  body.student-dashboard-view .student-welcome h1{margin:0!important;line-height:20px!important;height:20px}
+  body.student-dashboard-view .t-desk{display:none}body.student-dashboard-view .t-mob{display:inline}
+  body.student-dashboard-view .student-shell>.student-welcome{grid-template-areas:"left title"!important;height:58px!important;padding:10px 12px!important;align-items:center}
+  body.student-dashboard-view .student-welcome h1{font-size:1rem!important}
+  body.student-dashboard-view .student-workspace>.m-profile{background:#fff;border:1px solid #e3e8ef;border-radius:14px;margin:12px 15px 0;padding:10px 12px;box-sizing:border-box;width:auto}
+  body.student-dashboard-view .student-workspace>.m-profile .m-pi b{font-size:.9375rem}
+  body.student-dashboard-view .m-week{display:flex!important;justify-content:center;background:#fff;border:1px solid #e3e8ef;border-radius:14px;padding:4px}
+  body.student-dashboard-view .m-week .overview-week-controls{color:#061633}
+  body.student-dashboard-view .m-week .icon-btn{color:#061633!important}
+  body.student-dashboard-view .m-week .overview-week-label,body.student-dashboard-view .m-week .overview-week-label b{color:#061633!important}
 }
 </style>
 <style id="teacher-css">
@@ -988,6 +1056,7 @@ a.t-open:hover span{text-decoration:underline}
 
       const prog = d.program || 'gs', PNAME = { ielts: 'IELTS', toeic: 'TOEIC', ac12: 'AC12', gs: 'Global Success', comm: 'Giao tiếp' };
       const titleCaseName = value => String(value || '').toLocaleLowerCase('vi').replace(/(^|\s)(\p{L})/gu, (_, space, letter) => space + letter.toLocaleUpperCase('vi'));
+      const miniProfile = `<div class="m-profile"><span class="m-av" aria-hidden="true"><i data-lucide="user-round"></i></span><span class="m-pi"><b>${esc(titleCaseName(d.student_name))}</b><span><em>${esc(cls.name)}</em><i>${esc(S.code)}</i></span></span></div>`;
       const profileHtml = `<section class="card profile-card g-profile"><div class="profile-avatar" aria-hidden="true"><i data-lucide="user-round"></i></div><div class="profile-info"><h2 class="profile-name" data-student-name="${esc(titleCaseName(d.student_name))}">${esc(d.student_name)}</h2><div class="profile-meta"><span class="profile-class">${esc(cls.name)}</span><span class="profile-code">${esc(S.code)}</span></div></div></section>`;
       const heroHtml = `<section class="card hero-card g-hero" style="color:#fff">
         <div class="hero-lab"><i data-lucide="calendar-days" class="w-4 h-4"></i>Buổi học tiếp theo</div>
@@ -1139,11 +1208,11 @@ a.t-open:hover span{text-decoration:underline}
         history: histHtml
       };
       const view = views[S.view] ? S.view : 'overview';
-      const viewTitle = { overview:'Hello, ' + esc(titleCaseName(d.student_name)) + '!', lessons:'Bài học', homework:'Bài tập về nhà', calendar:'Lịch học', tuition:'Học phí', history:'Lịch sử học tập' }[view] || 'Tổng quan';
+      const viewTitle = { overview:'<span class="t-desk">Hello, ' + esc(titleCaseName(d.student_name)) + '!</span><span class="t-mob">Tổng quan</span>', lessons:'Bài học', homework:'Bài tập về nhà', calendar:'Lịch học', tuition:'Học phí', history:'Lịch sử học tập' }[view] || 'Tổng quan';
       const navItem = (key, label, icon) => `<button type="button" class="${view === key ? 'active' : ''}" data-student-view="${key}" ${view === key ? 'aria-current="page"' : ''}>${icon ? `<i data-lucide="${icon}"></i>` : ''}<span>${label}</span></button>`;
       const isOverview = view === 'overview';
       const railHtml = `${profileHtml}${weekSchedHtml}${heroHtml}${tuitionHtml}${infoHtml}`;
-      $('app').innerHTML = `<div class="student-shell ${isOverview ? '' : 'student-shell-inner-tabs'}"><div class="student-welcome"><div class="student-welcome-left"><img class="student-welcome-logo" src="logo-wordmark-gold-navy.png" alt="gblearninghub"><span class="student-welcome-brand-divider" aria-hidden="true"></span></div><div class="student-welcome-title"><h1>${viewTitle}</h1><p>Khu vực học tập của bạn</p></div><div class="student-welcome-right"><div class="student-welcome-actions">${isOverview ? overviewWeekToolbar : ''}</div><div class="student-welcome-tools"></div></div></div><aside class="student-sidebar" aria-label="Điều hướng học viên"><div class="student-brand"><img src="logo-wordmark-gold-navy.png" alt="gblearninghub"></div><nav class="student-nav">${navItem('overview','Tổng quan','layout-dashboard')}${navItem('lessons','Bài học','book-open')}${navItem('homework','Bài tập','pencil-line')}${navItem('calendar','Lịch học','calendar-days')}${navItem('tuition','Học phí','wallet')}${navItem('history','Lịch sử','history')}</nav></aside><div class="student-workspace ${isOverview ? 'student-workspace-overview' : ''}"><section class="student-main ${isOverview ? 'student-overview-view' : ''}" aria-label="Nội dung học tập"><div class="student-main-content ${isOverview ? 'student-overview-content' : ''} ${view === 'lessons' || view === 'homework' ? 'student-library-content' : ''}">${isOverview ? `<div class="student-overview-top">${profileHtml}${infoHtml}${heroHtml}</div><div class="student-overview-highlight">${weekSchedHtml}${tuitionHtml}${progHtml}</div>` : ''}<div class="student-main-section ${view === 'lessons' || view === 'homework' ? 'student-library-view' : ''}">${views[view]}</div></div></section>${isOverview ? '' : `<aside class="student-rail" aria-label="Hồ sơ và thông tin học tập">${railHtml}</aside>`}</div></div>`; icons();
+      $('app').innerHTML = `<div class="student-shell ${isOverview ? '' : 'student-shell-inner-tabs'}"><div class="student-welcome"><div class="student-welcome-left"><img class="student-welcome-logo" src="logo-wordmark-gold-navy.png" alt="gblearninghub"><span class="student-welcome-brand-divider" aria-hidden="true"></span></div><div class="student-welcome-title"><h1>${viewTitle}</h1><p>Khu vực học tập của bạn</p></div><div class="student-welcome-right"><div class="student-welcome-actions">${isOverview ? overviewWeekToolbar : ''}</div><div class="student-welcome-tools"></div></div></div><aside class="student-sidebar" aria-label="Điều hướng học viên"><div class="student-brand"><img src="logo-wordmark-gold-navy.png" alt="gblearninghub"></div><nav class="student-nav">${navItem('overview','Tổng quan','layout-dashboard')}${navItem('lessons','Bài học','book-open')}${navItem('homework','Bài tập','pencil-line')}${navItem('calendar','Lịch học','calendar-days')}${navItem('tuition','Học phí','wallet')}${navItem('history','Lịch sử','history')}</nav></aside><div class="student-workspace ${isOverview ? 'student-workspace-overview' : ''}">${miniProfile}<section class="student-main ${isOverview ? 'student-overview-view' : ''}" aria-label="Nội dung học tập"><div class="student-main-content ${isOverview ? 'student-overview-content' : ''} ${view === 'lessons' || view === 'homework' ? 'student-library-content' : ''}">${isOverview ? `<div class="student-overview-top"><div class="m-week">${overviewWeekToolbar}</div>${profileHtml}${infoHtml}${heroHtml}</div><div class="student-overview-highlight">${weekSchedHtml}${tuitionHtml}${progHtml}</div>` : ''}<div class="student-main-section ${view === 'lessons' || view === 'homework' ? 'student-library-view' : ''}">${views[view]}</div></div></section>${isOverview ? '' : `<aside class="student-rail" aria-label="Hồ sơ và thông tin học tập">${railHtml}</aside>`}</div></div>`; icons();
       const tools = document.querySelector('.student-welcome-tools');
       if (tools) ['btn-home','btn-theme'].forEach(id => { const el = $(id); if (el) tools.appendChild(el); });
       const curMonth = `${now.getFullYear()}-${pad(now.getMonth()+1)}`, vnd = n => Number(n || 0).toLocaleString('vi-VN') + 'đ';
