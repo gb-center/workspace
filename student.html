@@ -1189,7 +1189,7 @@ a.t-open:hover span{text-decoration:underline}
       const qs = c => S.c.from('sessions').select(c).gte('session_date', monday).lte('session_date', sun).order('session_date').order('start_time');
       const [a0, b, c] = await Promise.all([
         qs(cols),
-        S.c.from('week_materials').select('id,kind,skill,title,url,class_ids,sort_order').eq('week_start', monday).order('sort_order').order('id'),
+        S.c.from('week_materials').select('id,kind,skill,title,url,class_ids,sort_order,session_dates').eq('week_start', monday).order('sort_order').order('id'),
         S.c.from('assignment_classes').select('assignment_id,class_id,due_at,assignments(assignment_name,assignment_code,kind,page_path)').eq('week_start', monday).eq('is_active', true)
       ]);
       let a = a0;
@@ -1276,6 +1276,7 @@ a.t-open:hover span{text-decoration:underline}
       return `<section class="card t-daybar"><h2><i data-lucide="inbox"></i>Bài nộp trong tuần</h2><button type="button" class="t-ic" data-t="sub-refresh" aria-label="Tải lại bài nộp" title="Tải lại"><i data-lucide="refresh-cw"></i></button></section>${cards.join('') || '<section class="card text-center text-sm text-slate-500">Tuần này chưa giao bài online nào.</section>'}`;
     }
 
+    const matFor = (m, cid, date) => (m.class_ids || []).includes(cid) && (!(m.session_dates || []).length || m.session_dates.includes(date));
     function tMat(m, cid, edit) {
       const shared = (m.class_ids || []).length > 1;
       return `<div class="t-mat"><a class="t-open" href="${esc(safeUrl(m.url))}"><i data-lucide="external-link"></i><span>${esc(m.title)}</span></a>${shared ? '<span class="tag bg-slate-100 text-slate-600">Dùng chung</span>' : ''}${edit ? `<button type="button" class="t-ic" data-t="mat-edit" data-id="${m.id}" aria-label="Sửa tài liệu"><i data-lucide="pencil"></i></button><button type="button" class="t-ic" data-t="mat-del" data-id="${m.id}" data-cid="${cid}" aria-label="Xóa khỏi lớp này"><i data-lucide="trash-2"></i></button>` : ''}</div>`;
@@ -1291,7 +1292,7 @@ a.t-open:hover span{text-decoration:underline}
     }
     function tRow(s) {
       const cid = s.class_id, cl = s.classes || {}, open = T.open.has(s.id);
-      const mats = k => T.mats.filter(m => m.kind === k && (m.class_ids || []).includes(cid));
+      const mats = k => T.mats.filter(m => m.kind === k && matFor(m, cid, s.session_date));
       const asg = T.asg.filter(x => x.class_id === cid && x.assignments);
       const nL = mats('lesson').length, nH = mats('homework').length + asg.length, n = (T.stu[cid] || []).length;
       return `<div class="t-row" data-sid="${s.id}" data-cid="${cid}">
@@ -1339,7 +1340,7 @@ a.t-open:hover span{text-decoration:underline}
         const day = list.filter(s => s.session_date === d), key = kind + d, closed = T.dayClosed.has(key);
         const rows = day.map(s => {
           const id = s.class_id, cl = s.classes || {};
-          const ms = T.mats.filter(m => m.kind === kind && (m.class_ids || []).includes(id));
+          const ms = T.mats.filter(m => m.kind === kind && matFor(m, id, s.session_date));
           const asg = kind === 'homework' ? T.asg.filter(x => x.class_id === id && x.assignments) : [];
           const empty = !ms.length && !asg.length;
           return `<div class="t-class${empty ? ' is-empty' : ''}"><div class="t-class-name"><b>${esc(cl.class_name || cl.class_code || '')}</b><span>${hhmm(s.start_time)} – ${hhmm(s.end_time)}</span></div><div>${empty ? '<p class="t-none">Chưa có.</p>' : ms.map(m => tMat(m, id, false)).join('') + asg.map(tAsg).join('')}</div></div>`;
@@ -1350,8 +1351,8 @@ a.t-open:hover span{text-decoration:underline}
     }
     function tPickCard(list) {
       const one = s => {
-        const cid = s.class_id, cl = s.classes || {}, nL = T.mats.filter(m => m.kind === 'lesson' && (m.class_ids || []).includes(cid)).length;
-        const nH = T.mats.filter(m => m.kind === 'homework' && (m.class_ids || []).includes(cid)).length + T.asg.filter(x => x.class_id === cid && x.assignments).length;
+        const cid = s.class_id, cl = s.classes || {}, nL = T.mats.filter(m => m.kind === 'lesson' && matFor(m, cid, s.session_date)).length;
+        const nH = T.mats.filter(m => m.kind === 'homework' && matFor(m, cid, s.session_date)).length + T.asg.filter(x => x.class_id === cid && x.assignments).length;
         const chk = (label, c) => `<div class="t-chk"><span>${label}</span><span class="tag ${c ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${c ? c + ' tài liệu' : 'Chưa có'}</span></div>`;
         return `<div class="t-pick"><div class="t-next"><b>${esc(cl.class_name || cl.class_code || '')}</b><span>${fmtDay(s.session_date)} · ${hhmm(s.start_time)} – ${hhmm(s.end_time)}</span><span class="t-when">${esc((STATUS[s.status] || [s.status])[0])} · ${s.mode === 'online' ? 'Online' : 'Trực tiếp'} · ${(T.stu[cid] || []).length} học viên</span></div>${chk('Bài học', nL)}${chk('Bài tập', nH)}</div>`;
       };

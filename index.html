@@ -60,6 +60,25 @@
     .dlg[hidden]{display:none}
     .dlg .card{width:min(460px,100%);max-height:calc(100dvh - 32px);overflow:auto;background:#fff;border:1px solid var(--t-border);border-radius:24px;padding:22px}
     .dlg h2{font-size:1.0625rem;font-weight:800;color:var(--t-ink);margin-bottom:12px}
+    #dlg-mat .card{width:min(920px,100%)}
+    .dm-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px}
+    .dm-grid .pickgrid{grid-template-columns:repeat(auto-fill,minmax(112px,1fr))}
+    .dm-day{min-height:44px;padding:0 12px;border-radius:12px;border:1px solid var(--t-border);background:#fff;color:var(--t-ink);font-weight:700;font-size:.8125rem;line-height:1.15}
+    .dm-day small{display:block;font-weight:500;color:var(--t-muted,#64748b)}
+    .dm-day[aria-pressed="true"]{background:var(--t-primary);border-color:var(--t-primary);color:#fff}.dm-day[aria-pressed="true"] small{color:#cbd5e1}
+    @media(max-width:760px){.dm-grid{grid-template-columns:1fr;gap:0}}
+    .mt-class{background:#fff;border:1px solid var(--t-border);border-radius:16px;padding:0 16px}
+    .mt-class>summary{display:flex;align-items:center;gap:10px;min-height:52px;cursor:pointer;list-style:none;font-weight:800;color:var(--t-ink)}
+    .mt-class>summary::-webkit-details-marker{display:none}
+    .mt-class>summary .mt-tags{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+    .mt-body{padding:0 0 14px;display:flex;flex-direction:column;gap:10px}
+    .mt-day{border-top:1px solid var(--t-border);padding-top:10px}
+    .mt-day-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;font-weight:800;font-size:.875rem;color:var(--t-primary)}
+    .mt-day-head small{font-weight:500;color:var(--t-muted,#64748b);margin-left:6px}
+    .mt-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .mt-cols h4{font-size:.75rem;font-weight:800;color:var(--t-muted,#64748b);margin-bottom:6px}
+    .mt-cols>div{display:flex;flex-direction:column;gap:6px}
+    @media(max-width:700px){.mt-cols{grid-template-columns:1fr}}
     .dlg .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     .dlg label{display:block;font-size:.8125rem;font-weight:700;color:var(--t-ink);margin:12px 0 6px}
     .dlg .field{width:100%}
@@ -315,32 +334,40 @@
     <form class="card" novalidate>
       <h2 id="dm-title">Mục học liệu</h2>
       <input type="hidden" id="dm-id">
-      <div class="row2">
-        <div><label for="dm-week">Tuần</label><select id="dm-week" class="field"></select></div>
-        <div><label for="dm-kind">Loại</label>
-          <select id="dm-kind" class="field">
-            <option value="lesson">Bài học</option>
-            <option value="homework">Bài tập</option>
-          </select></div>
+      <div class="dm-grid">
+        <div class="dm-left">
+          <div class="row2">
+            <div><label for="dm-week">Tuần</label><select id="dm-week" class="field"></select></div>
+            <div><label for="dm-kind">Loại</label>
+              <select id="dm-kind" class="field">
+                <option value="lesson">Bài học</option>
+                <option value="homework">Bài tập</option>
+              </select></div>
+          </div>
+          <label for="dm-skill">Kỹ năng (không bắt buộc)</label>
+          <select id="dm-skill" class="field">
+            <option value="">Không phân loại</option>
+            <option value="reading">Reading</option>
+            <option value="listening">Listening</option>
+            <option value="writing">Writing</option>
+            <option value="speaking">Speaking</option>
+            <option value="grammar">Grammar</option>
+            <option value="vocabulary">Vocabulary</option>
+          </select>
+          <label for="dm-name">Tên</label>
+          <input id="dm-name" type="text" class="field" autocomplete="off" required>
+          <label for="dm-url">Link</label>
+          <input id="dm-url" type="text" inputmode="url" class="field" autocomplete="off" placeholder="https://..." required>
+          <div id="dm-suggest" style="margin-top:8px"></div>
+        </div>
+        <div class="dm-right">
+          <label>Giao cho ngày (không chọn = cả tuần)</label>
+          <div id="dm-days" class="flex flex-wrap gap-2"></div>
+          <label>Giao cho lớp (có thể bỏ trống, giao sau)</label>
+          <div id="dm-quick" class="flex flex-wrap gap-2"></div>
+          <div id="dm-classes" class="pickgrid" style="margin-top:10px"></div>
+        </div>
       </div>
-      <label for="dm-skill">Kỹ năng (không bắt buộc)</label>
-      <select id="dm-skill" class="field">
-        <option value="">Không phân loại</option>
-        <option value="reading">Reading</option>
-        <option value="listening">Listening</option>
-        <option value="writing">Writing</option>
-        <option value="speaking">Speaking</option>
-        <option value="grammar">Grammar</option>
-        <option value="vocabulary">Vocabulary</option>
-      </select>
-      <label for="dm-name">Tên</label>
-      <input id="dm-name" type="text" class="field" autocomplete="off" required>
-      <label for="dm-url">Link</label>
-      <input id="dm-url" type="text" inputmode="url" class="field" autocomplete="off" placeholder="https://..." required>
-      <div id="dm-suggest" style="margin-top:8px"></div>
-      <label>Giao cho lớp (có thể bỏ trống, giao sau)</label>
-      <div id="dm-quick" class="flex flex-wrap gap-2"></div>
-      <div id="dm-classes" class="pickgrid" style="margin-top:10px"></div>
       <div class="err" id="dm-err" role="alert"></div>
       <div class="acts">
         <button type="submit" class="btn-primary">Lưu</button>
@@ -632,7 +659,7 @@
       const PROGRAM = { AC: 'Global Success', IE: 'IELTS', TO: 'TOEIC', GT: 'Speaking' };
       const matClasses = () => st.classes.filter(c => !c.is_archived).sort((a, b) => natural(a.class_code, b.class_code));
       async function loadMats() {
-        const r = await st.c.from('week_materials').select('id,week_start,kind,skill,title,url,class_ids,sort_order')
+        const r = await st.c.from('week_materials').select('id,week_start,kind,skill,title,url,class_ids,sort_order,session_dates')
           .eq('week_start', weekKey()).order('sort_order').order('id');
         if (r.error) throw r.error;
         st.mats = r.data || [];
@@ -672,7 +699,7 @@
       async function loadLib(force) {
         if (st.libLoaded && !force) return;
         const [r, a, ac] = await Promise.all([
-          st.c.from('week_materials').select('id,week_start,kind,skill,title,url,class_ids,sort_order').order('week_start', { ascending: false }).order('sort_order').order('id'),
+          st.c.from('week_materials').select('id,week_start,kind,skill,title,url,class_ids,sort_order,session_dates').order('week_start', { ascending: false }).order('sort_order').order('id'),
           st.c.from('assignments').select('id,assignment_code,assignment_name,week_start,due_at,kind,skill,page_path').eq('is_active', true),
           st.c.from('assignment_classes').select('assignment_id,class_id,week_start,due_at').eq('is_active', true)
         ]);
@@ -731,6 +758,45 @@
         if (r.error) { $('page-msg').textContent = LMS.friendlyError(r.error); return; }
         await loadLib(); renderLib();
       }
+      function libItem(m) {
+              if (m.scan) {
+                return `<div class="mat-item"><div class="min-w-0 flex-1"><a class="mat-title" href="${esc(m.url)}">${esc(m.title)}</a>
+                  <div class="text-xs text-slate-500 mt-1">Mới trên GitHub · <span class="text-rose-700">Chưa giao cho lớp nào</span></div></div>
+                  <button type="button" class="icon-btn" data-add-scan="${esc(m.path)}" aria-label="Thêm vào học liệu"><i data-lucide="plus" class="w-4 h-4"></i></button></div>`;
+              }
+              if (m.asg) {
+                const due = m.due_at ? new Date(m.due_at) : null;
+                return `<div class="mat-item"><div class="min-w-0 flex-1"><div style="font-weight:700;color:var(--t-primary);overflow-wrap:anywhere">${esc(m.title)}</div>
+                  <div class="text-xs text-slate-500 mt-1">${kindText(m)} · Đề${due ? ' · Hạn ' + pad(due.getDate()) + '/' + pad(due.getMonth() + 1) : ''} · ${targetsText(m)}</div></div>
+                  ${m.page ? `<button type="button" class="icon-btn" data-prev-asg="${esc(m.code)}" aria-label="Xem thử bài làm"><i data-lucide="eye" class="w-4 h-4"></i></button>` : ''}
+                  <button type="button" class="icon-btn" data-rename-asg="${esc(m.code)}" aria-label="Sửa tên"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+                  <button type="button" class="icon-btn" data-edit-asg="${esc(m.code)}" aria-label="Giao lại bài"><i data-lucide="send" class="w-4 h-4"></i></button></div>`;
+              }
+              return `<div class="mat-item"><div class="min-w-0 flex-1">
+                <a class="mat-title" href="${isHttp(m.url) ? esc(m.url) : '#'}">${esc(m.title)}</a>
+                <div class="text-xs text-slate-500 mt-1">${kindText(m)} · ${targetsText(m)}</div></div>
+                <button type="button" class="icon-btn" data-edit-mat="${m.id}" aria-label="Sửa mục"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+                <button type="button" class="icon-btn" data-del-mat="${m.id}" aria-label="Xóa mục" style="color:#be123c"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`;
+      }
+      const matDates = m => Array.isArray(m.session_dates) ? m.session_dates : [];
+      function weekByClass(k, items) {
+        const cidSel = Number($('lib-class').value) || 0, groups = new Map(), orphan = [];
+        items.forEach(m => { const ids = m.class_ids || []; if (!ids.length) orphan.push(m); else ids.forEach(id => { if (cidSel && id !== cidSel) return; if (!groups.has(id)) groups.set(id, []); groups.get(id).push(m); }); });
+        const wd = k ? weekDatesFrom(k) : [], dayName = d => { const i = wd.map(ymd).indexOf(d); return i < 0 ? d : (i === 6 ? 'CN' : 'T' + (i + 2)) + ' ' + pad(wd[i].getDate()) + '/' + pad(wd[i].getMonth() + 1); };
+        const cols = list => ['lesson', 'homework'].map(kind => { const l = list.filter(m => (m.kind === 'homework' ? 'homework' : 'lesson') === kind); return `<div><h4>${kind === 'lesson' ? 'Bài học' : 'Bài tập'}</h4>${l.map(libItem).join('') || '<p class="text-sm text-slate-400">Chưa có.</p>'}</div>`; }).join('');
+        st.libOpenCls = st.libOpenCls || new Set();
+        const out = [...groups.keys()].map(id => st.classes.find(c => c.id === id) || { id, class_code: '#' + id }).sort((x, y) => natural(x.class_code, y.class_code)).map(c => {
+          const list = groups.get(c.id), nL = list.filter(m => m.kind !== 'homework').length, nH = list.length - nL;
+          const days = [...new Set(list.filter(m => !m.asg && !m.scan).flatMap(matDates))].sort();
+          const block = (date, label, l) => `<div class="mt-day"><div class="mt-day-head"><span>${label}</span><button type="button" class="icon-btn" data-add-mat data-week="${k}" data-cid="${c.id}" data-date="${date || ''}" aria-label="Giao học liệu cho ${esc(label)}" title="Giao học liệu"><i data-lucide="plus" class="w-4 h-4"></i></button></div><div class="mt-cols">${cols(l)}</div></div>`;
+          const whole = list.filter(m => m.asg || m.scan || !matDates(m).length);
+          const body = block(null, 'Cả tuần', whole) + days.map(d => block(d, dayName(d), list.filter(m => !m.asg && !m.scan && matDates(m).includes(d)))).join('');
+          const ckey = k + '|' + c.id;
+          return `<details class="mt-class" data-ckey="${ckey}" ${st.libOpenCls.has(ckey) ? 'open' : ''}><summary>${esc(c.class_code)}<span class="mt-tags"><span class="tag bg-slate-100 text-slate-600">${nL} bài học</span><span class="tag bg-slate-100 text-slate-600">${nH} bài tập</span></span></summary><div class="mt-body">${body}</div></details>`;
+        }).join('');
+        const orph = orphan.length ? `<div class="mt-class" style="padding:14px 16px"><div class="font-bold text-rose-700 mb-2">Chưa giao cho lớp nào</div><div class="flex flex-col gap-2">${orphan.map(libItem).join('')}</div></div>` : '';
+        return out + orph;
+      }
       function renderLib() {
         if (st.view !== 'lib') return;
         $('lib-list').querySelectorAll('details[data-week-group]').forEach(d => { st.libCollapsed[d.dataset.weekGroup] = !d.open; });
@@ -760,26 +826,7 @@
           if (k) { const n = weekNoOf(k), d = weekDates(n); head = `Tuần ${pad(n)} <span class="font-normal text-slate-500">(${pad(d[0].getDate())}.${pad(d[0].getMonth() + 1)} – ${pad(d[6].getDate())}.${pad(d[6].getMonth() + 1)})</span>`; }
           const collapseKey = k || '__none__';
           return `<details class="lib-week-group bg-white rounded-2xl border border-slate-200" data-week-group="${collapseKey}" ${st.libCollapsed[collapseKey] ? '' : 'open'}><summary class="lib-week-summary"><span><span class="lib-week-title">${head}</span><small>${byWeek[k].length} mục</small></span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
-            <div class="lib-week-items space-y-2">${byWeek[k].map(m => {
-              if (m.scan) {
-                return `<div class="mat-item"><div class="min-w-0 flex-1"><a class="mat-title" href="${esc(m.url)}">${esc(m.title)}</a>
-                  <div class="text-xs text-slate-500 mt-1">Mới trên GitHub · <span class="text-rose-700">Chưa giao cho lớp nào</span></div></div>
-                  <button type="button" class="icon-btn" data-add-scan="${esc(m.path)}" aria-label="Thêm vào học liệu"><i data-lucide="plus" class="w-4 h-4"></i></button></div>`;
-              }
-              if (m.asg) {
-                const due = m.due_at ? new Date(m.due_at) : null;
-                return `<div class="mat-item"><div class="min-w-0 flex-1"><div style="font-weight:700;color:var(--t-primary);overflow-wrap:anywhere">${esc(m.title)}</div>
-                  <div class="text-xs text-slate-500 mt-1">${kindText(m)} · Đề${due ? ' · Hạn ' + pad(due.getDate()) + '/' + pad(due.getMonth() + 1) : ''} · ${targetsText(m)}</div></div>
-                  ${m.page ? `<button type="button" class="icon-btn" data-prev-asg="${esc(m.code)}" aria-label="Xem thử bài làm"><i data-lucide="eye" class="w-4 h-4"></i></button>` : ''}
-                  <button type="button" class="icon-btn" data-rename-asg="${esc(m.code)}" aria-label="Sửa tên"><i data-lucide="pencil" class="w-4 h-4"></i></button>
-                  <button type="button" class="icon-btn" data-edit-asg="${esc(m.code)}" aria-label="Giao lại bài"><i data-lucide="send" class="w-4 h-4"></i></button></div>`;
-              }
-              return `<div class="mat-item"><div class="min-w-0 flex-1">
-                <a class="mat-title" href="${isHttp(m.url) ? esc(m.url) : '#'}">${esc(m.title)}</a>
-                <div class="text-xs text-slate-500 mt-1">${kindText(m)} · ${targetsText(m)}</div></div>
-                <button type="button" class="icon-btn" data-edit-mat="${m.id}" aria-label="Sửa mục"><i data-lucide="pencil" class="w-4 h-4"></i></button>
-                <button type="button" class="icon-btn" data-del-mat="${m.id}" aria-label="Xóa mục" style="color:#be123c"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`;
-            }).join('')}</div></details>`;
+            <div class="lib-week-items space-y-2">${weekByClass(k, byWeek[k])}</div></details>`;
         }).join('') : '<p class="text-sm text-slate-400">Chưa có học liệu nào.</p>';
         icons();
       }
@@ -861,6 +908,11 @@
         } catch (e) { return { ok: false, why: ctl.signal.aborted ? 'quá thời gian chờ' : 'không kết nối được tới địa chỉ này' }; }
         finally { clearTimeout(to); }
       }
+      function renderDays() {
+        const wk = $('dm-week').value, ds = wk ? weekDatesFrom(wk) : [];
+        $('dm-days').innerHTML = ds.map((dt, i) => { const k = ymd(dt); return `<button type="button" class="dm-day" data-day-k="${k}" aria-pressed="${st.dmDates.has(k)}">${i === 6 ? 'CN' : 'T' + (i + 2)}<small>${pad(dt.getDate())}/${pad(dt.getMonth() + 1)}</small></button>`; }).join('');
+      }
+      function weekDatesFrom(k) { const [y, m, dd] = k.split('-').map(Number); return Array.from({ length: 7 }, (_, i) => new Date(y, m - 1, dd + i)); }
       function openMat(id, pf) {
         $('dm-err').textContent = '';
         const m = id ? (st.mats.find(x => x.id === Number(id)) || st.lib.find(x => x.id === Number(id))) : null;
@@ -868,9 +920,10 @@
         const wk = m ? toMon(m.week_start) : pf ? pf.week_start : (st.view === 'lib' ? ymd(weekDates(NOW_WEEK)[0]) : weekKey());
         $('dm-week').innerHTML = weekOptions(wk); $('dm-week').value = wk;
         $('dm-title').textContent = m ? 'Sửa mục học liệu' : 'Thêm mục học liệu';
-        $('dm-kind').value = m ? m.kind : (pf ? pf.kind : 'lesson'); $('dm-skill').value = (m && m.skill) || '';
-        $('dm-name').value = m ? m.title : (pf ? pf.title : ''); $('dm-url').value = m ? m.url : (pf ? pf.url : ''); $('dm-url').dataset.orig = m ? m.url : '';
-        const sel = new Set(m ? m.class_ids : []);
+        $('dm-kind').value = m ? m.kind : ((pf && pf.kind) || 'lesson'); $('dm-skill').value = (m && m.skill) || '';
+        $('dm-name').value = m ? m.title : ((pf && pf.title) || ''); $('dm-url').value = m ? m.url : ((pf && pf.url) || ''); $('dm-url').dataset.orig = m ? m.url : '';
+        const sel = new Set(m ? m.class_ids : (pf && pf.class_ids) || []);
+        st.dmDates = new Set(m ? matDates(m) : (pf && pf.dates) || []); renderDays();
         const cls = matClasses(); (m ? m.class_ids : []).forEach(cid => { const c = st.classes.find(x => x.id === cid); if (c && c.is_archived) cls.push(c); });
         $('dm-classes').innerHTML = cls.map(c => `<label class="pickrow"><input type="checkbox" value="${c.id}"${sel.has(c.id) ? ' checked' : ''}><span>${esc(c.class_code)}</span></label>`).join('');
         quick = quickGroups();
@@ -894,7 +947,7 @@
           st.busy = false; btn.disabled = false; btn.textContent = t0;
           if (!chk.ok && !(await LMS.confirm('Link này chưa mở được: ' + chk.why + '.\n\n' + url + '\n\nNếu bài vừa upload lên GitHub, trang cần khoảng 1 phút mới sẵn sàng.', { ok: 'Vẫn lưu', cancel: 'Sửa lại' }))) return;
         }
-        const row = { week_start: $('dm-week').value || weekKey(), kind: $('dm-kind').value, skill: $('dm-skill').value || null, title, url, class_ids: ids };
+        const row = { week_start: $('dm-week').value || weekKey(), kind: $('dm-kind').value, skill: $('dm-skill').value || null, title, url, class_ids: ids, session_dates: [...st.dmDates].filter(k => weekDatesFrom($('dm-week').value).map(ymd).includes(k)).sort() };
         const res = id ? await st.c.from('week_materials').update(row).eq('id', id) : await st.c.from('week_materials').insert(row);
         if (res.error) { err.textContent = LMS.friendlyError(res.error); return; }
         closeDlgs(); await refresh((id ? 'Đã cập nhật mục.' : 'Đã thêm mục.') + (ids.length ? '' : ' Chưa giao cho lớp nào.'));
@@ -1212,6 +1265,10 @@
         ['lib-search', 'lib-class', 'lib-kind', 'lib-skill', 'lib-week-scope'].forEach(id => $(id).addEventListener(id === 'lib-search' ? 'input' : 'change', () => { if (id === 'lib-week-scope') st.libWeek = $('lib-week-scope').value; renderLib(); }));
         $('dlg-mat').querySelector('form').addEventListener('submit', saveMat);
         $('dm-del').addEventListener('click', deleteMat);
+        $('dm-days').addEventListener('click', e => { const b = e.target.closest('[data-day-k]'); if (!b) return; const k = b.dataset.dayK; st.dmDates.has(k) ? st.dmDates.delete(k) : st.dmDates.add(k); b.setAttribute('aria-pressed', String(st.dmDates.has(k))); });
+        $('dm-week').addEventListener('change', () => { st.dmDates = new Set(); renderDays(); });
+        $('lib-list').addEventListener('click', e => { const ad = e.target.closest('[data-add-mat]'); if (!ad) return; e.preventDefault(); openMat(null, { week_start: ad.dataset.week, class_ids: [Number(ad.dataset.cid)], dates: ad.dataset.date ? [ad.dataset.date] : [] }); });
+        $('lib-list').addEventListener('toggle', e => { const dt = e.target.closest && e.target.closest('.mt-class[data-ckey]'); if (!dt) return; st.libOpenCls = st.libOpenCls || new Set(); dt.open ? st.libOpenCls.add(dt.dataset.ckey) : st.libOpenCls.delete(dt.dataset.ckey); }, true);
         $('btn-asg').addEventListener('click', () => openAsg());
         $('btn-asg-lib').addEventListener('click', () => openAsg());
         $('btn-add-lib').addEventListener('click', () => openMat(null));
