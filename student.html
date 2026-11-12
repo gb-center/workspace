@@ -848,6 +848,15 @@
   body.student-dashboard-view .student-workspace>.m-profile{margin:12px 0 0!important}
   body.student-dashboard-view .student-shell .student-workspace{background:transparent!important;padding:0!important}
   body.student-dashboard-view .student-shell{background:transparent!important}
+  body.student-dashboard-view .m-week{margin-bottom:12px!important}
+  body.student-dashboard-view .t-content{display:flex;flex-direction:column;gap:12px}
+  body.student-dashboard-view .t-sub-cap{display:grid!important;font-size:.6875rem}
+  body.student-dashboard-view .t-sub-row{display:grid!important;grid-template-columns:minmax(0,1.2fr) minmax(0,.9fr) minmax(0,.9fr) 92px!important;column-gap:8px!important;align-items:center;font-size:.75rem}
+  body.student-dashboard-view .t-sub-row>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;grid-column:auto!important}
+  body.student-dashboard-view .t-sub-row .t-sr-name{font-weight:700}
+  body.student-dashboard-view .t-sub-row .t-sub-meta{justify-self:end;justify-content:flex-end;overflow:visible;flex-wrap:nowrap}
+  body.student-dashboard-view .t-sub-row .t-sub-meta .tag{white-space:nowrap;font-size:.625rem;padding:2px 6px}
+  body.student-dashboard-view .t-sr-cls small{display:none}
   body.student-dashboard-view .m-week{display:flex!important;justify-content:center;background:#fff;border:1px solid #e3e8ef;border-radius:14px;padding:4px}
   body.student-dashboard-view .m-week .overview-week-controls{color:#061633}
   body.student-dashboard-view .m-week .icon-btn{color:#061633!important}
@@ -859,7 +868,7 @@
 .t-content{display:flex;flex-direction:column;gap:14px;flex:1 1 auto;min-height:0}
 .student-main>.t-daybar{flex:none;margin-bottom:14px}
 .student-nav button.m-only{display:none}.t-rail-m{display:none}
-@media(max-width:780px){body.student-dashboard-view .student-nav button.m-only{display:flex!important}body.student-dashboard-view .t-rail-m{display:flex!important;flex-direction:column;gap:12px;overflow:visible!important}body.student-dashboard-view aside.t-rail{display:none!important}}
+@media(max-width:780px){body.student-dashboard-view .student-nav button.m-only{display:flex!important}body.student-dashboard-view .t-rail-m{display:flex!important;flex-direction:column;gap:12px;overflow:visible!important}body.student-dashboard-view aside.t-rail{display:none!important}body.student-dashboard-view .t-rail-m .t-tt-slot{display:grid!important;grid-template-columns:118px minmax(0,1fr);align-items:center;column-gap:12px;padding:10px 12px}body.student-dashboard-view .t-rail-m .t-tt-cls{display:block;margin:0;font-size:.8125rem;font-weight:600;color:#475569;text-align:left;overflow-wrap:anywhere}}
 .t-rail{overflow:hidden!important;overscroll-behavior:none}
 @media(min-width:1051px){.t-rail>.card:nth-child(2){flex:1 1 0!important;min-height:0;display:flex;flex-direction:column}.t-rail>.card:nth-child(2) .t-tt{flex:1 1 0;height:auto;min-height:0}}
 @media(max-width:1050px){.t-rail{overflow:visible!important}}
@@ -1318,7 +1327,7 @@ a.t-open:hover span{text-decoration:underline}
 
     /* ---------- Điều hướng bằng # ---------- */
     /* ---------- Giáo viên: lịch dạy theo ngày (student.html#teacher/YYYY-MM-DD) ---------- */
-    const T = { cache: new Map(), allStu: null, authed: false, nextAt: 0, subOpen: new Set(), dayClosed: new Set(), pick: null, slotOpen: new Set(), on: false, bound: false, view: 'day', monday: '', date: '', openFor: '', open: new Set(), sess: [], mats: [], asg: [], next: null, sub: null, stu: {} };
+    const T = { cache: new Map(), allStu: null, authed: false, nextAt: 0, subOpen: new Set(), dayClosed: new Set(), dayOpenM: new Set(), pick: null, slotOpen: new Set(), on: false, bound: false, view: 'day', monday: '', date: '', openFor: '', open: new Set(), sess: [], mats: [], asg: [], next: null, sub: null, stu: {} };
     const addDays = (k, n) => { const d = dOf(k); d.setDate(d.getDate() + n); return ymd(d); };
     const hhmm = t => String(t || '').slice(0, 5);
     const safeUrl = u => /^\s*javascript:/i.test(u || '') ? '#' : (u || '#');
@@ -1477,7 +1486,7 @@ a.t-open:hover span{text-decoration:underline}
       const tdy = ymd(new Date()), days = [...new Set(list.map(s => s.session_date))].sort((a, b) => (b === tdy) - (a === tdy));
       const icon = kind === 'lesson' ? 'presentation' : 'file-check-2', title = kind === 'lesson' ? 'Bài học' : 'Bài tập';
       const cards = days.map(d => {
-        const day = list.filter(s => s.session_date === d), key = kind + d, closed = T.dayClosed.has(key);
+        const day = list.filter(s => s.session_date === d), key = kind + d, closed = matchMedia('(max-width:780px)').matches ? !T.dayOpenM.has(key) : T.dayClosed.has(key);
         const rows = day.map(s => {
           const id = s.class_id, cl = s.classes || {};
           const ms = T.mats.filter(m => m.kind === kind && matFor(m, id, s.session_date));
@@ -1562,7 +1571,7 @@ a.t-open:hover span{text-decoration:underline}
         const sx = e.target.closest('.t-sub-head, .t-bar');
         if (sx) { const c = sx.closest('.t-sub'), body = c.querySelector('.t-sub-body'), open = body.hidden, k = c.dataset.aid; body.hidden = !open; c.querySelector('.t-sub-head').setAttribute('aria-expanded', String(open)); open ? T.subOpen.add(k) : T.subOpen.delete(k); return; }
         const dh = e.target.closest('.t-dayc-head');
-        if (dh) { const c = dh.closest('.t-dayc'), body = c.querySelector('.t-dayc-body'), open = body.hidden; body.hidden = !open; dh.setAttribute('aria-expanded', String(open)); open ? T.dayClosed.delete(c.dataset.dkey) : T.dayClosed.add(c.dataset.dkey); return; }
+        if (dh) { const c = dh.closest('.t-dayc'), body = c.querySelector('.t-dayc-body'), open = body.hidden; body.hidden = !open; dh.setAttribute('aria-expanded', String(open)); open ? (T.dayClosed.delete(c.dataset.dkey), T.dayOpenM.add(c.dataset.dkey)) : (T.dayClosed.add(c.dataset.dkey), T.dayOpenM.delete(c.dataset.dkey)); return; }
         const sh = e.target.closest('.t-slot-head');
         if (sh && !e.target.closest('select, a, input, textarea, button')) { const rows = [...sh.closest('.t-slot').querySelectorAll('.t-row')], anyOpen = rows.some(r => !r.querySelector('.t-body').hidden); rows.forEach(r => { const open = !r.querySelector('.t-body').hidden; if (open === anyOpen) tToggle(r.dataset.sid); }); return; }
         const head = e.target.closest('.t-row-head');
@@ -1577,7 +1586,7 @@ a.t-open:hover span{text-decoration:underline}
           else if (k === 'roster') tRoster(Number(b.dataset.cid), Number(b.dataset.sid));
           else if (k === 'view') { T.view = b.dataset.view; if (T.view === 'submissions') { drawTeacher(); await loadSubs(); } drawTeacher(); window.scrollTo(0, 0); }
           else if (k === 'sub-refresh') { await loadSubs(); drawTeacher(); LMS.toast('Đã tải lại bài nộp'); }
-          else if (k === 'day') { const d = b.dataset.date; T.view = 'day'; if (mondayKey(dOf(d)) === T.monday) { T.date = d; history.replaceState(null, '', '#teacher/' + d); drawTeacher(); } else location.hash = '#teacher/' + d; }
+          else if (k === 'day') { const d = b.dataset.date; if (T.view !== 'rail') T.view = 'day'; if (mondayKey(dOf(d)) === T.monday) { T.date = d; history.replaceState(null, '', '#teacher/' + d); drawTeacher(); } else location.hash = '#teacher/' + d; }
           else if (k === 'wk') { location.hash = '#teacher/' + addDays(T.date, Number(b.dataset.step)); }
           else if (k === 'today') { location.hash = '#teacher/' + ymd(new Date()); }
           else if (k === 'sess-save') {
