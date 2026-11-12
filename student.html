@@ -215,6 +215,10 @@
     .student-history-more button{min-height:38px;padding:0 15px;border:1px solid #e2e6ec;border-radius:10px;background:#fff;color:#24385c;font-size:.8rem;font-weight:700;cursor:pointer}
     .student-history-more button:hover{background:#f4f6f8}
     .tuition-history-list{display:grid;gap:9px}
+    .tuition-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.tuition-head h2{margin:0!important}
+    .tuition-head h2{min-width:0!important;flex:1 1 0!important;width:auto!important;font-size:.875rem!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tuition-head h2 svg{flex:none}.tuition-head #tuition-tag{flex:none}.tuition-head .tag{white-space:nowrap}
+    .tuition-bar{height:8px;border-radius:9999px;background:#e5e9ef;overflow:hidden;margin-top:12px}.tuition-bar i{display:block;height:100%;background:#047857;border-radius:inherit}
+    .tuition-bar-cap{display:flex;justify-content:space-between;gap:8px;margin-top:6px;font-size:.75rem;color:#818999}
     .tuition-amts{display:grid;grid-template-columns:auto auto;justify-content:start;column-gap:28px;row-gap:3px;margin-top:10px;font-size:.875rem;color:#475569}.tuition-amts b{text-align:right;font-variant-numeric:tabular-nums;color:#26344d}.tuition-amts b.neg,.th-amt.neg{color:#be123c!important}.tuition-amts b.pos,.th-amt.pos{color:#047857!important}
     @media(max-width:700px){.tuition-history-row{grid-template-columns:repeat(3,minmax(0,1fr))!important}.tuition-history-row>div{grid-column:1/-1}.tuition-history-row>.tag{grid-column:1/-1;justify-self:start}}
     .th-amt{font-size:.875rem;font-weight:700;color:#26344d;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}.th-amt small{display:block;font-size:.6875rem;font-weight:500;color:#818999}
@@ -736,6 +740,47 @@
     .student-overview-highlight .g-prog>.goal-pair>.goal:nth-child(1) .gl svg{color:#356fa8!important}
     .student-overview-highlight .g-prog>.goal-pair>.goal:nth-child(2) .gl svg{color:#b38324!important}
   </style>
+<style id="mobile-fix">
+@media(max-width:780px){
+  body.student-dashboard-view .student-shell{grid-template-columns:minmax(0,1fr)!important}
+  body.student-dashboard-view .student-welcome,body.student-dashboard-view .student-sidebar,body.student-dashboard-view .student-workspace,body.student-dashboard-view .student-main,body.student-dashboard-view .student-main-content{min-width:0;max-width:100%;box-sizing:border-box}
+  body.student-dashboard-view .student-nav{display:flex;flex-direction:row;overflow-x:auto;flex-wrap:nowrap;gap:6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  body.student-dashboard-view .student-nav::-webkit-scrollbar{display:none}
+  body.student-dashboard-view .student-nav button{flex:none}
+  body.student-dashboard-view .student-shell .student-workspace{overflow-x:hidden!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch}
+  body.student-dashboard-view .student-main-content.student-overview-content{display:flex!important;flex-direction:column;gap:12px}
+  body.student-dashboard-view .student-overview-top>*,body.student-dashboard-view .student-overview-highlight>*,body.student-dashboard-view .student-overview-content>*{flex:0 0 auto!important}
+  body.student-dashboard-view .student-main{overflow:visible;height:auto;min-height:0}
+  body.student-dashboard-view .student-main-content{height:auto!important;min-height:0!important;overflow:visible!important}
+  body.student-dashboard-view .student-overview-top,body.student-dashboard-view .student-overview-highlight{display:flex!important;flex-direction:column;gap:12px;height:auto!important;min-height:0!important;overflow:visible!important}
+  body.student-dashboard-view .student-overview-top>*,body.student-dashboard-view .student-overview-highlight>*,body.student-dashboard-view .student-overview-content>*{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;width:100%;box-sizing:border-box}
+  body.student-dashboard-view .student-overview-highlight .g-tuition #tuition-status-text{max-height:none!important;overflow:visible!important}
+  body.student-dashboard-view .student-main-section,body.student-dashboard-view .student-week-materials,body.student-dashboard-view .student-materials,body.student-dashboard-view .student-materials>*{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;box-sizing:border-box}
+  body.student-dashboard-view .student-shell{grid-template-rows:auto auto minmax(0,1fr)!important}
+  body.student-dashboard-view .student-shell>.student-welcome{height:auto!important;min-height:0;grid-template-columns:auto minmax(0,1fr)!important;grid-template-areas:"left right" "title title";row-gap:6px;padding:10px 12px!important}
+  body.student-dashboard-view .student-welcome-left{grid-area:left}
+  body.student-dashboard-view .student-welcome-right{grid-area:right;justify-content:flex-end;display:flex;align-items:center;gap:6px;min-width:0}
+  body.student-dashboard-view .student-welcome-title{grid-area:title;padding-left:0!important;min-width:0}
+  body.student-dashboard-view .student-welcome h1{font-size:1.125rem!important;line-height:1.25;overflow-wrap:anywhere;white-space:normal}
+  body.student-dashboard-view .student-welcome-actions{display:flex;align-items:center;min-width:0}
+  body.student-dashboard-view .overview-week-label{min-width:0!important}
+  body.student-dashboard-view .student-rail{display:flex!important;flex-direction:column;gap:12px;width:100%!important;min-width:0!important;max-width:100%!important;height:auto!important;max-height:none!important;overflow:visible!important;padding:12px!important;box-sizing:border-box;border-left:0}
+  body.student-dashboard-view .student-rail>*{width:100%;box-sizing:border-box}
+  body.student-dashboard-view .week-calendar-title{display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+  body.student-dashboard-view .week-calendar-title svg{flex:none}
+  body.student-dashboard-view .student-rail .week-calendar-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+  body.student-dashboard-view .student-week-preview-list{grid-template-columns:minmax(0,1fr)!important}
+  body.student-dashboard-view .overview-week-label>span:not(.week-name){display:none!important}
+  body.student-dashboard-view .student-welcome-right{flex-wrap:nowrap}
+  body.student-dashboard-view .student-welcome-tools{flex:none}
+  .t-row-head{grid-template-columns:minmax(0,1fr)!important;gap:8px;padding:6px 0}
+  .t-sum{flex-wrap:wrap!important;justify-content:flex-start!important}
+  .t-slot-head{flex-wrap:wrap}
+  .t-sub-row{grid-template-columns:minmax(0,1fr) auto!important}.t-sub-row .t-sr-cls,.t-sub-row .t-sr-code{grid-column:1}.t-sub-cap{display:none!important}
+  .t-class{grid-template-columns:1fr!important;gap:6px}
+  body.student-dashboard-view .overview-week-label>.week-name{display:inline!important;font-size:.8125rem!important;white-space:nowrap}
+}
+</style>
 <style id="teacher-css">
 .t-content{display:flex;flex-direction:column;gap:14px;flex:1 1 auto;min-height:0}
 .student-main>.t-daybar{flex:none;margin-bottom:14px}
@@ -1077,7 +1122,7 @@ a.t-open:hover span{text-decoration:underline}
         return `<div class="hrow student-history-row">${dayCols(s.date)}<span class="text-xs font-semibold text-sky-700">${s.start} – ${s.end}</span><span class="tag ${st[1]}">${st[0]}</span></div>`; }).join('');
       const histHtml = `<section class="card g-hist" id="student-history"><h2><i data-lucide="history"></i>Lịch sử buổi học</h2><div class="text-sm text-slate-500 mb-3">Đã học ${done.length} buổi · Vắng ${absent} buổi</div><div class="student-history-list">${historyRows || '<div class="text-sm text-slate-500">Chưa có buổi học nào.</div>'}</div>${past.length > S.historyLimit ? `<div class="student-history-more"><button type="button" data-history-more>Xem thêm ${Math.min(10, past.length - S.historyLimit)} buổi</button></div>` : ''}</section>`;
 
-      const tuitionHtml = `<section class="card g-tuition" id="student-tuition"><h2 class="font-bold flex items-center gap-2"><i data-lucide="wallet" class="w-4 h-4"></i>Học phí tháng ${pad(now.getMonth()+1)}/${now.getFullYear()}</h2><div class="text-sm text-slate-500 mt-2" id="tuition-status-text">Đang tải tình trạng…</div></section>`;
+      const tuitionHtml = `<section class="card g-tuition" id="student-tuition"><div class="tuition-head"><h2 class="font-bold flex items-center gap-2">Học phí T${pad(now.getMonth()+1)}/${now.getFullYear()}</h2><span id="tuition-tag"></span></div><div class="text-sm text-slate-500 mt-2" id="tuition-status-text">Đang tải tình trạng…</div></section>`;
       const tuitionHistoryContent = () => S.tuitionHistory === null
         ? '<div class="text-sm text-slate-500">Đang tải lịch sử học phí…</div>'
         : S.tuitionHistory.length
@@ -1101,7 +1146,13 @@ a.t-open:hover span{text-decoration:underline}
       const tools = document.querySelector('.student-welcome-tools');
       if (tools) ['btn-home','btn-theme'].forEach(id => { const el = $(id); if (el) tools.appendChild(el); });
       const curMonth = `${now.getFullYear()}-${pad(now.getMonth()+1)}`, vnd = n => Number(n || 0).toLocaleString('vi-VN') + 'đ';
-      const amtLines = (old, fee, rest) => Number(fee) > 0 || Number(old) > 0 ? `<div class="tuition-amts"><span>Tháng cũ</span><b class="${Number(old) > 0 ? 'neg' : ''}">${vnd(old)}</b><span>Tháng này</span><b>${vnd(fee)}</b><span>Còn lại</span><b class="${Number(rest) > 0 ? 'neg' : 'pos'}">${vnd(rest)}</b></div>` : '';
+      const amtLines = (old, fee, paidNow, rest, date) => {
+        if (!(Number(fee) > 0 || Number(old) > 0)) return '';
+        const compact = !!document.querySelector('.student-rail #student-tuition');
+        if (compact) return Number(rest) > 0 ? `<div class="tuition-amts"><span>Chưa thanh toán</span><b class="neg">${vnd(rest)}</b></div>` : '';
+        const pct = Number(fee) > 0 ? Math.min(100, Math.round(Number(paidNow) / Number(fee) * 100)) : 0;
+        return `<div class="tuition-amts"><span>Tháng cũ</span><b class="${Number(old) > 0 ? 'neg' : ''}">${vnd(old)}</b><span>Tháng này</span><b>${vnd(fee)}</b><span>Đã đóng</span><b class="${Number(paidNow) > 0 ? 'pos' : ''}">${vnd(paidNow)}</b><span>Còn lại</span><b class="${Number(rest) > 0 ? 'neg' : 'pos'}">${vnd(rest)}</b></div><div class="tuition-bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div><div class="tuition-bar-cap"><span>Đã đóng ${pct}% học phí tháng này</span>${date ? `<span>Ngày đóng: ${esc(date)}</span>` : ''}</div>`;
+      };
       const firstM = sess.map(x => String(x.date || '').slice(0,7)).filter(m => /^\d{4}-\d{2}$/.test(m) && m <= curMonth).sort()[0] || curMonth, monthsAll = [];
       for (let c = new Date(Number(firstM.slice(0,4)), Number(firstM.slice(5,7)) - 1, 1), e = new Date(now.getFullYear(), now.getMonth(), 1); c <= e && monthsAll.length < 36; c.setMonth(c.getMonth() + 1)) monthsAll.push(`${c.getFullYear()}-${pad(c.getMonth()+1)}`);
       Promise.all([S.c.rpc('student_tuition_status', { p_student_code: S.code, p_month: curMonth }), Promise.all(monthsAll.map(m => S.c.rpc('student_tuition_amounts', { p_student_code: S.code, p_month: m }).then(x => ({ m, row: Array.isArray(x.data) ? x.data[0] : x.data, err: x.error }))))]).then(([r, ams]) => {
@@ -1112,7 +1163,9 @@ a.t-open:hover span{text-decoration:underline}
         const good = row.status === 'Đã đóng';
         const money = ams.filter(x => x.row && !x.err), cur = money.find(x => x.m === curMonth), old = money.filter(x => x.m < curMonth).reduce((a, x) => a + Math.max(Number(x.row.fee) - Number(x.row.paid), 0), 0);
         const fee = cur ? Number(cur.row.fee) : 0, rest = old + (cur ? Math.max(fee - Number(cur.row.paid), 0) : 0);
-        el.innerHTML = `<span class="tag ${tuiTone(row.status)}">${esc(row.status || 'Chưa có thông tin')}</span>${date ? `<span class="ml-2 text-xs text-slate-500">Ngày đóng: ${esc(date)}</span>` : ''}${money.length ? amtLines(old, fee, rest) : ''}`;
+        const tg = $('tuition-tag'); if (tg) tg.innerHTML = `<span class="tag ${tuiTone(row.status)}">${esc(row.status || 'Chưa có thông tin')}</span>`;
+        const paidNow = cur ? Number(cur.row.paid) : 0;
+        el.innerHTML = money.length ? amtLines(old, fee, paidNow, rest, date) : '';
       }).catch(() => { const el = $('tuition-status-text'); if (el) el.textContent = 'Chưa có thông tin học phí tháng này.'; });
       if (S.view === 'tuition' && S.tuitionHistory === null && !S.tuitionHistoryLoading) {
         const codeAtRequest = S.code, currentMonth = `${now.getFullYear()}-${pad(now.getMonth()+1)}`;
