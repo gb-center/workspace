@@ -789,8 +789,14 @@ a.t-open:hover span{text-decoration:underline}
 .t-class{display:grid;grid-template-columns:200px 1fr;gap:14px;padding:12px 0;border-top:1px solid var(--t-border)}
 .t-class:first-of-type{border-top:0}
 .t-class-name{display:flex;flex-direction:column}.t-class-name span{font-size:.75rem;color:var(--t-muted)}
+.t-rail{justify-content:flex-start!important;gap:12px!important}
+.t-rail>*{margin:0!important}
 .t-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
-.t-stats b{display:block;font-size:1.25rem;color:var(--t-primary)}.t-stats span{font-size:.75rem;color:var(--t-muted)}
+.t-stat{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:12px 4px;border-radius:14px}
+.t-stat b{font-size:1.375rem;line-height:1.1}.t-stat span{font-size:.75rem;font-weight:700}
+.t-stat.c-all{background:#f1ecff;color:#6d28d9}
+.t-stat.c-done{background:#e7f6ef;color:#047857}
+.t-stat.c-left{background:#e8f0ff;color:#1d4ed8}
 .t-tt{display:flex;flex-direction:column;gap:8px;margin-top:12px}
 .t-tt-title{font-size:.75rem;font-weight:800;color:var(--t-primary)}
 .t-tt-slot{font-size:.875rem;font-weight:700;color:var(--t-ink);font-variant-numeric:tabular-nums;padding:6px 10px;border-radius:10px;background:var(--t-soft)}
@@ -1282,7 +1288,7 @@ a.t-open:hover span{text-decoration:underline}
       const done = T.sess.filter(s => s.status === 'done').length, left = T.sess.filter(s => s.status === 'planned' || s.status === 'makeup').length;
       const body = T.view === 'lessons' ? tWeekList('lesson') : T.view === 'submissions' ? tSubView()
         : `<section class="card t-daybar"><h2><i data-lucide="calendar-days"></i>${fmtDay(T.date)}</h2><span class="tag bg-slate-100 text-slate-600">${list.length} lớp</span></section>${tSlots(list) || '<section class="card text-center text-sm text-slate-500">Không có lớp nào ngày này.</section>'}`;
-      const rail = `<section class="card"><h2><i data-lucide="bar-chart-3"></i>Tổng kết tuần</h2><div class="t-stats"><div><b>${T.sess.length}</b><span>Buổi</span></div><div><b>${done}</b><span>Đã dạy</span></div><div><b>${left}</b><span>Sắp tới</span></div></div></section>
+      const rail = `<section class="card"><h2><i data-lucide="bar-chart-3"></i>Tổng kết tuần</h2><div class="t-stats"><div class="t-stat c-all"><b>${T.sess.length}</b><span>Buổi</span></div><div class="t-stat c-done"><b>${done}</b><span>Đã dạy</span></div><div class="t-stat c-left"><b>${left}</b><span>Sắp tới</span></div></div></section>
         <section class="card"><div class="week-calendar-head"><span class="week-calendar-title"><i data-lucide="calendar-days"></i>Thời khóa biểu tuần ${wk}</span><span class="week-calendar-range">${range}</span></div><div class="week-calendar" role="grid" aria-label="Chọn ngày">${cal}</div><div class="t-tt">${tt}</div></section>
         ${tNextCard()}`;
       $('app').innerHTML = `<div class="student-shell student-shell-inner-tabs"><div class="student-welcome"><div class="student-welcome-left"><img class="student-welcome-logo" src="logo-wordmark-gold-navy.png" alt="gblearninghub"><span class="student-welcome-brand-divider" aria-hidden="true"></span></div><div class="student-welcome-title"><h1>${titles[T.view]}</h1><p>Khu vực giảng dạy</p></div><div class="student-welcome-right"><div class="student-welcome-actions"><div class="overview-week-controls" role="group" aria-label="Chọn tuần"><button type="button" class="icon-btn" data-t="wk" data-step="-7" aria-label="Tuần trước"><i data-lucide="chevron-left" class="w-4 h-4"></i></button><span class="overview-week-label"><b>Tuần ${pad(wk)}</b><span>${range}</span></span><button type="button" class="icon-btn" data-t="wk" data-step="7" aria-label="Tuần sau"><i data-lucide="chevron-right" class="w-4 h-4"></i></button><button type="button" class="icon-btn" data-t="today" aria-label="Về hôm nay" title="Hôm nay"><i data-lucide="calendar-check" class="w-4 h-4"></i></button></div></div><div class="student-welcome-tools"></div></div></div>
@@ -1296,7 +1302,7 @@ a.t-open:hover span{text-decoration:underline}
       T.on = true; restoreHeaderActions();
       $('hello').textContent = 'Giáo viên'; $('hello-sub').textContent = 'Khu vực giảng dạy'; document.title = 'Giáo viên | gblearning';
       ['btn-class', 'btn-back'].forEach(id => $(id).classList.add('hidden')); $('btn-home').classList.remove('hidden');
-      $('app').innerHTML = '<div class="card text-center text-sm text-slate-500">Đang tải...</div>';
+      if (!$('app').querySelector('.t-content')) $('app').innerHTML = '<div class="card text-center text-sm text-slate-500">Đang tải...</div>';
       try {
         await LMS.requireTeacher();
         T.date = /^\d{4}-\d{2}-\d{2}$/.test(dateArg || '') ? dateArg : ymd(new Date());
@@ -1327,7 +1333,7 @@ a.t-open:hover span{text-decoration:underline}
           else if (k === 'roster') tRoster(Number(b.dataset.cid));
           else if (k === 'view') { T.view = b.dataset.view; if (T.view === 'submissions') { drawTeacher(); await loadSubs(); } drawTeacher(); window.scrollTo(0, 0); }
           else if (k === 'sub-refresh') { await loadSubs(); drawTeacher(); LMS.toast('Đã tải lại bài nộp'); }
-          else if (k === 'day') { T.view = 'day'; location.hash = '#teacher/' + b.dataset.date; }
+          else if (k === 'day') { const d = b.dataset.date; T.view = 'day'; if (mondayKey(dOf(d)) === T.monday) { T.date = d; history.replaceState(null, '', '#teacher/' + d); drawTeacher(); } else location.hash = '#teacher/' + d; }
           else if (k === 'wk') { location.hash = '#teacher/' + addDays(T.date, Number(b.dataset.step)); }
           else if (k === 'today') { location.hash = '#teacher/' + ymd(new Date()); }
           else if (k === 'sess-save') {
