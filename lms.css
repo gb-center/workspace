@@ -55,7 +55,7 @@
       #lms-nav .nav-brand{display:flex;align-items:center;gap:10px;padding:4px 14px 18px;font-weight:800;font-size:1.0625rem;color:var(--lms-accent-dark)}
       body{padding-left:var(--nav-w)}
     }
-    @media (pointer:coarse){button,select,.add-link-btn{min-height:44px;min-width:44px}main a[href="student-list.html"],#student-list-body a,table.stack td a{min-height:44px;min-width:44px;display:inline-flex;align-items:center;justify-content:center}main a[href="student-list.html"]{border-radius:9999px;padding-left:1rem;padding-right:1rem}}
+    @media (pointer:coarse){button,select,.add-link-btn{min-height:44px;min-width:44px}main a[href="student-list.html"]:not(.overview-shortcuts>a),#student-list-body a,table.stack td a{min-height:44px;min-width:44px;display:inline-flex;align-items:center;justify-content:center}main a[href="student-list.html"]:not(.overview-shortcuts>a){border-radius:9999px;padding-left:1rem;padding-right:1rem}}
 
     /* nút trong banner đầu trang */
     .hero-btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:44px;padding:0 1.1rem;border-radius:9999px;font-weight:700;font-size:.875rem;text-decoration:none}
