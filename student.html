@@ -1077,7 +1077,7 @@ a.t-open:hover span{text-decoration:underline}
       const tuitionHistoryContent = () => S.tuitionHistory === null
         ? '<div class="text-sm text-slate-500">Đang tải lịch sử học phí…</div>'
         : S.tuitionHistory.length
-          ? `<div class="tuition-history-list">${S.tuitionHistory.slice().reverse().map(row => { const monthDate = new Date(Number(row.month.slice(0,4)), Number(row.month.slice(5,7))-1, 1); const monthLabel = new Intl.DateTimeFormat('vi-VN', { month: 'long', year: 'numeric' }).format(monthDate); const paidDate = row.paid_on ? new Date(row.paid_on + 'T00:00:00').toLocaleDateString('vi-VN') : ''; const paid = row.status === 'Đã đóng'; return `<div class="tuition-history-row"><div><b>${esc(monthLabel)}</b>${paidDate ? `<span>Ngày đóng ${esc(paidDate)}</span>` : ''}${row.fee > 0 ? `<span>Học phí ${Number(row.fee).toLocaleString('vi-VN')}đ${row.paid > 0 ? ' · Đã đóng ' + Number(row.paid).toLocaleString('vi-VN') + 'đ' : ''}${row.paid < row.fee ? ' · Còn lại ' + (row.fee - row.paid).toLocaleString('vi-VN') + 'đ' : ''}</span>` : ''}</div><span class="tag ${paid ? 'bg-emerald-50 text-emerald-700' : 'bg-blue-50 text-blue-700'}">${esc(row.status || 'Chưa có thông tin')}</span></div>`; }).join('')}</div>`
+          ? `<div class="tuition-history-list">${S.tuitionHistory.slice().reverse().map(row => { const monthDate = new Date(Number(row.month.slice(0,4)), Number(row.month.slice(5,7))-1, 1); const monthLabel = new Intl.DateTimeFormat('vi-VN', { month: 'long', year: 'numeric' }).format(monthDate); const paidDate = row.paid_on ? new Date(row.paid_on + 'T00:00:00').toLocaleDateString('vi-VN') : ''; const paid = row.status === 'Đã đóng'; return `<div class="tuition-history-row"><div><b>${esc(monthLabel)}</b>${paidDate ? `<span>Ngày đóng ${esc(paidDate)}</span>` : ''}${row.fee > 0 ? `<span>Học phí ${Number(row.fee).toLocaleString('vi-VN')}đ</span>${row.paid > 0 ? '<span>Đã đóng ' + Number(row.paid).toLocaleString('vi-VN') + 'đ</span>' : ''}${row.paid < row.fee ? '<span>Còn lại ' + (row.fee - row.paid).toLocaleString('vi-VN') + 'đ</span>' : ''}` : ''}</div><span class="tag ${paid ? 'bg-emerald-50 text-emerald-700' : 'bg-blue-50 text-blue-700'}">${esc(row.status || 'Chưa có thông tin')}</span></div>`; }).join('')}</div>`
           : '<div class="text-sm text-slate-500">Chưa có lịch sử đóng học phí.</div>';
       const tuitionHistoryHtml = `<section class="card g-tuition-history"><h2><i data-lucide="wallet"></i>Lịch sử đóng học phí</h2><p class="text-xs text-slate-500 mb-3">Theo dõi trạng thái và ngày đóng theo từng tháng.</p><div id="tuition-history-list">${tuitionHistoryContent()}</div></section>`;
       const views = {
@@ -1097,15 +1097,18 @@ a.t-open:hover span{text-decoration:underline}
       const tools = document.querySelector('.student-welcome-tools');
       if (tools) ['btn-home','btn-theme'].forEach(id => { const el = $(id); if (el) tools.appendChild(el); });
       const curMonth = `${now.getFullYear()}-${pad(now.getMonth()+1)}`, vnd = n => Number(n || 0).toLocaleString('vi-VN') + 'đ';
-      const amtLine = (fee, paid) => Number(fee) > 0 ? `<div class="mt-2 text-sm text-slate-700">Học phí: <b>${vnd(fee)}</b>${Number(paid) > 0 ? ` · Đã đóng: <b>${vnd(paid)}</b>` : ''}${Number(paid) < Number(fee) ? ` · Còn lại: <b>${vnd(Number(fee) - Number(paid))}</b>` : ''}</div>` : '';
-      Promise.all([S.c.rpc('student_tuition_status', { p_student_code: S.code, p_month: curMonth }), S.c.rpc('student_tuition_amounts', { p_student_code: S.code, p_month: curMonth })]).then(([r, ra]) => {
-        const am = Array.isArray(ra.data) ? ra.data[0] : ra.data;
+      const amtLines = (old, fee, rest) => Number(fee) > 0 || Number(old) > 0 ? `<div class="mt-2 text-sm text-slate-700"><div>Tháng cũ: <b>${vnd(old)}</b></div><div>Tháng này: <b>${vnd(fee)}</b></div><div>Còn lại: <b>${vnd(rest)}</b></div></div>` : '';
+      const firstM = sess.map(x => String(x.date || '').slice(0,7)).filter(m => /^\d{4}-\d{2}$/.test(m) && m <= curMonth).sort()[0] || curMonth, monthsAll = [];
+      for (let c = new Date(Number(firstM.slice(0,4)), Number(firstM.slice(5,7)) - 1, 1), e = new Date(now.getFullYear(), now.getMonth(), 1); c <= e && monthsAll.length < 36; c.setMonth(c.getMonth() + 1)) monthsAll.push(`${c.getFullYear()}-${pad(c.getMonth()+1)}`);
+      Promise.all([S.c.rpc('student_tuition_status', { p_student_code: S.code, p_month: curMonth }), Promise.all(monthsAll.map(m => S.c.rpc('student_tuition_amounts', { p_student_code: S.code, p_month: m }).then(x => ({ m, row: Array.isArray(x.data) ? x.data[0] : x.data, err: x.error }))))]).then(([r, ams]) => {
         const el = $('tuition-status-text'); if (!el || S.data !== d) return;
         const row = Array.isArray(r.data) ? r.data[0] : r.data;
         if (r.error || !row) { el.textContent = 'Chưa có thông tin học phí tháng này.'; return; }
         const date = row.paid_on ? new Date(row.paid_on + 'T00:00:00').toLocaleDateString('vi-VN') : '';
         const good = row.status === 'Đã đóng';
-        el.innerHTML = `<span class="tag ${good ? 'bg-emerald-50 text-emerald-700' : 'bg-blue-50 text-blue-700'}">${esc(row.status || 'Chưa có thông tin')}</span>${date ? `<span class="ml-2 text-xs text-slate-500">Ngày đóng: ${esc(date)}</span>` : ''}${am && !ra.error ? amtLine(am.fee, am.paid) : ''}`;
+        const money = ams.filter(x => x.row && !x.err), cur = money.find(x => x.m === curMonth), old = money.filter(x => x.m < curMonth).reduce((a, x) => a + Math.max(Number(x.row.fee) - Number(x.row.paid), 0), 0);
+        const fee = cur ? Number(cur.row.fee) : 0, rest = old + (cur ? Math.max(fee - Number(cur.row.paid), 0) : 0);
+        el.innerHTML = `<span class="tag ${good ? 'bg-emerald-50 text-emerald-700' : 'bg-blue-50 text-blue-700'}">${esc(row.status || 'Chưa có thông tin')}</span>${date ? `<span class="ml-2 text-xs text-slate-500">Ngày đóng: ${esc(date)}</span>` : ''}${money.length ? amtLines(old, fee, rest) : ''}`;
       }).catch(() => { const el = $('tuition-status-text'); if (el) el.textContent = 'Chưa có thông tin học phí tháng này.'; });
       if (S.view === 'tuition' && S.tuitionHistory === null && !S.tuitionHistoryLoading) {
         const codeAtRequest = S.code, currentMonth = `${now.getFullYear()}-${pad(now.getMonth()+1)}`;
