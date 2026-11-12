@@ -830,7 +830,8 @@ a.t-open:hover span{text-decoration:underline}
 .t-tt-slot{display:block;width:100%;border:0;text-align:left;cursor:pointer;font-family:inherit}
 .t-tt-slot.picked{background:#f8f1df;box-shadow:inset 0 0 0 2px #e0a100}
 .t-pick+.t-pick{margin-top:12px;padding-top:12px;border-top:1px solid var(--t-border)}
-.t-rail>.card:last-child{max-height:340px;overflow-y:auto}
+.t-rail>.card:last-child{height:300px;min-height:300px;max-height:300px;overflow-y:auto;box-sizing:border-box}
+.t-card-head .t-ic{width:32px;height:32px;border:0!important;background:transparent!important;border-radius:10px}
 .t-day-title{margin:14px 0 4px;padding:6px 10px;border-radius:10px;background:var(--t-soft);font-size:.75rem;font-weight:800;color:var(--t-primary)}
 .t-day-title:first-of-type{margin-top:0}
 .t-class.is-empty{opacity:.55}
@@ -840,6 +841,11 @@ a.t-open:hover span{text-decoration:underline}
 .t-dayc-body .t-class:first-child{border-top:0}
 .t-sub-head,.t-sub .t-bar{cursor:pointer}.t-sub-body[hidden]{display:none!important}
 .t-thisweek{height:36px;padding:0 10px;border:0!important;background:transparent!important;color:#e5c16b!important;font-size:.875rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit}
+.t-sub-row{display:grid!important;grid-template-columns:minmax(120px,1.3fr) minmax(110px,1fr) 100px minmax(96px,auto);align-items:center;gap:12px}
+.t-sub-row .t-sub-meta{justify-self:end;display:flex;gap:6px;align-items:center}
+.t-sr-cls small{display:block;font-size:.6875rem;color:var(--t-muted)}
+.t-sr-code{font-variant-numeric:tabular-nums;color:var(--t-muted)}
+.t-sub-cap{font-size:.75rem;font-weight:700;color:var(--t-muted);border-bottom:1px solid var(--t-border);padding-bottom:6px;margin-top:10px}
 .t-tt-cls{display:block;margin-top:2px;font-size:.75rem;font-weight:500;color:#64748b;font-variant-numeric:normal}
 .t-next{display:flex;flex-direction:column;gap:2px;margin-bottom:10px;color:var(--t-ink)}.t-next span{font-size:.8125rem;color:var(--t-muted)}
 .t-next .t-when{font-weight:800;color:var(--t-accent)}
@@ -1228,7 +1234,7 @@ a.t-open:hover span{text-decoration:underline}
       const ids = [...new Set(T.asg.map(x => x.assignment_id))], cids = [...new Set(T.asg.map(x => x.class_id))];
       if (!ids.length) { T.sub = { students: [], subs: [], writing: [], classes: [] }; return; }
       const [st, sb, wr, cl] = await Promise.all([
-        S.c.from('students').select('id,student_name,class_id').in('class_id', cids).eq('is_active', true).order('student_name'),
+        S.c.from('students').select('id,student_name,student_code,class_id').in('class_id', cids).eq('is_active', true).order('student_name'),
         S.c.from('submissions').select('assignment_id,student_id,score,submitted_at,is_late,attempt_no,counts_for_score,part').in('assignment_id', ids),
         S.c.from('writing_submissions').select('assignment_id,student_id,part,is_late,band,submitted_at').in('assignment_id', ids),
         S.c.from('classes').select('id,class_code,class_name').in('id', cids)
@@ -1241,7 +1247,7 @@ a.t-open:hover span{text-decoration:underline}
       const D = T.sub || { students: [], subs: [], writing: [], classes: [] };
       const fmtDue = d => d ? 'Hạn ' + new Date(d).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : 'Không có hạn';
       const byA = new Map();
-      T.asg.filter(x => x.assignments).forEach(x => { if (!byA.has(x.assignment_id)) byA.set(x.assignment_id, { a: x.assignments, parts: [] }); byA.get(x.assignment_id).parts.push(x); });
+      T.asg.filter(x => x.assignments && !((D.classes.find(c => c.id === x.class_id) || {}).class_code || '').includes('Teacher')).forEach(x => { if (!byA.has(x.assignment_id)) byA.set(x.assignment_id, { a: x.assignments, parts: [] }); byA.get(x.assignment_id).parts.push(x); });
       const cards = [...byA.entries()].map(([aid, g]) => {
         const groups = g.parts.map(x => {
           const cls = D.classes.find(c => c.id === x.class_id) || {}, roster = D.students.filter(st => st.class_id === x.class_id);
@@ -1256,10 +1262,11 @@ a.t-open:hover span{text-decoration:underline}
         });
         const all = groups.flatMap(z => z.rows), done = all.filter(r => r.done), late = done.filter(r => r.late).length, sc = done.filter(r => r.score != null);
         const avg = sc.length ? sc.reduce((p, r) => p + r.score, 0) / sc.length : null, pct = all.length ? Math.round(done.length / all.length * 100) : 0;
-        const multi = groups.length > 1, name = c => esc(c.class_name || c.class_code || '');
-        const sub = multi ? groups.map(z => name(z.cls)).join(' · ') : name(groups[0].cls) + ' · ' + esc(fmtDue(groups[0].x.due_at));
-        const line = r => `<div class="t-sub-row"><span>${esc(r.st.student_name)}</span><span class="t-sub-meta">${r.done ? `${r.score != null ? '<b>' + num(r.score) + '</b>' : ''}${r.band != null ? '<b>Band ' + num(r.band) + '</b>' : ''}${r.tries > 1 ? '<span class="tag bg-slate-100 text-slate-600">Lần ' + r.tries + '</span>' : ''}${r.late ? '<span class="tag bg-rose-50 text-rose-700">Trễ</span>' : ''}${r.score == null && r.band == null && !r.late ? '<span class="tag bg-emerald-50 text-emerald-700">Đã nộp</span>' : ''}` : '<span class="tag bg-amber-50 text-amber-700">Chưa nộp</span>'}</span></div>`;
-        const list = groups.map(z => (multi ? `<div class="t-sub-title">${name(z.cls)} · ${esc(fmtDue(z.x.due_at))}</div>` : '') + (z.rows.map(line).join('') || '<div class="t-none">Lớp chưa có học viên.</div>')).join('');
+        const name = c => esc(c.class_name || c.class_code || ''), dues = [...new Set(groups.map(z => z.x.due_at || ''))];
+        const sub = dues.length === 1 ? esc(fmtDue(dues[0])) : 'Hạn nộp khác nhau theo lớp';
+        const flat = groups.flatMap(z => z.rows.map(r => ({ ...r, cls: z.cls, due: z.x.due_at }))).sort((p, q) => p.done - q.done);
+        const line = r => `<div class="t-sub-row"><span class="t-sr-name">${esc(r.st.student_name)}</span><span class="t-sr-cls">${name(r.cls)}${dues.length > 1 ? `<small>${esc(fmtDue(r.due))}</small>` : ''}</span><span class="t-sr-code">${esc(r.st.student_code || '')}</span><span class="t-sub-meta">${r.done ? `${r.score != null ? '<b>' + num(r.score) + '</b>' : ''}${r.band != null ? '<b>Band ' + num(r.band) + '</b>' : ''}${r.tries > 1 ? '<span class="tag bg-slate-100 text-slate-600">Lần ' + r.tries + '</span>' : ''}${r.late ? '<span class="tag bg-rose-50 text-rose-700">Trễ</span>' : ''}${r.score == null && r.band == null && !r.late ? '<span class="tag bg-emerald-50 text-emerald-700">Đã nộp</span>' : ''}` : '<span class="tag bg-amber-50 text-amber-700">Chưa nộp</span>'}</span></div>`;
+        const list = flat.length ? '<div class="t-sub-row t-sub-cap"><span>Học viên</span><span>Lớp</span><span>MSHS</span><span class="t-sub-meta">Trạng thái</span></div>' + flat.map(line).join('') : '<div class="t-none">Lớp chưa có học viên.</div>';
         return `<section class="card t-sub" data-aid="${aid}"><div class="t-sub-head" aria-expanded="${T.subOpen.has(String(aid))}"><div class="t-cls"><b>${esc(g.a.assignment_name)}</b><span>${sub}</span></div><div class="t-sum"><span class="tag ${done.length === all.length && all.length ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}">${done.length}/${all.length} đã nộp</span>${late ? `<span class="tag bg-rose-50 text-rose-700">${late} nộp trễ</span>` : ''}${avg != null ? `<span class="tag bg-slate-100 text-slate-600">Điểm TB ${num(avg)}</span>` : ''}</div></div>
           <div class="t-bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div><div class="t-sub-body" ${T.subOpen.has(String(aid)) ? '' : 'hidden'}>${list}</div></section>`;
       });
