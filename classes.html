@@ -79,7 +79,7 @@
       $('n-students').textContent=Object.values(counts).reduce((a,b)=>a+b,0);
       $('n-program').textContent=classes.filter(x=>x.program).length;
       $('n-uncategorized').textContent=classes.filter(x=>!x.program).length;
-      $('rows').innerHTML=shown.length?shown.map(x=>`<tr class="border-b border-slate-100">
+      $('rows').innerHTML=shown.length?shown.map(x=>`<tr class="border-b border-slate-100" data-rid="${x.id}">
         <td class="py-3 px-2"><a class="class-name-link" href="${esc(classHref(x))}"><b>${esc(x.class_code)}</b>${x.class_name&&x.class_name!==x.class_code?`<small>${esc(x.class_name)}</small>`:''}</a></td>
         <td class="py-3 px-2"><button type="button" class="class-roster-trigger" data-show-students="${x.id}" aria-label="Xem danh sách ${counts[x.id]||0} học viên lớp ${esc(x.class_code)}"><b>${counts[x.id]||0}</b></button></td>
         <td class="py-3 px-2"><select class="field" data-program="${x.id}" aria-label="Chương trình ${esc(x.class_code)}"><option value="">Chưa gắn chương trình</option>${Object.entries(PROGRAM).map(([k,v])=>`<option value="${k}" ${x.program===k?'selected':''}>${v}</option>`).join('')}</select></td>
@@ -112,7 +112,7 @@
     async function updateProgram(id,v){const r=await c.from('app_settings').select('value').eq('key','class_programs').maybeSingle();if(r.error)throw r.error;const programs=r.data&&r.data.value&&typeof r.data.value==='object'?r.data.value:{};if(v)programs[id]=v;else delete programs[id];const w=await c.from('app_settings').upsert({key:'class_programs',value:programs});if(w.error)throw w.error;const x=classes.find(y=>y.id===Number(id));if(x)x.program=v;render();LMS.toast('Đã cập nhật chương trình lớp.')}
     async function updateState(id,v){const x=classes.find(y=>y.id===Number(id));let r=await c.from('classes').update({is_active:v==='active'}).eq('id',Number(id));if(r.error)throw r.error;r=await c.from('class_settings').upsert({class_id:Number(id),is_archived:v==='archived',page_url:x.page_url||null},{onConflict:'class_id'});if(r.error)throw r.error;if(x){x.is_active=v==='active';x.is_archived=v==='archived'}render();LMS.toast('Đã cập nhật trạng thái lớp.')}
     $('q').addEventListener('input',render);$('f').addEventListener('change',render);
-    $('rows').addEventListener('click',e=>{const b=e.target.closest('[data-show-students]');if(b)openRoster(b.dataset.showStudents)});
+    $('rows').addEventListener('click',e=>{const b=e.target.closest('[data-show-students]');if(b)return openRoster(b.dataset.showStudents);if(matchMedia('(max-width:640px)').matches&&!e.target.closest('select,input,a,button,option')){const tr=e.target.closest('tr[data-rid]');if(tr)openRoster(tr.dataset.rid)}});
     $('rows').addEventListener('change',async e=>{try{if(e.target.dataset.note)return await saveNote(e.target);if(e.target.dataset.program)await updateProgram(e.target.dataset.program,e.target.value);if(e.target.dataset.state)await updateState(e.target.dataset.state,e.target.value)}catch(err){$('msg').textContent=LMS.friendlyError(err);load().catch(()=>{})}});
     $('student-dlg-close').addEventListener('click',()=>$('student-dlg').hidden=true);
     $('student-dlg').addEventListener('click',e=>{if(e.target===$('student-dlg'))$('student-dlg').hidden=true});

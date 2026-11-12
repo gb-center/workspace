@@ -218,6 +218,7 @@
         <div class="flex flex-wrap gap-2 lib-actions">
           <button id="btn-asg-lib" type="button" class="btn-soft"><i data-lucide="send" class="w-4 h-4"></i><span>Giao bài</span></button>
           <button id="btn-add-lib" type="button" class="btn-primary"><i data-lucide="plus" class="w-4 h-4"></i><span>Thêm học liệu</span></button>
+          <button id="lib-filter-toggle" type="button" class="btn-soft lib-ft" aria-label="Tìm kiếm và lọc học liệu" aria-expanded="false"><i data-lucide="search" class="w-4 h-4"></i></button>
         </div>
       </div>
       <div class="lib-filter-row">
@@ -1272,6 +1273,7 @@
         $('btn-asg').addEventListener('click', () => openAsg());
         $('btn-asg-lib').addEventListener('click', () => openAsg());
         $('btn-add-lib').addEventListener('click', () => openMat(null));
+        $('lib-filter-toggle').addEventListener('click', () => { const v = $('view-lib'), o = v.classList.toggle('filters-open'); $('lib-filter-toggle').setAttribute('aria-expanded', String(o)); if (o) $('lib-search').focus(); });
         $('dlg-asg').querySelector('form').addEventListener('submit', saveAsg);
         $('da-code').addEventListener('change', asgPick);
         $('da-grp').addEventListener('change', () => { fillAsgSkill(); fillAsgCode(); asgPick(); });
