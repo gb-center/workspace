@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Test 05 - Listening Lesson</title>
+<style>
+:root{--pri:#16181D;--sec:#23262D;--ink:#1B1D22;--panel:#F4F5F7;--line:#E4E6EA;--g1:#e5c16b;--g2:#b38324;--g3:#c89a3a;--ok:#e3f3e6;--okl:#2e7d4f;--bad:#fbe6e6;--badl:#b42b2b;--mut:#6b6f78}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden;background:#fff}
+body{font-family:Aptos,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);font-size:17px;line-height:1.4;-webkit-text-size-adjust:100%}
+button,input{font-family:inherit;color:inherit}
+button{cursor:pointer}
+svg{display:block}
+#app{height:100vh;height:100dvh;display:flex;flex-direction:column}
+#hd{display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.brand{font-weight:700;font-size:18px;margin-right:6px;white-space:nowrap}
+.tabs{display:flex;gap:6px;flex:1;min-width:0}
+.tab{height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:16px;white-space:nowrap}
+.tab.on{background:var(--pri);border-color:var(--pri);color:#fff}
+.tab small{font-size:13px;opacity:.75;margin-left:6px}
+.tools{display:flex;align-items:center;gap:8px}
+.who{font-size:14px;color:var(--mut);white-space:nowrap}
+.ib{width:44px;height:44px;border-radius:50%;border:0;background:var(--panel);display:flex;align-items:center;justify-content:center;flex:none}
+.ib.dark{background:var(--pri);color:#fff}
+.ib:disabled{opacity:.35}
+.ib.on{background:var(--g1)}
+#au{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--panel);border-bottom:1px solid var(--line)}
+#au .ib{background:#fff;border:1px solid var(--line)}
+#au .ib.dark{background:var(--pri);border-color:var(--pri)}
+#sk{position:relative;flex:1;min-width:60px;height:44px;touch-action:none;cursor:pointer}
+#sk .trk{position:absolute;left:0;right:0;top:19px;height:6px;border-radius:3px;background:var(--line)}
+#sk .fl{position:absolute;left:0;top:19px;height:6px;border-radius:3px;background:var(--pri);width:0}
+#sk .rg{position:absolute;top:15px;height:14px;border-radius:7px;background:var(--g1);opacity:.7;display:none}
+#sk .ph{position:absolute;top:13px;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:#fff;border:3px solid var(--pri);left:0}
+.tm{font-size:14px;color:var(--mut);white-space:nowrap;min-width:84px;text-align:center}
+.pill{height:44px;padding:0 20px;border-radius:999px;border:1px solid var(--pri);background:var(--pri);color:#fff;font-size:16px;font-weight:600;white-space:nowrap}
+.pill.ghost{background:#fff;color:var(--pri);border-color:var(--line)}
+.spd{height:44px;min-width:56px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:15px}
+#tl{display:flex;gap:6px;padding:6px 14px;border-bottom:1px solid var(--line);overflow:hidden}
+.t{min-width:36px;height:34px;padding:0 8px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:14px;font-weight:600;flex:none;line-height:1}
+.t.on{border-color:var(--pri);background:var(--panel)}
+.t.ok{background:var(--ok);border-color:var(--okl);color:var(--okl)}
+.t.bad{background:var(--bad);border-color:var(--badl);color:var(--badl)}
+.t.cur{box-shadow:none;outline:2px solid var(--g3);outline-offset:1px}
+#pg{flex:1;min-height:0;padding:12px 14px;overflow:hidden;display:flex;flex-direction:column;gap:10px}
+#pg.sc{overflow-y:auto}
+.gh{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.gp{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px 0 10px;border-radius:999px;background:var(--panel);font-weight:700;font-size:15px}
+.gp svg{width:18px;height:18px}
+.gi{font-size:16px}
+.gn{font-size:14px;color:var(--mut);flex-basis:100%}
+.blk{display:flex;flex-direction:column;gap:6px}
+.ttl{font-weight:700;font-size:17px;text-align:center;padding:2px 0}
+.qi{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.pre,.post{font-size:16px}
+.qn{flex:none;min-width:30px;height:30px;border-radius:999px;background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+input.gap{flex:1;min-width:0;height:44px;border:0;border-bottom:2px solid var(--line);background:var(--panel);border-radius:10px 10px 0 0;padding:0 12px;font-size:18px;outline:0}
+input.gap:focus{border-bottom-color:var(--g3)}
+input.gap:disabled{opacity:1;color:var(--ink)}
+input.gap.ok{background:var(--ok);border-bottom-color:var(--okl)}
+input.gap.bad{background:var(--bad);border-bottom-color:var(--badl)}
+.frm{display:grid;grid-template-columns:minmax(120px,34%) 1fr;gap:6px 12px;align-items:center}
+.frm .lb{font-weight:600;font-size:16px}
+.frm .st{font-size:17px}
+table.tb{width:100%;border-collapse:separate;border-spacing:0 6px;table-layout:auto}
+table.tb th{text-align:left;font-size:14px;color:var(--mut);font-weight:700;padding:0 8px}
+table.tb td{padding:6px 8px;background:var(--panel);vertical-align:middle;font-size:16px}
+table.tb td:first-child{border-radius:12px 0 0 12px}table.tb td:last-child{border-radius:0 12px 12px 0}
+table.tb td .qi{gap:6px}
+table.tb input.gap{background:#fff;font-size:17px;height:40px;min-width:70px}
+table.tb input.gap.ok{background:var(--ok)}table.tb input.gap.bad{background:var(--bad)}
+.mq{display:flex;flex-direction:column;gap:6px}
+.stem{display:flex;gap:8px;align-items:flex-start;font-weight:600}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opt{display:flex;align-items:center;gap:10px;min-height:44px;padding:6px 14px 6px 8px;border-radius:999px;border:1px solid var(--line);background:#fff;text-align:left;font-size:16px}
+.opt b{flex:none;width:30px;height:30px;border-radius:50%;background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:14px}
+.opt.sel{border-color:var(--pri);background:var(--panel)}
+.opt.sel b{background:var(--pri);color:#fff}
+.opt.ok{background:var(--ok);border-color:var(--okl)}.opt.ok b{background:var(--okl);color:#fff}
+.opt.bad{background:var(--bad);border-color:var(--badl)}.opt.bad b{background:var(--badl);color:#fff}
+.opt:disabled{opacity:1}
+.sentr{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:2px 0}
+.sentr .qi{flex:1 1 150px}
+.lst{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;background:var(--panel);border-radius:14px;padding:8px 14px;font-size:15px}
+.lst span b{margin-right:8px}
+.mrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.mrow .qi{flex:0 0 auto;min-width:150px;font-weight:600}
+.ch{display:flex;gap:6px;flex-wrap:wrap}
+.cb{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:#fff;font-weight:700;font-size:15px}
+.cb.sel{background:var(--pri);color:#fff;border-color:var(--pri)}
+.cb.ok{background:var(--okl);color:#fff;border-color:var(--okl)}.cb.bad{background:var(--badl);color:#fff;border-color:var(--badl)}
+.ex{font-size:15px;color:var(--mut)}
+.rv{display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:14px;background:var(--panel)}
+.rv .r1{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:16px}
+.rv .mk{font-weight:700}
+.rv .mk.ok{color:var(--okl)}.rv .mk.bad{color:var(--badl)}
+.rv .sc{font-size:15px;color:var(--mut)}
+.rv .a2{font-size:16px}
+#ft{display:flex;align-items:center;gap:8px;padding:8px 14px calc(8px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}
+.pgi{font-size:15px;color:var(--mut);min-width:56px;text-align:center;white-space:nowrap}
+.sp{flex:1}
+#sv{font-size:14px;color:var(--mut);white-space:nowrap}
+.ov{position:fixed;inset:0;background:rgba(22,24,29,.35);display:flex;align-items:center;justify-content:center;z-index:50;padding:14px}
+.ov.solid{background:#fff}
+.card{width:min(480px,100%);background:#fff;border:1px solid var(--line);border-radius:20px;padding:22px}
+.card h3{margin:0 0 8px;font-size:20px}
+.card p{margin:6px 0;font-size:17px}
+.card .score{font-size:36px;font-weight:700;margin:4px 0}
+.card .muted{font-size:15px;color:var(--mut)}
+.card .err{color:var(--badl)}
+.card input.gap{width:100%;margin:8px 0}
+.brow{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+.hide-m{}
+@media (max-width:700px){
+ body{font-size:16px}
+ #hd{gap:6px;padding:6px 10px}.brand{font-size:16px}
+ .tabs{flex:1 1 100%;order:3}.tab{flex:1;padding:0 6px}.tab small{display:none}
+ .who{display:none}
+ #au{padding:6px 10px;gap:6px}.tm{min-width:0;font-size:13px}
+ #tl{padding:6px 10px;gap:4px}.t{min-width:0;flex:1;padding:0}
+ #pg{padding:10px}
+ #ft{padding-left:10px;padding-right:10px}
+ .hide-m{display:none}
+ .brand{display:none}.tabs{flex:1 1 auto;order:0}
+ table.tb thead{display:none}table.tb,table.tb tbody{display:block}table.tb tr{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;background:var(--panel);border-radius:14px;padding:8px 10px;margin-bottom:6px}table.tb td{display:block;padding:0;background:none;border-radius:0!important}table.tb td .qi{flex:1 1 100%}table.tb td:has(.qi){flex:1 1 100%}
+ .t{height:30px}
+ #au .ib.x{display:none}
+ .frm{grid-template-columns:42% 1fr}
+ table.tb td{padding:5px 6px;font-size:15px}
+ .pill{padding:0 14px}
+ input.gap{height:40px;font-size:17px}.frm{gap:4px 10px}.frm .lb{font-size:15px}.gp{height:32px}.gi{font-size:15px}.opt{min-height:36px;padding:3px 12px 3px 6px;font-size:15px}.opt b{width:26px;height:26px;font-size:13px}.stem{font-size:15.5px}.opts{gap:4px}.mq{gap:4px}.qn{min-width:26px;height:26px;font-size:13px}.cb{width:38px;height:38px;font-size:14px}.ch{gap:4px}.mrow{gap:4px 8px}.lst{font-size:14px;padding:6px 10px}#tl{padding:4px 10px}#pg{padding:8px 10px;gap:8px}.gn{font-size:13px}.gi{font-size:14.5px}
+}
+@media (max-width:420px){.spd{min-width:48px;padding:0 8px}}
+.ib.ck{background:transparent}.ckg{display:inline-flex;gap:4px;flex:none}.ib.ck:disabled{opacity:.3}</style></head>
+<body>
+<div id="app">
+ <div id="hd"></div>
+ <div id="au"></div>
+ <div id="tl"></div>
+ <main id="pg"></main>
+ <div id="ft"></div>
+</div>
+<audio id="aud" preload="metadata"></audio>
+<script>window.DATA={"mode":"teaching","title":"Test 05 - Listening Lesson","code":"IELTS05-Listening","sb":{"url":"https://bumaiagvgpewhvczgwio.supabase.co","key":"sb_publishable_B563fC34wnTDCGSZv29euw_6P3mFRs5"},"anyOrder":[14,15,16,17,25,26,27],"audioBase":"https://bumaiagvgpewhvczgwio.supabase.co/storage/v1/object/public/audio/","parts":[{"id":1,"label":"Part 1","range":[1,10],"audio":"Practice%20Test%2005%20-%20Listening%20-%20Part%201.mp3","blocks":[{"gid":"g1","gh":"Questions 1–5","gi":"Complete the form below.","gn":"Write no more than three words or a number for each answer.","kind":"form","title":"Application for railcard","qs":[1,2,3,4,5],"rows":[["Type of card required:","Young Person’s Railcard"],["First name:",{"q":1}],["Surname:",{"q":2}],["Date of birth:",{"q":3}],["Permanent address:","158 Kingwood Close, Norwich"],["Postcode:",{"q":4}],["Telephone number:",{"q":5}],["Term-time address:","Housewalk Terrace,"],["London postcode:","WF1 4NN"]]},{"gid":"g2","gh":"Questions 6–9","gi":"Complete the table below.","gn":"Write no more than three words or a number for each answer.","kind":"table","qs":[6,7,8,9],"head":["Types of ticket","Restrictions","Cost"],"rows":[["London Day Out","outside peak hours",{"q":6,"pre":"£"}],["Super Advance Return",{"q":7,"pre":"must book seat","post":"in advance"},"£23"],["Saver","outside peak hours",{"q":8,"pre":"£"}],[{"q":9},"no restrictions","£60"]]},{"gid":"g3","gh":"Question 10","gi":"Choose the correct letter, A, B or C.","kind":"mcq","qs":[10],"q":10,"stem":"How much does the student actually pay for his ticket to London?","opts":["£7.66","£15.34","£33.34"]}]},{"id":2,"label":"Part 2","range":[11,20],"audio":"Practice%20Test%2005%20-%20Listening%20-%20Part%202.mp3","blocks":[{"gid":"g4","gh":"Questions 11–13","gi":"Choose the correct letter, A, B or C.","kind":"mcq","qs":[11],"q":11,"stem":"Who are mentors?","opts":["New students.","Second or third-year students.","University teachers."]},{"gid":"g4","kind":"mcq","qs":[12],"q":12,"stem":"How often should mentor groups meet?","opts":["Once a week.","Once a fortnight.","Once a month."]},{"gid":"g4","kind":"mcq","qs":[13],"q":13,"stem":"What is it essential to do at the first meeting?","opts":["Explain your problems.","Make new friends.","Agree when to meet again."]},{"gid":"g5","gh":"Questions 14–17","gi":"List four things which students may be given information about.","gn":"Write no more than three words for each answer.","kind":"list","qs":[14,15,16,17]},{"gid":"g6","gh":"Questions 18–20","gi":"Complete the sentences below.","gn":"Write no more than three words for each answer.","kind":"sent","qs":[18,19,20],"items":[{"pre":"Your mentor will show you how to obtain a free","q":18,"post":"."},{"pre":"Mentoring is useful for people who are","q":19,"post":"for the first time."},{"pre":"Your mentor may give you advice on how to","q":20,"post":"."}]}]},{"id":3,"label":"Part 3","range":[21,30],"audio":"Practice%20Test%2005%20-%20Listening%20-%20Part%203.mp3","blocks":[{"gid":"g7","gh":"Questions 21–24","gi":"What did each person say was the principal cause of stress for them?","gn":"Choose from the list of possible causes in the box.","kind":"match","qs":[21,22,23,24],"list":[["A","bad management"],["B","dual-career family"],["C","fear of unemployment"],["D","new technologies"],["E","working surroundings"],["F","powerlessness"],["G","too much work"]],"example":"Ramon – team work","items":[[21,"Kikuko"],[22,"Boris"],[23,"Etienne"],[24,"Nagwa"]]},{"gid":"g8","gh":"Questions 25–27","gi":"List three parts of one’s daily routine that can help reduce stress.","gn":"Write no more than three words for each answer.","kind":"list","qs":[25,26,27]},{"gid":"g9","gh":"Questions 28–30","gi":"Complete the table below.","gn":"Write no more than three words in each space.","kind":"table","qs":[28,29,30],"head":["Cause of stress","Strategy for reducing stress"],"rows":[["overwork",{"q":28}],["fear of job",{"q":29}],["new technologies",{"q":30}]]}]},{"id":4,"label":"Part 4","range":[31,40],"audio":"Practice%20Test%2005%20-%20Listening%20-%20Part%204.mp3","blocks":[{"gid":"g10","gh":"Questions 31–36","gi":"Choose the correct letter, A, B or C.","kind":"mcq","qs":[31],"q":31,"stem":"The speaker compares a solar eclipse today to a","opts":["religious experience.","scientific event.","popular spectacle."]},{"gid":"g10","kind":"mcq","qs":[32],"q":32,"stem":"The speaker says that the dark spot of an eclipse is","opts":["simple to predict.","easy to explain.","randomly occurring."]},{"gid":"g10","kind":"mcq","qs":[33],"q":33,"stem":"Concerning an eclipse, the ancient Chinese were","opts":["fascinated","rational","disturbed"]},{"gid":"g10","kind":"mcq","qs":[34],"q":34,"stem":"For the speaker, the most impressive aspect of an eclipse is the","opts":["exceptional beauty of the sky.","chance for scientific study.","effect of the moon on the sun."]},{"gid":"g10","kind":"mcq","qs":[35],"q":35,"stem":"Eclipses occur rarely because of the size of the","opts":["moon","sun","earth"]},{"gid":"g10","kind":"mcq","qs":[36],"q":36,"stem":"In predicting eclipses, the Babylonians were restricted by their","opts":["religious attitudes.","inaccurate observations.","limited ability to calculate"]},{"gid":"g11","gh":"Questions 37–40","gi":"Complete the table below.","gn":"Write no more than three words for each answer.","kind":"table","qs":[37,38,39,40],"head":["Date of eclipse","Scientists","Observation"],"rows":[["1735","Halley",{"q":37,"post":"who accurately predicted an eclipse"}],["1868","Janssen and Lockyer",{"q":38,"pre":"discovered"}],["1878","Watson",{"q":39,"pre":"believed he had found"}],["1919","Einstein",{"q":40,"pre":"realized astronomers had misunderstood"}]]}]}]};</script>
+<script type="application/json" id="lk">{"q1":{"a":["Stephen"],"e":"The caller says his first name: “Stephen”, spelled with “ph”, not “v”."},"q2":{"a":["Krockers"],"e":"He spells his surname: K-R-O-C-K-E-R-S."},"q3":{"a":["3rd February 1979","February 3 1979","3 February 1979","February 3rd 1979","February 3, 1979","3rd of February 1979"],"e":"“It’s the third of February… 1979.”"},"q4":{"a":["NR4 6JF","NR46JF"],"e":"He says “NR4”, then corrects the ending: “F for Freddie”, so the postcode is NR4 6JF."},"q5":{"a":["456321"],"e":"He gives his parents’ number: “four five six three two one”."},"q6":{"a":["18","£18"],"e":"“The cheapest one’s the London Day Out… That costs £18.00.”"},"q7":{"a":["one day","1 day","one","1"],"e":"Super Advance Return: “you have to book your seat one day ahead.”"},"q8":{"a":["29.30","£29.30"],"e":"“The Saver… that’s twenty nine thirty”, so £29.30."},"q9":{"a":["Open ticket","Open"],"e":"The ticket with no restrictions is the Open ticket: “that costs sixty.”"},"q10":{"a":"C","e":"A third off £23 is £7.66, so the ticket is £15.34. Adding the £18 railcard: “altogether you’ll have to pay 33 pounds 34.”"},"q11":{"a":"B","e":"A mentor is “someone who’s been studying here for a year or two”, i.e. a second or third-year student."},"q12":{"a":"B","e":"Meetings are “preferably about once every two weeks”."},"q13":{"a":"C","e":"At the first meeting you “fix a time and a place for your next meeting”."},"q14":{"a":["academic systems","study techniques","techniques for studying","university facilities","social activities"],"e":"Mentors can tell you about “academic systems”, which are different from school."},"q15":{"a":["academic systems","study techniques","techniques for studying","university facilities","social activities"],"e":"They can suggest “techniques for studying”."},"q16":{"a":["academic systems","study techniques","techniques for studying","university facilities","social activities"],"e":"They can help with “university facilities”, from sports halls to libraries."},"q17":{"a":["academic systems","study techniques","techniques for studying","university facilities","social activities"],"e":"They can help you get involved in “social activities”."},"q18":{"a":["e-mail account","email account"],"e":"“Your mentor will be able to show you how to get an e-mail account… they’re free.”"},"q19":{"a":["away from home"],"e":"A mentor is useful for people who have never been “away from home” before."},"q20":{"a":["pass your exams","pass exams","pass the exams"],"e":"Your mentor will have tips on the best way to “pass your exams”."},"q21":{"a":"C","e":"Kikuko: “what worries her most is that she might lose her job”, so C (fear of unemployment)."},"q22":{"a":"G","e":"Boris “puts overwork at the top of his list of stressors”, so G (too much work)."},"q23":{"a":"D","e":"Etienne is one of the 15 percent who give new technologies as the main cause, so D."},"q24":{"a":"E","e":"Nagwa: the main source of stress was “working in noisy, hot, unventilated conditions”, so E (working surroundings)."},"q25":{"a":["a balanced diet","balanced diet","vary your diet","drink less coffee","take regular exercise"],"e":"“Vary your diet… a balanced diet in other words.”"},"q26":{"a":["a balanced diet","balanced diet","vary your diet","drink less coffee","take regular exercise"],"e":"“If you want to feel less stressed, drink less coffee.”"},"q27":{"a":["a balanced diet","balanced diet","vary your diet","drink less coffee","take regular exercise"],"e":"“Finally, take regular exercise.”"},"q28":{"a":["manage time better","manage your time"],"e":"If you have too much work, “manage time better”."},"q29":{"a":["make plans","set money aside","update your CV"],"e":"If you worry about unemployment, “make plans”: set money aside and update your CV."},"q30":{"a":["do training courses"],"e":"For new technologies, “do training courses”."},"q31":{"a":"C","e":"Once “a terrifying religious experience”, an eclipse is now “more likely to be viewed as a tourist attraction”, so C (popular spectacle)."},"q32":{"a":"B","e":"“The dark spot itself is easy to explain: it is the shadow of the moon.”"},"q33":{"a":"C","e":"The Chinese “were so disturbed by these events” that they had gods to prevent eclipses."},"q34":{"a":"B","e":"For scientists, total eclipses “offer a unique opportunity for research”."},"q35":{"a":"A","e":"“If the moon were any larger eclipses would become a monthly bore; if it were smaller, they simply would not be possible.”"},"q36":{"a":"C","e":"The Babylonians spotted an 18-year pattern but “didn’t have the mathematics to predict an eclipse accurately”."},"q37":{"a":["the first person","first person"],"e":"“In 1735, Edmund Halley became the first person to make an accurate prediction of an eclipse.”"},"q38":{"a":["a new element","new element","helium"],"e":"Janssen and Lockyer’s observations in 1868 “led to the discovery of a new element” (helium)."},"q39":{"a":["the lost planet","lost planet","the planet","planet","Vulcan"],"e":"In 1878 Watson “thought he had spotted this so-called ‘lost’ planet” (Vulcan)."},"q40":{"a":["gravity"],"e":"Einstein suggested astronomers “were actually wrong about gravity”."}}</script>
+<script>
+(function () {
+  "use strict";
+  var D = window.DATA;
+  var state = { pi: 0, pg: 0, review: false, ans: {}, lock: {}, byId: {}, pres: {}, open: [], code: "", sname: "", saved: "", timer: null, loading: false, pages: [] };
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  function h(tag, a) {
+    var e = document.createElement(tag);
+    if (a) for (var k in a) { if (k === "cls") e.className = a[k]; else if (k === "html") e.innerHTML = a[k]; else if (k === "text") e.textContent = a[k]; else if (k.slice(0, 2) === "on") e.addEventListener(k.slice(2), a[k]); else e.setAttribute(k, a[k]); }
+    for (var i = 2; i < arguments.length; i++) { var c = arguments[i]; if (c == null) continue; e.appendChild(typeof c === "string" ? document.createTextNode(c) : c); }
+    return e;
+  }
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { } return null; }
+  function svg(p) { return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' + p + '</svg>'; }
+  var ICON = {
+    play: svg('<path d="M7 4.5v15l12-7.5z" fill="currentColor"/>'), pause: svg('<path d="M8 5v14M16 5v14"/>'),
+    b5: svg('<path d="M4 12a8 8 0 1 0 3-6.2M4 4v5h5"/>'), f5: svg('<path d="M20 12a8 8 0 1 1-3-6.2M20 4v5h-5"/>'),
+    x: svg('<path d="M6 6l12 12M18 6L6 18"/>'), tick: svg('<path d="M4 12.5l5 5L20 6.5"/>'),
+    prev: svg('<path d="M15 5l-7 7 7 7"/>'), next: svg('<path d="M9 5l7 7-7 7"/>'),
+    reset: svg('<path d="M4 12a8 8 0 1 0 3-6.2M4 4v5h5"/>'), book: svg('<path d="M4 5h6a2 2 0 0 1 2 2v12a2 2 0 0 0-2-2H4zM20 5h-6a2 2 0 0 0-2 2v12a2 2 0 0 1 2-2h6z"/>'),
+    head: svg('<path d="M4 15v-3a8 8 0 0 1 16 0v3M4 15v3a2 2 0 0 0 2 2h1v-6H6a2 2 0 0 0-2 1zM20 15v3a2 2 0 0 1-2 2h-1v-6h1a2 2 0 0 1 2 1z"/>'),
+    save: svg('<path d="M5 4h11l3 3v13H5zM8 4v5h7V4M8 20v-6h8v6"/>')
+  };
+  function ibtn(name, title, fn, cls, id) { return h("button", { cls: "ib " + (cls || ""), title: title, "aria-label": title, html: ICON[name], onclick: fn, id: id || "" }); }
+
+  var QMAP = {};
+  D.parts.forEach(function (P, pi) { P.blocks.forEach(function (b, bi) { b.qs.forEach(function (q) { QMAP[q] = { pi: pi, bi: bi }; }); }); });
+  function nums(pi) { var r = D.parts[pi].range, a = []; for (var n = r[0]; n <= r[1]; n++) a.push(n); return a; }
+  function val(n) { return state.ans[n] || ""; }
+  var KEY = {}; try { KEY = JSON.parse(document.getElementById("lk").textContent); } catch (e) { }
+  function norm(s) { return String(s || "").trim().replace(/\s+/g, " ").toLowerCase(); }
+  function checked(q) { return state.byId["q" + q] !== undefined; }
+  function doCheck(q) {
+    var k = KEY["q" + q]; if (!k || val(q) === "") return;
+    state.byId["q" + q] = [].concat(k.a).some(function (x) { return norm(x) === norm(val(q)); });
+    paintPage(false); paintTiles();
+  }
+  function replay() { var a = au.a; if (au.rg) a.currentTime = au.rg[0]; else a.currentTime = 0; a.play().catch(function () { }); }
+  function showAns(q) {
+    var k = KEY["q" + q] || {}, ok = state.byId["q" + q] === true, ans = [].concat(k.a || []);
+    var any = (D.anyOrder || []).indexOf(q) > -1;
+    var body = h("div", null, h("p", { text: "Your answer: " + val(q) + (ok ? " (correct)" : " (wrong)") }),
+      any ? null : h("p", { text: "Answer: " + ans.slice(0, 3).join(" / ") }), h("p", { cls: "muted", text: k.e || "" }));
+    modal("Question " + q, body, [{ t: "Close" }]);
+  }
+  function ckEl(q) {
+    if (!checked(q)) { var b = ibtn("tick", "Check", function () { doCheck(q); }, "ck"); b.disabled = val(q) === ""; return b; }
+    return h("span", { cls: "ckg" }, ibtn("head", "Replay without script", replay, "x"), ibtn("book", "Script and answer", function () { showAns(q); }, "x"));
+  }
+  function clearPart(pi) { nums(pi).forEach(function (n) { delete state.ans[n]; delete state.byId["q" + n]; }); paintAll(); }
+  function locked(pi) { return !!state.lock[pi]; }
+  function tileState(n) {
+    var r = state.byId["q" + n]; if (r !== undefined) return r === true ? "ok" : "bad";
+    return val(n) !== "" ? "on" : "";
+  }
+
+  /* ---------- rpc ---------- */
+  function rpc(fn, body, keep) {
+    return fetch(D.sb.url + "/rest/v1/rpc/" + fn, { method: "POST", keepalive: !!keep, headers: { "Content-Type": "application/json", apikey: D.sb.key }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error((j && (j.message || j.hint)) || "error"); return j; }); });
+  }
+  function errText(e) {
+    var m = String(e && e.message || e);
+    if (m.indexOf("student_not_found") > -1) return "Student code not found. Please check it and try again.";
+    if (m.indexOf("assignment_not_found") > -1) return "This test has not been assigned to your class.";
+    return "Could not reach the server. Check your internet connection and try again.";
+  }
+  function modal(title, body, btns) {
+    var ov = h("div", { cls: "ov" }), card = h("div", { cls: "card" }, h("h3", { text: title }));
+    if (typeof body === "string") card.appendChild(h("p", { text: body })); else if (body) card.appendChild(body);
+    var row = h("div", { cls: "brow" });
+    btns.forEach(function (b) { row.appendChild(h("button", { cls: "pill" + (b.ghost ? " ghost" : ""), text: b.t, onclick: function () { if (!b.keep) ov.remove(); if (b.f) b.f(); } })); });
+    card.appendChild(row); ov.appendChild(card); document.body.appendChild(ov); return ov;
+  }
+
+  /* ---------- blocks ---------- */
+  function inputFor(q, extra) {
+    var lk = checked(q), st = tileState(q);
+    var i = h("input", { cls: "gap" + (lk && st === "ok" ? " ok" : lk && st === "bad" ? " bad" : ""), type: "text", autocomplete: "off", autocapitalize: "off", spellcheck: "false", "aria-label": "Answer " + q, "data-q": q });
+    i.value = val(q); if (lk) i.disabled = true;
+    i.addEventListener("input", function () { state.ans[q] = i.value; var ck = i.parentNode.querySelector(".ck"); if (ck) ck.disabled = i.value.trim() === ""; updateTiles(); scheduleSave(); });
+    return h("div", { cls: "qi" }, extra && extra.pre ? h("span", { cls: "pre", text: extra.pre }) : null, h("span", { cls: "qn", text: String(q) }), i, extra && extra.post ? h("span", { cls: "post", text: extra.post }) : null, ckEl(q));
+  }
+  function cellEl(c) {
+    if (typeof c === "string") return document.createTextNode(c);
+    return inputFor(c.q, c);
+  }
+  function mcqEl(b) {
+    var q = b.q, lk = checked(q), st = tileState(q), v = val(q);
+    var opts = h("div", { cls: "opts" });
+    b.opts.forEach(function (t, i) {
+      var L = "ABC"[i], cls = "opt";
+      if (lk) { if (v === L) cls += st === "ok" ? " ok" : " bad"; } else if (v === L) cls += " sel";
+      var o = h("button", { cls: cls, onclick: function () { if (lk) return; state.ans[q] = state.ans[q] === L ? "" : L; paintPage(false); updateTiles(); scheduleSave(); } }, h("b", { text: L }), h("span", { text: t }));
+      if (lk) o.disabled = true; opts.appendChild(o);
+    });
+    return h("div", { cls: "mq" }, h("div", { cls: "stem" }, h("span", { cls: "qn", text: String(q) }), h("span", { text: b.stem }), ckEl(q)), opts);
+  }
+  function buildBlock(b) {
+    var el = h("div", { cls: "blk" });
+    if (b.kind === "form") {
+      el.appendChild(h("div", { cls: "ttl", text: b.title }));
+      var g = h("div", { cls: "frm" });
+      b.rows.forEach(function (r) { g.appendChild(h("div", { cls: "lb", text: r[0] })); g.appendChild(typeof r[1] === "string" ? h("div", { cls: "st", text: r[1] }) : inputFor(r[1].q)); });
+      el.appendChild(g);
+    } else if (b.kind === "table") {
+      var t = h("table", { cls: "tb" }), tr = h("tr");
+      b.head.forEach(function (x) { tr.appendChild(h("th", { text: x })); }); t.appendChild(h("thead", null, tr));
+      var tb = h("tbody"); b.rows.forEach(function (r) { var row = h("tr"); r.forEach(function (c) { row.appendChild(h("td", null, cellEl(c))); }); tb.appendChild(row); });
+      t.appendChild(tb); el.appendChild(t);
+    } else if (b.kind === "mcq") return mcqEl(b);
+    else if (b.kind === "list") b.qs.forEach(function (q) { el.appendChild(inputFor(q)); });
+    else if (b.kind === "sent") b.items.forEach(function (it) { el.appendChild(h("div", { cls: "sentr" }, h("span", { cls: "pre", text: it.pre }), inputFor(it.q, { post: it.post }))); });
+    else if (b.kind === "match") {
+      var lst = h("div", { cls: "lst" }); b.list.forEach(function (x) { lst.appendChild(h("span", null, h("b", { text: x[0] }), x[1])); }); el.appendChild(lst);
+      if (!b.cont) el.appendChild(h("div", { cls: "ex", text: "Example: " + b.example }));
+      b.items.forEach(function (it) {
+        var q = it[0], lk = checked(q), st = tileState(q), v = val(q), ch = h("div", { cls: "ch" });
+        b.list.forEach(function (x) {
+          var cls = "cb"; if (lk) { if (v === x[0]) cls += st === "ok" ? " ok" : " bad"; } else if (v === x[0]) cls += " sel";
+          var c = h("button", { cls: cls, text: x[0], "aria-label": x[0] + " " + x[1], onclick: function () { if (lk) return; state.ans[q] = state.ans[q] === x[0] ? "" : x[0]; paintPage(false); updateTiles(); scheduleSave(); } });
+          if (lk) c.disabled = true; ch.appendChild(c);
+        });
+        ch.appendChild(ckEl(q));
+        el.appendChild(h("div", { cls: "mrow" }, h("div", { cls: "qi" }, h("span", { cls: "qn", text: String(q) }), h("span", { text: it[1] })), ch));
+      });
+    }
+    return el;
+  }
+  function gHead(b, compact) {
+    var d = h("div", { cls: "gh" }, h("span", { cls: "gp", html: ICON.head }, h("span", { text: b.gh || ("Questions " + b.qs[0] + "–" + b.qs[b.qs.length - 1]) })), compact ? null : h("span", { cls: "gi", text: b.gi || "" }));
+    if (b.gn && !compact) d.appendChild(h("div", { cls: "gn", text: b.gn }));
+    return d;
+  }
+  function groupInfo(P, b) { // the block that carries the group heading
+    for (var i = 0; i < P.blocks.length; i++) if (P.blocks[i].gid === b.gid && P.blocks[i].gh) return P.blocks[i];
+    return b;
+  }
+  function reviewItems(pi) {
+    var P = D.parts[pi], r = state.pres[pi], map = {}; ((r && r.items) || []).forEach(function (x) { map[x.id] = x; });
+    return nums(pi).map(function (n) { return { rev: true, q: n, it: map["q" + n] }; });
+  }
+  function revEl(x) {
+    var it = x.it || {}, ok = it.correct === true, g = it.given || val(x.q);
+    var ans = [].concat(it.answer == null ? [] : it.answer);
+    var ansTxt = ans.length ? (typeof it.answer === "string" ? it.answer : ans.slice(0, 3).join(" / ")) : "";
+    var el = h("div", { cls: "rv" },
+      h("div", { cls: "r1" }, h("span", { cls: "qn", text: String(x.q) }), h("span", { text: g ? "Your answer: " + g : "No answer" }), h("span", { cls: "mk " + (ok ? "ok" : "bad"), text: ok ? "Correct" : "Wrong" })));
+    if (!ok && ansTxt && !(D.anyOrder || []).some(function (q) { return q === x.q; })) el.appendChild(h("div", { cls: "a2", text: "Answer: " + ansTxt }));
+    if (it.explanation) el.appendChild(h("div", { cls: "sc", text: it.explanation }));
+    return el;
+  }
+
+  /* ---------- paging (fit without scrolling) ---------- */
+  function pieces(b) {
+    var out = [], cp = function (o) { var c = {}; for (var k in o) c[k] = o[k]; return c; };
+    if (b.kind === "form") b.rows.forEach(function (r, i) { var c = cp(b); c.rows = [r]; c.title = i ? "" : b.title; c.qs = typeof r[1] === "string" ? [] : [r[1].q]; out.push(c); });
+    else if (b.kind === "table") b.rows.forEach(function (r) { var c = cp(b); c.rows = [r]; c.qs = r.filter(function (x) { return typeof x !== "string"; }).map(function (x) { return x.q; }); out.push(c); });
+    else if (b.kind === "list") b.qs.forEach(function (q) { var c = cp(b); c.qs = [q]; out.push(c); });
+    else if (b.kind === "sent") b.items.forEach(function (it) { var c = cp(b); c.items = [it]; c.qs = [it.q]; out.push(c); });
+    else if (b.kind === "match") b.items.forEach(function (it, i) { var c = cp(b); c.items = [it]; c.qs = [it[0]]; c.cont = i > 0; out.push(c); });
+    else out.push(b);
+    return out;
+  }
+  function computePages() {
+    var pi = state.pi, P = D.parts[pi], pg = $("#pg");
+    var cs = getComputedStyle(pg), padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight), padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+    var avail = pg.clientHeight - padY, gap = 10;
+    var m = h("div", { cls: "blk", style: "position:absolute;left:-9999px;top:0;visibility:hidden;width:" + (pg.clientWidth - padX) + "px" }); document.body.appendChild(m);
+    function hOf(e) { m.appendChild(e); var x = e.offsetHeight; m.removeChild(e); return x; }
+    var HH = {}, HC = {}, items = [], H = [];
+    if (state.review) { items = reviewItems(pi); H = items.map(function (x) { return hOf(revEl(x)); }); }
+    else {
+      P.blocks.forEach(function (b) { if (b.gh && !(b.gid in HH)) { HH[b.gid] = hOf(gHead(b)) + gap; HC[b.gid] = hOf(gHead(b, true)) + gap; } });
+      P.blocks.forEach(function (b) {
+        var w = hOf(buildBlock(b));
+        if (w + (HH[b.gid] || 0) + gap <= avail) { items.push(b); H.push(w); }
+        else pieces(b).forEach(function (c) { items.push(c); H.push(hOf(buildBlock(c))); });
+      });
+    }
+    document.body.removeChild(m);
+    var pages = [], cur = [], used = 0, lastG = null, seen = {};
+    items.forEach(function (b, i) {
+      var hd = function () { return state.review ? 0 : ((seen[b.gid] ? HC : HH)[b.gid] || 0); };
+      var need = H[i] + gap + (b.gid !== lastG ? hd() : 0);
+      if (cur.length && used + need > avail) { pages.push(cur); cur = []; used = 0; lastG = null; need = H[i] + gap + hd(); }
+      cur.push(i); used += need; lastG = b.gid; seen[b.gid] = true;
+    });
+    if (cur.length) pages.push(cur);
+    state.units = items; state.pages = pages;
+  }
+  function hasQ(u, n) { return state.review ? u.q === n : u.qs.indexOf(n) > -1; }
+  function pageOfQ(q) {
+    for (var p = 0; p < state.pages.length; p++) for (var k = 0; k < state.pages[p].length; k++) if (hasQ(state.units[state.pages[p][k]], q)) return p;
+    return 0;
+  }
+  function paintPage(relayout) {
+    var pg = $("#pg"); if (relayout) { computePages(); if (state.pg >= state.pages.length) state.pg = state.pages.length - 1; if (state.pg < 0) state.pg = 0; }
+    var P = D.parts[state.pi], lastG = null;
+    var wrap = h("div", { id: "pw", cls: "blk", style: "gap:10px" });
+    function seenBefore(gid) { for (var p = 0; p < state.pg; p++) for (var k = 0; k < state.pages[p].length; k++) if (state.units[state.pages[p][k]].gid === gid) return true; return false; }
+    (state.pages[state.pg] || []).forEach(function (i) {
+      var b = state.units[i];
+      if (state.review) { wrap.appendChild(revEl(b)); return; }
+      if (b.gid !== lastG) wrap.appendChild(gHead(groupInfo(P, b), seenBefore(b.gid)));
+      lastG = b.gid; wrap.appendChild(buildBlock(b));
+    });
+    var st = pg.scrollTop; pg.innerHTML = ""; pg.appendChild(wrap); pg.className = "";
+    if (window.innerWidth > 700) { // enlarge to fill the page
+      var z = 1; while (z < 1.5) { wrap.style.zoom = z + 0.05; if (pg.scrollHeight > pg.clientHeight + 1) break; z += 0.05; } wrap.style.zoom = z > 1 ? z : "";
+    }
+    if (pg.scrollHeight > pg.clientHeight + 2) pg.className = "sc";
+    pg.scrollTop = st; paintFooter();
+  }
+
+  /* ---------- chrome ---------- */
+  function paintHeader() {
+    document.querySelectorAll(".tab").forEach(function (t, i) {
+      var r = state.pres[i]; t.className = "tab" + (i === state.pi ? " on" : ""); t.innerHTML = "";
+      t.appendChild(document.createTextNode(D.parts[i].label)); if (state.lock[i] && r) t.appendChild(h("small", { text: r.score + "/" + r.total }));
+    });
+  }
+  function paintTiles() {
+    var tl = $("#tl"); tl.innerHTML = "";
+    nums(state.pi).forEach(function (n) {
+      var s = tileState(n), cur = (state.pages[state.pg] || []).some(function (i) { return hasQ(state.units[i], n); });
+      tl.appendChild(h("button", { cls: "t" + (s ? " " + s : "") + (cur ? " cur" : ""), text: String(n), "aria-label": "Question " + n, onclick: function () { state.pg = pageOfQ(n); paintPage(false); paintTiles(); } }));
+    });
+  }
+  function updateTiles() { paintTiles(); }
+  function paintFooter() {
+    var ft = $("#ft"), pi = state.pi, lk = locked(pi), n = state.pages.length;
+    ft.innerHTML = "";
+    var prev = ibtn("prev", "Previous page", function () { if (state.pg > 0) { state.pg--; paintPage(false); paintTiles(); } }); prev.disabled = state.pg <= 0;
+    var next = ibtn("next", "Next page", function () { if (state.pg < n - 1) { state.pg++; paintPage(false); paintTiles(); } }); next.disabled = state.pg >= n - 1;
+    ft.appendChild(prev); ft.appendChild(h("span", { cls: "pgi", text: (state.pg + 1) + " / " + Math.max(n, 1) })); ft.appendChild(next);
+    ft.appendChild(h("span", { cls: "sp" }));
+    ft.appendChild(ibtn("reset", "Clear this part", function () { clearPart(pi); }));
+  }
+  function paintAll() { paintHeader(); computePages(); if (state.pg >= state.pages.length) state.pg = Math.max(0, state.pages.length - 1); paintPage(false); paintTiles(); }
+  function setSave(t) { state.svText = t; var e = $("#sv"); if (e) e.textContent = t; }
+
+  /* ---------- audio ---------- */
+  var au = { a: null, rg: null, speeds: [1, 0.75, 1.25], si: 0 };
+  function fmt(t) { if (!isFinite(t)) t = 0; var m = Math.floor(t / 60), s = Math.floor(t % 60); return m + ":" + (s < 10 ? "0" : "") + s; }
+  function setAudio(pi) {
+    var a = au.a; var src = D.audioBase + D.parts[pi].audio; if (a.getAttribute("data-s") === src) return;
+    a.pause(); a.setAttribute("data-s", src); a.src = src; au.rg = null; a.playbackRate = au.speeds[au.si]; drawAu();
+  }
+  function drawAu() {
+    var a = au.a, d = a.duration || 0, t = a.currentTime || 0, p = d ? t / d : 0, sk = $("#sk"); if (!sk) return;
+    $(".fl", sk).style.width = (p * 100) + "%"; $(".ph", sk).style.left = (p * 100) + "%";
+    var rg = $(".rg", sk); if (au.rg && d) { rg.style.display = "block"; rg.style.left = (au.rg[0] / d * 100) + "%"; rg.style.width = ((au.rg[1] - au.rg[0]) / d * 100) + "%"; } else rg.style.display = "none";
+    $("#tm").textContent = fmt(t) + " / " + fmt(d);
+    $("#pp").innerHTML = a.paused ? ICON.play : ICON.pause; $("#cl").style.display = au.rg ? "flex" : "none";
+  }
+  function buildAudio() {
+    var box = $("#au"), a = au.a = $("#aud");
+    var pp = ibtn("play", "Play or pause", function () { if (a.paused) { if (au.rg && (a.currentTime < au.rg[0] || a.currentTime >= au.rg[1])) a.currentTime = au.rg[0]; a.play().catch(function () { $("#tm").textContent = "Audio could not be loaded"; }); } else a.pause(); }, "dark", "pp");
+    var b5 = ibtn("b5", "Back 5 seconds", function () { a.currentTime = Math.max(0, a.currentTime - 5); }, "x");
+    var f5 = ibtn("f5", "Forward 5 seconds", function () { a.currentTime = Math.min(a.duration || 1e9, a.currentTime + 5); }, "x");
+    var sk = h("div", { id: "sk" }, h("div", { cls: "trk" }), h("div", { cls: "rg" }), h("div", { cls: "fl" }), h("div", { cls: "ph" }));
+    var tm = h("span", { cls: "tm", id: "tm", text: "0:00 / 0:00" });
+    var sp = h("button", { cls: "spd", id: "spd", text: "1x", title: "Speed", "aria-label": "Playback speed", onclick: function () { au.si = (au.si + 1) % au.speeds.length; a.playbackRate = au.speeds[au.si]; this.textContent = au.speeds[au.si] + "x"; } });
+    var cl = ibtn("x", "Clear selected part", function () { au.rg = null; drawAu(); }, "", "cl"); cl.style.display = "none";
+    [pp, b5, f5, sk, tm, sp, cl].forEach(function (x) { box.appendChild(x); });
+    var down = null;
+    function tAt(e) { var r = sk.getBoundingClientRect(), x = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)); return x * (a.duration || 0); }
+    sk.addEventListener("pointerdown", function (e) { sk.setPointerCapture(e.pointerId); down = { x: e.clientX, t: tAt(e), drag: false }; });
+    sk.addEventListener("pointermove", function (e) {
+      if (!down) return; if (!down.drag && Math.abs(e.clientX - down.x) > 8) down.drag = true;
+      if (down.drag) { var t = tAt(e); au.rg = [Math.min(down.t, t), Math.max(down.t, t)]; drawAu(); }
+    });
+    sk.addEventListener("pointerup", function (e) {
+      if (!down) return; var t = tAt(e);
+      if (down.drag && au.rg && au.rg[1] - au.rg[0] > 0.5) { a.currentTime = au.rg[0]; a.play().catch(function () { }); } else { au.rg = null; a.currentTime = t; }
+      down = null; drawAu();
+    });
+    ["timeupdate", "loadedmetadata", "play", "pause", "durationchange"].forEach(function (ev) { a.addEventListener(ev, function () { if (ev === "timeupdate" && au.rg && a.currentTime >= au.rg[1]) a.currentTime = au.rg[0]; drawAu(); }); });
+    a.addEventListener("ended", function () { drawAu(); });
+    a.addEventListener("error", function () { $("#tm").textContent = "Audio could not be loaded"; });
+  }
+
+  /* ---------- progress, save, submit ---------- */
+  function draftBody() { return { ans: state.ans, open: state.open }; }
+  function scheduleSave() {
+    if (!state.code || state.loading) return;
+    var cur = JSON.stringify(draftBody()); if (cur === state.saved) return;
+    setSave("Saving..."); clearTimeout(state.timer); state.timer = setTimeout(function () { saveNow(false); }, 1200);
+  }
+  function saveNow(keep) {
+    if (!state.code) return Promise.resolve();
+    clearTimeout(state.timer);
+    var body = draftBody(), cur = JSON.stringify(body); if (cur === state.saved) { setSave("Saved"); return Promise.resolve(); }
+    return rpc("save_draft", { p_student_code: state.code, p_assignment_code: D.code, p_answers: body }, keep)
+      .then(function () { state.saved = cur; setSave("Saved"); }).catch(function () { setSave("Not saved"); });
+  }
+  document.addEventListener("visibilitychange", function () { if (document.visibilityState === "hidden") saveNow(true); });
+  window.addEventListener("pagehide", function () { saveNow(true); });
+  function loadProgress(pg) {
+    state.loading = true;
+    var d = pg.answers || {}; state.ans = d.ans || {}; state.open = d.open || [];
+    state.lock = {}; state.byId = {}; state.pres = {};
+    (pg.parts || []).forEach(function (x) {
+      var pi = x.part - 1; if (state.open.indexOf(pi) > -1 || !D.parts[pi]) return;
+      state.lock[pi] = true; state.pres[pi] = x.latest;
+      (x.latest.items || []).forEach(function (it) { state.byId[it.id] = it.correct; });
+    });
+    var first = 0; for (var i = 0; i < D.parts.length; i++) { if (!state.lock[i]) { first = i; break; } }
+    state.pi = first; state.pg = 0; state.review = false; setAudio(first);
+    state.saved = JSON.stringify(draftBody()); state.loading = false; paintAll(); setSave("");
+  }
+  function partAnswers(pi) { var a = {}; nums(pi).forEach(function (n) { a["q" + n] = val(n); }); return a; }
+  function submit() {
+    var pi = state.pi; if (locked(pi)) return;
+    var un = nums(pi).filter(function (n) { return val(n) === ""; }).length;
+    modal("Submit Part " + D.parts[pi].id + "?", (un ? un + " question" + (un > 1 ? "s are" : " is") + " still unanswered in this part. " : "") + "You cannot change your answers in this part after submitting.",
+      [{ t: "Keep working", ghost: true }, { t: "Submit", f: function () { doSubmit(pi); } }]);
+  }
+  function doSubmit(pi) {
+    var wait = modal("Submitting...", "Please wait.", []);
+    rpc("submit_assignment_part", { p_student_code: state.code, p_assignment_code: D.code, p_part: D.parts[pi].id, p_answers: partAnswers(pi) })
+      .then(function (j) {
+        wait.remove(); state.lock[pi] = true; state.pres[pi] = { score: j.score, total: j.total, is_late: j.is_late, counts_for_score: j.counts_for_score, items: j.items };
+        j.items.forEach(function (x) { state.byId[x.id] = x.correct; });
+        state.open = state.open.filter(function (x) { return x !== pi; });
+        saveNow(false); state.review = false; paintAll(); showResult(pi, j);
+      }).catch(function (e) { wait.remove(); modal("Could not submit", errText(e), [{ t: "OK" }]); });
+  }
+  function showResult(pi, j) {
+    var left = 0; D.parts.forEach(function (P, i) { if (!locked(i)) left++; });
+    var body = h("div", null, h("p", { cls: "score", text: j.score + " / " + j.total }),
+      h("p", { text: j.counts_for_score ? "This is your first attempt at this part, so this score counts." : "This is a retake. Only your first attempt at each part counts for your score." }),
+      j.is_late ? h("p", { cls: "err", text: "Submitted after the deadline (marked as late)." }) : null,
+      h("p", { cls: "muted", text: "Green is correct, red is wrong. Open the book icon to see the script and answers." + (left ? " " + left + " part" + (left > 1 ? "s" : "") + " left to submit." : " You have submitted all parts.") }));
+    var next = -1; for (var i = 0; i < D.parts.length; i++) if (!locked(i)) { next = i; break; }
+    var btns = [{ t: "Review", ghost: true, f: function () { state.review = true; state.pg = 0; paintAll(); } }];
+    if (next > -1) btns.push({ t: "Next part", f: function () { goPart(next); } });
+    modal("Part " + D.parts[pi].id + " result", body, btns);
+  }
+  function retry(pi) {
+    nums(pi).forEach(function (n) { delete state.ans[n]; delete state.byId["q" + n]; });
+    state.lock[pi] = false; delete state.pres[pi]; if (state.open.indexOf(pi) < 0) state.open.push(pi);
+    state.review = false; state.pg = 0; saveNow(false); paintAll();
+  }
+  function retakeAll() {
+    var any = false; D.parts.forEach(function (P, i) { if (locked(i)) any = true; });
+    modal("Clear all answers?", "All your answers in the four parts will be cleared.",
+      [{ t: "Cancel", ghost: true }, { t: "Retake", f: function () {
+        D.parts.forEach(function (P, pi) { nums(pi).forEach(function (n) { delete state.ans[n]; delete state.byId["q" + n]; }); state.lock[pi] = false; delete state.pres[pi]; if (state.open.indexOf(pi) < 0) state.open.push(pi); });
+        state.review = false; goPart(0); saveNow(false);
+      } }]);
+  }
+  function goPart(pi) { state.pi = pi; state.pg = 0; state.review = false; setAudio(pi); paintAll(); }
+
+  /* ---------- login ---------- */
+  function login() {
+    var qc = ""; try { qc = (new URLSearchParams(location.search).get("s") || decodeURIComponent((location.hash || "").slice(1))).trim(); } catch (e) { }
+    function start(c, ov, msg) {
+      c = String(c || "").trim(); if (!c) { if (msg) msg.textContent = "Please enter your code."; return; }
+      if (msg) msg.textContent = "Checking...";
+      rpc("student_assignment", { p_student_code: c, p_assignment_code: D.code }).then(function (j) {
+        state.code = c; state.sname = j.student_name || ""; store("sc", c);
+        return rpc("get_progress", { p_student_code: c, p_assignment_code: D.code }).then(function (pg) {
+          $("#who").textContent = state.sname; loadProgress(pg); if (ov) ov.remove();
+          if (qc) { try { history.replaceState(null, "", location.pathname); } catch (e) { } }
+        });
+      }).catch(function (e) {
+        if (msg) { msg.textContent = errText(e); return; }
+        var err = h("div", { cls: "ov solid" }, h("div", { cls: "card" }, h("h3", { text: D.title }), h("p", { cls: "err", text: errText(e) }),
+          h("div", { cls: "brow" }, h("button", { cls: "pill", text: "Try again", onclick: function () { err.remove(); store("sc", ""); qc = ""; try { history.replaceState(null, "", location.pathname); } catch (x) { } login(); } }))));
+        document.body.appendChild(err);
+      });
+    }
+    if (qc) { start(qc, null, null); return; }
+    var inp = h("input", { cls: "gap", type: "text", autocomplete: "off", spellcheck: "false", placeholder: "Student code", "aria-label": "Student code" });
+    inp.value = store("sc") || "";
+    var msg = h("p", { cls: "err", text: "" });
+    var ov = h("div", { cls: "ov solid" }, h("div", { cls: "card" }, h("h3", { text: D.title }), h("p", { text: "Enter your student code to start the test." }), inp, msg,
+      h("div", { cls: "brow" }, h("button", { cls: "pill", text: "Start", onclick: function () { start(inp.value, ov, msg); } }))));
+    inp.addEventListener("keydown", function (e) { if (e.key === "Enter") start(inp.value, ov, msg); });
+    document.body.appendChild(ov); setTimeout(function () { inp.focus(); }, 50);
+  }
+
+  /* ---------- boot ---------- */
+  function boot() {
+    var tabs = h("nav", { cls: "tabs" });
+    D.parts.forEach(function (P, i) { tabs.appendChild(h("button", { cls: "tab", onclick: function () { goPart(i); } })); });
+    var tools = h("div", { cls: "tools" }, h("span", { id: "who", cls: "who" }), ibtn("reset", "Clear all answers", retakeAll));
+    $("#hd").appendChild(h("div", { cls: "brand", text: D.title })); $("#hd").appendChild(tabs); $("#hd").appendChild(tools);
+    buildAudio(); setAudio(0); paintAll();
+    var rt; window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(function () { var q = null; paintAll(); }, 150); });
+  }
+  document.addEventListener("DOMContentLoaded", boot);
+})();
+
+</script>
+</body></html>

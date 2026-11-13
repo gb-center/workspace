@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Test 05 - Listening Presentation</title>
+<style>
+:root{--pri:#16181D;--ink:#1B1D22;--panel:#F4F5F7;--line:#E4E6EA;--g1:#e5c16b;--g2:#b38324;--ok:#e3f3e6;--okl:#2e7d4f;--bad:#fbe6e6;--badl:#b42b2b;--mut:#6b6f78}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:#fff}
+body{font-family:Aptos,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);line-height:1.35;-webkit-text-size-adjust:100%}
+button{font-family:inherit;color:inherit;cursor:pointer}
+svg{display:block}
+.pill{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 18px;border-radius:999px;border:0;background:var(--pri);color:#fff;font-weight:600;font-size:16px}
+.pill.ghost{background:var(--panel);color:var(--ink)}
+.ib{width:48px;height:48px;border-radius:50%;border:0;background:var(--panel);display:flex;align-items:center;justify-content:center;flex:none}
+.ib.dark{background:var(--pri);color:#fff}
+.ib.on{background:var(--g1)}
+mark.ans{background:var(--ok);color:var(--okl);font-weight:700;border-radius:6px;padding:0 8px}
+/* display */
+body.disp{overflow:hidden}
+#D{height:100vh;height:100dvh;display:flex;flex-direction:column;padding:2.2vh 3vw;gap:1.6vh}
+#dh{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+#dh .ttl{font-weight:700;font-size:22px}
+.tag{display:inline-flex;align-items:center;height:36px;padding:0 16px;border-radius:999px;background:var(--panel);font-weight:700;font-size:17px}
+.tag.cur{background:var(--pri);color:#fff}
+#dh .sp{flex:1}
+#dh small{color:var(--mut);font-size:14px}
+#dot{width:12px;height:12px;border-radius:50%;background:#bbb}#dot.on{background:var(--okl)}
+#da{display:flex;align-items:center;gap:14px;background:var(--panel);border-radius:20px;padding:10px 18px}
+#dsk{position:relative;flex:1;height:14px}
+#dsk .trk{position:absolute;left:0;right:0;top:4px;height:6px;border-radius:3px;background:var(--line)}
+#dsk .fl{position:absolute;left:0;top:4px;height:6px;border-radius:3px;background:var(--pri)}
+#dsk .rg{position:absolute;top:0;height:14px;border-radius:7px;background:rgba(229,193,107,.6);display:none}
+#dtm{font-variant-numeric:tabular-nums;color:var(--mut);font-size:16px;min-width:110px;text-align:right}
+#dhint{font-size:20px;font-weight:600}
+#db{flex:1;min-height:0;display:flex;gap:2.5vw}
+#dl{flex:1;min-width:0;overflow:hidden;display:flex;flex-direction:column;gap:1.4em}
+#dr{width:38%;flex:none;background:var(--panel);border-radius:24px;padding:28px;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+#dr .n{font-size:20px;color:var(--mut)}#dr .a{font-size:44px;font-weight:700}
+#dr .sc{font-size:22px;line-height:1.45}
+.grp{display:flex;flex-direction:column;gap:.45em}
+.gh{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.gh b{display:inline-flex;height:1.9em;align-items:center;padding:0 .8em;border-radius:999px;background:var(--panel);font-size:.9em}
+.gh span{color:var(--mut);font-size:.85em}
+.chips{display:flex;gap:.5em;flex-wrap:wrap;font-size:.8em;color:var(--mut)}
+.row{display:flex;gap:.6em;align-items:baseline;padding:.15em .4em;border-radius:12px}
+.row.f{background:#fbf3dc}
+.row .qn{flex:none;min-width:1.9em;height:1.9em;border-radius:50%;background:var(--panel);display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:.85em}
+.row.f .qn{background:var(--pri);color:#fff}
+.opts{display:flex;gap:1.2em;flex-wrap:wrap;color:var(--mut);font-size:.9em}
+.opts .c{color:var(--okl);font-weight:700}
+.tg{display:inline-flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+.tg i{font-style:normal;font-size:.7em;padding:.1em .7em;border-radius:999px;background:var(--bad);color:var(--badl);font-weight:700}
+#dsum{display:flex;gap:10px;flex-wrap:wrap;font-size:18px}
+/* remote */
+body.rem{background:#fff}
+#R{max-width:560px;margin:0 auto;padding:10px 12px 28px;display:flex;flex-direction:column;gap:10px}
+.rr{display:flex;gap:6px}.rr>*{flex:1}
+.seg{height:40px;border-radius:999px;border:0;background:var(--panel);font-weight:700;font-size:15px;padding:0 4px}
+.seg.on{background:var(--pri);color:#fff}
+#rau{display:flex;align-items:center;gap:6px;background:var(--panel);border-radius:18px;padding:8px}
+#rau .ib{background:#fff;border:1px solid var(--line);width:44px;height:44px}#rau .ib.dark{background:var(--pri);border-color:var(--pri)}
+#rsk{position:relative;height:36px;margin:0 2px;touch-action:none}
+#rsk .trk{position:absolute;left:0;right:0;top:15px;height:6px;border-radius:3px;background:var(--line)}
+#rsk .fl{position:absolute;left:0;top:15px;height:6px;border-radius:3px;background:var(--pri)}
+#rsk .rg{position:absolute;top:10px;height:16px;border-radius:8px;background:rgba(229,193,107,.6);display:none}
+#rtm{font-size:14px;color:var(--mut);text-align:center}
+#rt{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+#rt button{height:44px;border-radius:12px;border:1px solid var(--line);background:#fff;font-weight:700;font-size:16px;position:relative}
+#rt button.cur{border-color:var(--pri);background:var(--panel)}
+#rt button.rv{background:var(--ok);border-color:var(--okl);color:var(--okl)}
+#rt button.tgd::after{content:"";position:absolute;right:5px;top:5px;width:8px;height:8px;border-radius:50%;background:var(--badl)}
+#rp{background:var(--panel);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:8px}
+#rp .t{font-weight:600;font-size:17px}#rp .a{font-size:24px;font-weight:700;color:var(--okl)}#rp .e{font-size:15px;color:var(--mut)}
+.chip{height:44px;border-radius:999px;border:1px solid var(--line);background:#fff;font-weight:600;font-size:15px;padding:0 14px}
+.chip.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.rw{display:flex;gap:8px;flex-wrap:wrap}
+.ov{position:fixed;inset:0;background:#fff;display:flex;align-items:center;justify-content:center;padding:16px;z-index:9}
+.card{width:min(420px,100%);border:1px solid var(--line);border-radius:20px;padding:22px}
+.card input{width:100%;height:48px;font-size:20px;border:0;border-bottom:2px solid var(--line);background:var(--panel);border-radius:10px 10px 0 0;padding:0 12px;margin:10px 0;letter-spacing:.2em}
+.err{color:var(--badl);font-size:15px;min-height:1.3em}
+</style></head><body>
+<audio id="aud" preload="auto"></audio>
+<script type="application/json" id="pd">{"title":"Test 05 - Listening","sb":{"url":"https://bumaiagvgpewhvczgwio.supabase.co","key":"sb_publishable_B563fC34wnTDCGSZv29euw_6P3mFRs5"},"audioBase":"https://bumaiagvgpewhvczgwio.supabase.co/storage/v1/object/public/audio/","anyOrder":[14,15,16,17,25,26,27],"parts":[{"id":1,"label":"Part 1","range":[1,10],"audio":"Practice%20Test%2005%20-%20Listening%20-%20Part%201.mp3","focus":"Spelling, numbers and money","hint":"Name, number, date or money? Predict the format before you listen.","groups":[{"gh":"Questions 1–5","gi":"Complete the form below.","gn":"Write no more than three words or a number for each answer.","qs":[1,2,3,4,5],"list":null},{"gh":"Questions 6–9","gi":"Complete the table below.","gn":"Write no more than three words or a number for each answer.","qs":[6,7,8,9],"list":null},{"gh":"Question 10","gi":"Choose the correct letter, A, B or C.","gn":"","qs":[10],"list":null}]},{"id":2,"label":"Part 2","range":[11,20],"audio":"Practice%20Test%2005%20-%20Listening%20-%20Part%202.mp3","focus":"Distractors in multiple choice","hint":"Read the options and predict what could be a trap.","groups":[{"gh":"Questions 11–13","gi":"Choose the correct letter, A, B or C.","gn":"","qs":[11,12,13],"list":null},{"gh":"Questions 14–17","gi":"List four things which students may be given information about.","gn":"Write no more than three words for each answer.","qs":[14,15,16,17],"list":null},{"gh":"Questions 18–20","gi":"Complete the sentences below.","gn":"Write no more than three words for each answer.","qs":[18,19,20],"list":null}]},{"id":3,"label":"Part 3","range":[21,30],"audio":"Practice%20Test%2005%20-%20Listening%20-%20Part%203.mp3","focus":"Matching and lists in any order","hint":"Predict how the speakers agree, disagree or change their minds.","groups":[{"gh":"Questions 21–24","gi":"What did each person say was the principal cause of stress for them?","gn":"Choose from the list of possible causes in the box.","qs":[21,22,23,24],"list":[["A","bad management"],["B","dual-career family"],["C","fear of unemployment"],["D","new technologies"],["E","working surroundings"],["F","powerlessness"],["G","too much work"]]},{"gh":"Questions 25–27","gi":"List three parts of one’s daily routine that can help reduce stress.","gn":"Write no more than three words for each answer.","qs":[25,26,27],"list":null},{"gh":"Questions 28–30","gi":"Complete the table below.","gn":"Write no more than three words in each space.","qs":[28,29,30],"list":null}]},{"id":4,"label":"Part 4","range":[31,40],"audio":"Practice%20Test%2005%20-%20Listening%20-%20Part%204.mp3","focus":"Paraphrase in note completion","hint":"Predict the word type for each gap and what may be paraphrased.","groups":[{"gh":"Questions 31–36","gi":"Choose the correct letter, A, B or C.","gn":"","qs":[31,32,33,34,35,36],"list":null},{"gh":"Questions 37–40","gi":"Complete the table below.","gn":"Write no more than three words for each answer.","qs":[37,38,39,40],"list":null}]}],"q":{"1":{"t":"First name: ____"},"2":{"t":"Surname: ____"},"3":{"t":"Date of birth: ____"},"4":{"t":"Postcode: ____"},"5":{"t":"Telephone number: ____"},"6":{"t":"London Day Out · outside peak hours · £____"},"7":{"t":"Super Advance Return · must book seat ____ in advance · £23"},"8":{"t":"Saver · outside peak hours · £____"},"9":{"t":"____ · no restrictions · £60"},"10":{"t":"How much does the student actually pay for his ticket to London?","o":["£7.66","£15.34","£33.34"]},"11":{"t":"Who are mentors?","o":["New students.","Second or third-year students.","University teachers."]},"12":{"t":"How often should mentor groups meet?","o":["Once a week.","Once a fortnight.","Once a month."]},"13":{"t":"What is it essential to do at the first meeting?","o":["Explain your problems.","Make new friends.","Agree when to meet again."]},"14":{"t":"____ (any order)"},"15":{"t":"____ (any order)"},"16":{"t":"____ (any order)"},"17":{"t":"____ (any order)"},"18":{"t":"Your mentor will show you how to obtain a free ____ ."},"19":{"t":"Mentoring is useful for people who are ____ for the first time."},"20":{"t":"Your mentor may give you advice on how to ____ ."},"21":{"t":"Kikuko → ____"},"22":{"t":"Boris → ____"},"23":{"t":"Etienne → ____"},"24":{"t":"Nagwa → ____"},"25":{"t":"____ (any order)"},"26":{"t":"____ (any order)"},"27":{"t":"____ (any order)"},"28":{"t":"overwork · ____"},"29":{"t":"fear of job · ____"},"30":{"t":"new technologies · ____"},"31":{"t":"The speaker compares a solar eclipse today to a","o":["religious experience.","scientific event.","popular spectacle."]},"32":{"t":"The speaker says that the dark spot of an eclipse is","o":["simple to predict.","easy to explain.","randomly occurring."]},"33":{"t":"Concerning an eclipse, the ancient Chinese were","o":["fascinated","rational","disturbed"]},"34":{"t":"For the speaker, the most impressive aspect of an eclipse is the","o":["exceptional beauty of the sky.","chance for scientific study.","effect of the moon on the sun."]},"35":{"t":"Eclipses occur rarely because of the size of the","o":["moon","sun","earth"]},"36":{"t":"In predicting eclipses, the Babylonians were restricted by their","o":["religious attitudes.","inaccurate observations.","limited ability to calculate"]},"37":{"t":"1735 · Halley · ____ who accurately predicted an eclipse"},"38":{"t":"1868 · Janssen and Lockyer · discovered ____"},"39":{"t":"1878 · Watson · believed he had found ____"},"40":{"t":"1919 · Einstein · realized astronomers had misunderstood ____"}}}</script>
+<script type="application/json" id="kb">{"s": "SIvGWAPi6mh+sRlsr7nCjw==", "i": "txQHVbQyZ7xTqSsh", "c": "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"}</script>
+<script>
+(function () {
+"use strict";
+var D = JSON.parse(document.getElementById("pd").textContent), KB = JSON.parse(document.getElementById("kb").textContent);
+var ROOM = "ielts05-listening", SB = D.sb.url, KEYAPI = D.sb.key;
+var REMOTE = /(^|[#&?])(remote|r=1)\b/.test(location.hash + location.search);
+var STEPS = ["Predict", "Listen", "Reveal", "Error tags"];
+var TAGS = ["Missed it", "Number or spelling", "Distractor", "Paraphrase"];
+var $ = function (s, r) { return (r || document).querySelector(s); };
+function h(tag, a) { var e = document.createElement(tag); if (a) for (var k in a) { if (k === "cls") e.className = a[k]; else if (k === "html") e.innerHTML = a[k]; else if (k === "text") e.textContent = a[k]; else if (k.slice(0, 2) === "on") e.addEventListener(k.slice(2), a[k]); else e.setAttribute(k, a[k]); } for (var i = 2; i < arguments.length; i++) { var c = arguments[i]; if (c == null) continue; e.appendChild(typeof c === "string" ? document.createTextNode(c) : c); } return e; }
+function svg(p) { return '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' + p + '</svg>'; }
+var IC = { play: svg('<path d="M7 4.5v15l12-7.5z" fill="currentColor"/>'), pause: svg('<path d="M8 5v14M16 5v14"/>'), b5: svg('<path d="M4 12a8 8 0 1 0 3-6.2M4 4v5h5"/>'), f5: svg('<path d="M20 12a8 8 0 1 1-3-6.2M20 4v5h-5"/>'), x: svg('<path d="M6 6l12 12M18 6L6 18"/>'), a: svg('<path d="M5 20l7-16 7 16M8 14h8"/>'), b: svg('<path d="M7 4v16h6a4.5 4.5 0 0 0 0-8 4 4 0 0 0 0-8z"/>') };
+function ib(n, t, f, c) { return h("button", { cls: "ib " + (c || ""), title: t, "aria-label": t, html: IC[n], onclick: f }); }
+function fmt(t) { if (!isFinite(t)) t = 0; var m = Math.floor(t / 60), s = Math.floor(t % 60); return m + ":" + (s < 10 ? "0" : "") + s; }
+function qn(pi) { var r = D.parts[pi].range, a = []; for (var n = r[0]; n <= r[1]; n++) a.push(n); return a; }
+
+/* ---- shared state ---- */
+var S = { part: 0, step: 0, foc: 1, rev: {}, tags: {}, cmd: { id: 0 } };
+var ver = -1, ver2 = -1;
+function rpc(body) {
+  return fetch(SB + "/rest/v1/rpc/present_sync", { method: "POST", headers: { "Content-Type": "application/json", apikey: KEYAPI }, body: JSON.stringify(body) })
+    .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.message || "error"); return j; }); });
+}
+function dot(on) { var d = $("#dot"); if (d) d.className = on ? "on" : ""; }
+/* remote -> room */
+var pushing = false, dirty = false;
+function push() {
+  if (pushing) { dirty = true; return; } pushing = true; dirty = false;
+  rpc({ p_room: ROOM, p_state: S }).then(function () { dot(true); }).catch(function () { dot(false); }).then(function () { pushing = false; if (dirty) push(); });
+}
+function change(fn) { fn(S); render(); push(); }
+function cmd(c, v) { change(function (s) { s.cmd = { id: (s.cmd.id || 0) + 1, c: c, v: v }; }); }
+
+/* ---- display ---- */
+var au, rg = null, lastCmd = null, stat = { t: 0, dur: 0, paused: true, part: 0 }, speeds = [1, 0.75, 1.25], si = 0;
+function setAudio(pi) {
+  var src = D.audioBase + D.parts[pi].audio; if (au.getAttribute("data-s") === src) return;
+  au.pause(); au.setAttribute("data-s", src); au.src = src; rg = null; au.playbackRate = speeds[si];
+}
+function lineHtml(q, rev, foc) {
+  var Qd = D.q[q], a = rev[q] ? rev[q].a : null, row = h("div", { cls: "row" + (foc === q ? " f" : "") });
+  row.appendChild(h("span", { cls: "qn", text: String(q) }));
+  var box = h("div", { style: "flex:1;min-width:0" });
+  var t = Qd.t, parts = t.split("____");
+  var line = h("div");
+  parts.forEach(function (x, i) { line.appendChild(document.createTextNode(x)); if (i < parts.length - 1) line.appendChild(a ? h("mark", { cls: "ans", text: a }) : document.createTextNode("____")); });
+  box.appendChild(line);
+  if (Qd.o) { var o = h("div", { cls: "opts" }); Qd.o.forEach(function (x, i) { var L = "ABC"[i]; o.appendChild(h("span", { cls: a === L ? "c" : "", text: L + ". " + x })); }); box.appendChild(o); }
+  row.appendChild(box);
+  var tg = S.tags[q]; if (S.step === 3 && tg && tg.length) { var w = h("span", { cls: "tg" }); tg.forEach(function (i) { w.appendChild(h("i", { text: TAGS[i] })); }); row.appendChild(w); }
+  return row;
+}
+function renderDisplay() {
+  var P = D.parts[S.part], dl = $("#dl"); dl.innerHTML = "";
+  P.groups.forEach(function (g) {
+    var gr = h("div", { cls: "grp" }, h("div", { cls: "gh" }, h("b", { text: g.gh }), h("span", { text: g.gi })));
+    if (g.list) { var c = h("div", { cls: "chips" }); g.list.forEach(function (x) { c.appendChild(h("span", { text: x[0] + ". " + x[1] })); }); gr.appendChild(c); }
+    g.qs.forEach(function (q) { gr.appendChild(lineHtml(q, S.rev, S.step === 2 ? S.foc : -1)); });
+    dl.appendChild(gr);
+  });
+  if (S.step === 3) {
+    var cnt = [0, 0, 0, 0]; Object.keys(S.tags).forEach(function (q) { if (D.parts[S.part].range[0] <= +q && +q <= D.parts[S.part].range[1]) S.tags[q].forEach(function (i) { cnt[i]++; }); });
+    var sm = h("div", { id: "dsum" }); TAGS.forEach(function (t, i) { sm.appendChild(h("span", { cls: "tag", text: t + ": " + cnt[i] })); }); dl.appendChild(sm);
+  }
+  var dr = $("#dr"), f = S.rev[S.foc];
+  dr.style.display = S.step === 2 ? "flex" : "none"; dr.innerHTML = "";
+  if (S.step === 2) {
+    dr.appendChild(h("div", { cls: "n", text: "Question " + S.foc }));
+    dr.appendChild(h("div", { cls: "a", text: f ? f.a : "?" }));
+    dr.appendChild(h("div", { cls: "n", text: "Script" }));
+    dr.appendChild(h("div", { cls: "sc", text: f ? f.e : "Answer not shown yet." }));
+  }
+  $("#dtag").textContent = P.label; $("#dstep").textContent = STEPS[S.step]; $("#dfoc").textContent = P.focus;
+  $("#dhint").textContent = S.step === 0 ? "Predict: " + P.hint : S.step === 1 ? "Listen and write your answers." : S.step === 2 ? "Check the answers one by one." : "Why did we lose each mark?";
+  fitDisplay();
+}
+function fitDisplay() {
+  var dl = $("#dl"), dr = $("#dr"), sz = 34; var box = $("#db");
+  function over() { return dl.scrollHeight > dl.clientHeight + 1 || (dr.style.display !== "none" && dr.scrollHeight > dr.clientHeight + 1); }
+  for (; sz >= 12; sz--) { dl.style.fontSize = sz + "px"; if (dr.style.display !== "none") { dr.querySelector(".sc") && (dr.querySelector(".sc").style.fontSize = Math.max(14, sz * 0.75) + "px"); } if (!over()) break; }
+}
+function drawAu() {
+  var d = au.duration || 0, t = au.currentTime || 0, p = d ? t / d : 0, sk = $("#dsk");
+  $(".fl", sk).style.width = p * 100 + "%"; var r = $(".rg", sk);
+  if (rg && d) { r.style.display = "block"; r.style.left = rg[0] / d * 100 + "%"; r.style.width = (rg[1] - rg[0]) / d * 100 + "%"; } else r.style.display = "none";
+  $("#dtm").textContent = fmt(t) + " / " + fmt(d);
+  $("#dpp").innerHTML = au.paused ? IC.play : IC.pause;
+}
+function exec(c) {
+  if (!c || c.id === lastCmd) return; lastCmd = c.id;
+  if (c.c === "play") { if (rg && (au.currentTime < rg[0] || au.currentTime >= rg[1])) au.currentTime = rg[0]; au.play().catch(function () { }); }
+  else if (c.c === "pause") au.pause();
+  else if (c.c === "toggle") { if (au.paused) exec2play(); else au.pause(); }
+  else if (c.c === "seek") au.currentTime = Math.max(0, Math.min(au.duration || 1e9, c.v));
+  else if (c.c === "skip") au.currentTime = Math.max(0, Math.min(au.duration || 1e9, au.currentTime + c.v));
+  else if (c.c === "rate") { si = (si + 1) % speeds.length; au.playbackRate = speeds[si]; }
+  else if (c.c === "region") { rg = c.v; au.currentTime = rg[0]; au.play().catch(function () { }); }
+  else if (c.c === "clear") rg = null;
+  else if (c.c === "restart") { au.currentTime = rg ? rg[0] : 0; au.play().catch(function () { }); }
+  drawAu(); sendStat(true);
+}
+function exec2play() { if (rg && (au.currentTime < rg[0] || au.currentTime >= rg[1])) au.currentTime = rg[0]; au.play().catch(function () { }); }
+var lastSt = "";
+function sendStat(force) {
+  var st = { t: Math.round((au.currentTime || 0) * 10) / 10, dur: au.duration || 0, paused: au.paused, rate: speeds[si], rg: rg, part: S.part };
+  var j = JSON.stringify(st); if (!force && j === lastSt) return; lastSt = j;
+  rpc({ p_room: ROOM + "~d", p_state: st }).catch(function () { });
+}
+function pollDisplay() {
+  rpc({ p_room: ROOM, p_since: ver }).then(function (r) {
+    dot(true);
+    if (r.state && r.ver !== ver) {
+      var firstLoad = ver < 0; ver = r.ver; var prevPart = S.part; S = r.state; S.rev = S.rev || {}; S.tags = S.tags || {};
+      if (firstLoad) lastCmd = (S.cmd && S.cmd.id) || 0;
+      setAudio(S.part); render(); if (!firstLoad) exec(S.cmd);
+    } else if (r.ver !== undefined && ver < 0) ver = r.ver;
+  }).catch(function () { dot(false); }).then(function () { setTimeout(pollDisplay, 800); });
+}
+function buildDisplay() {
+  document.body.className = "disp"; au = $("#aud");
+  var link = location.href.split("#")[0].split("?")[0] + "#remote";
+  var D_ = h("div", { id: "D" },
+    h("div", { id: "dh" }, h("span", { cls: "ttl", text: D.title }), h("span", { cls: "tag cur", id: "dtag" }), h("span", { cls: "tag", id: "dstep" }), h("span", { id: "dfoc", style: "color:#6b6f78;font-size:17px" }), h("span", { cls: "sp" }), h("small", { text: "Remote: " + link }), h("span", { id: "dot" })),
+    h("div", { id: "da" }, h("button", { cls: "ib dark", id: "dpp", "aria-label": "Play or pause", html: IC.play, onclick: function () { if (au.paused) exec2play(); else au.pause(); } }), h("div", { id: "dsk" }, h("div", { cls: "trk" }), h("div", { cls: "rg" }), h("div", { cls: "fl" })), h("span", { id: "dtm", text: "0:00 / 0:00" })),
+    h("div", { id: "dhint" }),
+    h("div", { id: "db" }, h("div", { id: "dl" }), h("div", { id: "dr" })));
+  document.body.appendChild(D_);
+  ["timeupdate", "loadedmetadata", "play", "pause", "durationchange"].forEach(function (ev) { au.addEventListener(ev, function () { if (ev === "timeupdate" && rg && au.currentTime >= rg[1]) au.currentTime = rg[0]; drawAu(); }); });
+  au.addEventListener("pause", function () { sendStat(true); }); au.addEventListener("play", function () { sendStat(true); });
+  document.addEventListener("keydown", function (e) { if (e.code === "Space") { e.preventDefault(); if (au.paused) exec2play(); else au.pause(); } else if (e.key === "ArrowLeft") au.currentTime = Math.max(0, au.currentTime - 5); else if (e.key === "ArrowRight") au.currentTime += 5; });
+  window.addEventListener("resize", function () { render(); });
+  setAudio(0); render(); drawAu(); pollDisplay(); setInterval(function () { sendStat(false); }, 1000);
+}
+
+/* ---- remote ---- */
+var KEY = null;
+function b64(s) { return Uint8Array.from(atob(s), function (c) { return c.charCodeAt(0); }); }
+function unlock(pin) {
+  var enc = new TextEncoder();
+  return crypto.subtle.importKey("raw", enc.encode(pin), "PBKDF2", false, ["deriveKey"]).then(function (k) {
+    return crypto.subtle.deriveKey({ name: "PBKDF2", salt: b64(KB.s), iterations: 100000, hash: "SHA-256" }, k, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+  }).then(function (k) { return crypto.subtle.decrypt({ name: "AES-GCM", iv: b64(KB.i) }, k, b64(KB.c)); }).then(function (b) { return JSON.parse(new TextDecoder().decode(b)); });
+}
+function ans(q) { var a = KEY["q" + q].a; return [].concat(a)[0]; }
+function revealQ(q) { var k = KEY["q" + q], any = D.anyOrder.indexOf(q) > -1, a = ans(q); S.rev[q] = { a: any ? [].concat(k.a).slice(0, 5).join(" / ") : a, e: k.e }; }
+function renderRemote() {
+  var R = $("#R"); R.innerHTML = "";
+  var P = D.parts[S.part], nums = qn(S.part);
+  var pr = h("div", { cls: "rr" }); D.parts.forEach(function (p, i) { pr.appendChild(h("button", { cls: "seg" + (i === S.part ? " on" : ""), text: p.label, onclick: function () { change(function (s) { s.part = i; s.step = 0; s.foc = D.parts[i].range[0]; s.cmd = { id: (s.cmd.id || 0) + 1, c: "clear" }; }); } })); });
+  var sr = h("div", { cls: "rr" }); STEPS.forEach(function (t, i) { sr.appendChild(h("button", { cls: "seg" + (i === S.step ? " on" : ""), text: t, onclick: function () { change(function (s) { s.step = i; }); } })); });
+  var rau = h("div", { id: "rau" }, h("button", { cls: "ib dark", "aria-label": "Play or pause", html: stat.paused ? IC.play : IC.pause, onclick: function () { cmd(stat.paused ? "play" : "pause"); } }),
+    h("button", { cls: "ib", "aria-label": "Back 5 seconds", html: IC.b5, onclick: function () { cmd("skip", -5); } }), h("button", { cls: "ib", "aria-label": "Forward 5 seconds", html: IC.f5, onclick: function () { cmd("skip", 5); } }),
+    h("button", { cls: "ib", text: (stat.rate || 1) + "x", "aria-label": "Speed", style: "font-weight:700;font-size:14px", onclick: function () { cmd("rate"); } }),
+    h("button", { cls: "ib", "aria-label": "Mark loop start", html: IC.a, onclick: function () { markA = stat.t; flash(); } }),
+    h("button", { cls: "ib", "aria-label": "Mark loop end and loop", html: IC.b, onclick: function () { if (markA != null && stat.t > markA + 0.5) { cmd("region", [markA, stat.t]); markA = null; } } }),
+    h("button", { cls: "ib", "aria-label": "Clear loop", html: IC.x, onclick: function () { cmd("clear"); } }));
+  var sk = h("div", { id: "rsk" }, h("div", { cls: "trk" }), h("div", { cls: "rg" }), h("div", { cls: "fl" }));
+  sk.addEventListener("pointerup", function (e) { var r = sk.getBoundingClientRect(); cmd("seek", Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * (stat.dur || 0)); });
+  var tm = h("div", { id: "rtm", text: "" });
+  var tl = h("div", { id: "rt" });
+  nums.forEach(function (n) { tl.appendChild(h("button", { cls: (n === S.foc ? "cur " : "") + (S.rev[n] ? "rv " : "") + (S.tags[n] && S.tags[n].length ? "tgd" : ""), text: String(n), onclick: function () { change(function (s) { s.foc = n; }); } })); });
+  var Qd = D.q[S.foc], pn = h("div", { id: "rp" }, h("div", { cls: "t", text: S.foc + ". " + Qd.t + (Qd.o ? "  (" + Qd.o.map(function (x, i) { return "ABC"[i] + ". " + x; }).join("  ") + ")" : "") }));
+  var k = KEY["q" + S.foc]; pn.appendChild(h("div", { cls: "a", text: "Answer: " + (D.anyOrder.indexOf(S.foc) > -1 ? [].concat(k.a).slice(0, 5).join(" / ") : ans(S.foc)) })); pn.appendChild(h("div", { cls: "e", text: k.e }));
+  var act = h("div", { cls: "rw" });
+  if (S.step === 2) {
+    act.appendChild(h("button", { cls: "pill", text: S.rev[S.foc] ? "Hide answer" : "Show answer", onclick: function () { change(function (s) { if (s.rev[s.foc]) delete s.rev[s.foc]; else revealQ(s.foc); }); } }));
+    act.appendChild(h("button", { cls: "pill ghost", text: "Next question", onclick: function () { change(function (s) { var r = D.parts[s.part].range; if (s.foc < r[1]) s.foc++; }); } }));
+    act.appendChild(h("button", { cls: "pill ghost", text: "Show all", onclick: function () { change(function (s) { nums.forEach(revealQ); }); } }));
+    act.appendChild(h("button", { cls: "pill ghost", text: "Hide all", onclick: function () { change(function (s) { nums.forEach(function (n) { delete s.rev[n]; }); }); } }));
+  } else if (S.step === 3) {
+    TAGS.forEach(function (t, i) { var on = (S.tags[S.foc] || []).indexOf(i) > -1; act.appendChild(h("button", { cls: "chip" + (on ? " on" : ""), text: t, onclick: function () { change(function (s) { var a = s.tags[s.foc] || []; var j = a.indexOf(i); if (j > -1) a.splice(j, 1); else a.push(i); if (a.length) s.tags[s.foc] = a; else delete s.tags[s.foc]; }); } })); });
+    act.appendChild(h("button", { cls: "pill ghost", text: "Next question", onclick: function () { change(function (s) { var r = D.parts[s.part].range; if (s.foc < r[1]) s.foc++; }); } }));
+  } else act.appendChild(h("button", { cls: "pill ghost", text: "Next step", onclick: function () { change(function (s) { s.step = Math.min(3, s.step + 1); }); } }));
+  pn.appendChild(act);
+  [pr, sr, rau, sk, tm, tl, pn].forEach(function (x) { R.appendChild(x); });
+  drawRemoteAu();
+}
+var markA = null; function flash() { var t = $("#rtm"); if (t) t.textContent = "Loop start marked at " + fmt(markA); }
+function drawRemoteAu() {
+  var sk = $("#rsk"); if (!sk) return; var d = stat.dur || 0, p = d ? stat.t / d : 0; $(".fl", sk).style.width = p * 100 + "%";
+  var r = $(".rg", sk); if (stat.rg && d) { r.style.display = "block"; r.style.left = stat.rg[0] / d * 100 + "%"; r.style.width = (stat.rg[1] - stat.rg[0]) / d * 100 + "%"; } else r.style.display = "none";
+  var t = $("#rtm"); if (t && markA == null) t.textContent = fmt(stat.t) + " / " + fmt(d) + (stat.rg ? "  (loop on)" : "");
+}
+function pollRemote() {
+  rpc({ p_room: ROOM + "~d", p_since: ver2 }).then(function (r) { dot(true); if (r.state && r.ver !== ver2) { ver2 = r.ver; var np = stat.paused !== r.state.paused || stat.rate !== r.state.rate; stat = r.state; if (np) renderRemote(); else drawRemoteAu(); } })
+    .catch(function () { dot(false); }).then(function () { setTimeout(pollRemote, 1000); });
+}
+function loadState() { return rpc({ p_room: ROOM, p_since: -1 }).then(function (r) { if (r.state) { S = r.state; S.rev = S.rev || {}; S.tags = S.tags || {}; } }).catch(function () { }); }
+function buildRemote() {
+  document.body.className = "rem";
+  var R = h("div", { id: "R" }); document.body.appendChild(R);
+  var bar = h("div", { style: "display:flex;align-items:center;justify-content:flex-end;gap:6px;font-size:13px;color:#6b6f78;max-width:560px;margin:6px auto 0;padding:0 12px" }, h("span", { text: "Sync" }), h("span", { id: "dot" })); document.body.insertBefore(bar, R);
+  function start(k) { KEY = k; loadState().then(function () { renderRemote(); pollRemote(); }); }
+  var saved = null; try { saved = localStorage.getItem("pk"); } catch (e) { }
+  function ask(msgText) {
+    var inp = h("input", { type: "password", inputmode: "numeric", autocomplete: "off", "aria-label": "PIN" }), msg = h("p", { cls: "err", text: msgText || "" });
+    var ov = h("div", { cls: "ov" }, h("div", { cls: "card" }, h("h3", { text: "Remote" }), h("p", { text: "Enter the teacher PIN." }), inp, msg, h("button", { cls: "pill", text: "Open", onclick: go })));
+    function go() { msg.textContent = "Checking..."; unlock(inp.value.trim()).then(function (k) { try { localStorage.setItem("pk", inp.value.trim()); } catch (e) { } ov.remove(); start(k); }).catch(function () { msg.textContent = "Wrong PIN."; }); }
+    inp.addEventListener("keydown", function (e) { if (e.key === "Enter") go(); }); document.body.appendChild(ov); setTimeout(function () { inp.focus(); }, 50);
+  }
+  if (saved) unlock(saved).then(start).catch(function () { ask(""); }); else ask("");
+}
+function render() { if (REMOTE) { if (KEY) renderRemote(); } else renderDisplay(); }
+document.addEventListener("DOMContentLoaded", function () { if (REMOTE) buildRemote(); else buildDisplay(); });
+})();
+</script>
+</body></html>
