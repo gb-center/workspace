@@ -417,3 +417,22 @@ table.stack tbody td.cell-main .code-chip{margin-top:5px!important}
   body.tuition-page>header .page-header-actions input[type=month]{background:transparent!important;border:0!important;box-shadow:none!important;color:#e5c16b!important;color-scheme:dark;font-weight:700;text-align:center;padding-left:4px;padding-right:4px}
   body.tuition-page>header .page-header-actions input[type=month]::-webkit-calendar-picker-indicator{filter:invert(78%) sepia(40%) saturate(500%) hue-rotate(5deg);opacity:.9}
 }
+
+/* Mobile index: header + toolbar cố định, chỉ vùng dữ liệu cuộn */
+@media(max-width:640px){
+  html[data-lms-view="overview"] body,html[data-lms-view="schedule"] body{height:100dvh;min-height:0;overflow:hidden}
+  html[data-lms-view="overview"] body>header,html[data-lms-view="schedule"] body>header{flex:none}
+  html[data-lms-view="overview"] body>main{flex:1 1 0;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-bottom:104px!important}
+  html[data-lms-view="schedule"] body>main{flex:1 1 0;min-height:0;display:flex;flex-direction:column;overflow:hidden;padding-bottom:104px!important}
+  html[data-lms-view="schedule"] #view-schedule{display:flex!important;flex-direction:column;flex:1 1 0;min-height:0;gap:12px;margin:0!important}
+  html[data-lms-view="schedule"] #view-schedule>*{flex:none;margin:0!important}
+  html[data-lms-view="schedule"] #view-schedule>section[aria-label="Lịch tuần"]{flex:1 1 0;min-height:0;display:flex;flex-direction:column}
+  html[data-lms-view="schedule"] #view-schedule>section[aria-label="Lịch tuần"]>.overflow-auto{flex:1 1 0;min-height:0;max-height:none!important;height:auto!important;overscroll-behavior:contain}
+  html[data-lms-view="schedule"] #page-msg{flex:none}
+}
+
+/* Học liệu mobile: bố cục ổn định khi tải (không nhảy nút) */
+@media(max-width:640px){
+  #view-lib .lib-actions>button{flex:0 0 44px!important;width:44px!important}
+  #view-lib .lib-actions>#lib-tabs,#view-lib .lib-actions>#lib-tabs:empty{display:flex!important;flex:1 1 0!important;min-width:0;min-height:44px}
+}

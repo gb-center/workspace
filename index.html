@@ -815,6 +815,7 @@
         else if (!mob && tabsEl.parentNode === acts) tabsHome.p.insertBefore(tabsEl, tabsHome.n);
       }
       matchMedia('(max-width:640px)').addEventListener('change', placeTabs);
+      placeTabs();
       function weekByClass(k, items) {
         const cidSel = Number($('lib-class').value) || 0, groups = new Map(), orphan = [];
         items.forEach(m => { const ids = m.class_ids || []; if (!ids.length) orphan.push(m); else ids.forEach(id => { if (cidSel && id !== cidSel) return; if (!groups.has(id)) groups.set(id, []); groups.get(id).push(m); }); });
