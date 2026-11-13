@@ -109,7 +109,7 @@
       #grid[data-day="0"] .d0,#grid[data-day="1"] .d1,#grid[data-day="2"] .d2,#grid[data-day="3"] .d3,#grid[data-day="4"] .d4,#grid[data-day="5"] .d5,#grid[data-day="6"] .d6{display:table-cell}
     }
   </style>
-  <link rel="stylesheet" href="overview-redesign.css">
+  <script src="lms-mode.js"></script><link rel="stylesheet" href="overview-redesign.css">
   <link rel="stylesheet" href="lms-polish.css">
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col relative">
@@ -254,6 +254,9 @@ place();mq.addEventListener('change',place);
       </div>
       <div id="lib-tabs" class="flex flex-wrap gap-2" role="tablist" aria-label="Chương trình"></div>
       <div class="lib-list-scroll" aria-label="Danh sách học liệu theo tuần"><div id="lib-list" class="space-y-4"></div></div>
+      <div id="dlg-mt" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="dmt-title">
+        <div class="card"><h2 id="dmt-title"></h2><div id="dmt-lines" class="mt-lines"></div><div class="acts"><span id="dmt-acts" class="mt-acts"></span><button type="button" class="btn-soft" data-close>Đóng</button></div></div>
+      </div>
     </section>
     <div id="page-msg" role="alert" class="text-sm text-rose-700"></div>
   </main>
@@ -682,8 +685,8 @@ place();mq.addEventListener('change',place);
         $('overview-stats').innerHTML = stats.map((x, i) => `<a class="overview-stat overview-stat-${i + 1}" ${x.href ? `href="${x.href}"` : `href="#schedule" data-home-view="schedule"`}><span class="overview-stat-icon"><i data-lucide="${x.icon}"></i></span><span class="overview-stat-label">${x.label}</span><b>${x.value}</b><small>${x.note}</small></a>`).join('');
         const f = st.overviewFinance;
         $('overview-finance').innerHTML = `<div class="overview-section-title"><div><h2>Học phí tháng ${f ? f.month : 'này'}</h2><p>Tổng hợp từ tab Học phí</p></div><a href="tuition.html">Chi tiết <i data-lucide="arrow-right"></i></a></div><div class="overview-money-grid">${[
-          ['Phải thu', f && fmtMoney(f.due), 'wallet'], ['Đã thu', f && fmtMoney(f.paid), 'circle-dollar-sign'], ['Tổng chi', f && fmtMoney(f.expenses), 'receipt'], ['Còn nợ tháng này', f && fmtMoney(f.debt), 'clock-3'], ['Nợ các tháng trước', f && fmtMoney(f.arrears), 'history']
-        ].reduce((acc, x, i, all) => i ? acc : (matchMedia('(max-width:720px)').matches ? [0, 1, 3, 4, 2] : [0, 1, 2, 3, 4]).map(k => all[k]), []).map(x => `<div class="overview-money"><i data-lucide="${x[2]}"></i><span>${x[0]}</span><b>${x[1] || '–'}</b></div>`).join('')}</div>`;
+          ['Nợ tháng trước|Nợ cũ', f && fmtMoney(f.arrears), 'history'], ['Học phí tháng này|Học phí', f && fmtMoney(f.due), 'wallet'], ['Đã thu', f && fmtMoney(f.paid), 'circle-dollar-sign'], ['Còn lại', f && fmtMoney(f.debt), 'clock-3'], ['Tổng chi', f && fmtMoney(f.expenses), 'receipt']
+        ].map(x => `<div class="overview-money"><i data-lucide="${x[2]}"></i><span>${x[0].split('|').map((t, j, a) => a.length > 1 ? `<span class="${j ? 't-short' : 't-full'}">${t}</span>` : t).join('')}</span><b>${x[1] || '–'}</b></div>`).join('')}</div>`;
         const dates = weekDates(st.week), first = dates[0], last = dates[6];
         $('overview-week-label').textContent = pad(first.getDate()) + '/' + pad(first.getMonth() + 1) + ' – ' + pad(last.getDate()) + '/' + pad(last.getMonth() + 1);
         const today = ymd(new Date()), upcoming = st.sessions.filter(s => s.session_date >= today && !['cancel', 'holiday', 'done'].includes(s.status)).sort((a, b) => a.session_date.localeCompare(b.session_date) || a.start_time.localeCompare(b.start_time)).slice(0, 5);
@@ -831,7 +834,7 @@ place();mq.addEventListener('change',place);
       const matDates = m => Array.isArray(m.session_dates) ? m.session_dates : [];
       const tabsEl = $('lib-tabs'), tabsHome = { p: tabsEl.parentNode, n: tabsEl.nextSibling };
       function placeTabs() {
-        const mob = matchMedia('(max-width:640px)').matches, acts = document.querySelector('#view-lib .lib-actions');
+        const mob = true, acts = document.querySelector('#view-lib .lib-actions');
         if (!acts) return;
         if (mob && tabsEl.parentNode !== acts) acts.insertBefore(tabsEl, acts.firstChild);
         else if (!mob && tabsEl.parentNode === acts) tabsHome.p.insertBefore(tabsEl, tabsHome.n);
@@ -856,7 +859,8 @@ place();mq.addEventListener('change',place);
             ? `${m.page ? `<button type="button" class="icon-btn" data-prev-asg="${esc(m.code)}" aria-label="Xem thử bài làm"><i data-lucide="eye" class="w-4 h-4"></i></button>` : ''}<button type="button" class="icon-btn" data-rename-asg="${esc(m.code)}" aria-label="Sửa tên"><i data-lucide="pencil" class="w-4 h-4"></i></button><button type="button" class="icon-btn" data-edit-asg="${esc(m.code)}" aria-label="Giao lại bài"><i data-lucide="send" class="w-4 h-4"></i></button>`
             : `${isHttp(m.url) ? `<a class="icon-btn" href="${esc(m.url)}" target="_blank" rel="noopener" aria-label="Mở link"><i data-lucide="external-link" class="w-4 h-4"></i></a>` : ''}<button type="button" class="icon-btn" data-edit-mat="${m.id}" aria-label="Sửa mục"><i data-lucide="pencil" class="w-4 h-4"></i></button><button type="button" class="icon-btn" data-del-mat="${m.id}" aria-label="Xóa mục" style="color:#be123c"><i data-lucide="trash-2" class="w-4 h-4"></i></button>`;
           const ckey = k + '|m|' + (m.asg ? m.code : m.id);
-          return `<details class="mt-class mt-item" data-ckey="${ckey}" ${st.libOpenCls.has(ckey) ? 'open' : ''}><summary><span class="mt-name">${esc(m.title)}</span><span class="mt-tags">${ids.map(id => `<span class="tag bg-slate-100 text-slate-600">${esc(codeOf(id))}</span>`).join('')}</span></summary><div class="mt-lines">${lines}<div class="mt-acts">${acts}</div></div></details>`;
+          (st.mtMap = st.mtMap || {})[ckey] = { title: m.title, lines, acts, hw };
+          return `<div class="mt-class mt-item"><button type="button" class="mt-row" data-mt-key="${ckey}"><span class="mt-name">${esc(m.title)}</span><span class="tag bg-slate-100 text-slate-600 mt-count"><i data-lucide="users" class="mt-ic"></i>${ids.length} lớp</span></button></div>`;
         };
         const sect = (label, icon, list) => list.length ? `<div class="mt-sect"><h4><i data-lucide="${icon}" class="w-4 h-4"></i>${label}</h4>${list.map(row).join('')}</div>` : '';
         const out = sect('Bài học', 'presentation', given.filter(m => m.kind !== 'homework')) + sect('Bài tập', 'file-check-2', given.filter(m => m.kind === 'homework'));
@@ -880,11 +884,12 @@ place();mq.addEventListener('change',place);
         const q = $('lib-search').value.trim().toLowerCase(), cid = Number(sel.value) || 0, kind = $('lib-kind').value;
         const selectedWeek = st.libWeek === 'current' ? currentWeek : st.libWeek;
         const base = allItems.filter(m => (st.libWeek === 'all' || toMon(m.week_start) === selectedWeek) && (!q || m.title.toLowerCase().includes(q)) && (!cid || (m.class_ids || []).includes(cid)) && (!kind || m.kind === kind) && (!$('lib-skill').value || m.skill === $('lib-skill').value));
-        const PL = { ielts: 'IELTS', toeic: 'TOEIC', gs: 'Global Success', ac12: 'AC12', comm: 'Giao tiếp' }, PS = { ielts: 'IE', toeic: 'TO', gs: 'GS', ac12: 'AC12', comm: 'GT' };
-        const progsOf = m => m.scan ? [m.prog] : [...new Set((m.class_ids || []).map(id => { const c = st.classes.find(x => x.id === id); return c ? LMS.score.programOf(c.class_code) : ''; }).filter(Boolean))];
-        const present = Object.keys(PL).filter(k => base.some(m => progsOf(m).includes(k)));
+        const PL = { ielts: 'IELTS', comm: 'Giao tiếp', toeic: 'TOEIC', gs: 'Global Success' }, PS = { ielts: 'IE', comm: 'GT', toeic: 'TO', gs: 'GS' };
+        const progKey = code => { const c = String(code || '').toUpperCase(); return /^IE/.test(c) ? 'ielts' : /^TO/.test(c) ? 'toeic' : /^GT/.test(c) ? 'comm' : /^(AC|GS)/.test(c) ? 'gs' : ''; };
+        const progsOf = m => m.scan ? [m.prog === 'ac12' ? 'gs' : m.prog] : [...new Set((m.class_ids || []).map(id => { const c = st.classes.find(x => x.id === id); return c ? progKey(c.class_code) : ''; }).filter(Boolean))];
+        const present = Object.keys(PL);
         if (st.libProg && !present.includes(st.libProg)) st.libProg = '';
-        $('lib-tabs').innerHTML = present.length > 1 ? [['', 'Tất cả', 'Tất cả']].concat(present.map(k => [k, PL[k], PS[k]])).map(t => `<button type="button" class="ptab" role="tab" data-ptab="${t[0]}" aria-label="${esc(t[1])}" aria-pressed="${st.libProg === t[0]}"><span class="pl-full">${t[1]}</span><span class="pl-short">${t[2]}</span></button>`).join('') : '';
+        $('lib-tabs').innerHTML = true ? [['', 'Tất cả', 'Tất cả']].concat(present.map(k => [k, PL[k], PS[k]])).map(t => `<button type="button" class="ptab" role="tab" data-ptab="${t[0]}" aria-label="${esc(t[1])}" aria-pressed="${st.libProg === t[0]}"><span class="pl-full">${t[1]}</span><span class="pl-short">${t[2]}</span></button>`).join('') : '';
         placeTabs();
         const list = st.libProg ? base.filter(m => progsOf(m).includes(st.libProg)) : base;
         const byWeek = {}; list.forEach(m => { const k = toMon(m.week_start) || ''; (byWeek[k] = byWeek[k] || []).push(m); });
@@ -893,9 +898,9 @@ place();mq.addEventListener('change',place);
           let head = 'Chưa gán tuần';
           if (k) { const n = weekNoOf(k), d = weekDates(n); head = `Tuần ${pad(n)} <span class="font-normal text-slate-500">(${pad(d[0].getDate())}.${pad(d[0].getMonth() + 1)} – ${pad(d[6].getDate())}.${pad(d[6].getMonth() + 1)})</span>`; }
           const collapseKey = k || '__none__';
-          return `<details class="lib-week-group bg-white rounded-2xl border border-slate-200" data-week-group="${collapseKey}" ${st.libCollapsed[collapseKey] ? '' : 'open'}><summary class="lib-week-summary"><span><span class="lib-week-title">${head}</span><small>${byWeek[k].length} mục</small></span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+          return `<details class="lib-week-group bg-white rounded-2xl border border-slate-200${k && k === curMon() ? ' is-current' : ''}" data-week-group="${collapseKey}" ${st.libCollapsed[collapseKey] === false ? 'open' : ''}><summary class="lib-week-summary"><span><span class="lib-week-title">${head}${k && k === curMon() ? '<span class="lib-now">Tuần này</span>' : ''}</span><small>${byWeek[k].length} mục</small></span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
             <div class="lib-week-items space-y-2">${weekByClass(k, byWeek[k])}</div></details>`;
-        }).join('') : '<p class="text-sm text-slate-400">Chưa có học liệu nào.</p>';
+        }).join('') : '<p class="text-sm text-slate-400">' + (st.libProg ? 'Chưa có học liệu cho ' + PS[st.libProg] + '.' : 'Chưa có học liệu nào.') + '</p>';
         icons();
       }
       function targetsText(m) {
@@ -1333,6 +1338,8 @@ place();mq.addEventListener('change',place);
         addEventListener('popstate', syncOverviewHash);
         $('btn-add-mat').addEventListener('click', () => openMat(null));
         $('view-mat').addEventListener('click', e => { const d = e.target.closest('[data-del-mat]'); if (d) return removeMat(d.dataset.delMat); const b = e.target.closest('[data-edit-mat]'); if (b) openMat(b.dataset.editMat); });
+        $('view-lib').addEventListener('click', e => { const r = e.target.closest('[data-mt-key]'); if (!r) return; const x = (st.mtMap || {})[r.dataset.mtKey]; if (!x) return; $('dmt-title').textContent = x.title + ' · ' + (x.hw ? 'Hạn nộp' : 'Ngày học'); $('dmt-lines').innerHTML = x.lines; $('dmt-acts').innerHTML = x.acts; openDlg('dlg-mt'); icons(); });
+        $('dlg-mt').addEventListener('click', e => { if (e.target === $('dlg-mt') || e.target.closest('[data-edit-mat],[data-del-mat],[data-prev-asg],[data-rename-asg],[data-edit-asg]')) closeDlgs(); });
         $('view-lib').addEventListener('click', e => { const d = e.target.closest('[data-del-mat]'); if (d) return removeMat(d.dataset.delMat); const b = e.target.closest('[data-edit-mat]'); if (b) return openMat(b.dataset.editMat); const a = e.target.closest('[data-edit-asg]'); if (a) return openAsg(a.dataset.editAsg); const pv = e.target.closest('[data-prev-asg]'); if (pv) return previewAsg(pv.dataset.prevAsg); const rn = e.target.closest('[data-rename-asg]'); if (rn) return renameAsg(rn.dataset.renameAsg); const sc = e.target.closest('[data-add-scan]'); if (sc) { const it = st.scanAll.find(x => x.path === sc.dataset.addScan); if (it) return openMat(null, it); } const pt = e.target.closest('[data-ptab]'); if (pt) { st.libProg = pt.dataset.ptab; renderLib(); } });
         ['lib-search', 'lib-class', 'lib-kind', 'lib-skill', 'lib-week-scope'].forEach(id => $(id).addEventListener(id === 'lib-search' ? 'input' : 'change', () => { if (id === 'lib-week-scope') st.libWeek = $('lib-week-scope').value; renderLib(); }));
         $('dlg-mat').querySelector('form').addEventListener('submit', saveMat);

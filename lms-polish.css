@@ -544,3 +544,88 @@ html[data-lms-view="lib"] #btn-prev,html[data-lms-view="lib"] #btn-today,html[da
   html[data-lms-view="lib"] #m-weekbar #btn-prev,html[data-lms-view="lib"] #m-weekbar #btn-next,html[data-lms-view="lib"] #m-weekbar #btn-today{display:inline-flex}
 }
 @media(max-width:640px){#m-weekbar input[type=month]{width:150px;font-size:.9rem;padding:0}}
+
+/* Lịch tuần: khung giờ nằm giữa ô */
+#grid td.dcol{text-align:center!important;vertical-align:middle!important}
+#grid td.dcol>*{margin-left:auto!important;margin-right:auto!important;text-align:center!important;justify-content:center}
+#grid td.dcol>*{white-space:nowrap;padding-left:6px!important;padding-right:6px!important;font-size:.78rem}
+
+/* Học liệu: dòng bài + popup danh sách lớp */
+.mt-row{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;padding:6px 0;border:0;background:transparent;text-align:left;font-weight:700;color:var(--t-ink);cursor:pointer}
+.mt-row .mt-name{min-width:0;flex:1 1 auto;overflow-wrap:anywhere}
+.mt-row .mt-count{flex:none;display:inline-flex;align-items:center;gap:5px}
+#dlg-mt .mt-lines{border-top:0;padding:0;max-height:55vh;overflow:auto}
+#dlg-mt .acts{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.mt-row .mt-count{height:28px;padding:0 12px!important;border-radius:999px!important;background:#eef2f7!important;color:#1d3556!important;font-size:.8125rem;font-weight:700;gap:6px}
+.mt-row .mt-count .mt-ic{width:14px;height:14px;flex:none}
+@media(max-width:640px){#view-lib .lib-actions>#lib-tabs .ptab{padding:0 7px!important;min-height:38px;font-size:.72rem}#view-lib .lib-actions>#lib-tabs{gap:2px!important}}
+@media(max-width:640px){#view-lib .lib-actions>#lib-tabs .ptab{padding:0 5px!important;font-size:.68rem}#view-lib .lib-actions{gap:4px!important}}
+
+/* Desktop: nút Tuần này / Tháng này, ô tháng theo theme, ẩn Lịch tuần ở trang Lớp học */
+@media(min-width:641px){
+  body.classes-page>header .page-header-actions a[href*="schedule"]{display:none!important}
+  .week-thisweek{display:inline-flex;align-items:center;height:36px;margin-left:8px;padding:0 14px;border:1px solid rgba(229,193,107,.45);border-radius:999px;background:transparent;color:#e5c16b;font-size:.8125rem;font-weight:700;white-space:nowrap;cursor:pointer}
+  .week-thisweek:hover{background:rgba(255,255,255,.1)}
+  .week-thisweek.on{opacity:.4;pointer-events:none}
+  html[data-lms-view="lib"] .week-thisweek{display:none}
+  body.tuition-page>header .page-header-actions input[type=month]{height:36px;min-height:36px;width:auto;min-width:160px;padding:0 10px;border:1px solid rgba(229,193,107,.35)!important;border-radius:10px;background:transparent!important;color:#e5c16b!important;color-scheme:dark;font-weight:700;box-shadow:none!important;text-align:center}
+  body.tuition-page>header .page-header-actions input[type=month]::-webkit-calendar-picker-indicator{filter:invert(78%) sepia(40%) saturate(500%) hue-rotate(5deg);opacity:.9;cursor:pointer}
+  body.tuition-page>header .page-header-actions{gap:6px}
+}
+
+/* Học liệu desktop: bỏ dòng mô tả, tag chương trình ngang hàng với nút, bộ lọc gọn */
+@media(min-width:641px){
+  #view-lib>div:first-child>p{display:none}
+  #view-lib>div:first-child{display:block!important}
+  html[data-lms-view="lib"] .lib-actions{width:100%;flex-wrap:nowrap}
+  html[data-lms-view="lib"] .lib-actions>#lib-tabs{order:-1;flex:1 1 auto;display:flex;flex-wrap:nowrap;gap:6px;min-width:0}
+  html[data-lms-view="lib"] .lib-actions>#lib-tabs:empty{display:flex}
+  html[data-lms-view="lib"] .lib-actions>button{width:auto;padding:0 18px}
+  html[data-lms-view="lib"] .lib-filter-row{flex-wrap:wrap}
+  html[data-lms-view="lib"] .lib-filter-primary,html[data-lms-view="lib"] .lib-filter-secondary{flex-wrap:wrap}
+}
+@media(min-width:641px){
+  html[data-lms-view="lib"] .lib-filter-row{flex-wrap:nowrap}
+  html[data-lms-view="lib"] .lib-filter-primary,html[data-lms-view="lib"] .lib-filter-secondary{flex:1 1 0;flex-wrap:nowrap;margin-left:0}
+  html[data-lms-view="lib"] .lib-filter-row .field{flex:1 1 0!important;width:auto!important;min-width:0}
+}
+
+/* Tổng quan desktop: bo góc và chiếm đủ chiều cao như các tab khác */
+@media(min-width:1024px){
+  html[data-lms-view="overview"] .overview-stat,html[data-lms-view="overview"] .overview-finance,html[data-lms-view="overview"] .overview-panel{border-radius:20px}
+  html[data-lms-view="overview"] body>main{min-height:calc(100dvh - 80px);display:flex;flex-direction:column}
+  html[data-lms-view="overview"] #view-overview{flex:1 1 auto;display:flex;flex-direction:column;gap:20px}
+  html[data-lms-view="overview"] #view-overview>.overview-columns{flex:1 1 auto;align-items:stretch}
+  html[data-lms-view="overview"] #view-overview .overview-stat{padding:22px 22px}
+  html[data-lms-view="overview"] #view-overview .overview-finance{padding:24px 26px 24px 22px}
+  html[data-lms-view="overview"] #view-overview .overview-panel{padding:24px 26px}
+}
+
+/* Học liệu: nổi bật tuần hiện tại */
+#lib-list .lib-week-group.is-current{border-color:#e5c16b!important;background:#fffaf0!important;box-shadow:0 0 0 1px #e5c16b}
+#lib-list .lib-week-group.is-current .lib-week-title{color:#8a6414}
+.lib-now{display:inline-flex;align-items:center;height:22px;margin-left:10px;padding:0 10px;border-radius:999px;background:#e5c16b;color:#0b1f44;font-size:.6875rem;font-weight:800;vertical-align:middle}
+
+/* Thẻ chỉ số tổng quan: icon kéo hết chiều dọc */
+@media(min-width:481px){
+  .overview-stat-icon{align-self:stretch;height:auto;width:auto;min-width:56px;aspect-ratio:1/1;border-radius:14px}
+  .overview-stat-icon svg{width:24px;height:24px}
+}
+@media(min-width:481px){.overview-stat-icon{aspect-ratio:auto;width:60px;min-width:60px}.overview-stat{column-gap:14px}.overview-stat-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
+@media(min-width:481px){.overview-stat-label{white-space:normal;overflow:visible;text-overflow:clip}}
+
+/* Học phí tổng quan: "Chi tiết" thẳng hàng với cột cuối */
+@media(min-width:1101px){
+  .overview-finance .overview-section-title{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;align-items:start}
+  .overview-finance .overview-section-title>div{grid-column:1/5}
+  .overview-finance .overview-section-title>a{grid-column:5;justify-self:start;padding-left:43px;white-space:nowrap}
+}
+
+/* Lớp học desktop: số học viên giữa cột */
+@media(min-width:641px){
+  body.classes-page .classes-table-scroll th:nth-child(2),body.classes-page .classes-table-scroll td:nth-child(2){text-align:center}
+  body.classes-page .classes-table-scroll td:nth-child(2) .class-roster-trigger{margin-left:auto;margin-right:auto}
+}
+#grid thead th.today,#grid td.today{border-radius:0!important}
+
+@media(max-width:640px){.overview-shortcuts{display:none!important}}

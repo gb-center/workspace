@@ -6,7 +6,7 @@
   <script src="https://cdn.tailwindcss.com"></script><script src="https://unpkg.com/lucide@0.462.0"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="lms.css"><script src="lms.js"></script>
   <style>.dlg{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(15,23,42,.35)}.dlg[hidden]{display:none}.dlg .card{width:min(460px,100%);max-height:calc(100dvh - 32px);overflow:auto;background:#fff;border:1px solid var(--t-border);border-radius:24px;padding:22px}.dlg label{display:block;font-size:.8125rem;font-weight:700;margin:12px 0 6px}.dlg .field{width:100%}.dlg .acts{display:flex;gap:10px;margin-top:18px}.dlg .err{min-height:20px;color:#be123c;font-size:.875rem;margin-top:10px}</style>
-  <link rel="stylesheet" href="lms-polish.css">
+  <script src="lms-mode.js"></script><link rel="stylesheet" href="lms-polish.css">
   <style>
     #student-dlg[hidden]{display:none!important}
     #student-dlg .roster-card{display:flex;flex-direction:column;gap:14px;width:min(560px,100%);padding:22px;background:#fff;border:1px solid #e3e6eb;border-radius:16px;box-shadow:0 18px 55px rgba(20,31,46,.16)}
@@ -34,7 +34,7 @@
   </nav>
   <header class="bg-white border-b border-slate-200 sticky top-0 z-30 page-title-header"><div class="px-3 sm:px-5 lg:px-7 py-3 flex items-center justify-between gap-3">
     <h1 class="page-header-title">Lớp học<span class="page-header-subtitle">Danh sách lớp và chương trình học</span></h1>
-    <div class="page-header-actions"><a href="index.html#schedule" class="btn-soft m-ico" aria-label="Lịch tuần" title="Lịch tuần"><i data-lucide="calendar-days" class="w-4 h-4"></i><span>Lịch tuần</span></a></div>
+    <div class="page-header-actions"><a href="index.html#schedule" class="btn-soft m-ico" aria-label="Lịch tuần" title="Lịch tuần"><i data-lucide="calendar-days" class="w-4 h-4"></i><span>Lịch tuần</span></a><a id="btn-teacher" class="icon-btn" href="student.html#teacher" aria-label="Trang giáo viên" title="Trang giáo viên"><i data-lucide="graduation-cap" class="w-5 h-5"></i></a></div>
   </div></header>
   <main class="flex-1 px-3 sm:px-5 lg:px-7 py-5 space-y-4 classes-main">
     <section class="class-stat-strip" aria-label="Tổng quan lớp học"><div class="grid grid-cols-2 md:grid-cols-4 gap-3">
