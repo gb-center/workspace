@@ -751,7 +751,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         if (lib) {
           const k = libKey();
           $('week-label').textContent = 'Học liệu'; $('week-range').textContent = 'Mọi tuần, mới nhất trước';
-          bt.innerHTML = k ? 'Tuần <span id="current-week-number">' + pad(weekNoOf(k)) + '</span>' : 'Tất cả';
+          bt.innerHTML = 'Tuần <span id="current-week-number">' + pad(weekNoOf(k || curMon())) + '</span>';
         } else if (!bt.querySelector('#current-week-number')) bt.innerHTML = 'Tuần <span id="current-week-number">' + pad(st.week) + '</span>';
         const on = lib ? libKey() === curMon() : st.week === NOW_WEEK;
         $('btn-thisweek').classList.toggle('on', on);

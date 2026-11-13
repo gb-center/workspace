@@ -1144,3 +1144,13 @@ body:has(#btn-prev-week) a.lp-row,body:has(#btn-prev-week) a.rounded-lg.bg-sky-5
 @media(max-width:640px){
   #lib-list .lib-week-summary>span{flex-direction:column!important;align-items:flex-start!important;gap:2px!important}
 }
+
+/* Học liệu mobile: thanh tuần cân đối (pill điều hướng + nút Tuần này cùng chiều cao, chữ giữa) */
+@media(max-width:640px){
+  html[data-lms-view="lib"] #m-weekbar{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:0!important}
+  html[data-lms-view="lib"] #m-weekbar .week-current{flex:1 1 0!important;display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;height:40px!important;padding:0 6px!important}
+  html[data-lms-view="lib"] #m-weekbar .week-current-btn{display:inline-flex;align-items:center;justify-content:center;height:40px!important;min-height:0!important;line-height:1!important;padding:0!important;margin:0!important}
+  html[data-lms-view="lib"] #m-weekbar #btn-prev,html[data-lms-view="lib"] #m-weekbar #btn-next{height:40px!important;width:44px!important;display:inline-flex;align-items:center;justify-content:center;padding:0!important}
+  html[data-lms-view="lib"] #m-weekbar .week-thisweek{position:static!important;transform:none!important;flex:0 0 auto!important;display:inline-flex!important;align-items:center;justify-content:center;height:40px!important;margin:0 0 0 8px!important;padding:0 16px!important}
+}
+#m-weekbar .week-current-btn{gap:.3em}
