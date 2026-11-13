@@ -137,6 +137,7 @@
         <button id="btn-prev" type="button" class="icon-btn" aria-label="Tuần trước"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
         <div class="week-current"><button id="btn-today" type="button" class="week-current-btn">Tuần <span id="current-week-number">–</span></button><div id="week-range" class="week-range"></div></div>
         <button id="btn-next" type="button" class="icon-btn" aria-label="Tuần sau"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
+        <button id="btn-thisweek" type="button" class="week-thisweek">Tuần này</button>
       </div>
       <div class="header-tools flex items-center gap-2"><a id="btn-teacher" class="icon-btn" href="student.html#teacher" aria-label="Trang giáo viên" title="Trang giáo viên"><i data-lucide="graduation-cap" class="w-5 h-5"></i></a><button id="btn-logout" type="button" class="icon-btn" aria-label="Đăng xuất" title="Đăng xuất"><i data-lucide="log-out" class="w-5 h-5"></i></button></div>
     </div>
@@ -715,10 +716,21 @@
         else if (v === 'overview') render();
         else render();
       }
+      function curMon() { return toMon(ymd(new Date())); }
+      function libKey() { return st.libWeek === 'all' ? '' : st.libWeek === 'current' ? curMon() : st.libWeek; }
       function headState() {
-        const lib = st.view === 'lib';
-        ['btn-prev', 'btn-today', 'btn-next'].forEach(id => { $(id).style.display = lib ? 'none' : ''; });
-        if (lib) { $('week-label').textContent = 'Học liệu'; $('week-range').textContent = 'Mọi tuần, mới nhất trước'; }
+        const lib = st.view === 'lib', bt = $('btn-today');
+        if (lib) {
+          const k = libKey();
+          $('week-label').textContent = 'Học liệu'; $('week-range').textContent = 'Mọi tuần, mới nhất trước';
+          bt.innerHTML = k ? 'Tuần <span id="current-week-number">' + pad(weekNoOf(k)) + '</span>' : 'Tất cả';
+        } else if (!bt.querySelector('#current-week-number')) bt.innerHTML = 'Tuần <span id="current-week-number">' + pad(st.week) + '</span>';
+        const on = lib ? libKey() === curMon() : st.week === NOW_WEEK;
+        $('btn-thisweek').classList.toggle('on', on);
+      }
+      function libShift(d) {
+        const base = libKey() || curMon(), [y, m, dd] = base.split('-').map(Number), dt = new Date(y, m - 1, dd + d);
+        st.libWeek = ymd(dt) === curMon() ? 'current' : ymd(dt); renderLib(); headState();
       }
       const SKILL = { reading: 'Reading', listening: 'Listening', writing: 'Writing', speaking: 'Speaking', grammar: 'Grammar', vocabulary: 'Vocabulary' };
       const kindText = m => (m.kind === 'homework' ? 'Bài tập' : m.kind === 'slide' ? 'Slide' : 'Bài học') + (m.skill && SKILL[m.skill] ? ' · ' + SKILL[m.skill] : '');
@@ -738,7 +750,8 @@
         (ac.data || []).forEach(row => {
           const x = am[row.assignment_id]; if (!x) return;
           const wk = toMon(row.week_start || x.week_start), key = x.id + '|' + wk;
-          (g[key] = g[key] || { kind: x.kind === 'lesson' ? 'lesson' : 'homework', asg: true, skill: x.skill || '', page: x.page_path || '', code: x.assignment_code, title: x.assignment_name || x.assignment_code, week_start: wk, due_at: row.due_at || x.due_at, class_ids: [] }).class_ids.push(row.class_id);
+          (g[key] = g[key] || { kind: x.kind === 'lesson' ? 'lesson' : 'homework', asg: true, skill: x.skill || '', page: x.page_path || '', code: x.assignment_code, title: x.assignment_name || x.assignment_code, week_start: wk, due_at: row.due_at || x.due_at, class_ids: [], dues: {} }).class_ids.push(row.class_id);
+          g[key].dues[row.class_id] = row.due_at || x.due_at;
         });
         st.libAsg = Object.keys(g).map(k => g[k]);
         await scanRepo();
@@ -817,20 +830,27 @@
       matchMedia('(max-width:640px)').addEventListener('change', placeTabs);
       placeTabs();
       function weekByClass(k, items) {
-        const cidSel = Number($('lib-class').value) || 0, groups = new Map(), orphan = [];
-        items.forEach(m => { const ids = m.class_ids || []; if (!ids.length) orphan.push(m); else ids.forEach(id => { if (cidSel && id !== cidSel) return; if (!groups.has(id)) groups.set(id, []); groups.get(id).push(m); }); });
         const wd = k ? weekDatesFrom(k) : [], dayName = d => { const i = wd.map(ymd).indexOf(d); return i < 0 ? d : (i === 6 ? 'CN' : 'T' + (i + 2)) + ' ' + pad(wd[i].getDate()) + '/' + pad(wd[i].getMonth() + 1); };
-        const cols = list => ['lesson', 'homework', 'slide'].map(kind => { const l = list.filter(m => (m.kind === 'homework' ? 'homework' : m.kind === 'slide' ? 'slide' : 'lesson') === kind); return `<div><h4>${kind === 'lesson' ? 'Bài học' : kind === 'homework' ? 'Bài tập' : 'Slide'}</h4>${l.map(libItem).join('') || '<p class="text-sm text-slate-400">Chưa có.</p>'}</div>`; }).join('');
+        const dmy = v => { const d = v ? new Date(v) : null; return d && !isNaN(d) ? pad(d.getDate()) + '/' + pad(d.getMonth() + 1) : ''; };
+        const codeOf = id => (st.classes.find(c => c.id === id) || { class_code: '#' + id }).class_code;
         st.libOpenCls = st.libOpenCls || new Set();
-        const out = [...groups.keys()].map(id => st.classes.find(c => c.id === id) || { id, class_code: '#' + id }).sort((x, y) => natural(x.class_code, y.class_code)).map(c => {
-          const list = groups.get(c.id), nS = list.filter(m => m.kind === 'slide').length, nL = list.filter(m => m.kind !== 'homework' && m.kind !== 'slide').length, nH = list.length - nL - nS;
-          const days = [...new Set(list.filter(m => !m.asg && !m.scan).flatMap(matDates))].sort();
-          const block = (date, label, l) => `<div class="mt-day"><div class="mt-day-head"><span>${label}</span><button type="button" class="icon-btn" data-add-mat data-week="${k}" data-cid="${c.id}" data-date="${date || ''}" aria-label="Giao học liệu cho ${esc(label)}" title="Giao học liệu"><i data-lucide="plus" class="w-4 h-4"></i></button></div><div class="mt-cols">${cols(l)}</div></div>`;
-          const whole = list.filter(m => m.asg || m.scan || !matDates(m).length);
-          const body = block(null, 'Cả tuần', whole) + days.map(d => block(d, dayName(d), list.filter(m => !m.asg && !m.scan && matDates(m).includes(d)))).join('');
-          const ckey = k + '|' + c.id;
-          return `<details class="mt-class" data-ckey="${ckey}" ${st.libOpenCls.has(ckey) ? 'open' : ''}><summary><span class="mt-name">${esc(c.class_code)}</span><span class="mt-tags"><span class="tag bg-slate-100 text-slate-600" aria-label="${nL} bài học"><i data-lucide="presentation" class="mt-ic"></i>${nL}<span class="mt-w"> bài học</span></span><span class="tag bg-slate-100 text-slate-600" aria-label="${nH} bài tập"><i data-lucide="file-check-2" class="mt-ic"></i>${nH}<span class="mt-w"> bài tập</span></span>${nS ? `<span class="tag bg-slate-100 text-slate-600" aria-label="${nS} slide"><i data-lucide="monitor-play" class="mt-ic"></i>${nS}<span class="mt-w"> slide</span></span>` : ''}</span></summary><div class="mt-body">${body}</div></details>`;
-        }).join('');
+        const orphan = items.filter(m => m.scan || !(m.class_ids || []).length), given = items.filter(m => !m.scan && (m.class_ids || []).length);
+        const row = m => {
+          const ids = [...m.class_ids].sort((x, y) => natural(codeOf(x), codeOf(y))), hw = m.kind === 'homework';
+          const lines = ids.map(id => {
+            let info;
+            if (hw) { const d = dmy((m.dues && m.dues[id]) || m.due_at); info = d ? 'Hạn ' + d : 'Chưa đặt hạn'; }
+            else { const ds = matDates(m); info = !m.asg && ds.length ? ds.map(dayName).join(', ') : 'Cả tuần'; }
+            return `<div class="mt-line"><b>${esc(codeOf(id))}</b><span>${esc(info)}</span></div>`;
+          }).join('');
+          const acts = m.asg
+            ? `${m.page ? `<button type="button" class="icon-btn" data-prev-asg="${esc(m.code)}" aria-label="Xem thử bài làm"><i data-lucide="eye" class="w-4 h-4"></i></button>` : ''}<button type="button" class="icon-btn" data-rename-asg="${esc(m.code)}" aria-label="Sửa tên"><i data-lucide="pencil" class="w-4 h-4"></i></button><button type="button" class="icon-btn" data-edit-asg="${esc(m.code)}" aria-label="Giao lại bài"><i data-lucide="send" class="w-4 h-4"></i></button>`
+            : `${isHttp(m.url) ? `<a class="icon-btn" href="${esc(m.url)}" target="_blank" rel="noopener" aria-label="Mở link"><i data-lucide="external-link" class="w-4 h-4"></i></a>` : ''}<button type="button" class="icon-btn" data-edit-mat="${m.id}" aria-label="Sửa mục"><i data-lucide="pencil" class="w-4 h-4"></i></button><button type="button" class="icon-btn" data-del-mat="${m.id}" aria-label="Xóa mục" style="color:#be123c"><i data-lucide="trash-2" class="w-4 h-4"></i></button>`;
+          const ckey = k + '|m|' + (m.asg ? m.code : m.id);
+          return `<details class="mt-class mt-item" data-ckey="${ckey}" ${st.libOpenCls.has(ckey) ? 'open' : ''}><summary><span class="mt-name">${esc(m.title)}</span><span class="mt-tags">${ids.map(id => `<span class="tag bg-slate-100 text-slate-600">${esc(codeOf(id))}</span>`).join('')}</span></summary><div class="mt-lines">${lines}<div class="mt-acts">${acts}</div></div></details>`;
+        };
+        const sect = (label, icon, list) => list.length ? `<div class="mt-sect"><h4><i data-lucide="${icon}" class="w-4 h-4"></i>${label}</h4>${list.map(row).join('')}</div>` : '';
+        const out = sect('Bài học', 'presentation', given.filter(m => m.kind !== 'homework')) + sect('Bài tập', 'file-check-2', given.filter(m => m.kind === 'homework'));
         const orph = orphan.length ? `<div class="mt-class" style="padding:14px 16px"><div class="font-bold text-rose-700 mb-2">Chưa giao cho lớp nào</div><div class="flex flex-col gap-2">${orphan.map(libItem).join('')}</div></div>` : '';
         return out + orph;
       }
@@ -839,6 +859,7 @@
         $('lib-list').querySelectorAll('details[data-week-group]').forEach(d => { st.libCollapsed[d.dataset.weekGroup] = !d.open; });
         const allItems = st.lib.concat(st.libAsg).concat(scanItems()), weekSel = $('lib-week-scope'), currentWeek = toMon(ymd(new Date()));
         const weekKeys = [...new Set(allItems.map(m => toMon(m.week_start)).filter(Boolean))].sort().reverse();
+        if (/^\d{4}-/.test(st.libWeek) && !weekKeys.includes(st.libWeek)) { weekKeys.push(st.libWeek); weekKeys.sort().reverse(); }
         const weekLabel = key => { const start = new Date(key + 'T00:00:00'), end = new Date(start); end.setDate(end.getDate() + 6); return `Tuần ${pad(weekNoOf(key))} · ${pad(start.getDate())}.${pad(start.getMonth()+1)}.${start.getFullYear()} – ${pad(end.getDate())}.${pad(end.getMonth()+1)}.${end.getFullYear()}`; };
         weekSel.innerHTML = '<option value="all">Tất cả các tuần</option><option value="current">Tuần hiện tại</option>' + weekKeys.map(k => `<option value="${k}">${weekLabel(k)}</option>`).join('');
         if (st.libWeek !== 'all' && st.libWeek !== 'current' && !weekKeys.includes(st.libWeek)) st.libWeek = 'all';
@@ -1250,9 +1271,9 @@
 
       /* ---------- Sự kiện ---------- */
       function bind() {
-        $('btn-prev').addEventListener('click', () => { if (st.week > 1) { st.week -= 1; refresh(); } });
-        $('btn-next').addEventListener('click', () => { st.week += 1; refresh(); });
-        $('btn-today').addEventListener('click', () => { st.week = NOW_WEEK; st.selDay = Math.max(0, (new Date().getDay() + 6) % 7); refresh(); });
+        $('btn-prev').addEventListener('click', () => { if (st.view === 'lib') return libShift(-7); if (st.week > 1) { st.week -= 1; refresh(); } });
+        $('btn-next').addEventListener('click', () => { if (st.view === 'lib') return libShift(7); st.week += 1; refresh(); });
+        const goNow = () => { if (st.view === 'lib') { st.libWeek = 'current'; renderLib(); headState(); return; } st.week = NOW_WEEK; st.selDay = Math.max(0, (new Date().getDay() + 6) % 7); refresh(); }; $('btn-today').addEventListener('click', goNow); $('btn-thisweek').addEventListener('click', goNow);
         $('btn-copy').addEventListener('click', copyNextWeek);
         ['search', 'filter-status', 'sort'].forEach(id => $(id).addEventListener(id === 'search' ? 'input' : 'change', render));
         $('day-today').addEventListener('click', () => { st.week = NOW_WEEK; st.selDay = (new Date().getDay() + 6) % 7; refresh(); });

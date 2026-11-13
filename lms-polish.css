@@ -488,3 +488,34 @@ table.stack tbody td.cell-main .code-chip{margin-top:5px!important}
   body.tuition-page .page-header-actions{margin-left:auto!important}
   body>#lms-nav{margin:0 10px 8px!important}
 }
+
+/* Học liệu: tab theo code chương trình; danh sách theo bài */
+.ptab .pl-full{display:none!important}.ptab .pl-short{display:inline!important}
+.mt-sect{margin-bottom:12px}.mt-sect>h4{display:flex;align-items:center;gap:6px;margin:4px 0 8px;font-size:.8125rem;font-weight:800;color:var(--t-primary)}
+.mt-item{margin-bottom:8px}
+.mt-item>summary{min-height:48px;padding:6px 0;font-weight:700}
+.mt-item>summary .mt-name{min-width:0;flex:1 1 auto;overflow-wrap:anywhere}
+.mt-item>summary .mt-tags{flex:0 1 auto;justify-content:flex-end}
+.mt-lines{padding:0 0 12px;border-top:1px solid #eef1f5}
+.mt-line{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 2px;border-bottom:1px solid #f1f3f6;font-size:.875rem}
+.mt-line b{color:var(--t-ink)}.mt-line span{color:var(--t-muted);text-align:right}
+.mt-acts{display:flex;justify-content:flex-end;gap:4px;padding-top:8px}
+
+/* Nút "Tuần này" / "Tháng này"; học liệu có chọn tuần trên mobile */
+.week-thisweek{display:none}
+html[data-lms-view="lib"] #btn-prev,html[data-lms-view="lib"] #btn-today,html[data-lms-view="lib"] #btn-next{display:none}
+@media(max-width:640px){
+  html[data-lms-view="lib"] #btn-prev,html[data-lms-view="lib"] #btn-next{display:inline-flex}
+  html[data-lms-view="lib"] #btn-today{display:inline-flex}
+  html[data-lms-view="lib"] body>header .week-navigation,html[data-lms-view="lib"] body>header.has-week .week-navigation{display:flex!important}
+  html[data-lms-view="lib"] body>header .week-navigation .week-range{display:none}
+  .week-thisweek{display:inline-flex;align-items:center;height:30px;margin-left:6px;padding:0 12px;border:0;border-radius:999px;background:#eef2f7;color:#0b1f44;font-size:.75rem;font-weight:700;white-space:nowrap;cursor:pointer}
+  .week-thisweek.on{opacity:.4;pointer-events:none}
+  body.tuition-page>header .page-header-actions{margin-left:0!important;margin-right:auto!important;flex:1 1 auto;justify-content:flex-start}
+  body.tuition-page>header .page-header-actions #thismonth{margin-right:auto}
+  body.tuition-page>header .page-header-actions>#btn-logout,body.tuition-page>header .page-header-actions>a:last-child{margin-left:auto}
+}
+@media(max-width:640px){
+  body.tuition-page>header .page-header-actions input[type=month]{flex:0 0 auto!important;width:128px!important;font-size:.85rem!important;padding-left:2px!important;padding-right:2px!important}
+  body.tuition-page>header .page-header-actions input[type=month]::-webkit-calendar-picker-indicator{display:none}
+}
