@@ -1319,13 +1319,55 @@ body .student-overview-highlight .g-week-sched,body .student-overview-highlight 
       const weekSchedHtml = `<section class="card g-week-sched"><div class="week-calendar-head"><span class="week-calendar-title"><i data-lucide="calendar-days"></i>Lịch tuần này</span><span class="week-calendar-range">${weekRange}</span></div><div class="week-calendar" role="grid" aria-label="Lịch học tuần này">${weekCalendarDays}</div><div class="month-detail"><div class="text-xs font-bold text-slate-700 mb-2">${fmtDay(weekSelectedDate)}</div>${sessionDetails(weekSessionsByDay[weekSelectedDate] || [])}</div></section>`;
 
       const asg = d.assignments || [];
+      const resBtn = a => (a.kind === 'homework' && a.attempts) ? `<button type="button" class="icon-btn" data-res="${esc(a.code)}" aria-label="Kết quả" title="Kết quả"><i data-lucide="clipboard-check" class="w-4 h-4"></i></button>` : '';
+      if (!window.__resBind) {
+        window.__resBind = 1;
+        const gm = d2 => { const x = new Date(d2); return String(x.getDate()).padStart(2, '0') + '/' + String(x.getMonth() + 1).padStart(2, '0') + ' ' + String(x.getHours()).padStart(2, '0') + ':' + String(x.getMinutes()).padStart(2, '0'); };
+        const closeRes = () => { const m = document.getElementById('res-modal'); if (m) m.remove(); };
+        const showRes = html => {
+          closeRes();
+          const m = document.createElement('div'); m.id = 'res-modal';
+          m.style.cssText = 'position:fixed;inset:0;z-index:80;background:rgba(22,24,29,.5);display:flex;align-items:center;justify-content:center;padding:16px';
+          m.innerHTML = `<div role="dialog" aria-modal="true" style="background:#fff;border:1px solid #E4E6EA;border-radius:18px;width:min(640px,100%);max-height:85dvh;overflow:auto;padding:18px 20px;color:#1B1D22">${html}</div>`;
+          m.addEventListener('click', e => { if (e.target === m || e.target.closest('[data-res-close]')) closeRes(); });
+          document.body.appendChild(m);
+          if (window.lucide) window.lucide.createIcons();
+        };
+        const head = (t, sub) => `<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><span style="display:inline-flex;align-items:center;gap:8px;background:#F4F5F7;border-radius:999px;padding:6px 14px;font-weight:700;font-size:15px"><i data-lucide="clipboard-check" class="w-4 h-4"></i>${esc(t)}</span><span style="flex:1"></span><button type="button" data-res-close class="icon-btn" aria-label="Đóng" title="Đóng"><i data-lucide="x" class="w-4 h-4"></i></button></div>${sub ? `<div style="font-size:13px;color:#6b7280;margin-bottom:10px">${sub}</div>` : ''}`;
+        const ans = v => Array.isArray(v) ? v.join(' / ') : (v == null ? '' : String(v));
+        document.addEventListener('click', async ev => {
+          const b = ev.target.closest('[data-res]'); if (!b) return;
+          showRes(head('Kết quả', 'Đang tải...'));
+          try {
+            const r = await S.c.rpc('student_results', { p_student_code: S.code, p_assignment_code: b.getAttribute('data-res') });
+            if (r.error) throw r.error;
+            const x = r.data || {};
+            if (!x.ok) { showRes(head('Kết quả', 'Bài này chưa có kết quả để xem.')); return; }
+            let h = head(x.name || 'Kết quả', x.due_at ? 'Hạn nộp ' + gm(x.due_at) : '');
+            if (x.locked) h += `<div style="background:#F4F5F7;border-radius:14px;padding:12px 14px;font-size:14px">Đáp án và giải thích sẽ hiện sau hạn nộp (${gm(x.due_at)}).</div>`;
+            else (x.parts || []).forEach(pt => {
+              const it = (pt.results && pt.results.items) || [];
+              h += `<div style="margin:14px 0 6px;font-weight:700;font-size:14px">${esc(pt.name || ('Part ' + pt.part))} · ${pt.results ? pt.results.correct + '/' + pt.results.total : ''}${pt.late ? ' · nộp trễ' : ''}</div>`;
+              h += it.map(q => { const n = String(q.id || '').replace(/^q/, ''); const ok = !!q.correct;
+                return `<div style="border-top:1px solid #E4E6EA;padding:8px 0;font-size:14px;overflow-wrap:anywhere"><b>Câu ${esc(n)}</b> · <span style="color:${ok ? '#15803d' : '#b91c1c'};font-weight:700">${ok ? 'Đúng' : 'Sai'}</span> · Bạn chọn: ${esc(q.given || '(bỏ trống)')}${ok ? '' : `<div>Đáp án: <b>${esc(ans(q.answer))}</b></div>`}${q.explanation ? `<div style="color:#4b5563;margin-top:2px">${esc(q.explanation)}</div>` : ''}</div>`; }).join('');
+            });
+            (x.writing || []).forEach(w => {
+              h += `<div style="margin:14px 0 6px;font-weight:700;font-size:14px">Writing · Task ${esc(w.part)} · ${esc(w.word_count || 0)} từ${w.late ? ' · nộp trễ' : ''}</div>`;
+              h += w.reviewed ? `<div style="background:#F4F5F7;border-radius:14px;padding:12px 14px;font-size:14px">${w.band != null ? `<div style="margin-bottom:6px"><b>Band ${esc(w.band)}</b></div>` : ''}<div style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(w.feedback || '')}</div></div>` : `<div style="font-size:14px;color:#6b7280">Giáo viên chưa chấm bài này.</div>`;
+              h += `<details style="margin-top:8px"><summary style="cursor:pointer;font-size:13px;color:#6b7280">Bài viết của bạn</summary><div style="white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;margin-top:6px">${esc(w.body || '')}</div></details>`;
+            });
+            if (!x.locked && !(x.parts || []).length && !(x.writing || []).length) h += '<div style="font-size:14px;color:#6b7280">Chưa có bài nộp.</div>';
+            showRes(h);
+          } catch (e) { showRes(head('Kết quả', 'Không tải được kết quả. Thử lại sau.')); }
+        });
+      }
       const asgRow = a => {
         const due = a.due_at ? new Date(a.due_at) : null, late = due && due < now;
         const partHint = (a.kind === 'homework' && a.parts_total > 1) ? ` · Đã nộp ${a.parts_done || 0}/${a.parts_total} phần${(a.parts_done || 0) < a.parts_total ? ' · Hoàn thành đủ các phần để quy đổi band' : ' · Đã đủ phần để quy đổi band'}` : '';
         const state = (a.attempts ? `Đã làm ${a.attempts} lần${a.first_score != null ? ' · Điểm lần đầu: ' + a.first_score + '/' + (a.first_total || a.question_count) : ''}` : 'Chưa làm') + partHint;
         return `<div class="row"><div style="flex:1 1 200px;min-width:0"><div class="font-bold text-slate-800" style="overflow-wrap:anywhere">${esc(a.name)}</div>
           <div class="text-xs text-slate-500">${a.question_count ? a.question_count + ' câu · ' : ''}${state}${due ? ' · Hạn ' + pad(due.getDate()) + '/' + pad(due.getMonth() + 1) + (late ? ' (đã quá hạn)' : '') : ''}</div></div>
-          ${dayTag(a.session_dates)}${a.page_path ? `<a class="icon-btn" href="${esc(LMS.withStudent(new URL(a.page_path, location.href).href, S.code))}" aria-label="${a.attempts ? 'Làm lại' : 'Làm bài'}" title="${a.attempts ? 'Làm lại' : 'Làm bài'}"><i data-lucide="external-link" class="w-4 h-4"></i></a>` : `<a class="icon-btn" href="#${encodeURIComponent(S.code)}/${encodeURIComponent(a.code)}" aria-label="${a.attempts ? 'Làm lại' : 'Làm bài'}" title="${a.attempts ? 'Làm lại' : 'Làm bài'}"><i data-lucide="external-link" class="w-4 h-4"></i></a>`}</div>`;
+          ${dayTag(a.session_dates)}${resBtn(a)}${a.page_path ? `<a class="icon-btn" href="${esc(LMS.withStudent(new URL(a.page_path, location.href).href, S.code))}" aria-label="${a.attempts ? 'Làm lại' : 'Làm bài'}" title="${a.attempts ? 'Làm lại' : 'Làm bài'}"><i data-lucide="external-link" class="w-4 h-4"></i></a>` : `<a class="icon-btn" href="#${encodeURIComponent(S.code)}/${encodeURIComponent(a.code)}" aria-label="${a.attempts ? 'Làm lại' : 'Làm bài'}" title="${a.attempts ? 'Làm lại' : 'Làm bài'}"><i data-lucide="external-link" class="w-4 h-4"></i></a>`}</div>`;
       };
       const wkOf = a => a.week_start ? mondayKey(dOf(a.week_start)) : mondayKey(now);
       const materialMap = {};
@@ -1880,6 +1922,22 @@ body .student-overview-highlight .g-week-sched,body .student-overview-highlight 
       } catch (e) { showError(errText(e)); }
       window.scrollTo(0, 0);
     }
+
+    /* Keep the scroll position when the dashboard re-renders in place (calendar day, week step, load more). */
+    (function () {
+      const rh = renderHome;
+      renderHome = function () {
+        const app = document.getElementById('app');
+        const was = !!(app && app.querySelector('.student-shell'));
+        const y = window.scrollY || document.documentElement.scrollTop || 0;
+        const r = rh.apply(this, arguments);
+        if (was && y > 0) {
+          window.scrollTo(0, y);
+          requestAnimationFrame(() => window.scrollTo(0, y));
+        }
+        return r;
+      };
+    })();
 
     function bind() {
       $('app').addEventListener('click', e => {
