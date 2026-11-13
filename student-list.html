@@ -58,10 +58,10 @@
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-4">
         <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2 whitespace-nowrap"><i data-lucide="list" class="w-4 h-4"></i><span>Học viên</span></h3>
         <div class="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:items-center">
-          <input id="search" type="search" class="field w-full sm:w-56" placeholder="Tìm tên, mã hoặc lớp" aria-label="Tìm học viên">
-          <select id="filter-class" class="field w-full sm:w-52" aria-label="Lọc theo lớp"></select>
-          <button id="btn-add" type="button" class="btn-primary"><i data-lucide="plus" class="w-4 h-4"></i><span>Thêm học viên</span></button>
-          <button id="btn-export" type="button" class="btn-soft" aria-label="Xuất CSV"><i data-lucide="download" class="w-4 h-4"></i><span>Xuất CSV</span></button>
+          <input id="search" type="search" class="field m-fold w-full sm:w-56" placeholder="Tìm tên, mã hoặc lớp" aria-label="Tìm học viên">
+          <select id="filter-class" class="field m-fold w-full sm:w-52" aria-label="Lọc theo lớp"></select>
+          <button id="btn-add" type="button" class="btn-primary m-ico" aria-label="Thêm học viên" title="Thêm học viên"><i data-lucide="plus" class="w-4 h-4"></i><span>Thêm học viên</span></button>
+          <button id="btn-export" type="button" class="btn-soft m-hide" aria-label="Xuất CSV"><i data-lucide="download" class="w-4 h-4"></i><span>Xuất CSV</span></button>
         </div>
       </div>
       <div class="overflow-x-auto student-table-scroll">
@@ -520,5 +520,8 @@
       if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
     })();
   </script>
+<script>/* Mobile: gom ô tìm kiếm/lọc vào 1 nút */
+(function(){document.querySelectorAll('.m-fold').forEach(function(el){var p=el.parentElement;if(p.querySelector(':scope>.m-fold-toggle'))return;var b=document.createElement('button');b.type='button';b.className='btn-soft m-fold-toggle';b.setAttribute('aria-label','Tìm kiếm và lọc');b.setAttribute('aria-expanded','false');b.innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>';p.insertBefore(b,el);b.addEventListener('click',function(){var o=p.classList.toggle('m-fold-open');b.setAttribute('aria-expanded',String(o));var i=p.querySelector('input.m-fold');if(o&&i)i.focus();});});})();
+</script>
 </body>
 </html>

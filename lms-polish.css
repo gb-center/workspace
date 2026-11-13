@@ -301,3 +301,20 @@ table.stack tbody td.cell-main .code-chip{margin-top:5px!important}
   body.tuition-page .tuition-main>section:first-child .stat-n{font-size:.95rem!important;white-space:nowrap}
   body.tuition-page .tuition-row .status-cell .money{text-align:left}
 }
+
+/* Gom ô tìm kiếm/lọc vào 1 nút (mobile) */
+.m-fold-toggle{display:none}
+@media(max-width:640px){
+  .m-fold-toggle{display:inline-flex;align-items:center;justify-content:center;flex:0 0 44px;width:44px;min-width:44px;height:44px;padding:0;align-self:flex-start}
+  .m-fold{display:none!important}
+  :has(>.m-fold-toggle){display:flex!important;flex-direction:row!important;flex-wrap:wrap!important;align-items:center;gap:8px}
+  :has(>.m-fold-toggle)>:not(.m-fold-toggle):not(.m-fold){flex:1 1 0;min-width:0}
+  .m-fold-open>.m-fold{display:block!important;flex:0 0 100%!important;width:100%!important;order:9}
+  .m-ico>span{display:none!important}
+  .m-ico{flex:0 0 44px!important;width:44px;min-width:44px;height:44px;padding:0!important;justify-content:center}
+  .m-hide{display:none!important}
+  .schedule-toolbar{flex-direction:row!important;flex-wrap:wrap!important;align-items:flex-start!important;gap:8px!important}
+  .schedule-toolbar>div{width:auto!important;flex:0 0 auto!important}
+  .schedule-toolbar>div:has(.m-fold-open),.schedule-toolbar>div.m-fold-open{flex:1 1 100%!important}
+  .m-fold-open>.m-fold-toggle{background:#1f3558;color:#fff;border-color:#1f3558}
+}
