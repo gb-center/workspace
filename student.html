@@ -1296,7 +1296,7 @@ body .student-overview-highlight .g-week-sched,body .student-overview-highlight 
         <div class="stat-grid">
           <div class="stat s0"><i data-lucide="calendar-check"></i><div><b>${done.length}</b><span>Buổi đã học</span></div></div>
           <div class="stat s1"><i data-lucide="calendar-x"></i><div><b>${absent}</b><span>Buổi vắng</span></div></div>
-          <div class="stat s2"><i data-lucide="clock"></i><div><b>${d.owed || 0}</b><span>Buổi nợ</span></div></div>
+          ${d.tuition_mode === 'session' ? `<div class="stat s2"><i data-lucide="clock"></i><div><b>${sess.filter(x => x.status === 'done' && String(x.date).startsWith(todayKey.slice(0, 7))).length}</b><span>Buổi tháng này</span></div></div>` : `<div class="stat s2"><i data-lucide="clock"></i><div><b>${d.owed || 0}</b><span>Buổi nợ</span></div></div>`}
           <div class="stat s3"><i data-lucide="clipboard-list"></i><div><b>${asgDone}/${asgAll.length}</b><span>Bài đã làm</span></div></div>
         </div></section>`;
 
