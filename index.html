@@ -176,6 +176,12 @@
           <option value="time">Giờ học sớm nhất</option>
         </select>
       </div>
+      <div id="day-nav" class="day-nav" role="group" aria-label="Chuyển ngày">
+        <button id="day-prev" type="button" class="icon-btn" aria-label="Ngày trước"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+        <div class="day-nav-label" aria-live="polite"><b id="day-nav-dow"></b><span id="day-nav-date"></span></div>
+        <button id="day-next" type="button" class="icon-btn" aria-label="Ngày sau"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
+        <button id="day-today" type="button" class="icon-btn" aria-label="Về hôm nay" title="Về hôm nay"><i data-lucide="calendar-check" class="w-5 h-5"></i></button>
+      </div>
       <div class="flex flex-wrap gap-2">
         <button id="btn-copy" type="button" class="btn-soft m-ico" aria-label="Chép sang tuần sau" title="Chép sang tuần sau"><i data-lucide="copy" class="w-4 h-4"></i><span>Chép sang tuần sau</span></button>
       </div>
@@ -579,6 +585,7 @@
         $('week-range').textContent = `${pad(dates[0].getDate())}.${pad(dates[0].getMonth() + 1)}.${dates[0].getFullYear()} – ${pad(dates[6].getDate())}.${pad(dates[6].getMonth() + 1)}.${dates[6].getFullYear()}`;
         headState(); $('grid').dataset.day = String(st.selDay);
 
+        { const d = dates[st.selDay]; $('day-nav-dow').textContent = st.selDay === 6 ? 'Chủ nhật' : 'Thứ ' + ['Hai', 'Ba', 'Tư', 'Năm', 'Sáu', 'Bảy'][st.selDay]; $('day-nav-date').textContent = pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear(); }
         $('day-tabs').innerHTML = DAY.map((n, i) => `<button type="button" data-day="${i}" aria-pressed="${i === st.selDay}">${i === 6 ? 'CN' : 'T' + (i + 2)} ${pad(dates[i].getDate())}/${pad(dates[i].getMonth() + 1)}</button>`).join('');
         $('grid-head').innerHTML = '<th class="c-name">Lớp</th>' + DAY.map((n, i) =>
           `<th class="dcol d${i}${keys[i] === todayKey ? ' today' : ''}">${n}<div style="font-weight:500;opacity:.8">${pad(dates[i].getDate())}/${pad(dates[i].getMonth() + 1)}</div></th>`).join('');
@@ -800,6 +807,14 @@
                 <button type="button" class="icon-btn" data-del-mat="${m.id}" aria-label="Xóa mục" style="color:#be123c"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`;
       }
       const matDates = m => Array.isArray(m.session_dates) ? m.session_dates : [];
+      const tabsEl = $('lib-tabs'), tabsHome = { p: tabsEl.parentNode, n: tabsEl.nextSibling };
+      function placeTabs() {
+        const mob = matchMedia('(max-width:640px)').matches, acts = document.querySelector('#view-lib .lib-actions');
+        if (!acts) return;
+        if (mob && tabsEl.parentNode !== acts) acts.insertBefore(tabsEl, acts.firstChild);
+        else if (!mob && tabsEl.parentNode === acts) tabsHome.p.insertBefore(tabsEl, tabsHome.n);
+      }
+      matchMedia('(max-width:640px)').addEventListener('change', placeTabs);
       function weekByClass(k, items) {
         const cidSel = Number($('lib-class').value) || 0, groups = new Map(), orphan = [];
         items.forEach(m => { const ids = m.class_ids || []; if (!ids.length) orphan.push(m); else ids.forEach(id => { if (cidSel && id !== cidSel) return; if (!groups.has(id)) groups.set(id, []); groups.get(id).push(m); }); });
@@ -813,7 +828,7 @@
           const whole = list.filter(m => m.asg || m.scan || !matDates(m).length);
           const body = block(null, 'Cả tuần', whole) + days.map(d => block(d, dayName(d), list.filter(m => !m.asg && !m.scan && matDates(m).includes(d)))).join('');
           const ckey = k + '|' + c.id;
-          return `<details class="mt-class" data-ckey="${ckey}" ${st.libOpenCls.has(ckey) ? 'open' : ''}><summary>${esc(c.class_code)}<span class="mt-tags"><span class="tag bg-slate-100 text-slate-600">${nL} bài học</span><span class="tag bg-slate-100 text-slate-600">${nH} bài tập</span>${nS ? `<span class="tag bg-slate-100 text-slate-600">${nS} slide</span>` : ''}</span></summary><div class="mt-body">${body}</div></details>`;
+          return `<details class="mt-class" data-ckey="${ckey}" ${st.libOpenCls.has(ckey) ? 'open' : ''}><summary><span class="mt-name">${esc(c.class_code)}</span><span class="mt-tags"><span class="tag bg-slate-100 text-slate-600" aria-label="${nL} bài học"><i data-lucide="presentation" class="mt-ic"></i>${nL}<span class="mt-w"> bài học</span></span><span class="tag bg-slate-100 text-slate-600" aria-label="${nH} bài tập"><i data-lucide="file-check-2" class="mt-ic"></i>${nH}<span class="mt-w"> bài tập</span></span>${nS ? `<span class="tag bg-slate-100 text-slate-600" aria-label="${nS} slide"><i data-lucide="monitor-play" class="mt-ic"></i>${nS}<span class="mt-w"> slide</span></span>` : ''}</span></summary><div class="mt-body">${body}</div></details>`;
         }).join('');
         const orph = orphan.length ? `<div class="mt-class" style="padding:14px 16px"><div class="font-bold text-rose-700 mb-2">Chưa giao cho lớp nào</div><div class="flex flex-col gap-2">${orphan.map(libItem).join('')}</div></div>` : '';
         return out + orph;
@@ -834,11 +849,12 @@
         const q = $('lib-search').value.trim().toLowerCase(), cid = Number(sel.value) || 0, kind = $('lib-kind').value;
         const selectedWeek = st.libWeek === 'current' ? currentWeek : st.libWeek;
         const base = allItems.filter(m => (st.libWeek === 'all' || toMon(m.week_start) === selectedWeek) && (!q || m.title.toLowerCase().includes(q)) && (!cid || (m.class_ids || []).includes(cid)) && (!kind || m.kind === kind) && (!$('lib-skill').value || m.skill === $('lib-skill').value));
-        const PL = { ielts: 'IELTS', toeic: 'TOEIC', gs: 'Global Success', ac12: 'AC12', comm: 'Giao tiếp' };
+        const PL = { ielts: 'IELTS', toeic: 'TOEIC', gs: 'Global Success', ac12: 'AC12', comm: 'Giao tiếp' }, PS = { ielts: 'IE', toeic: 'TO', gs: 'GS', ac12: 'AC12', comm: 'GT' };
         const progsOf = m => m.scan ? [m.prog] : [...new Set((m.class_ids || []).map(id => { const c = st.classes.find(x => x.id === id); return c ? LMS.score.programOf(c.class_code) : ''; }).filter(Boolean))];
         const present = Object.keys(PL).filter(k => base.some(m => progsOf(m).includes(k)));
         if (st.libProg && !present.includes(st.libProg)) st.libProg = '';
-        $('lib-tabs').innerHTML = present.length > 1 ? [['', 'Tất cả']].concat(present.map(k => [k, PL[k]])).map(t => `<button type="button" class="ptab" role="tab" data-ptab="${t[0]}" aria-pressed="${st.libProg === t[0]}">${t[1]}</button>`).join('') : '';
+        $('lib-tabs').innerHTML = present.length > 1 ? [['', 'Tất cả', 'Tất cả']].concat(present.map(k => [k, PL[k], PS[k]])).map(t => `<button type="button" class="ptab" role="tab" data-ptab="${t[0]}" aria-label="${esc(t[1])}" aria-pressed="${st.libProg === t[0]}"><span class="pl-full">${t[1]}</span><span class="pl-short">${t[2]}</span></button>`).join('') : '';
+        placeTabs();
         const list = st.libProg ? base.filter(m => progsOf(m).includes(st.libProg)) : base;
         const byWeek = {}; list.forEach(m => { const k = toMon(m.week_start) || ''; (byWeek[k] = byWeek[k] || []).push(m); });
         const keys = Object.keys(byWeek).sort().reverse();
@@ -1238,6 +1254,9 @@
         $('btn-today').addEventListener('click', () => { st.week = NOW_WEEK; st.selDay = Math.max(0, (new Date().getDay() + 6) % 7); refresh(); });
         $('btn-copy').addEventListener('click', copyNextWeek);
         ['search', 'filter-status', 'sort'].forEach(id => $(id).addEventListener(id === 'search' ? 'input' : 'change', render));
+        $('day-today').addEventListener('click', () => { st.week = NOW_WEEK; st.selDay = (new Date().getDay() + 6) % 7; refresh(); });
+        $('day-prev').addEventListener('click', () => { if (st.selDay > 0) { st.selDay -= 1; render(); } else if (st.week > 1) { st.week -= 1; st.selDay = 6; refresh(); } });
+        $('day-next').addEventListener('click', () => { if (st.selDay < 6) { st.selDay += 1; render(); } else { st.week += 1; st.selDay = 0; refresh(); } });
         $('day-tabs').addEventListener('click', e => { const b = e.target.closest('[data-day]'); if (b) { st.selDay = Number(b.dataset.day); render(); } });
         $('grid-body').addEventListener('click', e => {
           const ec = e.target.closest('[data-edit-class]'); if (ec) return openClass(ec.dataset.editClass);

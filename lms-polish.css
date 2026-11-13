@@ -316,8 +316,104 @@ table.stack tbody td.cell-main .code-chip{margin-top:5px!important}
   .roster-btn{padding:0;background:none;border:0;color:#1f3558;font:inherit;font-weight:700;text-decoration:underline;text-underline-offset:2px;min-height:28px}
   .schedule-toolbar{flex-direction:row!important;flex-wrap:wrap!important;align-items:flex-start!important;gap:8px!important}
   .schedule-toolbar>div{width:auto!important;flex:0 0 auto!important}
+  .schedule-toolbar>.day-nav{display:flex!important;flex:1 1 0!important;min-width:0;align-items:center;justify-content:space-between;gap:4px}
+  .day-nav .icon-btn{flex:0 0 40px;width:40px;height:44px}
+  .day-tabs{display:none!important}
+  .day-nav-label{flex:1 1 0}
+  .day-nav-label{display:flex;flex-direction:column;align-items:center;line-height:1.2;min-width:0}
+  .day-nav-label b{font-size:.9375rem;font-weight:800;color:#1f3558}
+  .day-nav-label span{font-size:.75rem;color:#64748b}
   .schedule-toolbar>div:has(.m-fold-open),.schedule-toolbar>div.m-fold-open{flex:1 1 100%!important}
   .m-fold-open>.m-fold-toggle{background:#1f3558;color:#fff;border-color:#1f3558}
 }
 
 .roster-btn{padding:0;background:none;border:0;color:inherit;font:inherit;cursor:pointer}
+
+.day-nav{display:none}
+
+.class-pick{display:none}
+@media(max-width:640px){
+  .classes-head{flex-direction:row!important;flex-wrap:wrap!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;margin-bottom:10px!important}
+  .classes-head>div:first-child p{display:none}
+  .classes-head>div:last-child{width:auto!important;flex:0 0 auto!important}
+  .classes-head>.m-fold-open{flex:1 1 100%!important}
+  .class-pick{display:block;width:100%;margin-bottom:10px;font-weight:700}
+  body.classes-page #rows>tr:not(.m-sel){display:none!important}
+  .classes-tip{display:none}
+  body.classes-page #rows select,body.classes-page #rows input.class-note-field{display:none!important}
+  body.classes-page #rows .m-ro{display:block!important;font-size:.875rem;color:#334155;font-weight:600}
+  body.classes-page #rows .m-open{display:inline-flex!important;align-items:center;justify-content:center;width:36px;height:36px;margin-left:8px;border:1px solid #e2e8f0;border-radius:10px;background:#fff;color:#1f3558;vertical-align:middle}
+  body.classes-page #rows tr.m-sel{display:flex!important;flex-direction:column}
+  body.classes-page #rows tr.m-sel>td:nth-child(1){display:none!important}
+  body.classes-page #rows tr.m-sel>td:nth-child(2){order:1;display:flex!important;align-items:center;justify-content:flex-start!important;text-align:left}
+  body.classes-page #rows tr.m-sel>td:nth-child(3){order:2}body.classes-page #rows tr.m-sel>td:nth-child(4){order:3}body.classes-page #rows tr.m-sel>td:nth-child(5){order:4}
+  body.classes-page #rows tr.m-sel>td:nth-child(2) .m-open{margin-left:auto}
+  body.classes-page #rows td:has(.class-name-link) .class-name-link{display:none}
+}
+
+.m-ro{display:none}
+
+@media(max-width:640px){
+  .students-head{flex-direction:row!important;flex-wrap:wrap!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;margin-bottom:8px!important}
+  .students-head>div:last-child{width:auto!important;flex:0 0 auto!important}
+  .students-head>.m-fold-open{flex:1 1 100%!important}
+  body.student-list-page table.stack thead{position:sticky!important;top:0;z-index:5;background:#fff!important;align-items:center;padding:8px 2px!important;border-bottom:1px solid #e2e8f0}
+  body.student-list-page table.stack thead th{display:flex!important;align-items:center;min-width:0;line-height:1.2;white-space:nowrap}
+  body.student-list-page table.stack thead th:nth-child(4),body.student-list-page table.stack thead th:nth-child(5),body.student-list-page table.stack thead th:nth-child(6){display:none!important}
+  body.student-list-page table.stack thead .sortbtn{display:inline-flex;align-items:center;gap:2px;padding:0!important;margin:0!important;font:inherit;font-size:.625rem;line-height:1.2;text-align:left}
+}
+
+.ptab .pl-short{display:none}
+@media(max-width:640px){
+  .ptab .pl-full{display:none}
+  .ptab .pl-short{display:inline}
+  #view-lib .lib-actions>#lib-tabs{flex:1 1 0!important;min-width:0;display:flex!important;flex-wrap:nowrap!important;gap:3px!important;overflow-x:auto;align-items:center;scrollbar-width:none}
+  #view-lib .lib-actions>#lib-tabs::-webkit-scrollbar{display:none}
+  #view-lib .lib-actions>#lib-tabs:empty{display:none!important}
+  #view-lib .lib-actions>#lib-tabs .ptab{flex:0 0 auto;min-height:40px;padding:0 8px;font-size:.75rem}
+  #view-lib .lib-actions{gap:6px!important}
+}
+
+.t-short{display:none}
+@media(max-width:640px){
+  .t-full{display:none}
+  .t-short{display:inline}
+  .tuition-head-bar{flex-direction:row!important;align-items:center!important;justify-content:space-between!important;flex-wrap:wrap!important;gap:8px!important;margin-bottom:6px!important}
+  .tuition-head-bar>div:first-child p{display:none}
+  .tuition-head-bar>div:last-child{width:auto!important;flex:0 0 auto!important;margin-left:auto}
+  .tuition-head-bar>.m-fold-open{flex:1 1 100%!important}
+  body.tuition-page .tuition-row:not(.tuition-head){grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) minmax(0,.9fr) minmax(0,.85fr)!important;align-items:center!important;gap:4px 8px!important;padding:10px 2px!important}
+  body.tuition-page .tuition-row>div:first-child{display:contents!important}
+  body.tuition-page .tuition-student-line{display:contents!important}
+  body.tuition-page .tuition-student-line>a{grid-column:1;grid-row:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.8125rem}
+  body.tuition-page .tuition-student-code{grid-column:2;grid-row:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.6875rem}
+  body.tuition-page .tuition-row>div:first-child>.text-xs{grid-column:3;grid-row:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0!important;font-size:.6875rem}
+  body.tuition-page .tuition-row>div[data-label]:nth-child(2){grid-column:1;grid-row:2}
+  body.tuition-page .tuition-row>div[data-label]:nth-child(3){grid-column:2;grid-row:2}
+  body.tuition-page .tuition-row>div[data-label]:nth-child(4){grid-column:3;grid-row:2}
+  body.tuition-page .tuition-row .status-cell{display:contents!important}
+  body.tuition-page .tuition-row .status-cell::before{display:none!important}
+  body.tuition-page .tuition-row .status-check{position:static!important;grid-column:4;grid-row:1;justify-self:start;margin:0}
+  body.tuition-page .tuition-row .status-cell .money{grid-column:4;grid-row:2;font-size:.8125rem}
+  body.tuition-page .tuition-row .status-cell .money::before{content:'Hoàn thành';display:block;color:var(--t-muted);font-size:.6875rem;font-weight:500;margin-bottom:2px}
+  body.tuition-page .tuition-row>.tuition-paid-date[data-label]{grid-row:3}
+}
+
+.mt-ic{display:none}
+@media(max-width:640px){
+  .mt-class>summary{display:flex!important;align-items:center;gap:8px;flex-wrap:nowrap!important}
+  .mt-class>summary>.mt-tags{margin-left:auto;display:flex!important;flex-wrap:nowrap!important;gap:4px;flex:0 0 auto}
+  .mt-class>summary>.mt-tags .tag{display:inline-flex;align-items:center;gap:3px;white-space:nowrap;padding:3px 7px}
+  .mt-tags .mt-w{display:none}
+  .mt-tags .mt-ic{display:inline-block;width:14px;height:14px}
+}
+
+.mt-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Mobile: nút và ô tháng trong header theo theme (không nền trắng) */
+@media(max-width:640px){
+  body>header .page-header-actions .btn-soft,body>header .page-header-actions a.m-ico{background:transparent!important;border:0!important;box-shadow:none!important;color:#e5c16b!important}
+  body>header .page-header-actions .btn-soft svg{color:#e5c16b!important;stroke:#e5c16b!important}
+  body.tuition-page>header .page-header-actions input[type=month]{background:transparent!important;border:0!important;box-shadow:none!important;color:#e5c16b!important;color-scheme:dark;font-weight:700;text-align:center;padding-left:4px;padding-right:4px}
+  body.tuition-page>header .page-header-actions input[type=month]::-webkit-calendar-picker-indicator{filter:invert(78%) sepia(40%) saturate(500%) hue-rotate(5deg);opacity:.9}
+}
