@@ -436,3 +436,55 @@ table.stack tbody td.cell-main .code-chip{margin-top:5px!important}
   #view-lib .lib-actions>button{flex:0 0 44px!important;width:44px!important}
   #view-lib .lib-actions>#lib-tabs,#view-lib .lib-actions>#lib-tabs:empty{display:flex!important;flex:1 1 0!important;min-width:0;min-height:44px}
 }
+
+/* Mobile: tab điều hướng lên đầu (dưới header), header + tab cố định, chỉ vùng dữ liệu cuộn */
+@media(max-width:640px){
+  body:has(>#lms-nav){display:flex!important;flex-direction:column;height:100dvh!important;min-height:0!important;overflow:hidden!important;padding:0!important}
+  body:has(>#lms-nav)>header{order:1;flex:none;position:relative!important;top:auto!important}
+  body>#lms-nav{order:2;flex:none;position:relative!important;inset:auto!important;left:auto!important;right:auto!important;bottom:auto!important;top:auto!important;width:auto!important;height:auto!important;display:flex!important;flex-direction:row!important;align-items:stretch;gap:4px!important;padding:6px 10px 8px!important;margin:0!important;background:#0b1f44!important;border:0!important;border-radius:0 0 18px 18px!important;box-shadow:none!important;z-index:30}
+  body>#lms-nav .nav-brand{display:none!important}
+  body>#lms-nav a{flex:1 1 0!important;min-width:0;min-height:46px!important;flex-direction:column!important;justify-content:center!important;align-items:center;gap:2px!important;padding:0!important;border-radius:12px!important;background:transparent!important;color:#aeb9cc!important;font-size:.625rem!important;font-weight:700}
+  body>#lms-nav a span{display:block!important;white-space:nowrap}
+  body>#lms-nav a svg{width:20px!important;height:20px!important}
+  body>#lms-nav a[aria-current="page"]{background:rgba(255,255,255,.14)!important;color:#e5c16b!important}
+  body:has(>#lms-nav)>main{order:3;flex:1 1 0!important;min-height:0!important;height:auto!important;max-height:none!important;overflow-y:auto!important;overscroll-behavior:contain;padding-bottom:16px!important}
+}
+
+/* Học phí mobile: 5 thẻ tổng quan 1 hàng, cố định */
+@media(max-width:640px){
+  body.tuition-page .tuition-main>section:first-child{position:sticky;top:-12px;z-index:5;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:4px!important;margin:-12px -12px 12px!important;padding:12px 12px 8px!important;background:#f5f6f8}
+  body.tuition-page .tuition-main>section:first-child .stat-tile{padding:6px 3px!important;text-align:center;min-width:0;border-radius:10px}
+  body.tuition-page .tuition-main>section:first-child .stat-n{font-size:.78rem!important;line-height:1.2;white-space:nowrap}
+  body.tuition-page .tuition-main>section:first-child .stat-l{font-size:.56rem!important;line-height:1.15;margin-top:2px;overflow-wrap:anywhere}
+}
+@media(max-width:640px){
+  body.tuition-page .page-header-title{flex:none;white-space:nowrap}
+  body.tuition-page .page-header-title .page-header-subtitle{display:none}
+  body.tuition-page .page-header-actions{min-width:0;flex:1 1 auto;justify-content:flex-end}
+  body.tuition-page .page-header-actions input[type=month]{flex:0 1 130px!important}
+}
+@media(max-width:640px){
+  body.tuition-page .page-header-actions input[type=month]{flex:0 1 150px!important;font-size:.9rem!important}
+  body:has(>#lms-nav)>main{padding-bottom:8px!important}
+}
+
+/* Mobile: header kiểu cổng học sinh (thẻ trắng: logo trái, tiêu đề phải; tab navy bên dưới) */
+@media(max-width:640px){
+  body:has(>#lms-nav){background:#f5f6f8}
+  body:has(>#lms-nav)>header{position:relative!important;height:auto!important;min-height:0!important;margin:10px 10px 0!important;background:#fff!important;border:1px solid #e3e8ef!important;border-bottom:0!important;border-radius:18px 18px 0 0!important;box-shadow:none!important}
+  body:has(>#lms-nav)>header::before{content:"";position:absolute;left:14px;top:0;width:150px;height:52px;background:url(logo-wordmark-gold-navy.png) left center/contain no-repeat}
+  body:has(>#lms-nav)>header>div{height:auto!important;min-height:0!important;display:flex!important;flex-wrap:wrap;align-items:center!important;justify-content:flex-end;gap:6px!important;padding:52px 10px 6px!important}
+  body:has(>#lms-nav)>header .page-header-title,body:has(>#lms-nav)>header.has-week .schedule-page-title{position:absolute!important;top:0!important;right:16px!important;left:auto!important;bottom:auto!important;transform:none!important;height:52px;max-width:none!important;display:flex!important;align-items:center;margin:0!important;color:#0b1f44!important;font-size:1.05rem!important;font-weight:800!important}
+  body:has(>#lms-nav)>header .page-header-subtitle{display:none!important}
+  body:has(>#lms-nav)>header .page-header-actions,body:has(>#lms-nav)>header .header-tools,body:has(>#lms-nav)>header.has-week .week-navigation{margin:0!important;height:auto!important}
+  body:has(>#lms-nav)>header.has-week .week-navigation{margin-right:auto!important}
+  body:has(>#lms-nav)>header.has-week .week-navigation .week-current{height:auto!important;min-height:0!important;min-width:0!important;padding:0 6px!important}
+  body:has(>#lms-nav)>header .icon-btn,body:has(>#lms-nav)>header .week-navigation .icon-btn,body:has(>#lms-nav)>header .btn-soft,body:has(>#lms-nav)>header a.m-ico{color:#0b1f44!important;stroke:#0b1f44}
+  body:has(>#lms-nav)>header .btn-soft svg{color:#0b1f44!important;stroke:#0b1f44!important}
+  body:has(>#lms-nav)>header.has-week .week-navigation .week-current-btn{color:#0b1f44!important;font-weight:800}
+  body:has(>#lms-nav)>header.has-week .week-navigation .week-range{color:#64748b!important}
+  body.tuition-page>header .page-header-actions input[type=month]{color:#0b1f44!important;color-scheme:light}
+  body.tuition-page>header .page-header-actions input[type=month]::-webkit-calendar-picker-indicator{filter:none}
+  body.tuition-page .page-header-actions{margin-left:auto!important}
+  body>#lms-nav{margin:0 10px 8px!important}
+}
