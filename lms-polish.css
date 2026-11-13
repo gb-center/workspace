@@ -1040,3 +1040,11 @@ html[data-lms-view="lib"] #btn-prev,html[data-lms-view="lib"] #btn-today,html[da
   #btn-curweek{background:transparent!important;color:#e5c16b!important}
   #btn-curweek:hover{background:rgba(255,255,255,.1)!important}
 }
+/* popup tìm kiếm dùng chung + chấm đang lọc */
+#g-pop[hidden]{display:none!important}
+#g-pop{position:fixed;inset:0;z-index:80;background:rgba(15,23,42,.4);display:flex;align-items:flex-start;justify-content:center;padding:14vh 16px 16px}
+#g-pop .m-fold,#g-pop .field{display:block!important;width:100%!important;flex:none!important}
+@media(max-width:640px){
+  .m-fold-toggle,#lib-filter-toggle{position:relative}
+  .m-fold-toggle[data-on]::after,#lib-filter-toggle[data-on]::after{content:"";position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:#c89a3a}
+}

@@ -29,3 +29,56 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
   window.addEventListener('load', init);
 })();
+
+/* Tìm kiếm trên mobile: cùng một popup cho mọi trang + chấm báo đang lọc */
+(function () {
+  var mq = window.matchMedia('(max-width:640px)'), pop, moved = [];
+  var LIB = ['lib-search', 'lib-class', 'lib-kind', 'lib-skill', 'lib-week-scope'];
+  function els(t) {
+    if (t.id === 'lib-filter-toggle') return LIB.map(function (i) { return document.getElementById(i); }).filter(Boolean);
+    if (!t.__els) t.__els = [].slice.call((t.parentElement || document).querySelectorAll(':scope>.m-fold'));
+    return t.__els;
+  }
+  function own(t) { return !!t.closest('#m-weekbar') || !!t.closest('.classes-head'); }
+  function ensure() {
+    if (pop) return pop;
+    pop = document.createElement('div'); pop.id = 'g-pop'; pop.hidden = true;
+    pop.innerHTML = '<div class="m-pop-card"><b></b><div class="m-pop-body"></div><button type="button" class="m-pop-ok">Xong</button></div>';
+    document.body.appendChild(pop);
+    pop.addEventListener('click', function (e) { if (e.target === pop || e.target.classList.contains('m-pop-ok')) close(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !pop.hidden) close(); });
+    return pop;
+  }
+  function open(t) {
+    var p = ensure(), body = p.querySelector('.m-pop-body'), list = els(t);
+    p.querySelector('b').textContent = t.id === 'lib-filter-toggle' ? 'Tìm học liệu' : ((list[0] && list[0].getAttribute('aria-label')) || 'Tìm kiếm');
+    list.forEach(function (e) { moved.push({ e: e, p: e.parentNode, n: e.nextSibling }); body.appendChild(e); });
+    p.hidden = false;
+    var q = body.querySelector('input'); if (q) setTimeout(function () { q.focus(); }, 50);
+  }
+  function close() {
+    if (!pop || pop.hidden) return;
+    while (moved.length) { var m = moved.pop(); if (m.n && m.n.parentNode === m.p) m.p.insertBefore(m.e, m.n); else m.p.appendChild(m.e); }
+    pop.hidden = true; dots();
+  }
+  function active(list) {
+    return list.some(function (e) {
+      if (e.id === 'sort' || e.id === 'lib-week-scope') return false;
+      if (e.tagName === 'SELECT') return e.selectedIndex > 0;
+      return (e.value || '').trim() !== '';
+    });
+  }
+  function dots() {
+    [].slice.call(document.querySelectorAll('.m-fold-toggle,#lib-filter-toggle')).forEach(function (t) {
+      if (active(els(t))) t.setAttribute('data-on', '1'); else t.removeAttribute('data-on');
+    });
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('.m-fold-toggle,#lib-filter-toggle');
+    if (!t || !mq.matches || own(t)) return;
+    e.stopImmediatePropagation(); e.preventDefault(); open(t);
+  }, true);
+  ['input', 'change'].forEach(function (n) { document.addEventListener(n, dots, true); });
+  window.addEventListener('load', function () { setTimeout(dots, 300); });
+  document.addEventListener('DOMContentLoaded', function () { setTimeout(dots, 300); });
+})();
