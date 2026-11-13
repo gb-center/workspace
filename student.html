@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="lms.css">
-  <script>window.LMS_THEME_KEY = 'lms_theme_student_brand_v1'; window.LMS_THEME_DEFAULT = '#1d3f73'; window.LMS_THEME_BRAND = { primary: '#0b1f44', primary2: '#18345f', ink: '#0b1f44', pageBg: '#ffffff' };</script>
+  <script>window.LMS_THEME_KEY = 'lms_theme_student_brand_v1'; window.LMS_THEME_DEFAULT = '#16181D'; window.LMS_THEME_BRAND = { primary: '#16181D', primary2: '#23262D', ink: '#1B1D22', pageBg: '#ffffff' };</script>
   <script src="lms-mode.js"></script><script src="lms.js"></script>
   <style>
     body{padding:0!important}
@@ -63,7 +63,7 @@
     .goal .gv b em{font-style:normal;font-size:1.25rem;font-weight:700;color:var(--t-muted)}
     .goal .gs{font-size:.75rem;color:var(--t-muted);margin-top:2px}
     .goal .pct{font-size:.8125rem;font-weight:800;color:#15803d;background:#c9f0d6;padding:3px 12px;border-radius:9999px;white-space:nowrap}
-    .bar{height:10px;border-radius:9999px;background:#dfe5ec;overflow:hidden;margin-top:10px}
+    .bar{height:10px;border-radius:9999px;background:#E4E6EA;overflow:hidden;margin-top:10px}
     .bar i{display:block;height:100%;border-radius:9999px;background:#16a34a}
     .sk-title{display:flex;align-items:center;gap:8px;font-size:.8125rem;font-weight:800;color:var(--t-ink);margin-bottom:10px}
     .sk-title svg{width:16px;height:16px;color:var(--t-primary)}
@@ -74,15 +74,15 @@
     .sk .sv{font-size:1.25rem;font-weight:800;color:var(--t-ink);margin-top:4px}
     .sk .st{font-size:.6875rem;color:var(--t-muted)}
     .sk .bar{height:6px;margin-top:8px}
-    .sk.c0{background:#e3f1fd}.sk.c0 svg{color:#1d3f73}.sk.c0 .bar i{background:#1d3f73}
+    .sk.c0{background:#e3f1fd}.sk.c0 svg{color:#1B1D22}.sk.c0 .bar i{background:#23262D}
     .sk.c1{background:#efe9fd}.sk.c1 svg{color:#7c3aed}.sk.c1 .bar i{background:#7c3aed}
-    .sk.c2{background:#e3f1fd}.sk.c2 svg{color:#1d3f73}.sk.c2 .bar i{background:#1d3f73}
+    .sk.c2{background:#e3f1fd}.sk.c2 svg{color:#1B1D22}.sk.c2 .bar i{background:#23262D}
     .sk.c3{background:#fde8ec}.sk.c3 svg{color:#e11d48}.sk.c3 .bar i{background:#e11d48}
     .goal-pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
     .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     .stat{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:#fff;border:1px solid var(--t-border)}
     .stat svg{width:34px;height:34px;padding:8px;border-radius:10px;flex:none;box-sizing:border-box}
-    .stat.s0 svg{background:#e3f1fd;color:#1d3f73}.stat.s1 svg{background:#fde8ec;color:#e11d48}.stat.s2 svg{background:#e3f1fd;color:#1d3f73}.stat.s3 svg{background:#efe9fd;color:#7c3aed}
+    .stat.s0 svg{background:#e3f1fd;color:#1B1D22}.stat.s1 svg{background:#fde8ec;color:#e11d48}.stat.s2 svg{background:#e3f1fd;color:#1B1D22}.stat.s3 svg{background:#efe9fd;color:#7c3aed}
     .stat b{display:block;font-size:1.125rem;font-weight:800;color:var(--t-ink);line-height:1.2}
     .stat span{font-size:.75rem;color:var(--t-muted)}
     .student-header-inner{position:relative}
@@ -163,8 +163,8 @@
     .btn-primary[disabled]{opacity:.55}
     .hidden{display:none!important}
     /* Student portal: clean three-panel learning workspace */
-    body.student-dashboard-view{--t-primary:#0b1f44;--t-primary-2:#18345f;--t-accent:#1d3f73;--t-tint:#eef2f7;--t-tint-2:#d5deea;--t-soft:#f5f7fa;--t-border:#dfe4eb;--t-line:#c5ceda;--t-muted:#596579;--t-ink:#172235;--page-bg:transparent;background:transparent!important;color:#172235}
-    body{background:transparent!important;color:#172235}
+    body.student-dashboard-view{--t-primary:#16181D;--t-primary-2:#23262D;--t-accent:#4A4E57;--t-tint:#F4F5F7;--t-tint-2:#E4E6EA;--t-soft:#f5f7fa;--t-border:#E4E6EA;--t-line:#c5ceda;--t-muted:#596579;--t-ink:#1B1D22;--page-bg:transparent;background:transparent!important;color:#1B1D22}
+    body{background:transparent!important;color:#1B1D22}
     .wrap{max-width:1740px;padding:18px 24px calc(30px + env(safe-area-inset-bottom))}
     .student-logo{display:none}
     .student-header-inner>.student-greeting{display:none}
@@ -183,16 +183,16 @@
     .student-nav{display:flex;flex-direction:column;gap:7px}
     .student-nav button{display:flex;align-items:center;gap:11px;width:100%;min-height:42px;padding:0 12px;border:0;border-radius:10px;background:transparent;color:#596579;text-align:left;font-size:.8125rem;font-weight:600;cursor:pointer;transition:background .15s,color .15s}
     .student-nav button:hover,.student-nav button:focus-visible{background:var(--t-soft);color:var(--t-primary);outline:none}
-    .student-nav button.active{background:#eef2f7;color:#0b1f44;font-weight:800;box-shadow:inset 3px 0 #1d3f73}
+    .student-nav button.active{background:#F4F5F7;color:#1B1D22;font-weight:800;box-shadow:inset 3px 0 #23262D}
     .student-nav button.active{cursor:default}
     .student-nav svg{width:17px;height:17px;flex:none}
     .student-main{display:flex;flex-direction:column;min-width:0;min-height:0;padding:30px 30px 26px;background:#fff;overflow:hidden}
-    .student-welcome{grid-column:1/-1;grid-row:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,1fr) minmax(0,1fr);align-items:center;gap:14px;min-height:84px;margin:0;padding:10px 18px;border:1px solid #e3e8ef;border-radius:14px;background:#fff;box-shadow:0 3px 12px rgba(15,31,55,.07)}
+    .student-welcome{grid-column:1/-1;grid-row:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,1fr) minmax(0,1fr);align-items:center;gap:14px;min-height:84px;margin:0;padding:10px 18px;border:1px solid #E4E6EA;border-radius:14px;background:#fff;box-shadow:0 3px 12px rgba(22,24,29,.07)}
     .student-welcome-left{display:flex;align-items:center;gap:14px;min-width:0}
     .logo-home{display:flex;align-items:center}.m-profile,.m-week,.t-mob{display:none}
     .student-welcome-logo{display:none;width:150px;max-width:15vw;height:auto;max-height:42px;object-fit:contain}
     .student-welcome-brand-divider{display:none}
-    .student-welcome h1{margin:0;color:#0b1f44;font-size:1.65rem;font-weight:800;line-height:1.2}
+    .student-welcome h1{margin:0;color:#1B1D22;font-size:1.65rem;font-weight:800;line-height:1.2}
     .student-welcome p{margin:4px 0 0;color:#596579;font-size:.8125rem}
     .student-welcome-title{min-width:0;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
     .student-welcome-right{display:flex;align-items:center;justify-content:flex-end;gap:12px;min-width:0;height:100%}
@@ -203,33 +203,33 @@
     .student-welcome-actions .icon-btn,#btn-theme{width:38px;height:38px;border-radius:11px;background:#fff;border:1px solid var(--t-border);color:var(--t-primary)}
     .overview-week-controls{display:flex;align-items:center;gap:5px;margin-right:2px}
     .overview-week-controls .icon-btn{width:32px;height:32px;border:0;background:transparent;color:#5c6880}
-    .overview-week-controls .icon-btn:hover{background:#eef1f4}
-    .overview-week-label{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:190px;text-align:center;color:#26344d;font-size:.75rem;font-weight:700;line-height:1.25;white-space:nowrap;font-variant-numeric:tabular-nums}.overview-week-label .week-dates{font-size:.6875rem;font-weight:500;color:#718096}
+    .overview-week-controls .icon-btn:hover{background:#F4F5F7}
+    .overview-week-label{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:190px;text-align:center;color:#1B1D22;font-size:.75rem;font-weight:700;line-height:1.25;white-space:nowrap;font-variant-numeric:tabular-nums}.overview-week-label .week-dates{font-size:.6875rem;font-weight:500;color:#718096}
     .student-main-content{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding:0 4px 16px 0}
     .student-overview-content{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:22px}
     .student-main-section{scroll-margin-top:84px;min-width:0}
     .student-main-section+.student-main-section{margin-top:24px}
-    .student-view-title{margin:0 0 18px;font-size:1.05rem;font-weight:800;color:#202432}
+    .student-view-title{margin:0 0 18px;font-size:1.05rem;font-weight:800;color:#16181D}
     .student-history-list{display:grid;gap:9px}
     .student-history-row{min-width:0}
     .student-history-more{display:flex;justify-content:center;margin-top:14px}
-    .student-history-more button{min-height:38px;padding:0 15px;border:1px solid #e2e6ec;border-radius:10px;background:#fff;color:#24385c;font-size:.8rem;font-weight:700;cursor:pointer}
+    .student-history-more button{min-height:38px;padding:0 15px;border:1px solid #E4E6EA;border-radius:10px;background:#fff;color:#1B1D22;font-size:.8rem;font-weight:700;cursor:pointer}
     .student-history-more button:hover{background:#f4f6f8}
     .tuition-history-list{display:grid;gap:9px}
     .tuition-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.tuition-head h2{margin:0!important}
     .tuition-head h2{min-width:0!important;flex:1 1 0!important;width:auto!important;font-size:.875rem!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tuition-head h2 svg{flex:none}.tuition-head #tuition-tag{flex:none}.tuition-head .tag{white-space:nowrap}
-    .tuition-bar{height:8px;border-radius:9999px;background:#e5e9ef;overflow:hidden;margin-top:12px}.tuition-bar i{display:block;height:100%;background:#047857;border-radius:inherit}
+    .tuition-bar{height:8px;border-radius:9999px;background:#E4E6EA;overflow:hidden;margin-top:12px}.tuition-bar i{display:block;height:100%;background:#047857;border-radius:inherit}
     .tuition-bar-cap{display:flex;justify-content:space-between;gap:8px;margin-top:6px;font-size:.75rem;color:#818999}
     .tuition-amts:not(.compact){grid-template-columns:minmax(0,1fr) auto!important;justify-content:stretch!important;padding-right:14px}
     .tuition-amts.compact{display:flex;justify-content:space-between;align-items:center}.tuition-amts.compact b{margin-right:0}
-    .tuition-amts{display:grid;grid-template-columns:auto auto;justify-content:start;column-gap:28px;row-gap:3px;margin-top:10px;font-size:.875rem;color:#475569}.tuition-amts b{text-align:right;font-variant-numeric:tabular-nums;color:#26344d}.tuition-amts b.neg,.th-amt.neg{color:#be123c!important}.tuition-amts b.pos,.th-amt.pos{color:#047857!important}
+    .tuition-amts{display:grid;grid-template-columns:auto auto;justify-content:start;column-gap:28px;row-gap:3px;margin-top:10px;font-size:.875rem;color:#475569}.tuition-amts b{text-align:right;font-variant-numeric:tabular-nums;color:#1B1D22}.tuition-amts b.neg,.th-amt.neg{color:#be123c!important}.tuition-amts b.pos,.th-amt.pos{color:#047857!important}
     @media(max-width:700px){.tuition-history-row{grid-template-columns:repeat(3,minmax(0,1fr))!important}.tuition-history-row>div{grid-column:1/-1}.tuition-history-row>.tag{grid-column:1/-1;justify-self:start}}
-    .th-amt{font-size:.875rem;font-weight:700;color:#26344d;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}.th-amt small{display:block;font-size:.6875rem;font-weight:500;color:#818999}
-    .tuition-history-row{display:grid!important;grid-template-columns:minmax(0,1fr) repeat(3,112px) 96px;align-items:center;gap:12px;padding:12px 13px;border:1px solid #e8ebef;border-radius:12px;background:#fff}
-    .tuition-history-row b{display:block;color:#26344d;font-size:.875rem;text-transform:capitalize}
+    .th-amt{font-size:.875rem;font-weight:700;color:#1B1D22;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}.th-amt small{display:block;font-size:.6875rem;font-weight:500;color:#818999}
+    .tuition-history-row{display:grid!important;grid-template-columns:minmax(0,1fr) repeat(3,112px) 96px;align-items:center;gap:12px;padding:12px 13px;border:1px solid #E4E6EA;border-radius:12px;background:#fff}
+    .tuition-history-row b{display:block;color:#1B1D22;font-size:.875rem;text-transform:capitalize}
     .tuition-history-row>div>span{display:block;margin-top:3px;color:#818999;font-size:.75rem}
-    .student-main-section h2,.student-rail h2{color:#172235}
-    .student-main .card,.student-rail .card{background:#fff;border:1px solid var(--t-border);border-radius:17px;padding:20px;box-shadow:0 1px 3px rgba(15,31,55,.045);backdrop-filter:none;-webkit-backdrop-filter:none}
+    .student-main-section h2,.student-rail h2{color:#1B1D22}
+    .student-main .card,.student-rail .card{background:#fff;border:1px solid var(--t-border);border-radius:17px;padding:20px;box-shadow:0 1px 3px rgba(22,24,29,.045);backdrop-filter:none;-webkit-backdrop-filter:none}
     .student-main .card h2,.student-rail .card h2{font-size:.9rem;margin-bottom:13px}
     .student-main .card h2 svg,.student-rail .card h2 svg{background:var(--t-soft);color:var(--t-primary)}
     .student-main .goal{border-radius:14px}
@@ -243,7 +243,7 @@
     .student-overview-view>.student-welcome{margin-bottom:3px}
     .student-overview-top{display:grid;grid-column:1/-1;grid-template-columns:minmax(260px,.8fr) minmax(0,1.2fr);align-items:stretch;gap:20px}
     .student-overview-top>.card{height:100%;box-sizing:border-box}
-    .student-overview-top .profile-card{min-height:0;padding:20px!important;border:1px solid var(--t-border)!important;box-shadow:0 1px 3px rgba(15,31,55,.045)!important;align-items:center;gap:16px}
+    .student-overview-top .profile-card{min-height:0;padding:20px!important;border:1px solid var(--t-border)!important;box-shadow:0 1px 3px rgba(22,24,29,.045)!important;align-items:center;gap:16px}
     .student-overview-top .profile-avatar{width:76px;height:76px;border-radius:50%;flex:none}
     .student-overview-top .profile-name{font-size:1.125rem}
     .student-overview-highlight{display:grid;grid-column:1/-1;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"next tuition" "info info";align-items:start;gap:20px}
@@ -268,7 +268,7 @@
     .student-overview-bottom>.card{padding:21px}
     .student-overview-bottom .g-info{grid-column:1/-1}
     .student-overview-bottom .stat-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
-    .student-overview-view .g-hero{background:#0b1f44!important;border:0!important;color:#fff!important}
+    .student-overview-view .g-hero{background:#16181D!important;border:0!important;color:#fff!important}
     /* Compact spacing for the overview only. */
     .student-overview-view{padding:30px 24px 18px}
     .student-overview-view>.student-welcome{margin-bottom:12px}
@@ -299,10 +299,10 @@
     .student-overview-highlight{grid-template-columns:minmax(0,1fr);grid-template-areas:"info" "tuition" "activity";gap:16px}
     .student-overview-highlight .g-info{grid-area:info;display:contents}
     .student-overview-highlight .g-info>h2{display:none}
-    .student-overview-highlight .g-tuition{grid-area:tuition;height:auto;min-height:0;padding:20px 22px!important;border-left:4px solid #b38324;background:linear-gradient(110deg,#fff 0%,#fff 72%,#fbf8ef 100%)}
+    .student-overview-highlight .g-tuition{grid-area:tuition;height:auto;min-height:0;padding:20px 22px!important;border-left:1px solid #E4E6EA;background:linear-gradient(110deg,#fff 0%,#fff 72%,#fbf8ef 100%)}
     .student-overview-highlight .g-tuition h2{font-size:1rem!important}
     .student-overview-highlight .g-info .stat-grid{grid-area:info;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-    .student-overview-highlight .g-info .stat{min-height:92px;padding:16px;border-radius:17px;box-shadow:0 1px 3px rgba(15,31,55,.045)}
+    .student-overview-highlight .g-info .stat{min-height:92px;padding:16px;border-radius:17px;box-shadow:0 1px 3px rgba(22,24,29,.045)}
     .student-overview-highlight .g-info .stat svg{width:38px;height:38px}
     .student-overview-highlight .g-info .stat b{font-size:1.35rem}
     .student-overview-highlight .g-info .stat span{font-size:.8rem}
@@ -317,10 +317,10 @@
     .student-rail{width:340px;min-width:340px;max-width:340px;height:100%;min-height:0;box-sizing:border-box;padding:14px 12px;background:#fff;border-left:1px solid var(--t-border);display:flex;flex-direction:column;gap:10px;overflow:hidden}
     .student-rail>*{flex:0 0 auto;width:100%;min-width:0;box-sizing:border-box}
     .student-rail .profile-card{min-height:0;padding:9px 10px!important;border:0!important;box-shadow:none!important;align-items:center;gap:13px}
-    .student-rail .profile-avatar{width:62px;height:62px;border-radius:50%;background:#edf2f7;border:0;color:#24456a}
+    .student-rail .profile-avatar{width:62px;height:62px;border-radius:50%;background:#F4F5F7;border:0;color:#1B1D22}
     .student-rail .profile-name{font-size:1rem}
     .student-rail .profile-meta{gap:5px}
-    .student-rail .profile-class{background:#eef2f6;color:#364256}
+    .student-rail .profile-class{background:#F4F5F7;color:#364256}
     .student-rail .g-tuition{padding:14px!important}
     .student-rail .g-tuition h2{font-size:.8125rem!important;margin-bottom:8px}
     .student-rail .g-sched,.student-rail .g-week-sched{padding:11px!important}
@@ -339,7 +339,7 @@
     .student-rail .month-session{gap:7px;padding:2px 0}
     .student-rail .month-session-meta{gap:4px}
     .student-rail .month-session-meta .tag{padding:2px 7px;font-size:.625rem}
-    .student-rail .g-hero{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;align-items:center;min-height:0!important;padding:11px!important;border:0!important;border-radius:16px!important;background:#192c50!important;box-shadow:none!important;gap:5px 10px}
+    .student-rail .g-hero{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;align-items:center;min-height:0!important;padding:11px!important;border:0!important;border-radius:16px!important;background:#23262D!important;box-shadow:none!important;gap:5px 10px}
     .student-rail .g-hero .hero-lab{grid-column:1/-1;grid-row:1}
     .student-rail .g-hero .hero-next-time{grid-column:1;grid-row:2;min-width:0}
     .student-rail .g-hero .hero-actions{grid-column:2;grid-row:2;display:flex;flex-direction:column;gap:5px;margin:0}
@@ -359,18 +359,18 @@
     @media(max-width:520px){.student-welcome{grid-template-columns:minmax(0,1fr) auto;gap:5px;padding:8px}.student-welcome-logo{width:82px;max-width:20vw}.student-welcome-left{gap:5px}.student-welcome-brand-divider{display:none}.student-welcome-title{padding-left:7px}.student-welcome h1{font-size:1rem}.student-welcome p{display:none}.overview-week-controls{gap:0}.overview-week-controls .icon-btn{width:24px;height:28px}.overview-week-label{max-width:86px;font-size:.58rem}.student-welcome-tools .icon-btn,#btn-theme{width:29px;height:29px}}
     @media(max-width:600px){.student-main .student-history-row{grid-template-columns:minmax(0,1fr) auto;gap:6px 10px}.student-main .student-history-row .c-day{grid-column:1;grid-row:1}.student-main .student-history-row .c-date{grid-column:2;grid-row:1}.student-main .student-history-row>span:first-of-type{grid-column:1;grid-row:2}.student-main .student-history-row>.tag{grid-column:2;grid-row:2;justify-self:end;min-width:58px}}
     @media(max-width:1050px){body.student-dashboard-view #app.wrap{padding:10px 14px}.student-shell{grid-template-columns:155px minmax(0,1fr)}.student-workspace{display:block;overflow-y:auto;overscroll-behavior:contain}.student-sidebar{padding:20px 11px}.student-main{padding:23px 18px;overflow:visible}.student-main-content{overflow:visible;padding:0}.student-brand img{width:126px}.student-rail{width:auto;height:auto;min-width:0;max-width:none;display:flex;flex-direction:column;align-items:stretch;padding:16px;border-left:0;border-top:1px solid #eceef1;overflow:visible}.student-rail>*{min-width:0;width:auto}.student-welcome{position:sticky;top:0;z-index:5}}
-    @media(max-width:780px){body.student-dashboard-view #app.wrap{padding:8px 10px calc(8px + env(safe-area-inset-bottom))}.student-shell{grid-template-columns:1fr;grid-template-rows:auto auto minmax(0,1fr);border-radius:20px}.student-workspace{min-height:0}.student-sidebar{grid-column:1;padding:10px 13px;border-right:0;border-bottom:1px solid var(--t-border);gap:12px;overflow:visible}.student-brand{display:flex;align-self:flex-start;justify-content:flex-start;min-height:46px;padding:7px 10px}.student-brand img{width:132px}.student-nav{flex-direction:row;overflow-x:auto;gap:5px;padding-bottom:1px}.student-nav button{flex:0 0 auto;width:auto;min-height:38px;padding:0 11px}.student-nav button.active{box-shadow:inset 0 -3px #172747}.student-main{padding:14px 15px;overflow:visible}.student-main .card,.student-rail .card{padding:17px}.student-overview-content{grid-template-columns:1fr;gap:18px}.student-overview-content>.student-main-section,.student-overview-bottom,.student-overview-highlight{grid-column:1}.student-overview-highlight{grid-template-columns:1fr;grid-template-areas:"next" "info" "tuition";gap:15px}.student-overview-highlight .g-hero,.student-overview-highlight .g-tuition{height:176px;min-height:176px}.student-overview-highlight .g-info .stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.student-overview-highlight .g-hero{padding:17px!important;gap:8px 12px}.student-overview-highlight .hero-actions{gap:6px;margin-right:0}.student-overview-highlight .hero-actions .hero-btn{min-width:118px;min-height:34px;padding:0 8px}.student-overview-content>.student-main-section{gap:18px}.student-overview-view .student-week-materials .week-materials-toolbar{margin-bottom:16px}.student-overview-view .student-materials,.student-overview-bottom{grid-template-columns:1fr;gap:15px}.student-overview-bottom .g-info{grid-column:1}.student-overview-bottom .stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.student-overview-bottom>.card{padding:18px}.student-rail{grid-column:1;display:flex;flex-direction:column;align-items:stretch;padding:15px}.student-rail>*{min-width:0;width:auto}.student-welcome{margin-bottom:10px}.overview-week-controls{gap:0;margin:0}.overview-week-controls .icon-btn{width:28px;height:30px;padding:0}.overview-week-label{min-width:0;max-width:150px;white-space:normal;font-size:.65rem}.student-welcome-actions{gap:4px}}
+    @media(max-width:780px){body.student-dashboard-view #app.wrap{padding:8px 10px calc(8px + env(safe-area-inset-bottom))}.student-shell{grid-template-columns:1fr;grid-template-rows:auto auto minmax(0,1fr);border-radius:20px}.student-workspace{min-height:0}.student-sidebar{grid-column:1;padding:10px 13px;border-right:0;border-bottom:1px solid var(--t-border);gap:12px;overflow:visible}.student-brand{display:flex;align-self:flex-start;justify-content:flex-start;min-height:46px;padding:7px 10px}.student-brand img{width:132px}.student-nav{flex-direction:row;overflow-x:auto;gap:5px;padding-bottom:1px}.student-nav button{flex:0 0 auto;width:auto;min-height:38px;padding:0 11px}.student-nav button.active{box-shadow:inset 0 -3px #16181D}.student-main{padding:14px 15px;overflow:visible}.student-main .card,.student-rail .card{padding:17px}.student-overview-content{grid-template-columns:1fr;gap:18px}.student-overview-content>.student-main-section,.student-overview-bottom,.student-overview-highlight{grid-column:1}.student-overview-highlight{grid-template-columns:1fr;grid-template-areas:"next" "info" "tuition";gap:15px}.student-overview-highlight .g-hero,.student-overview-highlight .g-tuition{height:176px;min-height:176px}.student-overview-highlight .g-info .stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.student-overview-highlight .g-hero{padding:17px!important;gap:8px 12px}.student-overview-highlight .hero-actions{gap:6px;margin-right:0}.student-overview-highlight .hero-actions .hero-btn{min-width:118px;min-height:34px;padding:0 8px}.student-overview-content>.student-main-section{gap:18px}.student-overview-view .student-week-materials .week-materials-toolbar{margin-bottom:16px}.student-overview-view .student-materials,.student-overview-bottom{grid-template-columns:1fr;gap:15px}.student-overview-bottom .g-info{grid-column:1}.student-overview-bottom .stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.student-overview-bottom>.card{padding:18px}.student-rail{grid-column:1;display:flex;flex-direction:column;align-items:stretch;padding:15px}.student-rail>*{min-width:0;width:auto}.student-welcome{margin-bottom:10px}.overview-week-controls{gap:0;margin:0}.overview-week-controls .icon-btn{width:28px;height:30px;padding:0}.overview-week-label{min-width:0;max-width:150px;white-space:normal;font-size:.65rem}.student-welcome-actions{gap:4px}}
     @media(max-width:520px){.student-header-inner{padding:7px 12px!important}.student-shell{border-radius:16px}.student-main{padding:12px 12px}.student-rail{display:flex;padding:12px}.student-rail .g-sched{grid-row:auto}.student-main .student-materials{grid-template-columns:1fr}.student-welcome h1{font-size:1.05rem}.student-welcome .student-week-chip{font-size:.6875rem;padding:7px 9px}}
     @media(max-width:520px){.student-welcome{grid-template-columns:minmax(0,.85fr) minmax(90px,1fr) minmax(0,1.15fr);gap:5px;padding:8px}.student-welcome-logo{width:82px;max-width:20vw}.student-welcome-left{gap:5px}.student-welcome-brand-divider{height:28px}.student-welcome-right{gap:3px;padding-left:0}.student-welcome-tools{gap:2px}.student-welcome h1{font-size:.95rem}.student-welcome p{display:none}.overview-week-label{max-width:74px;font-size:.55rem}.overview-week-controls .icon-btn{width:22px;height:28px}.student-welcome-tools .icon-btn,#btn-theme{width:26px;height:28px}}
     /* Match the student navigation to the main LMS sidebar: roomy rows and a dark active pill. */
     .student-sidebar{padding:24px 14px;gap:20px}
     .student-nav{gap:10px}
     .student-nav button{min-height:54px;padding:0 15px;border-radius:18px;font-size:.95rem;font-weight:650;color:#73777e}
-    .student-nav button.active{background:#252a31;color:#fff;font-weight:750;box-shadow:none}
+    .student-nav button.active{background:#16181D;color:#fff;font-weight:750;box-shadow:none}
     .student-nav button.active svg{color:#fff}
     .student-nav svg{width:21px;height:21px;stroke-width:2}
-    .student-nav button:hover,.student-nav button:focus-visible{background:#f2f3f5;color:#26364a}
-    .student-nav button.active:hover,.student-nav button.active:focus-visible{background:#252a31;color:#fff}
+    .student-nav button:hover,.student-nav button:focus-visible{background:#f2f3f5;color:#1B1D22}
+    .student-nav button.active:hover,.student-nav button.active:focus-visible{background:#16181D;color:#fff}
     @media(min-width:1051px){.student-shell{grid-template-columns:220px minmax(0,1fr)}}
     @media(min-width:781px) and (max-width:1050px){.student-shell{grid-template-columns:180px minmax(0,1fr)}.student-nav button{min-height:50px;padding:0 12px;font-size:.875rem}}
     @media(max-width:780px){.student-sidebar{padding:10px 13px;gap:12px}.student-sidebar .student-brand{display:none}.student-welcome-logo{display:block}.student-nav{gap:6px}.student-nav button{min-height:42px;padding:0 13px;border-radius:14px;font-size:.875rem}.student-nav button.active{box-shadow:none}.student-nav svg{width:19px;height:19px}}
@@ -385,7 +385,7 @@
     .student-nav button{min-height:60px;padding:0 18px;border-radius:23px;font-size:1.08rem;font-weight:600;gap:17px}
     .student-nav svg{width:24px;height:24px}
     .student-nav button.active{background:#27292e;color:#fff;font-weight:650}
-    .student-welcome{grid-column:2;grid-row:1;grid-template-columns:minmax(0,1fr) auto;min-height:78px;height:78px;box-sizing:border-box;margin:0;padding:8px 26px 8px 44px;border:0;border-bottom:1px solid #23385c;border-radius:0;background:#0b1f44;box-shadow:0 6px 16px rgba(10,25,52,.18)}
+    .student-welcome{grid-column:2;grid-row:1;grid-template-columns:minmax(0,1fr) auto;min-height:78px;height:78px;box-sizing:border-box;margin:0;padding:8px 26px 8px 44px;border:0;border-bottom:1px solid #23262D;border-radius:0;background:#16181D;box-shadow:0 6px 16px rgba(22,24,29,.18)}
     .student-welcome-left{display:none}
     .student-welcome-title{align-items:flex-start;justify-content:center;text-align:left}
     .student-welcome h1{color:#c89a3a;font-size:1.25rem;font-weight:750;line-height:1.2}
@@ -398,6 +398,7 @@
     .overview-week-label{min-width:176px;color:#e5c16b;font-size:.875rem;font-weight:700}
     .student-welcome-tools{gap:8px}
     #btn-theme[hidden]{display:none!important}
+    #btn-theme,#theme-pop{display:none!important}
     .student-welcome-tools .icon-btn,#btn-theme{background:transparent;border:0;color:#e5c16b}
     .student-welcome-tools .icon-btn:hover,#btn-theme:hover{background:rgba(255,255,255,.1);color:#f0d58e}
     .student-workspace{grid-column:2;grid-row:2;background:#f5f6f8}
@@ -429,7 +430,7 @@
     @media(max-width:780px){.student-overview-highlight .student-overview-bottom{grid-template-columns:minmax(0,1fr)}.student-overview-highlight .student-overview-bottom>.card,.student-overview-highlight .student-overview-bottom .g-hero,.student-overview-highlight .student-overview-bottom .g-week-sched{height:auto;min-height:0}}
     /* Profile card split: large avatar panel on the left, details on the right. */
     .student-overview-top .profile-card{min-height:116px;padding:0!important;gap:0;overflow:hidden;border-radius:17px!important}
-    .student-overview-top .profile-avatar{flex:0 0 44%;width:44%;height:auto;min-height:116px;align-self:stretch;border:0;border-radius:17px 0 0 17px;background:#eef2f7;color:#0b1f44}
+    .student-overview-top .profile-avatar{flex:0 0 44%;width:44%;height:auto;min-height:116px;align-self:stretch;border:0;border-radius:17px 0 0 17px;background:#F4F5F7;color:#1B1D22}
     .student-overview-top .profile-avatar svg{width:50px;height:50px;stroke-width:1.7}
     .student-overview-top .profile-info{flex:1;min-width:0;padding:14px 18px}
     .student-overview-top .profile-meta{flex-direction:column;align-items:flex-start;gap:6px}
@@ -438,7 +439,7 @@
     /* Compact two-column learning metrics with the next session aligned beside them. */
     .student-overview-top{grid-template-columns:minmax(220px,.82fr) minmax(0,1.45fr) minmax(250px,1fr);grid-template-areas:"profile metrics next";align-items:stretch;gap:14px}
     .student-overview-top .g-profile{grid-area:profile;min-height:202px!important;height:100%;padding:0!important;overflow:hidden;border-radius:17px!important;display:flex;align-items:stretch;gap:0}
-    .student-overview-top .g-profile .profile-avatar{flex:0 0 44%;width:44%;height:auto;min-height:202px;align-self:stretch;border:0;border-radius:17px 0 0 17px;background:#eef2f7}
+    .student-overview-top .g-profile .profile-avatar{flex:0 0 44%;width:44%;height:auto;min-height:202px;align-self:stretch;border:0;border-radius:17px 0 0 17px;background:#F4F5F7}
     .student-overview-top .g-profile .profile-info{flex:1;min-width:0;align-self:center;padding:16px}
     .student-overview-top .g-info{display:contents}
     .student-overview-top .g-info>h2{display:none}
@@ -457,31 +458,31 @@
     /* Give the weekly calendar a filled, scan-friendly rhythm. */
     .student-overview-highlight .g-week-sched{padding:18px!important;background:linear-gradient(145deg,#fff 0%,#fff 72%,#f8f9fb 100%);display:flex;flex-direction:column;justify-content:flex-start}
     .student-overview-highlight .week-calendar-head{align-items:center;margin-bottom:14px}
-    .student-overview-highlight .week-calendar-title{display:flex;align-items:center;gap:9px;font-size:1rem;color:#0b1f44}
-    .student-overview-highlight .week-calendar-title svg{width:34px;height:34px;padding:8px;box-sizing:border-box;border-radius:11px;background:#eef2f7;color:#1d3556}
+    .student-overview-highlight .week-calendar-title{display:flex;align-items:center;gap:9px;font-size:1rem;color:#1B1D22}
+    .student-overview-highlight .week-calendar-title svg{width:34px;height:34px;padding:8px;box-sizing:border-box;border-radius:11px;background:#F4F5F7;color:#1B1D22}
     .student-overview-highlight .week-calendar-range{font-size:.75rem;font-weight:600}
     .student-overview-highlight .week-calendar{gap:7px}
-    .student-overview-highlight .week-calendar-day{position:relative;aspect-ratio:auto;width:100%;min-height:67px;padding:8px 3px;border:1px solid #e6eaf0;border-radius:13px;background:#f8f9fb;gap:5px;transition:background .15s,border-color .15s,transform .15s}
+    .student-overview-highlight .week-calendar-day{position:relative;aspect-ratio:auto;width:100%;min-height:67px;padding:8px 3px;border:1px solid #E4E6EA;border-radius:13px;background:#f8f9fb;gap:5px;transition:background .15s,border-color .15s,transform .15s}
     .student-overview-highlight .week-calendar-day span{font-size:.65rem;font-weight:700;letter-spacing:.01em}
     .student-overview-highlight .week-calendar-day b{font-size:.95rem;font-weight:750}
     .student-overview-highlight .week-calendar-day::after{content:"";width:5px;height:5px;border-radius:50%;background:transparent}
-    .student-overview-highlight .week-calendar-day.has-session{border-color:#d7e0eb;background:#eef2f7}
+    .student-overview-highlight .week-calendar-day.has-session{border-color:#E4E6EA;background:#F4F5F7}
     .student-overview-highlight .week-calendar-day.has-session::after{background:#b38324}
     .student-overview-highlight .week-calendar-day:hover{transform:translateY(-1px);border-color:#b8c5d5}
-    .student-overview-highlight .week-calendar-day.selected{border-color:#0b1f44;background:#0b1f44;color:#fff;box-shadow:0 4px 10px rgba(11,31,68,.16)}
+    .student-overview-highlight .week-calendar-day.selected{border-color:#16181D;background:#16181D;color:#fff;box-shadow:0 4px 10px rgba(22,24,29,.16)}
     .student-overview-highlight .week-calendar-day.selected span{color:rgba(255,255,255,.75)}
     .student-overview-highlight .week-calendar-day.selected::after{background:#e5c16b}
-    .student-overview-highlight .week-calendar-day.selected.today{box-shadow:0 0 0 2px #e5c16b,0 4px 10px rgba(11,31,68,.16)}
+    .student-overview-highlight .week-calendar-day.selected.today{box-shadow:0 0 0 2px #e5c16b,0 4px 10px rgba(22,24,29,.16)}
     .student-overview-highlight .g-week-sched .month-detail{flex:1 0 auto;min-height:66px;margin-top:14px;padding:12px 14px;border:0;border-radius:13px;background:#f3f5f8}
-    .student-overview-highlight .g-week-sched .month-detail>.text-xs{margin:0 0 7px!important;color:#1d3556;font-size:.8rem;font-weight:750}
+    .student-overview-highlight .g-week-sched .month-detail>.text-xs{margin:0 0 7px!important;color:#1B1D22;font-size:.8rem;font-weight:750}
     .student-overview-highlight .g-week-sched .month-detail>.text-sm{color:#69778b;font-size:.85rem}
-    .student-overview-highlight .g-week-sched .month-session{padding:5px 0;border-bottom:1px solid #e2e7ee}
+    .student-overview-highlight .g-week-sched .month-session{padding:5px 0;border-bottom:1px solid #E4E6EA}
     .student-overview-highlight .g-week-sched .month-session:last-child{border-bottom:0}
     @media(max-width:780px){.student-overview-highlight .week-calendar{gap:4px}.student-overview-highlight .week-calendar-day{min-height:58px;padding:6px 1px;border-radius:10px}.student-overview-highlight .week-calendar-day span{font-size:.58rem}.student-overview-highlight .week-calendar-day b{font-size:.85rem}.student-overview-highlight .g-week-sched .month-detail{min-height:0}}
     /* Flat, fixed-height weekly schedule; content changes scroll inside its detail area. */
-    .student-overview-highlight .g-week-sched{height:300px!important;min-height:300px!important;max-height:300px!important;box-sizing:border-box;overflow:hidden;border:1px solid #dfe4eb!important;border-radius:17px!important;background:#fff!important;box-shadow:none!important;padding:18px!important}
+    .student-overview-highlight .g-week-sched{height:300px!important;min-height:300px!important;max-height:300px!important;box-sizing:border-box;overflow:hidden;border:1px solid #E4E6EA!important;border-radius:17px!important;background:#fff!important;box-shadow:none!important;padding:18px!important}
     .student-overview-highlight .week-calendar-head{flex:0 0 auto;margin-bottom:12px}
-    .student-overview-highlight .week-calendar-title svg{background:#eef2f7;color:#1d3556;box-shadow:none}
+    .student-overview-highlight .week-calendar-title svg{background:#F4F5F7;color:#1B1D22;box-shadow:none}
     .student-overview-highlight .week-calendar-day{box-shadow:none!important;transform:none!important;transition:background-color .12s,border-color .12s}
     .student-overview-highlight .week-calendar-day:hover{transform:none;border-color:#c8d1dc}
     .student-overview-highlight .week-calendar-day.selected{box-shadow:none!important}
@@ -512,21 +513,21 @@
     /* Final dashboard polish: balanced profile, stable panels and clearer empty states. */
     .student-overview-top .g-profile .profile-avatar{flex-basis:36%;width:36%}
     .student-overview-highlight{align-items:stretch}
-    .student-overview-highlight .g-week-sched,.student-overview-highlight .g-tuition,.student-overview-highlight .g-prog{display:flex;flex-direction:column;justify-content:flex-start;align-self:stretch;padding:18px!important;border:1px solid #dfe4eb!important;border-radius:17px!important;background:#fff!important;box-shadow:none!important}
+    .student-overview-highlight .g-week-sched,.student-overview-highlight .g-tuition,.student-overview-highlight .g-prog{display:flex;flex-direction:column;justify-content:flex-start;align-self:stretch;padding:18px!important;border:1px solid #E4E6EA!important;border-radius:17px!important;background:#fff!important;box-shadow:none!important}
     .student-overview-highlight .g-week-sched{overflow:hidden}
     .student-overview-highlight .g-week-sched .week-calendar{flex:0 0 auto;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
     .student-overview-highlight .week-calendar-day{min-width:0;min-height:60px;padding:6px 1px;border-radius:10px}
     .student-overview-highlight .week-calendar-day span{font-size:.6rem}
     .student-overview-highlight .week-calendar-day b{font-size:.85rem}
     .student-overview-highlight .g-week-sched .month-detail{flex:1 1 auto;min-height:0;max-height:none!important;margin-top:10px;padding:10px 12px;overflow:auto}
-    .student-overview-highlight .g-tuition{border-left:3px solid #b38324!important;background:#fff!important}
+    .student-overview-highlight .g-tuition{border-left:1px solid #E4E6EA!important;background:#fff!important}
     .student-overview-highlight .g-tuition h2,.student-overview-highlight .g-prog .prog-head{flex:0 0 auto}
     .student-overview-highlight .g-tuition #tuition-status-text{flex:1 1 auto;min-height:0;max-height:none;overflow:auto;padding:10px 12px;border-radius:11px;background:#f4f5f7}
     .student-overview-highlight .g-prog{overflow:hidden}
     .student-overview-highlight .g-prog .prog-head{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
     .student-overview-highlight .g-prog>.prog-body,.student-overview-highlight .g-prog>.goal-pair,.student-overview-highlight .g-prog>.progress-empty,.student-overview-highlight .g-prog>.text-sm{flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain}
-    .student-overview-highlight .g-prog>.progress-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:18px;border:1px dashed #d7dee7;border-radius:13px;background:#f7f8fa;color:#778392;text-align:center;font-size:.875rem}
-    .student-overview-highlight .progress-empty svg{width:34px;height:34px;padding:8px;border-radius:11px;background:#edf1f6;color:#536a86}
+    .student-overview-highlight .g-prog>.progress-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:18px;border:1px dashed #E4E6EA;border-radius:13px;background:#f7f8fa;color:#778392;text-align:center;font-size:.875rem}
+    .student-overview-highlight .progress-empty svg{width:34px;height:34px;padding:8px;border-radius:11px;background:#F4F5F7;color:#536a86}
     .student-overview-content>.student-main-section{gap:14px}
     .student-overview-view .student-materials{align-items:stretch;gap:14px}
     .student-overview-view .student-materials>.card{display:flex;flex-direction:column;height:210px;min-height:210px;max-height:210px;box-sizing:border-box;padding:17px;overflow:hidden}
@@ -541,10 +542,10 @@
     .student-overview-highlight .g-week-sched .month-detail{margin-top:8px;padding:8px 10px}
     @media(max-width:780px){.student-overview-highlight .week-calendar-day span{font-size:.72rem!important}.student-overview-highlight .g-week-sched,.student-overview-highlight .g-tuition,.student-overview-highlight .g-prog{height:284px!important;min-height:284px!important;max-height:284px!important}}
     /* Soft, distinct accents make the three dashboard cards easier to scan as a set. */
-    .student-overview-highlight .g-week-sched{border-top:3px solid #1d3556!important}
-    .student-overview-highlight .g-week-sched .week-calendar-title svg{background:#edf2f7;color:#1d3556}
+    .student-overview-highlight .g-week-sched{border-top:3px solid #23262D!important}
+    .student-overview-highlight .g-week-sched .week-calendar-title svg{background:#F4F5F7;color:#1B1D22}
     .student-overview-highlight .g-week-sched .month-detail{background:#f4f6f8}
-    .student-overview-highlight .g-tuition{border-left:4px solid #b38324!important;background:#fffdf8!important}
+    .student-overview-highlight .g-tuition{border-left:1px solid #E4E6EA!important;background:#fffdf8!important}
     .student-overview-highlight .g-tuition h2 svg{background:#f8f0df!important;color:#a8781c!important}
     .student-overview-highlight .g-tuition #tuition-status-text{background:#fbf8f1;color:#667085}
     .student-overview-highlight .g-prog{border-top:3px solid #7652bd!important}
@@ -564,7 +565,7 @@
     .student-week-only{display:flex;flex-direction:column;min-height:0;overflow:hidden}
     .student-week-only-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex:0 0 auto;min-width:0}
     .student-week-only-head h2{margin:0!important;min-width:0}
-    .student-week-only-date{display:flex;align-items:baseline;gap:8px;flex:0 0 auto;margin:0;color:#26344d;font-size:.78rem;line-height:1.25;font-variant-numeric:tabular-nums;white-space:nowrap}
+    .student-week-only-date{display:flex;align-items:baseline;gap:8px;flex:0 0 auto;margin:0;color:#1B1D22;font-size:.78rem;line-height:1.25;font-variant-numeric:tabular-nums;white-space:nowrap}
     .student-week-only-date b{font-weight:700}.student-week-only-date span{color:#748196;font-weight:500}
     .student-week-only-body{flex:1 1 auto;min-height:0;margin-top:12px;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding-right:8px}
     .student-overview-view .student-materials>.student-week-only{height:300px;min-height:300px;max-height:300px}
@@ -572,7 +573,7 @@
     @media(max-width:520px){.student-week-only-head{align-items:flex-start;flex-direction:column;gap:5px}.student-week-only-date{padding-left:40px}}
     .student-library-view .student-library-list{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding:0 10px 4px 0}
     .student-library-week{display:flex;flex-direction:column;gap:10px}
-    .student-library-week h3{display:flex;align-items:baseline;gap:10px;margin:0;color:#1d3556;font-size:.9rem;font-weight:800}
+    .student-library-week h3{display:flex;align-items:baseline;gap:10px;margin:0;color:#1B1D22;font-size:.9rem;font-weight:800}
     .student-library-week h3 span{color:#748196;font-size:.78rem;font-weight:500}
     @media(min-width:781px){
       .student-shell-inner-tabs .student-workspace{grid-template-columns:minmax(0,1fr) 360px}
@@ -604,30 +605,30 @@
     .student-overview-highlight .g-prog .progress-empty svg{background:#f0eafd;color:#7652bd}
     /* Tuition card gets the same top rule as its neighbors, in a neutral tone. */
     .student-overview-highlight .g-tuition{border-top:3px solid #cbd5e1!important}
-    .student-overview-highlight .g-tuition{border-top-color:#1d3556!important}
+    .student-overview-highlight .g-tuition{border-top-color:#23262D!important}
     /* Give the three dashboard cards distinct, quiet surface tints. */
     .student-overview-highlight .g-week-sched,.student-overview-highlight .g-tuition,.student-overview-highlight .g-prog{background:#fff!important}
     .student-overview-highlight .g-week-sched .month-detail{background:#f4f6f8!important}
     .student-overview-highlight .g-tuition #tuition-status-text{background:#f4f5f7!important}
-    .student-overview-highlight .g-week-sched{border-top:3px solid #1d3556!important}
-    .student-overview-highlight .g-tuition{border-top:3px solid #b38324!important}
+    .student-overview-highlight .g-week-sched{border-top:3px solid #23262D!important}
+    .student-overview-highlight .g-tuition{border-top:1px solid #E4E6EA!important}
     .student-overview-highlight .g-prog{border-top:3px solid #7652bd!important}
     /* Keep tuition card neutral; reserve gold for small brand accents. */
-    .student-overview-highlight .g-tuition{border-left:1px solid #dfe4eb!important;background:#fff!important}
-    .student-overview-highlight .g-tuition h2 svg{background:#edf2f7!important;color:#1d3556!important}
+    .student-overview-highlight .g-tuition{border-left:1px solid #E4E6EA!important;background:#fff!important}
+    .student-overview-highlight .g-tuition h2 svg{background:#F4F5F7!important;color:#1B1D22!important}
     .student-overview-highlight .g-tuition #tuition-status-text{background:#f4f5f7;color:#667085}
     /* Add a quiet navy tint to the profile avatar panel. */
-    .student-overview-top .g-profile .profile-avatar{background:#e8eef6!important;color:#1d3556!important}
+    .student-overview-top .g-profile .profile-avatar{background:#F4F5F7!important;color:#1B1D22!important}
     .student-overview-top .g-profile .profile-avatar svg{stroke-width:1.8}
     /* Replace weekday rectangles with light markers and a circular selected day. */
     .student-overview-highlight .week-calendar-day{width:min(48px,100%);height:auto;min-height:0;aspect-ratio:1/1;padding:2px;border:0!important;border-radius:50%!important;background:transparent!important;box-shadow:none!important;gap:3px}
-    .student-overview-highlight .week-calendar-day.has-session{border:0!important;background:transparent!important;color:#26364a}
+    .student-overview-highlight .week-calendar-day.has-session{border:0!important;background:transparent!important;color:#1B1D22}
     .student-overview-highlight .week-calendar-day.has-session::after{background:#b38324}
     .student-overview-highlight .week-calendar-day.today:not(.selected) b{color:#a8781c;font-weight:850}
     .student-overview-highlight .week-calendar-day.today:not(.selected){box-shadow:none!important}
-    .student-overview-highlight .week-calendar-day.selected{position:relative;background:#f8f1df!important;border:0!important;border-radius:50%!important;color:#0b1f44;box-shadow:none!important}
+    .student-overview-highlight .week-calendar-day.selected{position:relative;background:#f8f1df!important;border:0!important;border-radius:50%!important;color:#1B1D22;box-shadow:none!important}
     .student-overview-highlight .week-calendar-day.selected span{color:#66758b}
-    .student-overview-highlight .week-calendar-day.selected b{color:#0b1f44}
+    .student-overview-highlight .week-calendar-day.selected b{color:#1B1D22}
     .student-overview-highlight .week-calendar-day.selected::after{display:none!important}
     .student-overview-highlight .week-calendar-day.selected.today{box-shadow:none!important}
     @media(max-width:780px){.student-overview-highlight .week-calendar-day{width:min(48px,100%);min-height:0;aspect-ratio:1/1;padding:2px}}
@@ -639,18 +640,18 @@
     .student-rail .week-calendar-day.has-session::after{display:block;background:#b38324}
     .student-rail .week-calendar-day.today:not(.selected) b{color:#a8781c;font-weight:850}
     .student-rail .week-calendar-day.today:not(.selected){box-shadow:none!important}
-    .student-rail .week-calendar-day.selected{background:#f8f1df!important;border:0!important;border-radius:50%!important;color:#0b1f44;box-shadow:none!important}
+    .student-rail .week-calendar-day.selected{background:#f8f1df!important;border:0!important;border-radius:50%!important;color:#1B1D22;box-shadow:none!important}
     .student-rail .week-calendar-day.selected span{color:#66758b}
-    .student-rail .week-calendar-day.selected b{color:#0b1f44}
+    .student-rail .week-calendar-day.selected b{color:#1B1D22}
     .student-rail .week-calendar-day.selected::after{display:none!important}
     .student-rail .week-calendar-day.selected.today{box-shadow:none!important}
     /* Keep the calendar in month view; use the same quiet selected-day and session markers. */
-    .g-sched .month-day{position:relative;display:flex;align-items:center;justify-content:center;width:min(52px,100%);aspect-ratio:1/1;min-height:0;padding:0 0 5px;border:0!important;border-radius:50%!important;background:transparent!important;box-shadow:none!important;color:#172235;font-size:.9rem;font-weight:650}
-    .g-sched .month-day.has-session{border:0!important;background:transparent!important;color:#172235;font-weight:700}
+    .g-sched .month-day{position:relative;display:flex;align-items:center;justify-content:center;width:min(52px,100%);aspect-ratio:1/1;min-height:0;padding:0 0 5px;border:0!important;border-radius:50%!important;background:transparent!important;box-shadow:none!important;color:#1B1D22;font-size:.9rem;font-weight:650}
+    .g-sched .month-day.has-session{border:0!important;background:transparent!important;color:#1B1D22;font-weight:700}
     .g-sched .month-day.has-session::after{content:'';position:absolute;bottom:5px;left:50%;width:4px;height:4px;border-radius:50%;background:#b38324;transform:translateX(-50%)}
     .g-sched .month-day.today:not(.selected){color:#a8781c;font-weight:850}
     .g-sched .month-day.today:not(.selected)::after{display:none}
-    .g-sched .month-day.selected{border:0!important;background:#f8f1df!important;color:#0b1f44;font-weight:800;box-shadow:none!important}
+    .g-sched .month-day.selected{border:0!important;background:#f8f1df!important;color:#1B1D22;font-weight:800;box-shadow:none!important}
     .g-sched .month-day.selected::after{display:none}
     .g-sched .month-day.outside{color:#c3cad4}
     @media(max-width:780px){.g-sched .month-day{width:min(44px,100%);font-size:.82rem}.g-sched .month-day.has-session::after{bottom:4px}}
@@ -659,7 +660,7 @@
     .student-overview-highlight .g-prog{overflow:visible!important}
     .student-overview-highlight .g-prog>.prog-body,.student-overview-highlight .g-prog>.goal-pair,.student-overview-highlight .g-prog>.progress-empty,.student-overview-highlight .g-prog>.text-sm{flex:0 0 auto!important;min-height:max-content!important;max-height:none!important;overflow:visible!important;overscroll-behavior:auto!important}
     /* Profile welcome heading and warmer brand tint. */
-    .student-overview-top .g-profile .profile-avatar{background:linear-gradient(145deg,#e8eef6 0%,#f8f2e4 100%)!important;color:#1d3556!important}
+    .student-overview-top .g-profile .profile-avatar{background:linear-gradient(145deg,#F4F5F7 0%,#f8f2e4 100%)!important;color:#1B1D22!important}
     .student-overview-top .g-profile .profile-info{min-width:0;flex:1}
     .g-profile .profile-name{font-size:1.125rem}
     .g-profile .profile-meta{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
@@ -710,7 +711,7 @@
     @media(max-width:780px){.student-overview-highlight .g-prog{padding:14px!important}.student-overview-highlight .g-prog>.prog-body.two{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr)!important;gap:7px!important}.student-overview-highlight .g-prog .sk-grid{gap:5px}.student-overview-highlight .g-prog .sk{padding:6px 4px}}
     .student-overview-highlight .g-prog>.prog-body.two{align-items:stretch!important}
     .student-overview-highlight .g-prog .goal-column{display:grid;grid-template-rows:auto 1fr;gap:6px;min-width:0;height:100%}
-    .student-overview-highlight .g-prog .goal-column-title{display:flex;align-items:center;gap:6px;min-height:20px;color:#172235;font-size:.72rem;font-weight:800;line-height:1.2}
+    .student-overview-highlight .g-prog .goal-column-title{display:flex;align-items:center;gap:6px;min-height:20px;color:#1B1D22;font-size:.72rem;font-weight:800;line-height:1.2}
     .student-overview-highlight .g-prog .goal-column-title svg{width:17px;height:17px;flex:none;color:#7652bd}
     .student-overview-highlight .g-prog .goal-value-only{display:flex;flex-direction:column;justify-content:center;min-height:0;height:100%;box-sizing:border-box}
     .student-overview-highlight .g-prog .goal-value-only .gv{justify-content:flex-start}
@@ -741,7 +742,7 @@
     .student-overview-highlight .g-prog>.goal-pair>.goal .gv{gap:5px;margin-top:7px}
     .student-overview-highlight .g-prog>.goal-pair>.goal .gv b{font-size:1.4rem;line-height:1.1}
     .student-overview-highlight .g-prog>.goal-pair>.goal .gs{font-size:.74rem;line-height:1.3}
-    .student-overview-highlight .g-prog>.goal-pair>.goal:nth-child(1) .gl svg{color:#24497a!important}
+    .student-overview-highlight .g-prog>.goal-pair>.goal:nth-child(1) .gl svg{color:#1B1D22!important}
     .student-overview-highlight .g-prog>.goal-pair>.goal:nth-child(2) .gl svg{color:#b38324!important}
   </style>
 <style id="mobile-fix">
@@ -749,25 +750,25 @@
   body.student-dashboard-view .student-shell{grid-template-columns:minmax(0,1fr)!important}
   body.student-dashboard-view .student-welcome,body.student-dashboard-view .student-sidebar,body.student-dashboard-view .student-workspace,body.student-dashboard-view .student-main,body.student-dashboard-view .student-main-content{min-width:0;max-width:100%;box-sizing:border-box}
   body.student-dashboard-view .student-shell *,body.student-dashboard-view .student-shell *::before,body.student-dashboard-view .student-shell *::after{box-shadow:none!important;text-shadow:none!important}
-  body.student-dashboard-view .student-shell .card,body.student-dashboard-view .student-shell section.card{background-image:none!important;border-top-width:1px!important;border:1px solid #e3e8ef!important;border-radius:14px}
+  body.student-dashboard-view .student-shell .card,body.student-dashboard-view .student-shell section.card{background-image:none!important;border-top-width:1px!important;border:1px solid #E4E6EA!important;border-radius:14px}
   body.student-dashboard-view .student-shell .card::before,body.student-dashboard-view .student-shell .card::after{display:none!important}
-  body.student-dashboard-view .student-shell .g-hero{background:#0b1f44!important;background-image:none!important;border-color:#0b1f44!important}
+  body.student-dashboard-view .student-shell .g-hero{background:#16181D!important;background-image:none!important;border-color:#16181D!important}
   body.student-dashboard-view .student-shell>.student-sidebar{box-shadow:none!important}
   body.student-dashboard-view .student-shell>.student-welcome{height:auto!important;min-height:0!important}
-  body.student-dashboard-view .student-shell>.student-welcome,body.student-dashboard-view .student-shell>.student-sidebar{background:#061633!important}
-  body.student-dashboard-view .student-shell .g-hero{background:#061633!important;border-color:#061633!important}
+  body.student-dashboard-view .student-shell>.student-welcome,body.student-dashboard-view .student-shell>.student-sidebar{background:#16181D!important}
+  body.student-dashboard-view .student-shell .g-hero{background:#16181D!important;border-color:#16181D!important}
   body.student-dashboard-view .student-shell>.student-welcome{grid-template-columns:auto minmax(0,1fr)!important;grid-template-areas:"left title" "profile right"!important;align-items:center;gap:8px 10px!important;padding:12px 12px 6px!important}
   body.student-dashboard-view .student-welcome-left{display:flex!important;grid-area:left;background:#fff;border-radius:10px;padding:6px 10px;align-items:center}
   body.student-dashboard-view .student-welcome-logo{display:block!important;width:auto!important;max-width:none!important;height:20px;max-height:none!important}
   body.student-dashboard-view .student-welcome-title{grid-area:title!important;justify-self:end;text-align:right!important;align-items:flex-end!important}
   body.student-dashboard-view .student-welcome h1{color:#ffd45e!important;font-size:1rem!important;text-align:right}
   body.student-dashboard-view .m-profile{display:flex;grid-area:profile;align-items:center;gap:9px;min-width:0}
-  body.student-dashboard-view .m-av{flex:none;width:36px;height:36px;border-radius:50%;background:#12295a;color:#ffd45e;display:flex;align-items:center;justify-content:center}
+  body.student-dashboard-view .m-av{flex:none;width:36px;height:36px;border-radius:50%;background:#23262D;color:#ffd45e;display:flex;align-items:center;justify-content:center}
   body.student-dashboard-view .m-av svg{width:20px;height:20px}
   body.student-dashboard-view .m-pi{min-width:0;display:flex;flex-direction:column;gap:2px}
   body.student-dashboard-view .m-pi b{color:#fff;font-size:.8125rem;font-weight:800;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   body.student-dashboard-view .m-pi span{display:flex;gap:6px;align-items:center;font-size:.6875rem;min-width:0}
-  body.student-dashboard-view .m-pi em{font-style:normal;color:#061633;background:#e8eefb;border-radius:6px;padding:1px 6px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px}
+  body.student-dashboard-view .m-pi em{font-style:normal;color:#1B1D22;background:#e8eefb;border-radius:6px;padding:1px 6px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px}
   body.student-dashboard-view .m-pi i{font-style:normal;color:#b3c0dc}
   body.student-dashboard-view .student-shell .g-profile{display:none!important}
   body.student-dashboard-view .student-welcome-right{grid-area:right!important;justify-self:end}
@@ -783,12 +784,12 @@
   body.student-dashboard-view .student-shell .row{display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;align-items:center;gap:10px}
   body.student-dashboard-view .student-shell a.row>span:not(.tag){flex:1 1 auto;min-width:0}
   body.student-dashboard-view .student-shell a.row>svg:last-child,body.student-dashboard-view .student-shell .row>a:last-child{flex:none;margin-left:auto}
-  body.student-dashboard-view .student-shell .profile-avatar{background:#eef2f7!important;background-image:none!important}
+  body.student-dashboard-view .student-shell .profile-avatar{background:#F4F5F7!important;background-image:none!important}
   body.student-dashboard-view .student-shell .g-profile,body.student-dashboard-view .student-shell .g-profile *{background-image:none!important}
 }
 @media(min-width:781px){
   body.student-dashboard-view .student-shell-inner-tabs .student-rail .profile-card{display:flex!important;align-items:stretch!important;padding:0!important;gap:0!important;overflow:hidden;min-height:96px!important;height:auto;border:1px solid var(--t-border)!important;border-radius:17px!important;background:#fff!important;box-shadow:none!important}
-  body.student-dashboard-view .student-shell-inner-tabs .student-rail .profile-avatar{flex:0 0 36%!important;width:36%!important;height:auto!important;min-height:0!important;border:0!important;border-radius:0!important;background:linear-gradient(145deg,#e8eef6 0%,#f8f2e4 100%)!important;color:#1d3556!important}
+  body.student-dashboard-view .student-shell-inner-tabs .student-rail .profile-avatar{flex:0 0 36%!important;width:36%!important;height:auto!important;min-height:0!important;border:0!important;border-radius:0!important;background:linear-gradient(145deg,#F4F5F7 0%,#f8f2e4 100%)!important;color:#1B1D22!important}
   body.student-dashboard-view .student-shell-inner-tabs .student-rail .profile-avatar svg{width:34px;height:34px}
   body.student-dashboard-view .student-shell-inner-tabs .student-rail .profile-info{flex:1;min-width:0;align-self:center;padding:14px 12px;gap:6px}
   body.student-dashboard-view .student-shell-inner-tabs .student-rail .profile-name{font-size:.9375rem}
@@ -797,7 +798,7 @@
 @media(max-width:780px){
   body.student-dashboard-view .student-rail[aria-label^="Hồ sơ"]{display:none!important}
   body.student-dashboard-view .student-shell>.student-welcome{box-shadow:none!important;border:0!important;border-radius:14px 14px 0 0!important}
-  body.student-dashboard-view .student-shell>.student-sidebar{background:#0b1f44!important;border:0!important;padding:0 10px 10px!important;border-radius:0 0 14px 14px;box-shadow:0 6px 16px rgba(10,25,52,.18);position:relative;z-index:1}
+  body.student-dashboard-view .student-shell>.student-sidebar{background:#16181D!important;border:0!important;padding:0 10px 10px!important;border-radius:0 0 14px 14px;box-shadow:0 6px 16px rgba(22,24,29,.18);position:relative;z-index:1}
   body.student-dashboard-view .student-nav button{background:transparent!important;color:#b9c4d9!important;box-shadow:none!important}
   body.student-dashboard-view .student-nav button svg{color:inherit!important}
   body.student-dashboard-view .student-nav button.active{background:rgba(255,255,255,.14)!important;color:#f2c14e!important}
@@ -836,15 +837,15 @@
   .t-sub-row{grid-template-columns:minmax(0,1fr) auto!important}.t-sub-row .t-sr-cls,.t-sub-row .t-sr-code{grid-column:1}.t-sub-cap{display:none!important}
   .t-class{grid-template-columns:1fr!important;gap:6px}
   body.student-dashboard-view .overview-week-label>.week-name{display:inline!important;font-size:.8125rem!important;white-space:nowrap}
-  body.student-dashboard-view .student-shell>.student-welcome{background:#fff!important;border-bottom:1px solid #e3e8ef!important;grid-template-areas:"left title" "profile profile"!important;height:auto!important;min-height:0!important;padding:12px 12px 10px!important}
+  body.student-dashboard-view .student-shell>.student-welcome{background:#fff!important;border-bottom:1px solid #E4E6EA!important;grid-template-areas:"left title" "profile profile"!important;height:auto!important;min-height:0!important;padding:12px 12px 10px!important}
   body.student-dashboard-view .student-shell>.student-welcome .student-welcome-right{display:none!important}
   body.student-dashboard-view .student-welcome-left{background:transparent!important;padding:0!important}
-  body.student-dashboard-view .student-welcome h1{color:#061633!important;font-size:.9375rem!important;white-space:nowrap!important;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  body.student-dashboard-view .student-welcome h1{color:#1B1D22!important;font-size:.9375rem!important;white-space:nowrap!important;overflow:hidden;text-overflow:ellipsis;max-width:100%}
   body.student-dashboard-view .student-shell>.student-welcome{height:86px!important;box-sizing:border-box}
-  body.student-dashboard-view .m-av{background:#eef2f7;color:#061633}
-  body.student-dashboard-view .m-pi b{color:#061633}
+  body.student-dashboard-view .m-av{background:#F4F5F7;color:#1B1D22}
+  body.student-dashboard-view .m-pi b{color:#1B1D22}
   body.student-dashboard-view .m-pi i{color:#64748b}
-  body.student-dashboard-view .m-pi em{background:#eef2f7}
+  body.student-dashboard-view .m-pi em{background:#F4F5F7}
   body.student-dashboard-view .student-shell>.student-sidebar{padding:8px 10px 10px!important}
   body.student-dashboard-view .student-nav button.active{background:rgba(255,255,255,.16)!important}
   body.student-dashboard-view .student-shell>.student-welcome{align-items:center!important;align-content:center!important}
@@ -854,7 +855,7 @@
   body.student-dashboard-view .t-desk{display:none}body.student-dashboard-view .t-mob{display:inline}
   body.student-dashboard-view .student-shell>.student-welcome{grid-template-areas:"left title"!important;height:58px!important;padding:10px 12px!important;align-items:center}
   body.student-dashboard-view .student-welcome h1{font-size:1rem!important}
-  body.student-dashboard-view .student-workspace .m-profile{background:#fff;border:1px solid #e3e8ef;border-radius:14px;margin:12px 15px 0;padding:10px 12px;box-sizing:border-box;width:auto}
+  body.student-dashboard-view .student-workspace .m-profile{background:#fff;border:1px solid #E4E6EA;border-radius:14px;margin:12px 15px 0;padding:10px 12px;box-sizing:border-box;width:auto}
   body.student-dashboard-view .student-workspace .m-profile .m-pi b{font-size:.9375rem}
   body.student-dashboard-view .student-shell .student-main,body.student-dashboard-view .student-shell .student-main.student-overview-view{padding:12px 0 14px!important;background:transparent!important}
   body.student-dashboard-view .student-workspace .m-profile{margin:12px 0 0!important}
@@ -881,11 +882,11 @@
   body.student-dashboard-view .tuition-history-row>.th-amt:nth-of-type(3){grid-column:3;text-align:right}
   body.student-dashboard-view .student-history-row .c-date{text-align:right;justify-self:end}
   body.student-dashboard-view .student-history-row>.tag{justify-self:end!important;min-width:0!important;margin:0}
-  body.student-dashboard-view .m-week{display:flex!important;justify-content:center;background:#fff;border:1px solid #e3e8ef;border-radius:14px;padding:4px}
-  body.student-dashboard-view .m-week .overview-week-controls{color:#061633}
-  body.student-dashboard-view .m-week .icon-btn{color:#061633!important}
-  body.student-dashboard-view .m-week .t-thisweek{color:#061633!important;font-weight:700;background:transparent!important}body.student-dashboard-view .m-week .t-thisweek.on{color:#94a3b8!important}
-  body.student-dashboard-view .m-week .overview-week-label,body.student-dashboard-view .m-week .overview-week-label b{color:#061633!important}
+  body.student-dashboard-view .m-week{display:flex!important;justify-content:center;background:#fff;border:1px solid #E4E6EA;border-radius:14px;padding:4px}
+  body.student-dashboard-view .m-week .overview-week-controls{color:#1B1D22}
+  body.student-dashboard-view .m-week .icon-btn{color:#1B1D22!important}
+  body.student-dashboard-view .m-week .t-thisweek{color:#1B1D22!important;font-weight:700;background:transparent!important}body.student-dashboard-view .m-week .t-thisweek.on{color:#94a3b8!important}
+  body.student-dashboard-view .m-week .overview-week-label,body.student-dashboard-view .m-week .overview-week-label b{color:#1B1D22!important}
 }
 </style>
 <style id="teacher-css">
@@ -923,7 +924,7 @@ body.student-dashboard-view .t-rail .week-calendar-day.today:not(.has-session){o
   body.student-dashboard-view .t-stick{display:block;position:sticky;top:0;z-index:6;background:#f5f6f8;padding-top:12px}
   body.student-dashboard-view .t-stick>.t-daybar{margin-bottom:12px!important}
   body.student-dashboard-view .t-stick>.m-week{margin-bottom:12px!important}
-  body.student-dashboard-view .t-sum .t-chip{min-height:0!important;min-width:0!important;height:auto!important;padding:2px 9px!important;font-size:.75rem!important;font-weight:700!important;line-height:1.4!important;border:0!important;background:#f1f5f9!important;border-radius:9999px!important;gap:5px}
+  body.student-dashboard-view .t-sum .t-chip{min-height:0!important;min-width:0!important;height:auto!important;padding:2px 9px!important;font-size:.75rem!important;font-weight:700!important;line-height:1.4!important;border:0!important;background:#F4F5F7!important;border-radius:9999px!important;gap:5px}
   body.student-dashboard-view .t-sum .t-chip svg{width:12px!important;height:12px!important}body.student-dashboard-view .t-sum .t-chip,body.student-dashboard-view .t-sum .tag{box-sizing:border-box!important;height:24px!important;display:inline-flex!important;align-items:center!important;padding-top:0!important;padding-bottom:0!important;line-height:1!important}
   body.student-dashboard-view .t-sum{gap:6px!important;flex-wrap:nowrap!important}body.student-dashboard-view .t-sum .tag{font-size:.6875rem!important;padding:2px 7px!important;line-height:1.4!important;white-space:nowrap}body.student-dashboard-view .t-sum .t-chip{font-size:.6875rem!important;padding:2px 7px!important}
   body.student-dashboard-view .t-class-name{display:flex!important;flex-direction:row!important;align-items:baseline;justify-content:space-between;gap:10px}
@@ -945,13 +946,13 @@ body.student-dashboard-view .t-rail .week-calendar-day.today:not(.has-session){o
 .t-slot{display:flex;flex-direction:column;gap:12px}
 .t-slot-head{display:flex;align-items:center;gap:8px;min-height:44px;cursor:pointer}
 .t-slot select.field.t-status{width:auto;min-height:44px;border:0!important;background:transparent!important;background-image:none!important;box-shadow:none!important;padding:0 8px!important;font-size:.9375rem;font-weight:800;text-align:left;cursor:pointer}
-.t-status[data-st="planned"]{color:#1d3f73}
+.t-status[data-st="planned"]{color:#1B1D22}
 .t-status[data-st="done"]{color:#059669}
 .t-status[data-st="cancel"]{color:#e11d48}
 .t-status[data-st="makeup"]{color:#d97706}
 .t-status[data-st="holiday"]{color:#64748b}
 .t-status[data-st="mixed"]{color:#475569}
-.t-status option{color:#172235;font-weight:600}
+.t-status option{color:#1B1D22;font-weight:600}
 .t-row{display:flex;flex-direction:column;gap:12px;padding-top:10px;border-top:1px solid var(--t-border)}
 .t-row-head{display:grid;grid-template-columns:minmax(120px,240px) minmax(0,1fr);align-items:center;gap:10px;min-height:48px;cursor:pointer}
 .t-cname{font-size:1rem;color:var(--t-ink);overflow-wrap:anywhere;line-height:1.25}
@@ -959,7 +960,7 @@ body.student-dashboard-view .t-rail .week-calendar-day.today:not(.has-session){o
 .t-sum .tag,.t-sum .t-chip{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:32px;padding:0 12px;border-radius:999px;font-size:.75rem;font-weight:700;line-height:1;white-space:nowrap}
 .t-chip{border:1px solid var(--t-border);background:#fff;color:var(--t-primary)}
 .t-chip svg{width:14px;height:14px}
-.t-modal{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(15,31,55,.35)}
+.t-modal{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(22,24,29,.35)}
 .t-modal-box{width:min(420px,100%);max-height:80dvh;overflow:auto;background:#fff;border-radius:17px;padding:18px;display:flex;flex-direction:column;gap:12px}
 .t-modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .t-modal-head h3{margin:0;font-size:1rem;font-weight:800;color:var(--t-primary)}
@@ -1012,19 +1013,19 @@ a.t-open:hover span{text-decoration:underline}
 .t-stat b{font-size:1.375rem;line-height:1.1}.t-stat span{font-size:.75rem;font-weight:700}
 .t-stat.c-all{background:#f1ecff;color:#6d28d9}
 .t-stat.c-done{background:#e7f6ef;color:#047857}
-.t-stat.c-left{background:#e8f0ff;color:#14305c}
+.t-stat.c-left{background:#e8f0ff;color:#1B1D22}
 .t-tt{display:flex;flex-direction:column;gap:8px;margin-top:12px;height:244px;overflow-y:auto;overscroll-behavior:contain;align-content:flex-start;scrollbar-width:thin}
 .t-tt>*{flex:0 0 auto}
 .t-rail>.card:last-child{min-height:184px;box-sizing:border-box}
 .t-tt-title{font-size:.75rem;font-weight:800;color:var(--t-primary)}
 .t-tt-slot{font-size:.875rem;font-weight:700;color:var(--t-ink);font-variant-numeric:tabular-nums;padding:6px 10px;border-radius:10px;background:var(--t-soft)}
 .t-tt-slot.done{opacity:.5}
-.t-rail .week-calendar-day.has-session span,.t-rail .week-calendar-day.has-session b{color:#0b1f44!important;font-weight:900!important}
+.t-rail .week-calendar-day.has-session span,.t-rail .week-calendar-day.has-session b{color:#1B1D22!important;font-weight:900!important}
 .t-rail .week-calendar-day:not(.has-session) span,.t-rail .week-calendar-day:not(.has-session) b{color:#94a3b8!important;font-weight:600!important}
 .t-rail .week-calendar-day{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:3px!important;width:100%!important;aspect-ratio:auto!important;height:60px!important;padding:6px 0 5px!important;border-radius:12px!important}
 .t-rail .week-calendar-day::after,.t-rail .week-calendar-day.selected::after{content:""!important;display:block!important;position:static!important;flex:none;width:6px;height:6px;margin:0!important;border-radius:50%;background:transparent}
 .t-rail .week-calendar-day.has-session::after,.t-rail .week-calendar-day.has-session.selected::after{background:#e0a100!important}
-.t-rail .week-calendar-day.selected{background:#f3f5f9!important;border-radius:12px!important}
+.t-rail .week-calendar-day.selected{background:#F4F5F7!important;border-radius:12px!important}
 .t-rail .week-calendar-day.today span,.t-rail .week-calendar-day.today b{color:#d99a00!important}
 .t-tt-slot{display:block;width:100%;border:0;text-align:left;cursor:pointer;font-family:inherit}
 .t-tt-slot.picked{background:#f8f1df;box-shadow:inset 0 0 0 2px #e0a100}
@@ -1062,11 +1063,143 @@ a.t-open:hover span{text-decoration:underline}
 .t-mode-head{display:none}
 @media(max-width:780px){
   body.student-dashboard-view .t-slot.mode-up .t-sum .t-mode{display:none!important}
-  body.student-dashboard-view .t-slot.mode-up .t-mode-head{display:inline-flex;align-items:center;box-sizing:border-box;height:24px;padding:0 9px;border-radius:9999px;background:#f1f5f9;color:#475569;font-size:.6875rem;font-weight:700;white-space:nowrap}
+  body.student-dashboard-view .t-slot.mode-up .t-mode-head{display:inline-flex;align-items:center;box-sizing:border-box;height:24px;padding:0 9px;border-radius:9999px;background:#F4F5F7;color:#475569;font-size:.6875rem;font-weight:700;white-space:nowrap}
   body.student-dashboard-view .t-row-head{grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important;gap:8px!important}
   body.student-dashboard-view .t-row-head .t-sum{flex-wrap:nowrap!important;justify-content:flex-end!important}
 }
 </style>
+<style id="m-tools-fix">@media(max-width:780px){
+body.student-dashboard-view .student-shell>.student-welcome{grid-template-columns:auto minmax(0,1fr) auto!important;grid-template-areas:"left title right"!important}
+body.student-dashboard-view .student-shell>.student-welcome .student-welcome-right{display:flex!important;grid-area:right;align-items:center;justify-content:flex-end;min-width:0}
+body.student-dashboard-view .student-welcome-right .student-welcome-actions{display:none!important}
+body.student-dashboard-view .student-welcome-tools .icon-btn,body.student-dashboard-view .student-welcome-tools #btn-mode{color:#1B1D22!important;width:36px;height:36px;background:transparent!important;border:0!important}
+}</style>
+<style id="m-prof-fix">@media(max-width:780px){
+body.student-dashboard-view .m-av{width:40px!important;height:40px!important;border-radius:12px!important;background:#F4F5F7!important;background-image:none!important;border:0!important;color:#1B1D22!important}
+body.student-dashboard-view .m-av svg{width:20px!important;height:20px!important;stroke-width:1.8}
+body.student-dashboard-view .student-workspace .m-profile .m-pi{flex:1 1 auto;min-width:0}
+body.student-dashboard-view .m-profile>.m-week{display:flex!important;flex:none;align-items:center;margin:0 0 0 auto!important;padding:0!important;border:0!important;background:transparent!important;width:auto}
+body.student-dashboard-view .m-profile .overview-week-controls{gap:0}
+body.student-dashboard-view .m-profile .overview-week-label{min-width:0!important}
+body.student-dashboard-view .m-profile .overview-week-label .week-dates{display:none}
+body.student-dashboard-view .m-profile .overview-week-label .week-name{display:inline!important;font-size:.8125rem!important;padding:0 2px}
+body.student-dashboard-view .m-profile .icon-btn{width:28px!important;height:32px!important}
+body.student-dashboard-view .m-profile .t-thisweek{height:32px;padding:0 6px;font-size:.75rem}
+}</style>
+<style id="m-prof-fix2">@media(max-width:780px){
+body.student-dashboard-view .student-workspace .m-profile{padding:0!important;gap:10px!important;overflow:hidden;align-items:stretch!important}
+body.student-dashboard-view .student-workspace .m-profile .m-av{width:52px!important;height:auto!important;min-height:52px;align-self:stretch;border-radius:13px 0 0 13px!important}
+body.student-dashboard-view .student-workspace .m-profile .m-pi{padding:9px 0;justify-content:center}
+body.student-dashboard-view .m-profile>.m-week{padding-right:8px!important;align-self:center}
+}</style>
+<style id="m-prof-fix3">@media(max-width:780px){
+body.student-dashboard-view .m-profile .m-week .icon-btn,body.student-dashboard-view .m-profile .m-week .t-thisweek{display:none!important}
+body.student-dashboard-view .m-profile .overview-week-label{align-items:flex-end!important;text-align:right;gap:2px!important}
+body.student-dashboard-view .m-profile .overview-week-label .week-dates{display:block!important;font-size:.6875rem;font-weight:600;color:#64748b}
+body.student-dashboard-view .m-profile .overview-week-label .week-name{font-size:.875rem!important;font-weight:800;padding:0}
+}</style>
+<style id="m-prof-fix4">@media(max-width:780px){
+body.student-dashboard-view .m-profile .overview-week-label{flex-direction:row!important;align-items:baseline!important;gap:5px!important;white-space:nowrap}
+body.student-dashboard-view .m-profile .overview-week-label .week-dates{font-size:.625rem!important}
+}</style>
+<style id="m-prof-fix5">@media(max-width:780px){
+body.student-dashboard-view .m-profile .overview-week-label{flex-direction:column!important;align-items:flex-end!important;gap:2px!important;white-space:nowrap}
+body.student-dashboard-view .m-profile .overview-week-label .week-dates{white-space:nowrap!important;font-size:.6875rem!important}
+}</style>
+<style id="m-prof-fix6">@media(max-width:780px){
+body.student-dashboard-view .m-profile .overview-week-label{gap:2px!important;line-height:1.15!important;font-family:inherit}
+body.student-dashboard-view .m-profile .overview-week-label .week-name{font-size:.9375rem!important;font-weight:800!important;line-height:1.15!important;color:#1B1D22!important}
+body.student-dashboard-view .m-profile .overview-week-label .week-dates{font-size:.6875rem!important;font-weight:400!important;line-height:1.15!important;color:#64748b!important}
+}</style>
+<style id="m-prof-fix7">@media(max-width:780px){body.student-dashboard-view .student-workspace>.m-stick{padding-bottom:12px!important}}</style>
+<style id="sb-autohide">
+*{scrollbar-width:thin;scrollbar-color:transparent transparent}
+*:hover{scrollbar-color:#cbd0d8 transparent}
+*::-webkit-scrollbar{width:8px;height:8px;background:transparent}
+*::-webkit-scrollbar-track{background:transparent}
+*::-webkit-scrollbar-thumb{background:transparent;border-radius:8px}
+*:hover::-webkit-scrollbar-thumb{background:#cbd0d8}
+</style>
+<style id="m-hide-wk">@media(max-width:780px){body.student-dashboard-view .student-week-only-date{display:none!important}}</style>
+<style id="att-css">
+.profile-att{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;background:#E6F6EC;color:#157347;font-size:.75rem;font-weight:700}
+.att-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.att-strip>div{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid #E4E6EA;border-radius:12px;background:#fff}
+.att-strip b{font-size:1.125rem;font-weight:800;color:#1B1D22;line-height:1.1}.att-strip b.pos{color:#157347}.att-strip b.neg{color:#be123c}
+.att-strip span{font-size:.6875rem;color:#6B7280}
+.hr-tags{display:flex;align-items:center;justify-content:flex-end;gap:6px}
+@media(max-width:600px){.student-main .student-history-row>.hr-tags{grid-column:2;grid-row:2;justify-self:end}}
+</style>
+<style id="flat-rows">
+.student-main .row,.student-workspace .row{background:transparent!important;border:0!important;border-bottom:1px solid #E4E6EA!important;border-radius:0!important;padding:10px 0!important;box-shadow:none!important}
+.student-main .space-y-2>.row:last-child,.student-main .student-library-list>.row:last-child{border-bottom:0!important}
+.student-main a.row:hover{background:transparent!important}.student-main a.row:hover span{text-decoration:underline;text-underline-offset:4px}
+</style>
+<style id="sub-pill">
+.student-main .student-library-week>h3,.student-main .student-week-only-head>h2,.student-main .student-week-preview-head>h2{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;margin:0 0 8px;border-radius:999px;background:#F4F5F7;color:#1B1D22;font-size:.8125rem;font-weight:700;line-height:1}
+.student-main .student-library-week>h3 span{font-weight:500;color:#6B7280;margin-left:4px}
+.student-main .student-week-only-head>h2 svg,.student-main .student-week-preview-head>h2 svg{width:15px;height:15px}
+</style>
+<style id="no-card-hl">
+body .student-overview-highlight .g-week-sched,body .student-overview-highlight .g-prog,body .student-overview-highlight .g-tuition,body .student-overview-top .card,body .student-overview-view .card{border-top:1px solid #E4E6EA!important;border-left:1px solid #E4E6EA!important}
+</style>
+<style id="sub-pill2">
+.student-main .g-asg>h2,.student-main .g-mat>h2{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;margin:0 0 10px;border-radius:999px;background:#F4F5F7;color:#1B1D22;font-size:.8125rem;font-weight:700;line-height:1}
+.student-main .g-asg>h2 svg,.student-main .g-mat>h2 svg{width:15px;height:15px}
+</style>
+<style id="sub-pill3">
+.student-main .g-hist>h2,.student-main .g-tuition-history>h2{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;margin:0 0 10px;border-radius:999px;background:#F4F5F7;color:#1B1D22;font-size:.8125rem;font-weight:700;line-height:1}
+.student-main .g-hist>h2 svg,.student-main .g-tuition-history>h2 svg{width:15px;height:15px}
+</style>
+<style id="hl-sync">
+.student-overview-highlight>.card{display:flex!important;flex-direction:column;padding:18px 20px!important}
+.student-overview-highlight .week-calendar-head,.student-overview-highlight .tuition-head,.student-overview-highlight .prog-head{display:flex!important;flex-wrap:nowrap!important;align-items:center!important;justify-content:space-between!important;gap:10px;height:32px;min-height:32px;margin:0 0 14px!important}
+.student-overview-highlight .week-calendar-title,.student-overview-highlight .tuition-head h2,.student-overview-highlight .prog-head h2{display:inline-flex!important;align-items:center;gap:6px;flex:0 0 auto!important;height:32px;padding:0 12px!important;margin:0!important;border-radius:999px;background:#F4F5F7;color:#1B1D22;font-size:.875rem!important;font-weight:700!important;line-height:1;width:auto!important;overflow:visible!important}
+.student-overview-highlight .week-calendar-title svg,.student-overview-highlight .tuition-head h2 svg,.student-overview-highlight .prog-head h2 svg{width:15px!important;height:15px!important;padding:0!important;background:transparent!important;border-radius:0!important;color:#1B1D22!important}
+.student-overview-highlight .prog-head h2>span,.student-overview-highlight .prog-head h2 svg{background:transparent!important}
+.student-overview-highlight .week-calendar-range,.student-overview-highlight #tuition-tag .tag,.student-overview-highlight .prog-pill{display:inline-flex;align-items:center;height:28px;padding:0 10px;border-radius:999px;font-size:.75rem;font-weight:600;white-space:nowrap}
+.student-overview-highlight .week-calendar-range{padding:0;color:#6B7280}
+.student-overview-highlight .prog-pill{background:#F4F5F7;color:#1B1D22}
+.student-overview-highlight .month-detail,.student-overview-highlight #tuition-status-text,.student-overview-highlight .g-prog>*:last-child{flex:1 1 auto}
+</style>
+<style id="pill-unify">
+.student-main .student-library-week>h3,.student-main .student-week-only-head>h2,.student-main .student-week-preview-head>h2,.student-main .g-asg>h2,.student-main .g-mat>h2,.student-main .g-hist>h2,.student-main .g-tuition-history>h2,.student-overview-highlight .week-calendar-title,.student-overview-highlight .tuition-head h2,.student-overview-highlight .prog-head h2{display:inline-flex!important;align-items:center;gap:6px;height:32px!important;padding:0 12px!important;border-radius:999px!important;background:#F4F5F7!important;color:#1B1D22!important;font-size:.875rem!important;font-weight:700!important;line-height:1!important;width:auto!important}
+.student-main .student-library-week>h3 svg,.student-main .student-week-only-head>h2 svg,.student-main .student-week-preview-head>h2 svg,.student-main .g-asg>h2 svg,.student-main .g-mat>h2 svg,.student-main .g-hist>h2 svg,.student-main .g-tuition-history>h2 svg,.student-overview-highlight .week-calendar-title svg,.student-overview-highlight .tuition-head h2 svg,.student-overview-highlight .prog-head h2 svg{width:15px!important;height:15px!important;flex:none;padding:0!important;background:transparent!important;border-radius:0!important;color:#1B1D22!important}
+</style>
+<style id="pill-fit">.student-main .g-asg>h2,.student-main .g-mat>h2,.student-main .g-hist>h2,.student-main .g-tuition-history>h2,.student-main .student-library-week>h3,.student-main .student-week-only-head>h2,.student-main .student-week-preview-head>h2{align-self:flex-start!important;justify-self:start!important;width:fit-content!important;max-width:100%!important;flex:0 0 auto!important}</style>
+<style id="stat-like-avatar">
+.student-overview-top .g-info .stat{padding:0!important;gap:16px!important;overflow:hidden;align-items:stretch!important;border-radius:17px!important}
+.student-overview-top .g-info .stat>svg{flex:0 0 36%!important;width:36%!important;height:auto!important;min-height:78px;align-self:stretch;box-sizing:border-box;padding:22px 14px!important;border-radius:0!important;background:#F4F5F7!important;color:#1B1D22!important;stroke-width:1.7!important}
+.student-overview-top .g-info .stat>div{align-self:center;padding:10px 12px 10px 0;min-width:0}
+.student-overview-top .g-info .stat.s0>svg,.student-overview-top .g-info .stat.s1>svg,.student-overview-top .g-info .stat.s2>svg,.student-overview-top .g-info .stat.s3>svg{background:#F4F5F7!important;color:#1B1D22!important}
+</style>
+<style id="stat-compact">
+.student-overview-top .g-info .stat>svg{flex:0 0 76px!important;width:76px!important;padding:0 24px!important;stroke-width:1.9!important}
+.student-overview-top .g-info .stat.s0>svg{background:#E6F6EC!important;color:#157347!important}
+.student-overview-top .g-info .stat.s1>svg{background:#FDECEF!important;color:#be123c!important}
+.student-overview-top .g-info .stat.s2>svg{background:#FFF1DC!important;color:#9A5B00!important}
+.student-overview-top .g-info .stat.s3>svg{background:#ECEAFB!important;color:#5b3fc4!important}
+</style>
+<style id="rail-compact">@media(min-width:781px){
+.student-rail,.student-shell-inner-tabs .student-rail{overflow:hidden!important;justify-content:flex-start!important;gap:8px!important;padding:12px!important}
+.student-rail>*{flex:0 0 auto!important;margin:0!important}
+.student-shell-inner-tabs .student-rail .g-week-sched,.student-shell-inner-tabs .student-rail .g-sched,.student-shell-inner-tabs .student-rail .g-tuition,.student-shell-inner-tabs .student-rail .g-info,.student-shell-inner-tabs .student-rail .g-hero,.student-shell-inner-tabs .student-rail .g-hist{padding:9px 11px!important}
+.student-rail .g-hero{overflow:visible!important;gap:3px 10px!important}
+.student-rail .card h2,.student-rail .week-calendar-head{margin-bottom:5px!important}
+.student-rail .stat{min-height:0!important;padding:6px 8px!important}
+.student-rail .stat-grid{gap:5px!important}
+.student-rail .hero-btn{min-height:30px!important}
+.student-rail .month-detail{margin-top:5px!important;padding-top:5px!important}
+}
+@media(min-width:781px) and (max-height:820px){.student-rail .profile-card{padding:8px 10px!important}.student-rail .profile-avatar{transform:none}.student-rail .stat span{font-size:.65rem}.student-rail .month-detail{display:none!important}}
+</style>
+<style id="th-tag-align">@media(min-width:781px){.tuition-history-row>.tag{align-self:end!important;margin-bottom:-3px;justify-self:end}}</style>
+<style id="rail-tuition-grid">.student-rail #student-tuition{display:grid!important;grid-template-columns:minmax(0,1fr) auto;column-gap:10px;row-gap:6px;align-items:center}
+.student-rail #student-tuition .tuition-head,.student-rail #student-tuition #tuition-status-text,.student-rail #student-tuition .tuition-amts.compact{display:contents!important}
+.student-rail #student-tuition .tuition-head h2{grid-column:1;grid-row:1;margin:0!important}
+.student-rail #student-tuition #tuition-tag{grid-column:1;grid-row:2;justify-self:start;margin-left:42px}
+.student-rail #student-tuition .tuition-amts.compact b{grid-column:2;grid-row:1;justify-self:end;margin:0;font-size:1rem}
+.student-rail #student-tuition .ta-date{grid-column:2;grid-row:2;justify-self:end;font-size:.75rem;color:#818999}</style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
   <header class="bg-white border-b border-slate-200 sticky top-0 z-30">
@@ -1145,8 +1278,10 @@ a.t-open:hover span{text-decoration:underline}
 
       const prog = d.program || 'gs', PNAME = { ielts: 'IE', toeic: 'TO', ac12: 'AC12', gs: 'GS', comm: 'GT' };
       const titleCaseName = value => String(value || '').toLocaleLowerCase('vi').replace(/(^|\s)(\p{L})/gu, (_, space, letter) => space + letter.toLocaleUpperCase('vi'));
+      const attP = sess.filter(x => x.attendance === 'present' || x.attendance === 'late').length, attA = sess.filter(x => x.attendance === 'absent').length, attRate = (attP + attA) ? Math.round(attP * 100 / (attP + attA)) : null;
+      const attTag = x => x.attendance === 'present' ? '<span class="tag bg-emerald-50 text-emerald-700 inline-flex items-center gap-1"><i data-lucide="check" class="w-3.5 h-3.5"></i><span>Có mặt</span></span>' : x.attendance === 'late' ? '<span class="tag bg-amber-50 text-amber-700 inline-flex items-center gap-1"><i data-lucide="clock" class="w-3.5 h-3.5"></i><span>Trễ</span></span>' : x.attendance === 'absent' ? '<span class="tag bg-rose-50 text-rose-700 inline-flex items-center gap-1"><i data-lucide="x" class="w-3.5 h-3.5"></i><span>Vắng</span></span>' : '';
       const miniProfile = `<div class="m-profile"><span class="m-av" aria-hidden="true"><i data-lucide="user-round"></i></span><span class="m-pi"><b>${esc(titleCaseName(d.student_name))}</b><span><em>${esc(cls.name)}</em><i>${esc(S.code)}</i></span></span></div>`;
-      const profileHtml = `<section class="card profile-card g-profile"><div class="profile-avatar" aria-hidden="true"><i data-lucide="user-round"></i></div><div class="profile-info"><h2 class="profile-name" data-student-name="${esc(titleCaseName(d.student_name))}">${esc(d.student_name)}</h2><div class="profile-meta"><span class="profile-class">${esc(cls.name)}</span><span class="profile-code">${esc(S.code)}</span></div></div></section>`;
+      const profileHtml = `<section class="card profile-card g-profile"><div class="profile-avatar" aria-hidden="true"><i data-lucide="user-round"></i></div><div class="profile-info"><h2 class="profile-name" data-student-name="${esc(titleCaseName(d.student_name))}">${esc(d.student_name)}</h2><div class="profile-meta"><span class="profile-class">${esc(cls.name)}</span><span class="profile-code">${esc(S.code)}</span>${attRate !== null ? `<span class="profile-att">Chuyên cần ${attRate}%${attA ? ` · Vắng ${attA}` : ''}</span>` : ''}</div></div></section>`;
       const heroHtml = `<section class="card hero-card g-hero" style="color:#fff">
         <div class="hero-lab"><i data-lucide="calendar-days" class="w-4 h-4"></i>Buổi học tiếp theo</div>
         <div class="hero-next-time"><div class="text-xl font-extrabold">${next ? fmtDay(next.date) : 'Chưa có lịch'}</div>
@@ -1172,7 +1307,7 @@ a.t-open:hover span{text-decoration:underline}
       Object.values(sessionsByDay).forEach(a => a.sort((x, y) => x.start.localeCompare(y.start)));
       const calendarDays = Array.from({ length: 42 }, (_, i) => { const date = new Date(gridStart); date.setDate(gridStart.getDate() + i); const key = ymd(date), daySessions = sessionsByDay[key] || [], inMonth = date.getMonth() === calMonth - 1, selected = key === S.calendarDate, today = key === todayKey; const tip = daySessions.map(s => `${s.start}–${s.end}${s.lesson ? ' · ' + s.lesson : ''}`).join(' | '); return `<button type="button" class="month-day${inMonth ? '' : ' outside'}${daySessions.length ? ' has-session' : ''}${today ? ' today' : ''}${selected ? ' selected' : ''}" data-calendar-day="${key}" ${!inMonth ? 'disabled' : ''} aria-label="${key}${daySessions.length ? ', có buổi học' : ''}" title="${esc(tip || key)}">${date.getDate()}</button>`; }).join('');
       const selectedSessions = sessionsByDay[S.calendarDate] || [];
-      const sessionDetails = daySessions => daySessions.length ? daySessions.map(s => { const st = STATUS[s.status] || STATUS.planned; const lesson = String(s.lesson || '').trim(); return `<div class="month-session"><div class="month-session-top"><strong class="text-xs text-slate-700">${s.start} – ${s.end}</strong>${lesson ? `<span class="text-xs text-slate-600" style="overflow-wrap:anywhere">${esc(lesson)}</span>` : ''}</div><div class="month-session-meta"><span class="tag ${st[1]}">${st[0]}</span>${s.attendance === 'absent' ? '<span class="tag bg-rose-50 text-rose-700">Vắng</span>' : ''}${s.mode === 'online' ? (joinOpen(s) ? joinBtn('row') : '<span class="tag bg-sky-50 text-sky-700 inline-flex items-center gap-1"><i data-lucide="video" class="w-3.5 h-3.5"></i><span>Meet</span></span>') : '<span class="tag bg-slate-100 text-slate-600">Trực tiếp</span>'}</div></div>`; }).join('') : '<div class="text-sm text-slate-500">Ngày này không có buổi học.</div>';
+      const sessionDetails = daySessions => daySessions.length ? daySessions.map(s => { const st = STATUS[s.status] || STATUS.planned; const lesson = String(s.lesson || '').trim(); return `<div class="month-session"><div class="month-session-top"><strong class="text-xs text-slate-700">${s.start} – ${s.end}</strong>${lesson ? `<span class="text-xs text-slate-600" style="overflow-wrap:anywhere">${esc(lesson)}</span>` : ''}</div><div class="month-session-meta"><span class="tag ${st[1]}">${st[0]}</span>${attTag(s)}${s.mode === 'online' ? (joinOpen(s) ? joinBtn('row') : '<span class="tag bg-sky-50 text-sky-700 inline-flex items-center gap-1"><i data-lucide="video" class="w-3.5 h-3.5"></i><span>Meet</span></span>') : '<span class="tag bg-slate-100 text-slate-600">Trực tiếp</span>'}</div></div>`; }).join('') : '<div class="text-sm text-slate-500">Ngày này không có buổi học.</div>';
       const monthDetails = sessionDetails(selectedSessions);
       const schedHtml = `<section class="card g-sched" id="student-calendar"><div class="month-head"><div class="month-caption">Lịch học tháng</div><div class="month-controls"><button type="button" class="month-nav" data-calendar-step="-1" aria-label="Tháng trước"><i data-lucide="chevron-left" class="w-5 h-5"></i></button><span class="month-title">${new Intl.DateTimeFormat('vi-VN', { month: 'long', year: 'numeric' }).format(firstDay)}</span><button type="button" class="month-nav" data-calendar-step="1" aria-label="Tháng sau"><i data-lucide="chevron-right" class="w-5 h-5"></i></button></div></div><div class="month-calendar" role="grid" aria-label="Lịch học tháng ${pad(calMonth)}/${calYear}">${['T2','T3','T4','T5','T6','T7','CN'].map(x => `<div class="month-weekday" role="columnheader">${x}</div>`).join('')}${calendarDays}</div><div class="month-detail"><div class="text-xs font-bold text-slate-700 mb-2">${fmtDay(S.calendarDate)}</div>${monthDetails}</div></section>`;
       const weekStartKey = mondayKey(now), weekStartDate = dOf(weekStartKey), weekDays = Array.from({length:7}, (_, i) => { const date = new Date(weekStartDate); date.setDate(date.getDate() + i); return ymd(date); });
@@ -1186,10 +1321,11 @@ a.t-open:hover span{text-decoration:underline}
       const asg = d.assignments || [];
       const asgRow = a => {
         const due = a.due_at ? new Date(a.due_at) : null, late = due && due < now;
-        const state = a.attempts ? `Đã làm ${a.attempts} lần${a.first_score != null ? ' · Điểm lần đầu: ' + a.first_score + '/' + (a.first_total || a.question_count) : ''}` : 'Chưa làm';
+        const partHint = (a.kind === 'homework' && a.parts_total > 1) ? ` · Đã nộp ${a.parts_done || 0}/${a.parts_total} phần${(a.parts_done || 0) < a.parts_total ? ' · Hoàn thành đủ các phần để quy đổi band' : ' · Đã đủ phần để quy đổi band'}` : '';
+        const state = (a.attempts ? `Đã làm ${a.attempts} lần${a.first_score != null ? ' · Điểm lần đầu: ' + a.first_score + '/' + (a.first_total || a.question_count) : ''}` : 'Chưa làm') + partHint;
         return `<div class="row"><div style="flex:1 1 200px;min-width:0"><div class="font-bold text-slate-800" style="overflow-wrap:anywhere">${esc(a.name)}</div>
           <div class="text-xs text-slate-500">${a.question_count ? a.question_count + ' câu · ' : ''}${state}${due ? ' · Hạn ' + pad(due.getDate()) + '/' + pad(due.getMonth() + 1) + (late ? ' (đã quá hạn)' : '') : ''}</div></div>
-          ${a.page_path ? `<a class="icon-btn" href="${esc(LMS.withStudent(new URL(a.page_path, location.href).href, S.code))}" aria-label="${a.attempts ? 'Làm lại' : 'Làm bài'}" title="${a.attempts ? 'Làm lại' : 'Làm bài'}"><i data-lucide="external-link" class="w-4 h-4"></i></a>` : `<a class="icon-btn" href="#${encodeURIComponent(S.code)}/${encodeURIComponent(a.code)}" aria-label="${a.attempts ? 'Làm lại' : 'Làm bài'}" title="${a.attempts ? 'Làm lại' : 'Làm bài'}"><i data-lucide="external-link" class="w-4 h-4"></i></a>`}</div>`;
+          ${dayTag(a.session_dates)}${a.page_path ? `<a class="icon-btn" href="${esc(LMS.withStudent(new URL(a.page_path, location.href).href, S.code))}" aria-label="${a.attempts ? 'Làm lại' : 'Làm bài'}" title="${a.attempts ? 'Làm lại' : 'Làm bài'}"><i data-lucide="external-link" class="w-4 h-4"></i></a>` : `<a class="icon-btn" href="#${encodeURIComponent(S.code)}/${encodeURIComponent(a.code)}" aria-label="${a.attempts ? 'Làm lại' : 'Làm bài'}" title="${a.attempts ? 'Làm lại' : 'Làm bài'}"><i data-lucide="external-link" class="w-4 h-4"></i></a>`}</div>`;
       };
       const wkOf = a => a.week_start ? mondayKey(dOf(a.week_start)) : mondayKey(now);
       const materialMap = {};
@@ -1205,7 +1341,7 @@ a.t-open:hover span{text-decoration:underline}
       if (!materialWeeks.includes(S.materialWeek)) S.materialWeek = currentMaterialWeek;
       const weekOption = k => { const s = dOf(k), e = new Date(s); e.setDate(e.getDate() + 6); const n = 1 + Math.round((new Date(s.getFullYear(), s.getMonth(), s.getDate()) - BASE_MONDAY) / (7 * 864e5)); return `<span class="week-name">Tuần ${pad(n)}</span><span class="week-dates">${pad(s.getDate())}.${pad(s.getMonth()+1)} – ${pad(e.getDate())}.${pad(e.getMonth()+1)}.${e.getFullYear()}</span>`; };
       const materialWeekIndex = materialWeeks.indexOf(S.materialWeek);
-      const overviewWeekToolbar = `<div class="overview-week-controls" role="group" aria-label="Chọn tuần tổng quan"><button type="button" class="icon-btn" data-material-week-step="1" aria-label="Tuần trước" ${materialWeekIndex < 0 || materialWeekIndex >= materialWeeks.length - 1 ? 'disabled' : ''}><i data-lucide="chevron-left" class="w-4 h-4"></i></button><span class="overview-week-label">${weekOption(S.materialWeek)}</span><button type="button" class="icon-btn" data-material-week-step="-1" aria-label="Tuần sau" ${materialWeekIndex <= 0 ? 'disabled' : ''}><i data-lucide="chevron-right" class="w-4 h-4"></i></button></div>`;
+      const overviewWeekToolbar = `<div class="overview-week-controls" role="group" aria-label="Chọn tuần tổng quan"><button type="button" class="icon-btn" data-material-week-step="1" aria-label="Tuần trước" ${materialWeekIndex < 0 || materialWeekIndex >= materialWeeks.length - 1 ? 'disabled' : ''}><i data-lucide="chevron-left" class="w-4 h-4"></i></button><span class="overview-week-label">${weekOption(S.materialWeek)}</span><button type="button" class="icon-btn" data-material-week-step="-1" aria-label="Tuần sau" ${materialWeekIndex <= 0 ? 'disabled' : ''}><i data-lucide="chevron-right" class="w-4 h-4"></i></button><button type="button" class="t-thisweek${S.materialWeek === currentMaterialWeek ? ' on' : ''}" data-material-week-current aria-label="Về tuần hiện tại" title="Tuần hiện tại">Tuần này</button></div>`;
       const materialsToolbar = `<div class="week-materials-toolbar"><div class="materials-week-nav" role="group" aria-label="Chọn tuần học liệu"><button type="button" class="icon-btn" data-material-week-step="1" aria-label="Tuần trước" ${materialWeekIndex < 0 || materialWeekIndex >= materialWeeks.length - 1 ? 'disabled' : ''}><i data-lucide="chevron-left" class="w-4 h-4"></i></button><div class="materials-week-current"><div class="materials-week-label">${weekOption(S.materialWeek)}</div></div><button type="button" class="icon-btn" data-material-week-step="-1" aria-label="Tuần sau" ${materialWeekIndex <= 0 ? 'disabled' : ''}><i data-lucide="chevron-right" class="w-4 h-4"></i></button></div><button type="button" class="materials-week-now" data-material-week-current>Tuần hiện tại</button></div>`;
       const byKind = (kind, label, icon, title, ic, empty, allWeeks = false) => {
         const isLesson = kind === 'lesson', linkKey = isLesson ? 'lessons' : 'homeworks', asgKey = isLesson ? 'lessonAsg' : 'homeworkAsg';
@@ -1217,7 +1353,7 @@ a.t-open:hover span{text-decoration:underline}
             if (!links.length && !assignments.length) return '';
             const start = dOf(k), end = new Date(start); end.setDate(end.getDate() + 6);
             const weekNo = 1 + Math.round((new Date(start.getFullYear(), start.getMonth(), start.getDate()) - BASE_MONDAY) / (7 * 864e5));
-            return `<div class="student-library-week"><h3>Tuần ${pad(weekNo)} <span>${pad(start.getDate())}.${pad(start.getMonth()+1)} – ${pad(end.getDate())}.${pad(end.getMonth()+1)}.${end.getFullYear()}</span></h3><div class="space-y-2">${assignments.map(asgRow).join('')}${linksBlock(links, label, isLesson ? 'presentation' : 'file-check-2')}</div></div>`;
+            return `<div class="student-library-week"><h3><i data-lucide="calendar-days"></i>Tuần ${pad(weekNo)} <span>${pad(start.getDate())}.${pad(start.getMonth()+1)} – ${pad(end.getDate())}.${pad(end.getMonth()+1)}.${end.getFullYear()}</span></h3><div class="space-y-2">${assignments.map(asgRow).join('')}${linksBlock(links, label, isLesson ? 'presentation' : 'file-check-2')}</div></div>`;
           }).filter(Boolean);
           content = groups.join('') || `<div class="text-sm text-slate-500">${empty}</div>`;
         } else {
@@ -1233,8 +1369,8 @@ a.t-open:hover span{text-decoration:underline}
         }
         return `<section class="card ${ic}" id="${isLesson ? 'student-lessons' : 'student-homework'}"><h2><i data-lucide="${icon}"></i>${title}</h2><div class="student-library-list">${content}</div></section>`;
       };
-      const hwHtml = byKind('homework', 'Bài tập', 'pencil-line', 'Bài tập về nhà', 'g-asg', 'Chưa có bài tập về nhà.', true);
-      const matHtml = byKind('lesson', 'Bài học', 'book-open', 'Bài học trên lớp', 'g-mat', 'Chưa có bài học trên lớp.', true);
+      const hwHtml = byKind('homework', 'Bài tập', 'pencil-line', 'Kho bài tập', 'g-asg', 'Chưa có bài tập về nhà.', true);
+      const matHtml = byKind('lesson', 'Bài học', 'book-open', 'Kho bài học', 'g-mat', 'Chưa có bài học trên lớp.', true);
       const weekOnlyPreview = (kind, label, icon, ic) => {
         const isLesson = kind === 'lesson', row = materialMap[currentMaterialWeek] || { lessons: [], homeworks: [], lessonAsg: [], homeworkAsg: [] };
         const links = (row[isLesson ? 'lessons' : 'homeworks'] || []).filter(x => x && (x.url || x.title)), assignments = row[isLesson ? 'lessonAsg' : 'homeworkAsg'] || [];
@@ -1277,11 +1413,11 @@ a.t-open:hover span{text-decoration:underline}
       const progHtml = `<section class="card g-prog" id="student-overview"><div class="prog-head"><h2><i data-lucide="bar-chart-3"></i>Tiến độ học tập</h2><span class="prog-pill">Chương trình: <b>${esc(PNAME[prog] || '')}</b></span></div>${progBody}</section>`;
 
       /* Lịch sử buổi học: thu gọn mặc định, buổi mới nhất trước, không có buổi tương lai */
-      const historyRows = past.slice(0, S.historyLimit).map(s => { const st = s.attendance === 'absent' ? ['Vắng', 'bg-rose-50 text-rose-700'] : (STATUS[s.status] || STATUS.planned);
-        return `<div class="hrow student-history-row">${dayCols(s.date)}<span class="text-xs font-semibold text-sky-700">${s.start} – ${s.end}</span><span class="tag ${st[1]}">${st[0]}</span></div>`; }).join('');
-      const histHtml = `<section class="card g-hist" id="student-history"><h2><i data-lucide="history"></i>Lịch sử buổi học</h2><div class="text-sm text-slate-500 mb-3">Đã học ${done.length} buổi · Vắng ${absent} buổi</div><div class="student-history-list">${historyRows || '<div class="text-sm text-slate-500">Chưa có buổi học nào.</div>'}</div>${past.length > S.historyLimit ? `<div class="student-history-more"><button type="button" data-history-more>Xem thêm ${Math.min(10, past.length - S.historyLimit)} buổi</button></div>` : ''}</section>`;
+      const historyRows = past.slice(0, S.historyLimit).map(s => { const st = STATUS[s.status] || STATUS.planned;
+        return `<div class="hrow student-history-row">${dayCols(s.date)}<span class="text-xs font-semibold text-sky-700">${s.start} – ${s.end}</span><span class="hr-tags"><span class="tag ${st[1]}">${st[0]}</span>${attTag(s)}</span></div>`; }).join('');
+      const histHtml = `<section class="card g-hist" id="student-history"><h2><i data-lucide="history"></i>Lịch sử buổi học</h2><div class="att-strip"><div><b>${done.length}</b><span>Đã học</span></div><div><b class="pos">${attP}</b><span>Có mặt</span></div><div><b class="${attA ? 'neg' : ''}">${attA}</b><span>Vắng</span></div><div><b>${attRate !== null ? attRate + '%' : '–'}</b><span>Chuyên cần</span></div></div><div class="student-history-list">${historyRows || '<div class="text-sm text-slate-500">Chưa có buổi học nào.</div>'}</div>${past.length > S.historyLimit ? `<div class="student-history-more"><button type="button" data-history-more>Xem thêm ${Math.min(10, past.length - S.historyLimit)} buổi</button></div>` : ''}</section>`;
 
-      const tuitionHtml = `<section class="card g-tuition" id="student-tuition"><div class="tuition-head"><h2 class="font-bold flex items-center gap-2">Học phí T${pad(now.getMonth()+1)}/${now.getFullYear()}</h2><span id="tuition-tag"></span></div><div class="text-sm text-slate-500 mt-2" id="tuition-status-text">Đang tải tình trạng…</div></section>`;
+      const tuitionHtml = `<section class="card g-tuition" id="student-tuition"><div class="tuition-head"><h2 class="font-bold flex items-center gap-2"><i data-lucide="wallet"></i>Học phí tháng ${pad(now.getMonth()+1)}/${now.getFullYear()}</h2><span id="tuition-tag"></span></div><div class="text-sm text-slate-500 mt-2" id="tuition-status-text">Đang tải tình trạng…</div></section>`;
       const tuitionHistoryContent = () => S.tuitionHistory === null
         ? '<div class="text-sm text-slate-500">Đang tải lịch sử học phí…</div>'
         : S.tuitionHistory.length
@@ -1301,7 +1437,7 @@ a.t-open:hover span{text-decoration:underline}
       const navItem = (key, label, icon) => `<button type="button" class="${view === key ? 'active' : ''}" data-student-view="${key}" ${view === key ? 'aria-current="page"' : ''}>${icon ? `<i data-lucide="${icon}"></i>` : ''}<span>${label}</span></button>`;
       const isOverview = view === 'overview';
       const railHtml = `${profileHtml}${weekSchedHtml}${heroHtml}${tuitionHtml}${infoHtml}`;
-      $('app').innerHTML = `<div class="student-shell ${isOverview ? '' : 'student-shell-inner-tabs'}"><div class="student-welcome"><div class="student-welcome-left"><a class="logo-home" href="#" data-student-home aria-label="Về trang tổng quan"><img class="student-welcome-logo" src="logo-wordmark-gold-navy.png" alt="gblearninghub"></a><span class="student-welcome-brand-divider" aria-hidden="true"></span></div><div class="student-welcome-title"><h1>${viewTitle}</h1><p>Khu vực học tập của bạn</p></div><div class="student-welcome-right"><div class="student-welcome-actions">${isOverview ? overviewWeekToolbar : ''}</div><div class="student-welcome-tools"></div></div></div><aside class="student-sidebar" aria-label="Điều hướng học viên"><div class="student-brand"><a class="logo-home" href="#" data-student-home aria-label="Về trang tổng quan"><img src="logo-wordmark-gold-navy.png" alt="gblearninghub"></a></div><nav class="student-nav">${navItem('overview','Tổng quan','layout-dashboard')}${navItem('lessons','Bài học','book-open')}${navItem('homework','Bài tập','pencil-line')}${navItem('calendar','Lịch học','calendar-days')}${navItem('tuition','Học phí','wallet')}${navItem('history','Lịch sử','history')}</nav></aside><div class="student-workspace ${isOverview ? 'student-workspace-overview' : ''}"><div class="m-stick">${miniProfile}</div><section class="student-main ${isOverview ? 'student-overview-view' : ''}" aria-label="Nội dung học tập"><div class="student-main-content ${isOverview ? 'student-overview-content' : ''} ${view === 'lessons' || view === 'homework' ? 'student-library-content' : ''}">${isOverview ? `<div class="student-overview-top"><div class="m-week">${overviewWeekToolbar}</div>${profileHtml}${infoHtml}${heroHtml}</div><div class="student-overview-highlight">${weekSchedHtml}${tuitionHtml}${progHtml}</div>` : ''}<div class="student-main-section ${view === 'lessons' || view === 'homework' ? 'student-library-view' : ''}">${views[view]}</div></div></section>${isOverview ? '' : `<aside class="student-rail" aria-label="Hồ sơ và thông tin học tập">${railHtml}</aside>`}</div></div>`; icons();
+      $('app').innerHTML = `<div class="student-shell ${isOverview ? '' : 'student-shell-inner-tabs'}"><div class="student-welcome"><div class="student-welcome-left"><a class="logo-home" href="#" data-student-home aria-label="Về trang tổng quan"><img class="student-welcome-logo" src="logo-wordmark.png" alt="gblearninghub"></a><span class="student-welcome-brand-divider" aria-hidden="true"></span></div><div class="student-welcome-title"><h1>${viewTitle}</h1><p>Khu vực học tập của bạn</p></div><div class="student-welcome-right"><div class="student-welcome-actions">${isOverview ? overviewWeekToolbar : ''}</div><div class="student-welcome-tools"></div></div></div><aside class="student-sidebar" aria-label="Điều hướng học viên"><div class="student-brand"><a class="logo-home" href="#" data-student-home aria-label="Về trang tổng quan"><img src="logo-wordmark.png" alt="gblearninghub"></a></div><nav class="student-nav">${navItem('overview','Tổng quan','layout-dashboard')}${navItem('lessons','Bài học','book-open')}${navItem('homework','Bài tập','pencil-line')}${navItem('calendar','Lịch học','calendar-days')}${navItem('tuition','Học phí','wallet')}${navItem('history','Lịch sử','history')}</nav></aside><div class="student-workspace ${isOverview ? 'student-workspace-overview' : ''}"><div class="m-stick">${miniProfile.replace(/<\/div>$/, (isOverview ? `<div class="m-week">${overviewWeekToolbar}</div>` : '') + '</div>')}</div><section class="student-main ${isOverview ? 'student-overview-view' : ''}" aria-label="Nội dung học tập"><div class="student-main-content ${isOverview ? 'student-overview-content' : ''} ${view === 'lessons' || view === 'homework' ? 'student-library-content' : ''}">${isOverview ? `<div class="student-overview-top">${profileHtml}${infoHtml}${heroHtml}</div><div class="student-overview-highlight">${weekSchedHtml}${tuitionHtml}${progHtml}</div>` : ''}<div class="student-main-section ${view === 'lessons' || view === 'homework' ? 'student-library-view' : ''}">${views[view]}</div></div></section>${isOverview ? '' : `<aside class="student-rail" aria-label="Hồ sơ và thông tin học tập">${railHtml}</aside>`}</div></div>`; icons();
       const tools = document.querySelector('.student-welcome-tools');
       if (tools) ['btn-home','btn-mode','btn-theme'].forEach(id => { const el = $(id); if (el) tools.appendChild(el); });
       { const th = $('btn-theme'); if (th) th.hidden = T.on; }
@@ -1309,9 +1445,9 @@ a.t-open:hover span{text-decoration:underline}
       const amtLines = (old, fee, paidNow, rest, date) => {
         if (!(Number(fee) > 0 || Number(old) > 0)) return '';
         const compact = !!document.querySelector('.student-rail #student-tuition');
-        if (compact) return Number(rest) > 0 ? `<div class="tuition-amts compact"><span>Chưa thanh toán</span><b class="neg">${vnd(rest)}</b></div>` : '';
+        if (compact) { const owe = Number(rest) > 0; return `<div class="tuition-amts compact"><b class="${owe ? 'neg' : 'pos'}">${vnd(owe ? rest : paidNow)}</b>${!owe && date ? `<span class="ta-date">${esc(date)}</span>` : ''}</div>`; }
         const pct = Number(fee) > 0 ? Math.min(100, Math.round(Number(paidNow) / Number(fee) * 100)) : 0;
-        return `<div class="tuition-amts"><span>Tháng cũ</span><b class="${Number(old) > 0 ? 'neg' : ''}">${vnd(old)}</b><span>Tháng này</span><b>${vnd(fee)}</b><span>Đã đóng</span><b class="${Number(paidNow) > 0 ? 'pos' : ''}">${vnd(paidNow)}</b><span>Còn lại</span><b class="${Number(rest) > 0 ? 'neg' : 'pos'}">${vnd(rest)}</b></div><div class="tuition-bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div><div class="tuition-bar-cap"><span>Đã đóng ${pct}% học phí tháng này</span>${date ? `<span>Ngày đóng: ${esc(date)}</span>` : ''}</div>`;
+        return `<div class="tuition-amts"><span>Tháng cũ</span><b class="${Number(old) > 0 ? 'neg' : ''}">${vnd(old)}</b><span>Tháng này</span><b>${vnd(fee)}</b><span>Đã đóng</span><b class="${Number(paidNow) > 0 ? 'pos' : ''}">${vnd(paidNow)}</b><span>Còn lại</span><b class="${Number(rest) > 0 ? 'neg' : 'pos'}">${vnd(rest)}</b></div><div class="tuition-bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div>${date ? `<div class="tuition-bar-cap"><span>Ngày đóng: ${esc(date)}</span></div>` : ''}`;
       };
       const firstM = sess.map(x => String(x.date || '').slice(0,7)).filter(m => /^\d{4}-\d{2}$/.test(m) && m <= curMonth).sort()[0] || curMonth, monthsAll = [];
       for (let c = new Date(Number(firstM.slice(0,4)), Number(firstM.slice(5,7)) - 1, 1), e = new Date(now.getFullYear(), now.getMonth(), 1); c <= e && monthsAll.length < 36; c.setMonth(c.getMonth() + 1)) monthsAll.push(`${c.getFullYear()}-${pad(c.getMonth()+1)}`);
@@ -1627,8 +1763,8 @@ a.t-open:hover span{text-decoration:underline}
         <section class="card"><div class="week-calendar-head"><span class="week-calendar-title"><i data-lucide="calendar-days"></i>Thời khóa biểu tuần ${wk}</span><span class="week-calendar-range">${range}</span></div><div class="week-calendar" role="grid" aria-label="Chọn ngày">${cal}</div><div class="t-tt">${tt}</div></section>
         `;
       const rail = railBase + (T.pick && slots.find(g => g.key === T.pick) ? tPickCard(slots.find(g => g.key === T.pick).all) : tNextCard());
-      $('app').innerHTML = `<div class="student-shell student-shell-inner-tabs"><div class="student-welcome"><div class="student-welcome-left"><a class="logo-home" href="index.html#overview"  aria-label="Về trang tổng quan"><img class="student-welcome-logo" src="logo-wordmark-gold-navy.png" alt="gblearninghub"></a><span class="student-welcome-brand-divider" aria-hidden="true"></span></div><div class="student-welcome-title"><h1>${titles[T.view]}</h1><p>Khu vực giảng dạy</p></div><div class="student-welcome-right"><div class="student-welcome-actions">${wkCtl}</div><div class="student-welcome-tools"></div></div></div>
-        <aside class="student-sidebar" aria-label="Điều hướng giáo viên"><div class="student-brand"><a class="logo-home" href="index.html#overview"  aria-label="Về trang tổng quan"><img src="logo-wordmark-gold-navy.png" alt="gblearninghub"></a></div><nav class="student-nav">${nav('rail', 'Tổng quan', 'layout-dashboard', 'm-only')}${nav('day', 'Lịch dạy', 'calendar-days')}${nav('lessons', 'Bài học', 'presentation')}${nav('submissions', 'Bài nộp', 'inbox')}</nav></aside>
+      $('app').innerHTML = `<div class="student-shell student-shell-inner-tabs"><div class="student-welcome"><div class="student-welcome-left"><a class="logo-home" href="index.html#overview"  aria-label="Về trang tổng quan"><img class="student-welcome-logo" src="logo-wordmark.png" alt="gblearninghub"></a><span class="student-welcome-brand-divider" aria-hidden="true"></span></div><div class="student-welcome-title"><h1>${titles[T.view]}</h1><p>Khu vực giảng dạy</p></div><div class="student-welcome-right"><div class="student-welcome-actions">${wkCtl}</div><div class="student-welcome-tools"></div></div></div>
+        <aside class="student-sidebar" aria-label="Điều hướng giáo viên"><div class="student-brand"><a class="logo-home" href="index.html#overview"  aria-label="Về trang tổng quan"><img src="logo-wordmark.png" alt="gblearninghub"></a></div><nav class="student-nav">${nav('rail', 'Tổng quan', 'layout-dashboard', 'm-only')}${nav('day', 'Lịch dạy', 'calendar-days')}${nav('lessons', 'Bài học', 'presentation')}${nav('submissions', 'Bài nộp', 'inbox')}</nav></aside>
         <div class="student-workspace"><section class="student-main" aria-label="Nội dung giảng dạy"><div class="t-stick">${head}<div class="m-week">${wkCtl}</div></div><div class="student-main-content t-content">${T.view === 'rail' ? `<div class="t-rail t-rail-m">${railBase}</div>` : rest}</div></section><aside class="student-rail t-rail" aria-label="Tổng kết và lịch tuần">${rail}</aside></div></div>`;
       const tools = document.querySelector('.student-welcome-tools');
       if (tools) ['btn-home', 'btn-mode', 'btn-theme'].forEach(id => { const el = $(id); if (el) tools.appendChild(el); });

@@ -44,7 +44,7 @@
     #grid tr.dim .c-name,#grid tr.dim td.day{opacity:.55}
     .chip{display:block;width:100%;text-align:center;margin-bottom:4px;padding:6px 8px;border-radius:12px;border:1px solid var(--t-tint-2);background:var(--t-tint);color:var(--t-ink);font-size:.8125rem;font-weight:600;line-height:1.25;min-height:44px}
     .chip small{display:block;font-weight:500;color:var(--t-muted);font-size:.75rem}
-    .chip.offline{background:#e0f2fe;border-color:#bae6fd;color:#0b1f44}
+    .chip.offline{background:#e0f2fe;border-color:#bae6fd;color:#1B1D22}
     .chip.online{background:#ffedd5;border-color:#fed7aa;color:#9a3412}
     .chip.offline small,.chip.online small{color:inherit;opacity:.8}
     .chip.holiday{background:#fff;color:var(--t-muted);text-decoration:line-through}
@@ -57,7 +57,7 @@
     .day-tabs{display:none;gap:6px;overflow-x:auto;padding-bottom:4px}
     .day-tabs button{flex:1 0 auto;min-width:48px;min-height:44px;border-radius:9999px;border:1px solid var(--t-tint-2);background:#fff;color:var(--t-primary);font-weight:700;font-size:.8125rem;padding:0 10px}
     .day-tabs button[aria-pressed="true"]{background:var(--t-primary);color:#fff;border-color:var(--t-primary)}
-    .dlg{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(15,23,42,.35)}
+    .dlg{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(22,24,29,.35)}
     .dlg[hidden]{display:none}
     .dlg .card{width:min(460px,100%);max-height:calc(100dvh - 32px);overflow:auto;background:#fff;border:1px solid var(--t-border);border-radius:24px;padding:22px}
     .dlg h2{font-size:1.0625rem;font-weight:800;color:var(--t-ink);margin-bottom:12px}
@@ -66,6 +66,7 @@
     .dm-grid .pickgrid{grid-template-columns:repeat(auto-fill,minmax(112px,1fr))}
     .dm-day{min-height:44px;padding:0 12px;border-radius:12px;border:1px solid var(--t-border);background:#fff;color:var(--t-ink);font-weight:700;font-size:.8125rem;line-height:1.15}
     .dm-day small{display:block;font-weight:500;color:var(--t-muted,#64748b)}
+    .dm-day.is-off{opacity:.3;cursor:not-allowed}
     .dm-day[aria-pressed="true"]{background:var(--t-primary);border-color:var(--t-primary);color:#fff}.dm-day[aria-pressed="true"] small{color:#cbd5e1}
     @media(max-width:760px){.dm-grid{grid-template-columns:1fr;gap:0}}
     .mt-class{background:#fff;border:1px solid var(--t-border);border-radius:16px;padding:0 16px}
@@ -93,7 +94,7 @@
     .pick{min-height:44px;padding:0 14px;border-radius:9999px;border:1px solid var(--t-tint-2);background:#fff;color:var(--t-primary);font-weight:700;font-size:.8125rem}
     .pick-green{background:#dcfce7;border-color:#86efac;color:#166534}
     .pick-yellow{background:#fef9c3;border-color:#fde047;color:#854d0e}
-    .pick-blue{background:#e0f2fe;border-color:#7dd3fc;color:#0b1f44}
+    .pick-blue{background:#e0f2fe;border-color:#7dd3fc;color:#1B1D22}
     .pickgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
     .dlg label.pickrow{display:flex;align-items:center;gap:10px;min-height:44px;margin:0;padding:0 12px;border:1px solid var(--t-border);border-radius:12px;background:#fff;font-size:.9375rem;font-weight:600;cursor:pointer}
     .pickrow input{width:20px;height:20px;flex:none}
@@ -115,7 +116,7 @@
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col relative">
   <nav id="lms-nav" aria-label="Điều hướng chính">
-    <div class="nav-brand"><img src="logo-wordmark-gold-navy.png" alt="gblearninghub" style="height:24px;width:auto;max-width:100%;display:block"></div>
+    <div class="nav-brand"><img src="logo-wordmark.png" alt="gblearninghub" style="height:24px;width:auto;max-width:100%;display:block"></div>
     <a href="index.html#overview" id="nav-overview" aria-label="Tổng quan"><i data-lucide="layout-dashboard"></i><span>Tổng quan</span></a>
     <a href="index.html#schedule" id="nav-home" aria-label="Lịch tuần"><i data-lucide="calendar-days"></i><span>Lịch tuần</span></a>
     <a href="classes.html" id="nav-classes" aria-label="Lớp học"><i data-lucide="book-open-check"></i><span>Lớp học</span></a>
@@ -405,11 +406,12 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
           <div id="dm-suggest" style="margin-top:8px"></div>
         </div>
         <div class="dm-right">
-          <label>Giao cho ngày (không chọn = cả tuần)</label>
-          <div id="dm-days" class="flex flex-wrap gap-2"></div>
-          <label>Giao cho lớp (có thể bỏ trống, giao sau)</label>
+          <label>Bước 1 · Giao cho lớp (có thể bỏ trống, giao sau)</label>
           <div id="dm-quick" class="flex flex-wrap gap-2"></div>
           <div id="dm-classes" class="pickgrid" style="margin-top:10px"></div>
+          <label>Bước 2 · Giao cho ngày (không chọn = cả tuần)</label>
+          <div id="dm-days" class="flex flex-wrap gap-2"></div>
+          <p id="dm-days-hint" class="text-xs text-slate-500" style="margin-top:6px"></p>
         </div>
       </div>
       <div class="err" id="dm-err" role="alert"></div>
@@ -439,9 +441,12 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
       <input id="da-week" type="date" class="field">
       <label for="da-due">Hạn nộp</label>
       <input id="da-due" type="datetime-local" class="field">
-      <label>Giao cho lớp</label>
+      <label>Bước 1 · Giao cho lớp</label>
       <div id="da-quick" class="flex flex-wrap gap-2"></div>
       <div id="da-classes" class="pickgrid" style="margin-top:10px"></div>
+      <label>Bước 2 · Giao cho ngày (không chọn = cả tuần)</label>
+      <div id="da-days" class="flex flex-wrap gap-2"></div>
+      <p id="da-days-hint" class="text-xs text-slate-500" style="margin-top:6px"></p>
       <p class="text-xs text-slate-500" style="margin-top:8px">Lớp đã được giao sẽ được tick sẵn. Bỏ tick rồi bấm Lưu sẽ gỡ bài khỏi lớp đó (bài nộp của học sinh vẫn được giữ). Không tick lớp nào cũng được.</p>
       <div class="err" id="da-err" role="alert"></div>
       <div class="acts">
@@ -764,7 +769,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         const [r, a, ac] = await Promise.all([
           st.c.from('week_materials').select('id,week_start,kind,skill,title,url,class_ids,sort_order,session_dates').order('week_start', { ascending: false }).order('sort_order').order('id'),
           st.c.from('assignments').select('id,assignment_code,assignment_name,week_start,due_at,kind,skill,page_path').eq('is_active', true),
-          st.c.from('assignment_classes').select('assignment_id,class_id,week_start,due_at').eq('is_active', true)
+          st.c.from('assignment_classes').select('assignment_id,class_id,week_start,due_at,session_dates').eq('is_active', true)
         ]);
         if (r.error) throw r.error; if (a.error) throw a.error; if (ac.error) throw ac.error;
         st.lib = r.data || [];
@@ -773,8 +778,8 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         (ac.data || []).forEach(row => {
           const x = am[row.assignment_id]; if (!x) return;
           const wk = toMon(row.week_start || x.week_start), key = x.id + '|' + wk;
-          (g[key] = g[key] || { kind: x.kind === 'lesson' ? 'lesson' : 'homework', asg: true, skill: x.skill || '', page: x.page_path || '', code: x.assignment_code, title: x.assignment_name || x.assignment_code, week_start: wk, due_at: row.due_at || x.due_at, class_ids: [], dues: {} }).class_ids.push(row.class_id);
-          g[key].dues[row.class_id] = row.due_at || x.due_at;
+          (g[key] = g[key] || { kind: x.kind === 'lesson' ? 'lesson' : 'homework', asg: true, skill: x.skill || '', page: x.page_path || '', code: x.assignment_code, title: x.assignment_name || x.assignment_code, week_start: wk, due_at: row.due_at || x.due_at, class_ids: [], dues: {}, dates: {} }).class_ids.push(row.class_id);
+          g[key].dues[row.class_id] = row.due_at || x.due_at; g[key].dates[row.class_id] = row.session_dates || [];
         });
         st.libAsg = Object.keys(g).map(k => g[k]);
         await scanRepo();
@@ -862,8 +867,9 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
           const ids = [...m.class_ids].sort((x, y) => natural(codeOf(x), codeOf(y))), hw = m.kind === 'homework';
           const lines = ids.map(id => {
             let info;
-            if (hw) { const d = dmy((m.dues && m.dues[id]) || m.due_at); info = d ? 'Hạn ' + d : 'Chưa đặt hạn'; }
-            else { const ds = matDates(m); info = !m.asg && ds.length ? ds.map(dayName).join(', ') : 'Cả tuần'; }
+            const ds = m.asg ? ((m.dates && m.dates[id]) || []) : matDates(m);
+            if (hw) { const d = dmy((m.dues && m.dues[id]) || m.due_at); info = (ds.length ? ds.map(dayName).join(', ') + ' · ' : '') + (d ? 'Hạn ' + d : 'Chưa đặt hạn'); }
+            else { info = ds.length ? ds.map(dayName).join(', ') : 'Cả tuần'; }
             return `<div class="mt-line"><b>${esc(codeOf(id))}</b><span>${esc(info)}</span></div>`;
           }).join('');
           const acts = m.asg
@@ -992,9 +998,38 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         } catch (e) { return { ok: false, why: ctl.signal.aborted ? 'quá thời gian chờ' : 'không kết nối được tới địa chỉ này' }; }
         finally { clearTimeout(to); }
       }
-      function renderDays() {
+      async function renderDays() {
         const wk = $('dm-week').value, ds = wk ? weekDatesFrom(wk) : [];
-        $('dm-days').innerHTML = ds.map((dt, i) => { const k = ymd(dt); return `<button type="button" class="dm-day" data-day-k="${k}" aria-pressed="${st.dmDates.has(k)}">${i === 6 ? 'CN' : 'T' + (i + 2)}<small>${pad(dt.getDate())}/${pad(dt.getMonth() + 1)}</small></button>`; }).join('');
+        const ids = [...document.querySelectorAll('#dm-classes input:checked')].map(i => Number(i.value));
+        st.dmSess = st.dmSess || {};
+        if (wk && ids.length && !st.dmSess[wk]) {
+          const r = await st.c.from('sessions').select('class_id,session_date,status').gte('session_date', wk).lte('session_date', ymd(ds[6]));
+          if ($('dm-week').value !== wk) return;
+          st.dmSess[wk] = r.error ? null : (r.data || []);
+        }
+        const rows = (wk && st.dmSess[wk]) || null, has = {};
+        if (rows) rows.forEach(x => { if (ids.includes(x.class_id) && !['cancel', 'holiday'].includes(x.status)) has[x.session_date] = true; });
+        const filter = !!(ids.length && rows);
+        if (filter) st.dmDates.forEach(k => { if (!has[k]) st.dmDates.delete(k); });
+        $('dm-days').innerHTML = ds.map((dt, i) => { const k = ymd(dt), off = filter && !has[k]; return `<button type="button" class="dm-day${off ? ' is-off' : ''}" data-day-k="${k}" aria-pressed="${st.dmDates.has(k)}"${off ? ' disabled' : ''}>${i === 6 ? 'CN' : 'T' + (i + 2)}<small>${pad(dt.getDate())}/${pad(dt.getMonth() + 1)}</small></button>`; }).join('');
+        $('dm-days-hint').textContent = !ids.length ? 'Chọn lớp trước để thấy ngày có buổi học.' : (filter && !Object.keys(has).length ? 'Các lớp đã chọn không có buổi học nào trong tuần này.' : '');
+      }
+      async function renderAsgDays() {
+        const wk = $('da-week').value, ds = wk ? weekDatesFrom(wk) : [];
+        st.daDates = st.daDates || new Set();
+        const ids = [...document.querySelectorAll('#da-classes input:checked')].map(i => Number(i.dataset.id));
+        st.dmSess = st.dmSess || {};
+        if (wk && ids.length && !st.dmSess[wk]) {
+          const r = await st.c.from('sessions').select('class_id,session_date,status').gte('session_date', wk).lte('session_date', ymd(ds[6]));
+          if ($('da-week').value !== wk) return;
+          st.dmSess[wk] = r.error ? null : (r.data || []);
+        }
+        const rows = (wk && st.dmSess[wk]) || null, has = {};
+        if (rows) rows.forEach(x => { if (ids.includes(x.class_id) && !['cancel', 'holiday'].includes(x.status)) has[x.session_date] = true; });
+        const filter = !!(ids.length && rows);
+        if (filter) st.daDates.forEach(k => { if (!has[k]) st.daDates.delete(k); });
+        $('da-days').innerHTML = ds.map((dt, i) => { const k = ymd(dt), off = filter && !has[k]; return `<button type="button" class="dm-day${off ? ' is-off' : ''}" data-day-k="${k}" aria-pressed="${st.daDates.has(k)}"${off ? ' disabled' : ''}>${i === 6 ? 'CN' : 'T' + (i + 2)}<small>${pad(dt.getDate())}/${pad(dt.getMonth() + 1)}</small></button>`; }).join('');
+        $('da-days-hint').textContent = !ids.length ? 'Chọn lớp trước để thấy ngày có buổi học.' : (filter && !Object.keys(has).length ? 'Các lớp đã chọn không có buổi học nào trong tuần này.' : '');
       }
       function weekDatesFrom(k) { const [y, m, dd] = k.split('-').map(Number); return Array.from({ length: 7 }, (_, i) => new Date(y, m - 1, dd + i)); }
       function openMat(id, pf) {
@@ -1009,7 +1044,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         const sel = new Set(m ? m.class_ids : (pf && pf.class_ids) || []);
         st.dmDates = new Set(m ? matDates(m) : (pf && pf.dates) || []); renderDays();
         const cls = matClasses(); (m ? m.class_ids : []).forEach(cid => { const c = st.classes.find(x => x.id === cid); if (c && c.is_archived) cls.push(c); });
-        $('dm-classes').innerHTML = cls.map(c => `<label class="pickrow"><input type="checkbox" value="${c.id}"${sel.has(c.id) ? ' checked' : ''}><span>${esc(c.class_code)}</span></label>`).join('');
+        $('dm-classes').innerHTML = cls.map(c => `<label class="pickrow"><input type="checkbox" value="${c.id}"${sel.has(c.id) ? ' checked' : ''}><span>${esc(c.class_code)}</span></label>`).join(''); renderDays();
         quick = quickGroups();
         $('dm-quick').innerHTML = quickHtml();
         $('dm-del').style.display = m ? '' : 'none';
@@ -1107,13 +1142,14 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
       }
       async function asgPick() {
         const a = st.asgList.find(x => x.assignment_code === $('da-code').value);
-        const ex = a ? await st.c.from('assignment_classes').select('class_id,week_start,due_at').eq('assignment_id', a.id).eq('is_active', true) : { data: [] };
+        const ex = a ? await st.c.from('assignment_classes').select('class_id,week_start,due_at,session_dates').eq('assignment_id', a.id).eq('is_active', true) : { data: [] };
         const have = new Set((ex.data || []).map(x => x.class_id)); st.asgHave = have;
         const first = (ex.data || [])[0];
         $('da-week').value = (first && first.week_start) || (a && a.week_start) || weekKey();
         $('da-kind').value = (a && a.kind) === 'lesson' ? 'lesson' : 'homework'; $('da-askill').value = (a && a.skill) || '';
         $('da-due').value = toLocalInput((first && first.due_at) || (a && a.due_at));
         document.querySelectorAll('#da-classes input').forEach(x => { x.checked = have.has(Number(x.dataset.id)); });
+        st.daDates = new Set((first && first.session_dates) || []); renderAsgDays();
       }
       async function saveAsg(ev) {
         ev.preventDefault(); if (st.busy) return;
@@ -1130,7 +1166,13 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         st.busy = true; let given = 0, res;
         if (codes.length) {
           res = await st.c.rpc('assign_assignment_bulk', { p_assignment_code: code, p_class_codes: codes, p_class_prefix: null, p_week_start: $('da-week').value || null, p_due_at: due });
-          if (!res.error) given = (res.data || []).length;
+          if (!res.error) {
+            given = (res.data || []).length;
+            const ids = boxes.filter(i => i.checked).map(i => Number(i.dataset.id)), wkk = $('da-week').value;
+            const dts = [...(st.daDates || [])].filter(k => wkk && weekDatesFrom(wkk).map(ymd).includes(k));
+            const ud = await st.c.from('assignment_classes').update({ session_dates: dts }).eq('assignment_id', a.id).in('class_id', ids);
+            if (ud.error) res = ud;
+          }
         }
         if ((!res || !res.error) && drop.length) res = await st.c.from('assignment_classes').update({ is_active: false }).eq('assignment_id', a.id).in('class_id', drop);
         st.busy = false;
@@ -1373,17 +1415,22 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         $('da-quick').addEventListener('click', e => {
           const b = e.target.closest('[data-q]'); if (!b) return;
           const boxes = document.querySelectorAll('#da-classes input');
-          if (b.dataset.q === 'none') { boxes.forEach(x => { x.checked = false; }); return; }
+          if (b.dataset.q === 'none') { boxes.forEach(x => { x.checked = false; }); renderAsgDays(); return; }
           const ids = new Set(quick[Number(b.dataset.q)].ids);
           boxes.forEach(x => { if (ids.has(Number(x.dataset.id))) x.checked = true; });
+          renderAsgDays();
         });
+        $('da-classes').addEventListener('change', () => renderAsgDays());
+        $('da-week').addEventListener('change', () => { st.daDates = new Set(); renderAsgDays(); });
+        $('da-days').addEventListener('click', e => { const b = e.target.closest('[data-day-k]'); if (!b || b.disabled) return; const k = b.dataset.dayK; st.daDates = st.daDates || new Set(); st.daDates.has(k) ? st.daDates.delete(k) : st.daDates.add(k); b.setAttribute('aria-pressed', String(st.daDates.has(k))); });
         $('dm-quick').addEventListener('click', e => {
           const b = e.target.closest('[data-q]'); if (!b) return;
           const boxes = document.querySelectorAll('#dm-classes input');
           if (b.dataset.q === 'none') boxes.forEach(x => { x.checked = false; });
           else { const ids = new Set(quick[Number(b.dataset.q)].ids); boxes.forEach(x => { if (ids.has(Number(x.value))) x.checked = true; }); }
-          updateSuggest();
+          updateSuggest(); renderDays();
         });
+        $('dm-classes').addEventListener('change', () => renderDays());
         ['input', 'change'].forEach(t => $('dlg-mat').addEventListener(t, e => { if (e.target.id !== 'dm-url') updateSuggest(); }));
         $('dm-suggest').addEventListener('click', async e => {
           const b = e.target.closest('[data-sug]'); if (!b || !sugUrl) return;

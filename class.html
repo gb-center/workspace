@@ -34,18 +34,18 @@
   }
 </style>
 <style id="lms-dlg">
-  .dlg{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(15,23,42,.35)}
+  .dlg{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(22,24,29,.35)}
   .dlg[hidden]{display:none}
-  .dlg .card{width:min(520px,100%);max-height:calc(100dvh - 32px);overflow:auto;background:#fff;border:1px solid var(--t-border,#e2e8f0);border-radius:24px;padding:22px}
-  .dlg h2{font-size:1.0625rem;font-weight:800;color:var(--t-ink,#0f172a);margin-bottom:12px}
+  .dlg .card{width:min(520px,100%);max-height:calc(100dvh - 32px);overflow:auto;background:#fff;border:1px solid var(--t-border,#E4E6EA);border-radius:24px;padding:22px}
+  .dlg h2{font-size:1.0625rem;font-weight:800;color:var(--t-ink,#1B1D22);margin-bottom:12px}
   .obj-g{font-size:.75rem;font-weight:800;color:#475569;margin:12px 0 6px}
-  .obj{border:1px solid #e2e8f0;border-radius:14px;padding:10px 12px;margin-bottom:8px;background:#fff}
-  .obj-h{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:.875rem;font-weight:700;color:#0f172a}
+  .obj{border:1px solid #E4E6EA;border-radius:14px;padding:10px 12px;margin-bottom:8px;background:#fff}
+  .obj-h{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:.875rem;font-weight:700;color:#1B1D22}
   .obj-h small{font-weight:600;color:#64748b;white-space:nowrap}
   .obj-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
   .ochip{min-height:44px;padding:0 14px;border-radius:9999px;border:1px solid #cbd5e1;background:#fff;color:#334155;font-size:.8125rem;font-weight:600}
   .ochip.on{background:#16a34a;border-color:#16a34a;color:#fff}
-  .dlg label{display:block;font-size:.8125rem;font-weight:700;color:var(--t-ink,#0f172a);margin:12px 0 6px}
+  .dlg label{display:block;font-size:.8125rem;font-weight:700;color:var(--t-ink,#1B1D22);margin:12px 0 6px}
   .dlg .field{width:100%}
   .dlg .acts{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:18px}
   .dlg .err{min-height:20px;margin-top:10px;font-size:.875rem;color:#be123c}
@@ -60,16 +60,17 @@
 .att-sq{width:28px;height:28px;border:0;background:none;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;border-radius:50%}
 .att-sq svg{width:22px;height:22px;display:block}
 .att-btn{display:inline-flex;align-items:center;gap:5px;height:34px;padding:0 10px;border:0;border-radius:9999px;font-size:.75rem;font-weight:700;white-space:nowrap;cursor:pointer}
-.att-btn.a0{background:#f1f5f9;color:#64748b}.att-btn.a1{background:#fef3c7;color:#92400e}.att-btn.a2{background:#dcfce7;color:#166534}
-.dat-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #f1f5f9}
-.dat-name{flex:1;min-width:0;font-weight:600;font-size:.9375rem;color:#0f172a}
+.att-btn.a0{background:#F4F5F7;color:#64748b}.att-btn.a1{background:#fef3c7;color:#92400e}.att-btn.a2{background:#dcfce7;color:#166534}
+.dat-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #F4F5F7}
+.dat-name{flex:1;min-width:0;font-weight:600;font-size:.9375rem;color:#1B1D22}
 .dat-b{width:44px;height:44px;border-radius:9999px;border:1.5px solid #cbd5e1;background:#fff;color:#94a3b8;font-size:1.1rem;font-weight:800;cursor:pointer}
-.dat-b.on-p{background:#7dc943;border-color:#7dc943;color:#fff}.dat-b.on-a{background:#f44858;border-color:#f44858;color:#fff}
-.srow-att,.h-acts{display:none}.h-mat{width:34px;height:34px;border:0;background:transparent;color:#0b1f44;display:inline-flex;align-items:center;justify-content:center}.h-acts{align-items:center;gap:4px}
-.att-opt{min-height:56px;border-radius:14px;border:1.5px solid var(--t-line,#cbd5e1);background:#fff;color:var(--t-ink,#0f172a);font-weight:800;font-size:1rem;cursor:pointer}
-#da-present[aria-pressed="true"]{background:#e0f2fe;border-color:#7dd3fc;color:#075985}
+.dat-b.on-p{background:#7dc943;border-color:#7dc943;color:#fff}.dat-b.on-l{background:#f5b942;border-color:#f5b942;color:#fff}.dat-b.on-a{background:#f44858;border-color:#f44858;color:#fff}
+.srow-att,.h-acts{display:none}.h-mat{width:34px;height:34px;border:0;background:transparent;color:#1B1D22;display:inline-flex;align-items:center;justify-content:center}.h-acts{align-items:center;gap:4px}
+.att-opt{min-height:56px;border-radius:14px;border:1.5px solid var(--t-line,#cbd5e1);background:#fff;color:var(--t-ink,#1B1D22);font-weight:800;font-size:1rem;cursor:pointer}
+#da-present[aria-pressed="true"]{background:#e0f2fe;border-color:#7dd3fc;color:#1B1D22}
+#da-late[aria-pressed="true"]{background:#fef3c7;border-color:#fcd34d;color:#92400e}
 #da-absent[aria-pressed="true"]{background:#ffe4e6;border-color:#fda4af;color:#9f1239}
-.hrow{display:grid;grid-template-columns:64px 56px 150px 130px 110px minmax(0,1fr);align-items:center;gap:12px;padding:10px 12px;border-radius:10px;background:#fff;border:1px solid #f1f5f9}
+.hrow{display:grid;grid-template-columns:64px 56px 150px 130px 110px minmax(0,1fr);align-items:center;gap:12px;padding:10px 12px;border-radius:10px;background:#fff;border:1px solid #F4F5F7}
 .hrow .h-st{display:block;text-align:center;padding:3px 8px;border-radius:9999px;font-size:.6875rem;font-weight:600}
 @media(max-width:760px){.hrow{grid-template-columns:auto auto 1fr}.hrow .h-st{min-width:8rem}.hrow .h-note{grid-column:1/-1}}
 </style>
@@ -79,7 +80,7 @@
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col relative">
 
 <nav id="lms-nav" aria-label="Điều hướng chính">
-    <div class="nav-brand"><img src="logo-wordmark-gold-navy.png" alt="gblearninghub" style="height:24px;width:auto;max-width:100%;display:block"></div>
+    <div class="nav-brand"><img src="logo-wordmark.png" alt="gblearninghub" style="height:24px;width:auto;max-width:100%;display:block"></div>
     <a href="index.html#overview" aria-label="Tổng quan"><i data-lucide="layout-dashboard"></i><span>Tổng quan</span></a>
     <a href="index.html#schedule" aria-label="Lịch tuần"><i data-lucide="calendar-days"></i><span>Lịch tuần</span></a>
     <a href="#" aria-current="page" aria-label="Lớp này"><i data-lucide="book-open"></i><span>Lớp này</span></a>
@@ -220,8 +221,9 @@ var cur=document.querySelector('#lms-nav a[aria-current=page]');if(cur&&cur.scro
       <h2 id="da-title">Điểm danh</h2>
       <div class="text-sm text-slate-600" id="da-info"></div>
       <input type="hidden" id="da-key">
-      <div class="grid grid-cols-2 gap-3" style="margin-top:14px">
+      <div class="grid grid-cols-3 gap-3" style="margin-top:14px">
         <button type="button" id="da-present" class="att-opt" aria-pressed="false">✓ Có mặt</button>
+        <button type="button" id="da-late" class="att-opt" aria-pressed="false">◔ Trễ</button>
         <button type="button" id="da-absent" class="att-opt" aria-pressed="false">✕ Vắng</button>
       </div>
       <div class="acts"><button type="button" id="da-clear" class="btn-soft">Bỏ chọn</button><button type="button" class="btn-soft" data-close>Đóng</button></div>
@@ -473,7 +475,8 @@ var cur=document.querySelector('#lms-nav a[aria-current=page]');if(cur&&cur.scro
       $('dat-info').textContent = sessionLabel(s) + ' · ' + shortDate(dateOf(s.session_date)) + ' · ' + t5(s.start_time) + ' - ' + t5(s.end_time);
       $('dat-list').innerHTML = S.students.map(st => { const v = S.att[s.id + '|' + st.id] || '';
         return `<div class="dat-row"><span class="dat-name">${esc(st.student_name)}</span>
-          <button type="button" data-a="${st.id}|present" class="dat-b ${v && v !== 'absent' ? 'on-p' : ''}" aria-label="Có mặt: ${esc(st.student_name)}">✓</button>
+          <button type="button" data-a="${st.id}|present" class="dat-b ${v === 'present' ? 'on-p' : ''}" aria-label="Có mặt: ${esc(st.student_name)}">✓</button>
+          <button type="button" data-a="${st.id}|late" class="dat-b ${v === 'late' ? 'on-l' : ''}" aria-label="Trễ: ${esc(st.student_name)}">T</button>
           <button type="button" data-a="${st.id}|absent" class="dat-b ${v === 'absent' ? 'on-a' : ''}" aria-label="Vắng: ${esc(st.student_name)}">✕</button></div>`; }).join('');
     }
     async function openAddStu() {
@@ -486,7 +489,7 @@ var cur=document.querySelector('#lms-nav a[aria-current=page]');if(cur&&cur.scro
     function renderAddStu() {
       const q = $('dad-q').value.trim().toLowerCase(), l = (S.free || []).filter(x => !q || (x.student_name || '').toLowerCase().includes(q));
       $('dad-info').textContent = (S.free || []).length + ' học viên · bấm + để thêm vào ' + (S.cls.class_name || S.cls.class_code);
-      $('dad-list').innerHTML = l.length ? l.map(x => `<div class="dat-row"><span class="dat-name">${esc(x.student_name)}</span><button type="button" data-add="${x.id}" class="dat-b on-p" style="background:#0b1f44;border-color:#0b1f44" aria-label="Thêm ${esc(x.student_name)}">+</button></div>`).join('') : '<div class="text-sm text-slate-400 p-3">Không có học viên nào chưa xếp lớp.</div>';
+      $('dad-list').innerHTML = l.length ? l.map(x => `<div class="dat-row"><span class="dat-name">${esc(x.student_name)}</span><button type="button" data-add="${x.id}" class="dat-b on-p" style="background:#16181D;border-color:#16181D" aria-label="Thêm ${esc(x.student_name)}">+</button></div>`).join('') : '<div class="text-sm text-slate-400 p-3">Không có học viên nào chưa xếp lớp.</div>';
     }
     async function addStu(id) {
       const x = (S.free || []).find(v => v.id === Number(id)); if (!x) return;
@@ -503,7 +506,7 @@ var cur=document.querySelector('#lms-nav a[aria-current=page]');if(cur&&cur.scro
       const days = DAYS.map((label, i) => ({ label, d: dates[i], list: S.sessions.filter(s => s.session_date === ymd(dates[i])) })).filter(x => x.list.length);
       $('schedule-grid').innerHTML = !days.length ? '<div class="w-full rounded-xl border border-dashed border-slate-200 p-5 text-center text-xs text-slate-400">Tuần này không có buổi học.</div>' : days.map(({ label, d, list }) => {
         const isToday = ymd(d) === todayKey;
-        return list.map(s => `<div class="srow rounded-xl border border-sky-200 bg-white ${isToday ? 'ring-2 ring-sky-500' : ''}">
+        return list.map(s => `<div class="srow rounded-xl border border-slate-200 bg-white ${isToday ? 'ring-2 ring-sky-500' : ''}">
           <span class="text-xs font-bold ${isToday ? 'text-sky-700' : 'text-slate-700'}">${label}</span>
           <span class="text-xs text-slate-500">${shortDate(d)}</span>
           <span class="text-xs font-bold text-sky-700 bg-sky-50 rounded px-2 py-1.5 text-center border border-sky-100">${t5(s.start_time)}<span class="t-end"> - ${t5(s.end_time)}</span></span>
@@ -584,11 +587,12 @@ var cur=document.querySelector('#lms-nav a[aria-current=page]');if(cur&&cur.scro
       $('att-head').innerHTML = 'Điểm danh' + (sess.length > 1 ? '<div class="att-hl">' + sess.map(x => `<span>${sessionLabel(x).replace('Thứ ', 'T').replace('Chủ nhật', 'CN')}</span>`).join('') + '</div>' : '');
       body.innerHTML = S.students.map(st => {
         const att = sess.length ? '<div class="att-row">' + sess.map(s => {
-          const v = S.att[s.id + '|' + st.id] || '', cls = v === 'absent' ? 'absent' : (v ? 'present' : ''), lb = sessionLabel(s);
+          const v = S.att[s.id + '|' + st.id] || '', cls = v === 'absent' ? 'absent' : v === 'late' ? 'late' : (v ? 'present' : ''), lb = sessionLabel(s);
           const ic = v === 'absent' ? '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#f44858"/><path d="M8 8l8 8M16 8l-8 8" fill="none" stroke="#8c1818" stroke-width="2.6" stroke-linecap="round"/></svg>'
+            : v === 'late' ? '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#f5b942"/><path d="M12 6.5V12l3.4 2" fill="none" stroke="#7a4a00" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'
             : (v ? '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#7dc943"/><path d="M6.8 12.6l3.6 3.6 6.8-7" fill="none" stroke="#3f7a1c" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'
             : '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#fff" stroke="#cbd5e1" stroke-width="1.6"/></svg>');
-          return `<button type="button" data-att="${s.id}|${st.id}" class="att-sq ${cls}" aria-label="${esc(st.student_name)}, ${lb}: ${v === 'absent' ? 'Vắng' : v ? 'Có mặt' : 'Chưa điểm danh'}">${ic}</button>`;
+          return `<button type="button" data-att="${s.id}|${st.id}" class="att-sq ${cls}" aria-label="${esc(st.student_name)}, ${lb}: ${v === 'absent' ? 'Vắng' : v === 'late' ? 'Trễ' : v ? 'Có mặt' : 'Chưa điểm danh'}">${ic}</button>`;
         }).join('') + '</div>' : '<span class="text-slate-300">–</span>';
         return `<tr class="hover:bg-slate-50">
           <td class="py-3 px-3 font-semibold text-slate-800"><span class="flex items-center gap-1.5"><i data-lucide="user" class="w-3.5 h-3.5 text-slate-400"></i>${esc(st.student_name)}</span></td>
@@ -602,7 +606,7 @@ var cur=document.querySelector('#lms-nav a[aria-current=page]');if(cur&&cur.scro
       $('da-info').textContent = sessionLabel(se) + ' · ' + shortDate(dateOf(se.session_date)) + ' · ' + t5(se.start_time) + ' - ' + t5(se.end_time);
       $('da-key').value = sid + '|' + stid;
       const v = S.att[sid + '|' + stid] || '';
-      $('da-present').setAttribute('aria-pressed', String(!!v && v !== 'absent')); $('da-absent').setAttribute('aria-pressed', String(v === 'absent'));
+      $('da-present').setAttribute('aria-pressed', String(v === 'present' || v === 'excused')); $('da-late').setAttribute('aria-pressed', String(v === 'late')); $('da-absent').setAttribute('aria-pressed', String(v === 'absent'));
       $('da-clear').style.display = v ? '' : 'none';
       openDlg('dlg-att');
     }
@@ -653,11 +657,11 @@ var cur=document.querySelector('#lms-nav a[aria-current=page]');if(cur&&cur.scro
       $('btn-next-week').addEventListener('click', () => { S.offset++; renderAll(); });
       $('schedule-grid').addEventListener('click', e => { const q = e.target.closest('button[data-atts]'); if (q) return openAtts(q.dataset.atts); const m = e.target.closest('button[data-mat]'); if (m) return openMat(m.dataset.mat); const b = e.target.closest('button[data-sid]'); if (b) openSessDlg(b.dataset.sid); });
       $('edit-links').addEventListener('click', openHeroDlg); $('dlg-hero').querySelector('form').addEventListener('submit', saveHeroDlg); $('class-state').addEventListener('click', () => { [...document.querySelectorAll('#dst-opts [data-st]')].forEach(b => b.setAttribute('aria-pressed', String(b.dataset.st === classState()))); openDlg('dlg-state'); }); $('dst-opts').addEventListener('click', e => { const b = e.target.closest('[data-st]'); if (!b) return; closeDlgs(); setClassState(b.dataset.st); });
-      $('dat-list').addEventListener('click', e => { const b = e.target.closest('[data-a]'); if (!b) return; const [st, v] = b.dataset.a.split('|'), cur = S.att[S.attSid + '|' + st] || ''; setAtt(S.attSid, st, (v === 'absent' ? cur === 'absent' : cur && cur !== 'absent') ? null : v); });
+      $('dat-list').addEventListener('click', e => { const b = e.target.closest('[data-a]'); if (!b) return; const [st, v] = b.dataset.a.split('|'), cur = S.att[S.attSid + '|' + st] || ''; setAtt(S.attSid, st, cur === v ? null : v); });
       $('btn-addstu').addEventListener('click', openAddStu); $('dad-q').addEventListener('input', renderAddStu); $('dad-list').addEventListener('click', e => { const b = e.target.closest('[data-add]'); if (b) addStu(b.dataset.add); });
       $('btn-curweek').addEventListener('click', () => { S.offset = 0; renderAll(); });
       $('student-list-body').addEventListener('click', e => { const b = e.target.closest('[data-att]'); if (b) { const [a, c] = b.dataset.att.split('|'); openAtt(a, c); } });
-      ['da-present', 'da-absent', 'da-clear'].forEach(id => $(id).addEventListener('click', e => { const [a, c] = $('da-key').value.split('|'), i = e.currentTarget.id; closeDlgs(); setAtt(a, c, i === 'da-absent' ? 'absent' : i === 'da-present' ? 'present' : null); }));
+      ['da-present', 'da-late', 'da-absent', 'da-clear'].forEach(id => $(id).addEventListener('click', e => { const [a, c] = $('da-key').value.split('|'), i = e.currentTarget.id; closeDlgs(); setAtt(a, c, i === 'da-absent' ? 'absent' : i === 'da-late' ? 'late' : i === 'da-present' ? 'present' : null); }));
       $('session-history-list').addEventListener('click', e => { const mt = e.target.closest('button[data-mat]'); if (mt) { e.preventDefault(); return openMat(mt.dataset.mat); } const q = e.target.closest('button[data-atts]'); if (q) { e.preventDefault(); return openAtts(q.dataset.atts); } const b = e.target.closest('[data-week]'); if (!b) return; e.preventDefault(); S.offset = Number(b.dataset.week); renderAll(); $('week-indicator').scrollIntoView({ behavior: 'smooth', block: 'center' }); });
       $('add-lesson-link').addEventListener('click', () => openLinksDlg('lesson'));
       $('add-hw-link').addEventListener('click', () => openLinksDlg('hw'));

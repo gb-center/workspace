@@ -12,6 +12,7 @@
     'html[data-mode="dark"] .student-main .card.t-daybar{border-color:transparent!important}@media(min-width:781px){html[data-mode="dark"] .student-welcome{filter:' + EX + '}}@media(max-width:780px){html[data-mode="dark"] .student-sidebar{filter:' + EX + '}}' +
     '@media(min-width:641px){html[data-mode="dark"] body>header.has-week,html[data-mode="dark"] body>header.page-title-header{filter:' + EX + '}}' +
     '@media(max-width:640px){html[data-mode="dark"] body>#lms-nav{filter:' + EX + '}}' +
+    '@media(max-width:780px){html[data-mode="dark"] .student-welcome-tools .icon-btn,html[data-mode="dark"] .student-welcome-tools #btn-mode{color:#1B1D22!important}}' +
     '#btn-mode{display:inline-flex;align-items:center;justify-content:center;cursor:pointer}#btn-mode svg{width:20px;height:20px}';
   var st = document.createElement('style'); st.id = 'lms-mode-css'; st.textContent = css; (document.head || d).appendChild(st);
   var MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>',
