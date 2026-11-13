@@ -330,7 +330,7 @@
       S.meet = (gm.data && typeof gm.data.value === 'string') ? gm.data.value : '';
       S.students = st.data || []; S.set = se.data || {}; S.sessions = ss.data || [];
       S.links = {}; (wl.data || []).forEach(r => { S.links[r.week_start] = { lessons: r.lessons || [], homeworks: r.homeworks || [] }; });
-      S.shared = {}; (wm.data || []).forEach(r => { const w = S.shared[r.week_start] = S.shared[r.week_start] || { lessons: [], homeworks: [] }; (r.kind === 'homework' ? w.homeworks : w.lessons).push({ title: r.title, url: r.url }); });
+      S.shared = {}; (wm.data || []).forEach(r => { const w = S.shared[r.week_start] = S.shared[r.week_start] || { lessons: [], homeworks: [] }; if (r.kind === 'slide') return; (r.kind === 'homework' ? w.homeworks : w.lessons).push({ title: r.title, url: r.url }); });
       const ids = (ac.data || []).map(r => r.assignment_id), am = {};
       if (ids.length) {
         const ar = await S.c.from('assignments').select('id,assignment_name,assignment_code,kind,week_start,page_path,is_active').in('id', ids);

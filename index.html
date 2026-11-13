@@ -75,7 +75,7 @@
     .mt-day{border-top:1px solid var(--t-border);padding-top:10px}
     .mt-day-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;font-weight:800;font-size:.875rem;color:var(--t-primary)}
     .mt-day-head small{font-weight:500;color:var(--t-muted,#64748b);margin-left:6px}
-    .mt-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .mt-cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
     .mt-cols h4{font-size:.75rem;font-weight:800;color:var(--t-muted,#64748b);margin-bottom:6px}
     .mt-cols>div{display:flex;flex-direction:column;gap:6px}
     @media(max-width:700px){.mt-cols{grid-template-columns:1fr}}
@@ -201,7 +201,7 @@
           <button id="btn-add-mat" type="button" class="btn-primary"><i data-lucide="plus" class="w-4 h-4"></i><span>Thêm mục</span></button>
         </div>
       </div>
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div class="bg-white rounded-2xl border border-slate-200 p-4">
           <h2 class="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2"><i data-lucide="presentation" class="w-4 h-4"></i>Bài học</h2>
           <div id="mat-lesson" class="space-y-2"></div>
@@ -209,6 +209,10 @@
         <div class="bg-white rounded-2xl border border-slate-200 p-4">
           <h2 class="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2"><i data-lucide="file-check-2" class="w-4 h-4"></i>Bài tập</h2>
           <div id="mat-homework" class="space-y-2"></div>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200 p-4">
+          <h2 class="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2"><i data-lucide="monitor-play" class="w-4 h-4"></i>Slide (giáo viên)</h2>
+          <div id="mat-slide" class="space-y-2"></div>
         </div>
       </div>
     </section>
@@ -228,7 +232,7 @@
         </div>
         <div class="lib-filter-secondary">
           <select id="lib-class" class="field w-full sm:w-48" aria-label="Lọc theo lớp"></select>
-          <select id="lib-kind" class="field w-full sm:w-44" aria-label="Lọc theo loại"><option value="">Tất cả loại</option><option value="lesson">Bài học</option><option value="homework">Bài tập</option></select>
+          <select id="lib-kind" class="field w-full sm:w-44" aria-label="Lọc theo loại"><option value="">Tất cả loại</option><option value="lesson">Bài học</option><option value="homework">Bài tập</option><option value="slide">Slide (giáo viên)</option></select>
           <select id="lib-skill" class="field w-full sm:w-44" aria-label="Lọc theo kỹ năng"><option value="">Mọi kỹ năng</option><option value="reading">Reading</option><option value="listening">Listening</option><option value="writing">Writing</option><option value="speaking">Speaking</option><option value="grammar">Grammar</option><option value="vocabulary">Vocabulary</option></select>
         </div>
       </div>
@@ -343,6 +347,7 @@
               <select id="dm-kind" class="field">
                 <option value="lesson">Bài học</option>
                 <option value="homework">Bài tập</option>
+                <option value="slide">Slide trình chiếu (chỉ giáo viên)</option>
               </select></div>
           </div>
           <label for="dm-skill">Kỹ năng (không bắt buộc)</label>
@@ -694,7 +699,7 @@
         if (lib) { $('week-label').textContent = 'Học liệu'; $('week-range').textContent = 'Mọi tuần, mới nhất trước'; }
       }
       const SKILL = { reading: 'Reading', listening: 'Listening', writing: 'Writing', speaking: 'Speaking', grammar: 'Grammar', vocabulary: 'Vocabulary' };
-      const kindText = m => (m.kind === 'homework' ? 'Bài tập' : 'Bài học') + (m.skill && SKILL[m.skill] ? ' · ' + SKILL[m.skill] : '');
+      const kindText = m => (m.kind === 'homework' ? 'Bài tập' : m.kind === 'slide' ? 'Slide' : 'Bài học') + (m.skill && SKILL[m.skill] ? ' · ' + SKILL[m.skill] : '');
       const toMon = k => { if (!k) return ''; const [y, m, d] = k.split('-').map(Number), dt = new Date(y, m - 1, d); dt.setDate(dt.getDate() - (dt.getDay() + 6) % 7); return ymd(dt); };
       const weekNoOf = key => { const [y, m, d] = key.split('-').map(Number); return 1 + Math.round((new Date(y, m - 1, d) - BASE_MONDAY) / (7 * 864e5)); };
       async function loadLib(force) {
@@ -784,16 +789,16 @@
         const cidSel = Number($('lib-class').value) || 0, groups = new Map(), orphan = [];
         items.forEach(m => { const ids = m.class_ids || []; if (!ids.length) orphan.push(m); else ids.forEach(id => { if (cidSel && id !== cidSel) return; if (!groups.has(id)) groups.set(id, []); groups.get(id).push(m); }); });
         const wd = k ? weekDatesFrom(k) : [], dayName = d => { const i = wd.map(ymd).indexOf(d); return i < 0 ? d : (i === 6 ? 'CN' : 'T' + (i + 2)) + ' ' + pad(wd[i].getDate()) + '/' + pad(wd[i].getMonth() + 1); };
-        const cols = list => ['lesson', 'homework'].map(kind => { const l = list.filter(m => (m.kind === 'homework' ? 'homework' : 'lesson') === kind); return `<div><h4>${kind === 'lesson' ? 'Bài học' : 'Bài tập'}</h4>${l.map(libItem).join('') || '<p class="text-sm text-slate-400">Chưa có.</p>'}</div>`; }).join('');
+        const cols = list => ['lesson', 'homework', 'slide'].map(kind => { const l = list.filter(m => (m.kind === 'homework' ? 'homework' : m.kind === 'slide' ? 'slide' : 'lesson') === kind); return `<div><h4>${kind === 'lesson' ? 'Bài học' : kind === 'homework' ? 'Bài tập' : 'Slide'}</h4>${l.map(libItem).join('') || '<p class="text-sm text-slate-400">Chưa có.</p>'}</div>`; }).join('');
         st.libOpenCls = st.libOpenCls || new Set();
         const out = [...groups.keys()].map(id => st.classes.find(c => c.id === id) || { id, class_code: '#' + id }).sort((x, y) => natural(x.class_code, y.class_code)).map(c => {
-          const list = groups.get(c.id), nL = list.filter(m => m.kind !== 'homework').length, nH = list.length - nL;
+          const list = groups.get(c.id), nS = list.filter(m => m.kind === 'slide').length, nL = list.filter(m => m.kind !== 'homework' && m.kind !== 'slide').length, nH = list.length - nL - nS;
           const days = [...new Set(list.filter(m => !m.asg && !m.scan).flatMap(matDates))].sort();
           const block = (date, label, l) => `<div class="mt-day"><div class="mt-day-head"><span>${label}</span><button type="button" class="icon-btn" data-add-mat data-week="${k}" data-cid="${c.id}" data-date="${date || ''}" aria-label="Giao học liệu cho ${esc(label)}" title="Giao học liệu"><i data-lucide="plus" class="w-4 h-4"></i></button></div><div class="mt-cols">${cols(l)}</div></div>`;
           const whole = list.filter(m => m.asg || m.scan || !matDates(m).length);
           const body = block(null, 'Cả tuần', whole) + days.map(d => block(d, dayName(d), list.filter(m => !m.asg && !m.scan && matDates(m).includes(d)))).join('');
           const ckey = k + '|' + c.id;
-          return `<details class="mt-class" data-ckey="${ckey}" ${st.libOpenCls.has(ckey) ? 'open' : ''}><summary>${esc(c.class_code)}<span class="mt-tags"><span class="tag bg-slate-100 text-slate-600">${nL} bài học</span><span class="tag bg-slate-100 text-slate-600">${nH} bài tập</span></span></summary><div class="mt-body">${body}</div></details>`;
+          return `<details class="mt-class" data-ckey="${ckey}" ${st.libOpenCls.has(ckey) ? 'open' : ''}><summary>${esc(c.class_code)}<span class="mt-tags"><span class="tag bg-slate-100 text-slate-600">${nL} bài học</span><span class="tag bg-slate-100 text-slate-600">${nH} bài tập</span>${nS ? `<span class="tag bg-slate-100 text-slate-600">${nS} slide</span>` : ''}</span></summary><div class="mt-body">${body}</div></details>`;
         }).join('');
         const orph = orphan.length ? `<div class="mt-class" style="padding:14px 16px"><div class="font-bold text-rose-700 mb-2">Chưa giao cho lớp nào</div><div class="flex flex-col gap-2">${orphan.map(libItem).join('')}</div></div>` : '';
         return out + orph;
@@ -849,7 +854,7 @@
         if (st.view !== 'mat') return;
         const d = weekDates(st.week);
         $('mat-sub').textContent = 'Tuần ' + pad(st.week) + ' (' + pad(d[0].getDate()) + '.' + pad(d[0].getMonth() + 1) + ' – ' + pad(d[6].getDate()) + '.' + pad(d[6].getMonth() + 1) + '). Mỗi mục tự hiện ở trang lớp và trang học sinh của các lớp được chọn.';
-        [['lesson', 'mat-lesson'], ['homework', 'mat-homework']].forEach(([k, id]) => {
+        [['lesson', 'mat-lesson'], ['homework', 'mat-homework'], ['slide', 'mat-slide']].forEach(([k, id]) => {
           const list = st.mats.filter(m => m.kind === k);
           $(id).innerHTML = list.length ? list.map(matItem).join('') : '<p class="text-sm text-slate-400">Chưa có mục nào.</p>';
         });
