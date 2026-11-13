@@ -1321,7 +1321,7 @@ a.t-open:hover span{text-decoration:underline}
           const list = $('tuition-history-list'); if (list) list.innerHTML = tuitionHistoryContent();
         });
       }
-      (LMS.isTeacherNow ? LMS.isTeacherNow() : Promise.resolve(false)).then(ok => { const b = $('btn-class'); if (ok && b && S.data === d) { b.href = 'class.html?class=' + encodeURIComponent(cls.code); b.classList.remove('hidden'); $('btn-home').classList.remove('hidden'); } });
+      (LMS.isTeacherNow ? LMS.isTeacherNow() : Promise.resolve(false)).then(ok => { const b = $('btn-class'); if (ok && b && S.data === d) { b.href = 'class.html?class=' + encodeURIComponent(cls.code); b.classList.remove('hidden'); $('btn-home').classList.remove('hidden'); $('btn-home').href = 'index.html#overview'; document.querySelectorAll('a.logo-home[data-student-home]').forEach(l => { l.href = 'index.html#overview'; l.removeAttribute('data-student-home'); l.setAttribute('aria-label', 'Về trang tổng quan'); }); } });
     }
 
     /* ---------- Làm bài ---------- */
