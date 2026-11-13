@@ -1162,3 +1162,8 @@ body:has(#btn-prev-week) a.lp-row,body:has(#btn-prev-week) a.rounded-lg.bg-sky-5
   body.tuition-page #m-weekbar #prev,body.tuition-page #m-weekbar #next{flex:0 0 44px;height:40px!important;display:inline-flex;align-items:center;justify-content:center}
   body.tuition-page #m-weekbar #thismonth{position:static!important;transform:none!important;flex:0 0 auto!important;height:40px!important;margin:0 0 0 10px!important;padding:0 16px!important;display:inline-flex;align-items:center;justify-content:center}
 }
+
+/* Desktop: Tổng quan dùng cùng lề với Học liệu (trên 20px, dưới 16px, hai bên giống nhau) */
+@media(min-width:1024px){
+  html[data-lms-view="overview"] body>main{padding-top:20px!important;padding-bottom:16px!important;padding-left:clamp(18px,3vw,44px)!important;padding-right:clamp(18px,3vw,44px)!important}
+}
