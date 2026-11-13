@@ -257,6 +257,14 @@
     </form>
   </div>
 
+ <div id="dlg-roster" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="dr-title">
+    <form class="card" novalidate onsubmit="return false">
+      <h2 id="dr-title">Học viên</h2>
+      <ol id="dr-list" class="text-sm" style="padding-left:24px;list-style:decimal;display:flex;flex-direction:column;gap:6px;max-height:55vh;overflow:auto"></ol>
+      <div class="acts"><button type="button" class="btn-soft" data-close>Đóng</button></div>
+    </form>
+  </div>
+
   <!-- Hộp thoại: buổi học -->
   <div id="dlg-session" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="ds-title">
     <form class="card" novalidate>
@@ -484,7 +492,7 @@
         const [c, cs, s, p] = await Promise.all([
           st.c.from('classes').select('id,class_code,class_name,is_active,group_code'),
           st.c.from('class_settings').select('class_id,page_url,is_archived'),
-          st.c.from('students').select('id,class_id,monthly_tuition,is_active').eq('is_active', true),
+          st.c.from('students').select('id,class_id,student_name,monthly_tuition,is_active').eq('is_active', true),
           st.c.from('app_settings').select('value').eq('key', 'class_programs').maybeSingle()
         ]);
         if (c.error) throw c.error; if (cs.error) throw cs.error; if (s.error) throw s.error; if (p.error) throw p.error;
@@ -494,8 +502,15 @@
           page_url: (set[r.id] || {}).page_url || '', is_archived: !!(set[r.id] || {}).is_archived,
           program: st.programs[r.id] || ''
         }));
-        st.counts = {}; st.activeStudentCount = (s.data || []).length; st.unassignedCount = 0;
-        (s.data || []).forEach(r => { if (r.class_id) st.counts[r.class_id] = (st.counts[r.class_id] || 0) + 1; else st.unassignedCount += 1; });
+        st.counts = {}; st.roster = {}; st.activeStudentCount = (s.data || []).length; st.unassignedCount = 0;
+        (s.data || []).forEach(r => { if (r.class_id) { st.counts[r.class_id] = (st.counts[r.class_id] || 0) + 1; (st.roster[r.class_id] = st.roster[r.class_id] || []).push(r.student_name || ''); } else st.unassignedCount += 1; });
+      }
+      function openRoster(id) {
+        const c = st.classes.find(x => x.id === Number(id)); if (!c) return;
+        const names = (st.roster[c.id] || []).slice().sort((a, b) => a.localeCompare(b, 'vi'));
+        $('dr-title').textContent = c.class_code + ' · ' + names.length + ' học viên';
+        $('dr-list').innerHTML = names.length ? names.map(n => '<li>' + esc(n) + '</li>').join('') : '<li class="text-slate-400" style="list-style:none">Chưa có học viên.</li>';
+        openDlg('dlg-roster');
       }
       async function loadBlocked() {
         const r = await st.c.from('app_settings').select('value').eq('key', 'blocked_weekly').maybeSingle();
@@ -584,8 +599,8 @@
           html += `<tr class="${s !== 'active' ? 'dim' : ''}"><td class="c-name"><div class="flex items-start justify-between gap-2"><div style="min-width:0">
             <a class="cls-link" href="${esc(url)}">${esc(c.class_code)}</a>
             ${sub ? `<div class="text-xs text-slate-500" style="overflow-wrap:anywhere">${esc(sub)}</div>` : ''}
-            <div class="text-xs text-slate-500">${c.program ? 'Chương trình: ' + esc(CLASS_PROGRAM[c.program] || c.program) : 'Chưa gắn chương trình'}</div>
-            <div class="text-xs text-slate-500">${n} học viên${s === 'inactive' ? ' · Tạm ngưng' : s === 'archived' ? ' · Lưu trữ' : ''}</div></div>
+            <div class="text-xs text-slate-500 m-hide">${c.program ? 'Chương trình: ' + esc(CLASS_PROGRAM[c.program] || c.program) : 'Chưa gắn chương trình'}</div>
+            <div class="text-xs text-slate-500"><button type="button" class="roster-btn" data-roster="${c.id}" aria-label="Xem danh sách học viên lớp ${esc(c.class_code)}">${n} học viên</button>${s === 'inactive' ? ' · Tạm ngưng' : s === 'archived' ? ' · Lưu trữ' : ''}</div></div>
             <button type="button" class="icon-btn" style="width:36px;height:36px;flex:none" data-edit-class="${c.id}" aria-label="Sửa lớp ${esc(c.class_code)}"><i data-lucide="settings" class="w-4 h-4"></i></button></div></td>`
             + keys.map((k, i) => {
               const ss = sessionsOf(c.id, k);
@@ -1226,6 +1241,7 @@
         $('day-tabs').addEventListener('click', e => { const b = e.target.closest('[data-day]'); if (b) { st.selDay = Number(b.dataset.day); render(); } });
         $('grid-body').addEventListener('click', e => {
           const ec = e.target.closest('[data-edit-class]'); if (ec) return openClass(ec.dataset.editClass);
+          const rb = e.target.closest('[data-roster]'); if (rb) return openRoster(rb.dataset.roster);
           const ch = e.target.closest('[data-sid]'); if (ch) return openSession(ch.dataset.sid);
           const bl = e.target.closest('[data-blocked]'); if (bl) return openBlocked(Number(bl.dataset.blocked));
           const td = e.target.closest('td.day'); if (td) openSession(null, td.dataset.class, td.dataset.date);

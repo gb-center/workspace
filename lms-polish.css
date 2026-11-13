@@ -313,8 +313,11 @@ table.stack tbody td.cell-main .code-chip{margin-top:5px!important}
   .m-ico>span{display:none!important}
   .m-ico{flex:0 0 44px!important;width:44px;min-width:44px;height:44px;padding:0!important;justify-content:center}
   .m-hide{display:none!important}
+  .roster-btn{padding:0;background:none;border:0;color:#1f3558;font:inherit;font-weight:700;text-decoration:underline;text-underline-offset:2px;min-height:28px}
   .schedule-toolbar{flex-direction:row!important;flex-wrap:wrap!important;align-items:flex-start!important;gap:8px!important}
   .schedule-toolbar>div{width:auto!important;flex:0 0 auto!important}
   .schedule-toolbar>div:has(.m-fold-open),.schedule-toolbar>div.m-fold-open{flex:1 1 100%!important}
   .m-fold-open>.m-fold-toggle{background:#1f3558;color:#fff;border-color:#1f3558}
 }
+
+.roster-btn{padding:0;background:none;border:0;color:inherit;font:inherit;cursor:pointer}
