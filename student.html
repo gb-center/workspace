@@ -902,13 +902,28 @@
 @media(max-width:780px){body.student-dashboard-view .student-nav button.m-only{display:flex!important}body.student-dashboard-view .t-rail-m{display:flex!important;flex-direction:column;gap:12px;overflow:visible!important}body.student-dashboard-view aside.t-rail{display:none!important}body.student-dashboard-view .t-rail-m .t-tt-slot{display:grid!important;grid-template-columns:118px minmax(0,1fr);align-items:center;column-gap:12px;padding:10px 12px}body.student-dashboard-view .t-rail-m .t-tt-cls{display:block;margin:0;font-size:.8125rem;font-weight:600;color:#475569;text-align:left;overflow-wrap:anywhere}}
 .t-stick{display:contents}
 .t-rail .week-calendar-day.next-day{background:#fff4d6!important;border-radius:12px!important}
+
+/* Teacher week calendar: dot only, dim empty days, no outer frame */
+body.student-dashboard-view .t-rail>section.card:has(.week-calendar),body.student-dashboard-view .t-rail .card:has(>.week-calendar-head){border:0!important;box-shadow:none!important;background:transparent!important}
+body.student-dashboard-view .m-week{border:0!important;background:transparent!important}
+body.student-dashboard-view .t-rail .week-calendar-day,body.student-dashboard-view .m-week .week-calendar-day{position:relative;border:0!important;box-shadow:none!important;background:transparent!important;color:var(--t-ink);opacity:.38;padding-bottom:8px}
+body.student-dashboard-view .t-rail .week-calendar-day.has-session{opacity:1}
+body.student-dashboard-view .t-rail .week-calendar-day.has-session::after{content:"";position:absolute;left:50%;bottom:3px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:#b38324}
+body.student-dashboard-view .t-rail .week-calendar-day.next-day{background:transparent!important}
+body.student-dashboard-view .t-rail .week-calendar-day.selected{background:var(--t-primary)!important;color:#fff;opacity:1}
+body.student-dashboard-view .t-rail .week-calendar-day.selected::after{background:#e5c16b}
+body.student-dashboard-view .t-rail .week-calendar-day{aspect-ratio:auto!important;height:46px;border-radius:12px!important}
+body.student-dashboard-view .t-rail .week-calendar-day.selected b,body.student-dashboard-view .t-rail .week-calendar-day.selected span{color:#fff!important}
+body.student-dashboard-view .t-rail .week-calendar-day.today:not(.selected) b,body.student-dashboard-view .t-rail .week-calendar-day.today:not(.selected) span{color:#b38324!important}
+body.student-dashboard-view .t-rail .week-calendar-day.today{opacity:1}
+body.student-dashboard-view .t-rail .week-calendar-day.today:not(.has-session){opacity:.8}
 @media(max-width:780px){
   body.student-dashboard-view .student-main:has(.t-stick){padding-top:0!important}
   body.student-dashboard-view .t-stick{display:block;position:sticky;top:0;z-index:6;background:#f5f6f8;padding-top:12px}
   body.student-dashboard-view .t-stick>.t-daybar{margin-bottom:12px!important}
   body.student-dashboard-view .t-stick>.m-week{margin-bottom:12px!important}
   body.student-dashboard-view .t-sum .t-chip{min-height:0!important;min-width:0!important;height:auto!important;padding:2px 9px!important;font-size:.75rem!important;font-weight:700!important;line-height:1.4!important;border:0!important;background:#f1f5f9!important;border-radius:9999px!important;gap:5px}
-  body.student-dashboard-view .t-sum .t-chip svg{width:12px!important;height:12px!important}
+  body.student-dashboard-view .t-sum .t-chip svg{width:12px!important;height:12px!important}body.student-dashboard-view .t-sum .t-chip,body.student-dashboard-view .t-sum .tag{box-sizing:border-box!important;height:24px!important;display:inline-flex!important;align-items:center!important;padding-top:0!important;padding-bottom:0!important;line-height:1!important}
   body.student-dashboard-view .t-sum{gap:6px!important;flex-wrap:nowrap!important}body.student-dashboard-view .t-sum .tag{font-size:.6875rem!important;padding:2px 7px!important;line-height:1.4!important;white-space:nowrap}body.student-dashboard-view .t-sum .t-chip{font-size:.6875rem!important;padding:2px 7px!important}
   body.student-dashboard-view .t-class-name{display:flex!important;flex-direction:row!important;align-items:baseline;justify-content:space-between;gap:10px}
   body.student-dashboard-view .t-class-name b,body.student-dashboard-view .t-class-name span{font-size:.9375rem!important;font-weight:700!important;color:var(--t-ink)}
@@ -1020,6 +1035,7 @@ a.t-open:hover span{text-decoration:underline}
 .t-class.is-empty{opacity:.55}
 .t-card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:13px}.t-card-head h2{margin:0!important}
 .t-dayc-head{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:44px;cursor:pointer}.t-dayc-head h2{margin:0!important}
+.t-dayc.is-today{border-color:#e5c16b!important;box-shadow:0 0 0 1px #e5c16b!important;background:#fffaf0!important}.t-dayc.is-today .t-dayc-head h2,.t-dayc.is-today .t-dayc-head h2 svg{color:#8a6414!important}
 .t-dayc-body{margin-top:10px}.t-dayc-body[hidden]{display:none!important}
 .t-dayc-body .t-class:first-child{border-top:0}
 .t-sub-head,.t-sub .t-bar{cursor:pointer}.t-sub-body[hidden]{display:none!important}
@@ -1531,7 +1547,7 @@ a.t-open:hover span{text-decoration:underline}
     }
     function tWeekList(kind) {
       const list = [...T.sess].sort((a, b) => (a.session_date + hhmm(a.start_time)).localeCompare(b.session_date + hhmm(b.start_time)));
-      const tdy = ymd(new Date()), days = [...new Set(list.map(s => s.session_date))].sort((a, b) => (b === tdy) - (a === tdy));
+      const tdy = ymd(new Date()), days = [...new Set(list.map(s => s.session_date))].sort();
       const icon = kind === 'lesson' ? 'presentation' : 'file-check-2', title = kind === 'lesson' ? 'Bài học' : 'Bài tập';
       const cards = days.map(d => {
         const day = list.filter(s => s.session_date === d), key = kind + d, closed = !T.dayOpenM.has(key);
@@ -1542,7 +1558,7 @@ a.t-open:hover span{text-decoration:underline}
           const empty = !ms.length && !asg.length;
           return `<div class="t-class${empty ? ' is-empty' : ''}"><div class="t-class-name"><b>${esc(cl.class_name || cl.class_code || '')}</b><span>${hhmm(s.start_time)} – ${hhmm(s.end_time)}</span></div><div>${empty ? '<p class="t-none">Chưa có.</p>' : ms.map(m => tMat(m, id, false)).join('') + asg.map(tAsg).join('')}</div></div>`;
         }).join('');
-        return `<section class="card t-dayc" data-dkey="${key}"><div class="t-dayc-head" aria-expanded="${!closed}"><h2><i data-lucide="calendar-days"></i>${d === tdy ? 'Hôm nay - ' : ''}${fmtDay(d)}</h2><span class="tag bg-slate-100 text-slate-600">${day.length} lớp</span></div><div class="t-dayc-body" ${closed ? 'hidden' : ''}>${rows}</div></section>`;
+        return `<section class="card t-dayc${d === tdy ? ' is-today' : ''}" data-dkey="${key}"><div class="t-dayc-head" aria-expanded="${!closed}"><h2><i data-lucide="calendar-days"></i>${d === tdy ? 'Hôm nay - ' : ''}${fmtDay(d)}</h2><span class="tag bg-slate-100 text-slate-600">${day.length} lớp</span></div><div class="t-dayc-body" ${closed ? 'hidden' : ''}>${rows}</div></section>`;
       }).join('');
       return `<section class="card t-daybar"><h2><i data-lucide="${icon}"></i>${title} các lớp trong tuần</h2></section>${cards || '<section class="card text-center text-sm text-slate-500">Tuần này chưa có buổi học nào.</section>'}`;
     }
