@@ -1923,17 +1923,27 @@ body .student-overview-highlight .g-week-sched,body .student-overview-highlight 
       window.scrollTo(0, 0);
     }
 
-    /* Keep the scroll position when the dashboard re-renders in place (calendar day, week step, load more). */
+    /* Keep scroll positions (window and inner scrollers such as .student-workspace) when the dashboard re-renders in place. */
     (function () {
       const rh = renderHome;
+      const keyOf = (el, root) => { const cls = el.className && el.className.baseVal === undefined ? String(el.className).trim() : ''; if (!cls) return null; const same = [...root.querySelectorAll('.' + cls.split(/\s+/).map(c => CSS.escape(c)).join('.'))]; return cls + '|' + same.indexOf(el); };
+      const find = (k, root) => { const [cls, i] = [k.slice(0, k.lastIndexOf('|')), Number(k.slice(k.lastIndexOf('|') + 1))]; return [...root.querySelectorAll('.' + cls.split(/\s+/).map(c => CSS.escape(c)).join('.'))][i] || null; };
       renderHome = function () {
         const app = document.getElementById('app');
         const was = !!(app && app.querySelector('.student-shell'));
-        const y = window.scrollY || document.documentElement.scrollTop || 0;
+        const wy = window.scrollY || document.documentElement.scrollTop || 0;
+        const saved = [];
+        if (was) app.querySelectorAll('*').forEach(el => {
+          if (el.scrollTop > 0 && el.scrollHeight > el.clientHeight) { const oy = getComputedStyle(el).overflowY; if (oy === 'auto' || oy === 'scroll') { const k = keyOf(el, app); if (k) saved.push([k, el.scrollTop]); } }
+        });
         const r = rh.apply(this, arguments);
-        if (was && y > 0) {
-          window.scrollTo(0, y);
-          requestAnimationFrame(() => window.scrollTo(0, y));
+        if (was) {
+          const apply = () => {
+            if (wy > 0) window.scrollTo(0, wy);
+            saved.forEach(([k, t]) => { const el = find(k, app); if (el) el.scrollTop = t; });
+          };
+          apply();
+          requestAnimationFrame(apply);
         }
         return r;
       };

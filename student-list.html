@@ -288,6 +288,7 @@
             <td class="py-3 px-2"><button type="button" data-act="status" data-id="${s.id}" title="Bấm để đổi trạng thái" aria-label="Trạng thái ${esc(s.student_name)}: ${s.is_active ? 'Đang học' : 'Tạm ngưng'}. Bấm để đổi" class="text-[11px] px-2 py-1 rounded-full cursor-pointer ${s.is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}" style="border:0;min-height:28px">${s.is_active ? 'Đang học' : 'Tạm ngưng'}</button></td>
             <td class="py-3 px-2 text-xs text-slate-500${s.note ? '' : ' note-empty'}">${esc(s.note || '—')}</td>
             <td class="cell-actions py-3 px-2"><div class="flex justify-end">
+              <button type="button" class="icon-btn" data-act="copylink" data-id="${s.id}" aria-label="Sao chép link trang ${esc(s.student_name)}" title="Sao chép link trang học sinh"><i data-lucide="link" class="w-4 h-4"></i></button>
               ${SCORE.KINDS[SCORE.programOf(cls && cls.class_code)] ? `<button type="button" class="icon-btn" data-act="target" data-id="${s.id}" aria-label="Mục tiêu điểm ${esc(s.student_name)}"><i data-lucide="target" class="w-4 h-4"></i></button>` : ''}
               <button type="button" class="icon-btn" data-act="edit" data-id="${s.id}" aria-label="Sửa ${esc(s.student_name)}"><i data-lucide="pencil" class="w-4 h-4"></i></button>
               <button type="button" class="icon-btn danger" data-act="delete" data-id="${s.id}" aria-label="Xóa ${esc(s.student_name)}"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
@@ -404,6 +405,13 @@
         await reload('Đã xóa học viên.');
       }
 
+      async function copyLink(id) {
+        const s = find(id); if (!s) return;
+        const url = new URL('student.html#' + encodeURIComponent(s.student_code), location.href).href;
+        try { await navigator.clipboard.writeText(url); LMS.toast('Đã sao chép link của ' + s.student_name); }
+        catch (e) { LMS.toast('Không sao chép được. Link: ' + url); }
+      }
+
       async function copyCode(id) {
         const s = find(id); if (!s) return;
         try { await navigator.clipboard.writeText(s.student_code); LMS.toast('Đã sao chép mã ' + s.student_code); }
@@ -499,7 +507,7 @@
         $('rows').addEventListener('click', e => {
           const b = e.target.closest('[data-act]'); if (!b) return;
           const act = b.dataset.act, id = b.dataset.id;
-          if (act === 'target') openTargets(id); else if (act === 'edit') edit(id); else if (act === 'delete') remove(id); else if (act === 'copy') copyCode(id); else if (act === 'status') toggleStatus(id);
+          if (act === 'target') openTargets(id); else if (act === 'edit') edit(id); else if (act === 'delete') remove(id); else if (act === 'copy') copyCode(id); else if (act === 'copylink') copyLink(id); else if (act === 'status') toggleStatus(id);
         });
       }
 
