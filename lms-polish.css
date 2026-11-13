@@ -1167,3 +1167,23 @@ body:has(#btn-prev-week) a.lp-row,body:has(#btn-prev-week) a.rounded-lg.bg-sky-5
 @media(min-width:1024px){
   html[data-lms-view="overview"] body>main{padding-top:20px!important;padding-bottom:16px!important;padding-left:clamp(18px,3vw,44px)!important;padding-right:clamp(18px,3vw,44px)!important}
 }
+
+/* Desktop: dải thống kê Lớp học / Học viên / Học phí bắt đầu cùng vị trí với khung Học liệu
+   (main là vùng cuộn nên top:80px trước đó đẩy dải xuống thêm 80px) */
+@media(min-width:641px){
+  .class-stat-strip,.student-stat-strip,body.tuition-page .tuition-main>section:first-child{top:-12px!important}
+}
+
+/* Desktop: mọi khung dùng cùng padding trái 20px để viền các khung thẳng hàng khi thò ra ngoài lề (lms.js) */
+@media(min-width:1024px){
+  .class-stat-strip .stat-tile,.student-stat-strip .stat-tile,body.tuition-page .tuition-main>section:first-child .stat-tile,.overview-stat{padding-left:20px!important}
+  body.tuition-page .tuition-main>section.rounded-2xl,.tuition-debt-panel{padding-left:20px!important}
+  main>section.rounded-2xl,main>.bg-white.rounded-2xl,.overview-finance,.overview-panel{padding-left:20px!important}
+}
+
+/* Cột hôm nay ở lịch tuần: một lớp vàng nhạt, nền đặc (không trong suốt để khỏi chồng lớp) */
+#grid thead th.today{background:#fbf3d9!important;color:#1B1D22!important;border-radius:0!important}
+#grid td.today,#grid td.day.today,#grid td.dcol.today{background:#fdf8e8!important;box-shadow:none!important}
+#grid td.day.today:hover{background:#fbf3d9!important}
+#grid tr.free td.today{background:#dcecdf!important}
+#grid tr.busy td.today{background:#f1dfdc!important}
