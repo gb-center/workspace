@@ -20,6 +20,7 @@
   <style>
     html[data-lms-view="schedule"] #view-overview,html[data-lms-view="lib"] #view-overview,html[data-lms-view="lib"] #view-schedule{display:none!important}
     html[data-lms-view="schedule"] #view-schedule{display:block!important}
+    html[data-lms-view="lib"] #view-lib{display:block!important}
   </style>
   <style>
     #grid{border-collapse:separate;border-spacing:0;width:100%;table-layout:fixed;min-width:1040px}
@@ -43,7 +44,7 @@
     #grid tr.dim .c-name,#grid tr.dim td.day{opacity:.55}
     .chip{display:block;width:100%;text-align:center;margin-bottom:4px;padding:6px 8px;border-radius:12px;border:1px solid var(--t-tint-2);background:var(--t-tint);color:var(--t-ink);font-size:.8125rem;font-weight:600;line-height:1.25;min-height:44px}
     .chip small{display:block;font-weight:500;color:var(--t-muted);font-size:.75rem}
-    .chip.offline{background:#e0f2fe;border-color:#bae6fd;color:#075985}
+    .chip.offline{background:#e0f2fe;border-color:#bae6fd;color:#0b1f44}
     .chip.online{background:#ffedd5;border-color:#fed7aa;color:#9a3412}
     .chip.offline small,.chip.online small{color:inherit;opacity:.8}
     .chip.holiday{background:#fff;color:var(--t-muted);text-decoration:line-through}
@@ -92,7 +93,7 @@
     .pick{min-height:44px;padding:0 14px;border-radius:9999px;border:1px solid var(--t-tint-2);background:#fff;color:var(--t-primary);font-weight:700;font-size:.8125rem}
     .pick-green{background:#dcfce7;border-color:#86efac;color:#166534}
     .pick-yellow{background:#fef9c3;border-color:#fde047;color:#854d0e}
-    .pick-blue{background:#e0f2fe;border-color:#7dd3fc;color:#075985}
+    .pick-blue{background:#e0f2fe;border-color:#7dd3fc;color:#0b1f44}
     .pickgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
     .dlg label.pickrow{display:flex;align-items:center;gap:10px;min-height:44px;margin:0;padding:0 12px;border:1px solid var(--t-border);border-radius:12px;background:#fff;font-size:.9375rem;font-weight:600;cursor:pointer}
     .pickrow input{width:20px;height:20px;flex:none}
@@ -146,10 +147,20 @@
 (function(){var h=document.querySelector('body>header');if(!h||document.getElementById('m-weekbar'))return;var bar=document.createElement('div');bar.id='m-weekbar';h.insertAdjacentElement('afterend',bar);
 var mq=matchMedia('(max-width:640px)'),items=[];
 function pick(){var wn=h.querySelector('.week-navigation');if(wn)return[wn];return['prev','month','next','thismonth'].map(function(i){return document.getElementById(i)}).filter(Boolean)}
-function place(){var els=pick();if(mq.matches){if(items.length)return;els.forEach(function(e){items.push({e:e,p:e.parentNode,n:e.nextSibling});bar.appendChild(e)});bar.hidden=!items.length}else{while(items.length){var x=items.pop();x.p.insertBefore(x.e,x.n)}bar.hidden=true}}
-place();mq.addEventListener('change',place);
+var c=document.createElement('div');c.id='m-center';
+function home(e){var h=e.__h;if(!h)return;if(h.n&&h.n.parentNode===h.p)h.p.insertBefore(e,h.n);else h.p.appendChild(e)}
+function place(){var els=pick();var tb=document.querySelector('.schedule-toolbar');var dn=document.getElementById('day-nav'),dt=document.getElementById('day-today'),so=document.getElementById('sort');var a=tb&&tb.querySelector(':scope>div:first-child'),z=tb&&tb.querySelector(':scope>div:last-child');var sw=document.getElementById('m-sort');if(!sw){sw=document.createElement('span');sw.id='m-sort';sw.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 16 4 4 4-4M7 20V4M21 8l-4-4-4 4M17 4v16"/></svg>'}var side=[a,so?sw:null,dt,z].filter(Boolean);[dn,so].concat([a,dt,z]).forEach(function(e){if(e&&!e.__h)e.__h={p:e.parentNode,n:e.nextSibling}});
+if(mq.matches){if(so&&so.parentNode!==sw)sw.appendChild(so);if(!c.parentNode)bar.appendChild(c);if(!items.length)els.forEach(function(e){items.push({e:e,p:e.parentNode,n:e.nextSibling});c.appendChild(e)});if(dn&&dn.parentNode!==c)c.appendChild(dn);side.forEach(function(e){if(e.parentNode!==bar)bar.appendChild(e)});bar.hidden=!items.length}else{if(so&&so.parentNode===sw)home(so);if(sw.parentNode)sw.remove();side.slice().reverse().forEach(function(e){if(e.parentNode===bar)home(e)});if(dn&&dn.parentNode===c)home(dn);while(items.length){var x=items.pop();x.p.insertBefore(x.e,x.n)}bar.hidden=true}}
+
+var pop=document.createElement('div');pop.id='m-pop';pop.hidden=true;pop.innerHTML='<div class="m-pop-card"><b>Tìm lớp</b><div class="m-pop-body"></div><button type="button" class="m-pop-ok">Xong</button></div>';document.body.appendChild(pop);
+function closePop(){var a=document.querySelector('.m-pop-body');['search','filter-status'].forEach(function(id){var e=document.getElementById(id);if(e&&e.parentNode===a){var d=(document.getElementById('m-weekbar').querySelector(':scope>div:has(.m-fold-toggle)')||document.querySelector('.schedule-toolbar>div'));if(d)d.appendChild(e)}});pop.hidden=true}
+pop.addEventListener('click',function(e){if(e.target===pop||e.target.classList.contains('m-pop-ok'))closePop()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!pop.hidden)closePop()});
+document.addEventListener('click',function(e){var t=e.target.closest('#m-weekbar .m-fold-toggle');if(!t||!mq.matches)return;e.stopImmediatePropagation();e.preventDefault();var a=pop.querySelector('.m-pop-body');['search','filter-status'].forEach(function(id){var x=document.getElementById(id);if(x)a.appendChild(x)});pop.hidden=false;var q=document.getElementById('search');if(q)setTimeout(function(){q.focus()},50)},true);
+place();mq.addEventListener('change',place);document.addEventListener('DOMContentLoaded',place);
 })();
 </script>
+  <script>(function(){var v=document.documentElement.dataset.lmsView,t=document.getElementById('page-title');if(t)t.textContent=v==='lib'?'Học liệu':v==='schedule'?'Lịch tuần':'Tổng quan';var tb=document.getElementById('tabbar');if(tb&&v==='lib')tb.style.display='none'})();</script>
 
 
   <main class="flex-1 w-full max-w-none mx-auto px-3 sm:px-5 lg:px-7 py-4 sm:py-6 space-y-4">
@@ -188,9 +199,9 @@ place();mq.addEventListener('change',place);
       </div>
       <div id="day-nav" class="day-nav" role="group" aria-label="Chuyển ngày">
         <button id="day-prev" type="button" class="icon-btn" aria-label="Ngày trước"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
-        <div class="day-nav-label" aria-live="polite"><b id="day-nav-dow"></b><span id="day-nav-date"></span></div>
+        <div class="day-nav-label" id="day-nav-label" role="button" tabindex="0" title="Bấm để về hôm nay" aria-live="polite"><b id="day-nav-dow"></b><span id="day-nav-date"></span></div>
         <button id="day-next" type="button" class="icon-btn" aria-label="Ngày sau"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
-        <button id="day-today" type="button" class="icon-btn" aria-label="Về hôm nay" title="Về hôm nay"><i data-lucide="calendar-check" class="w-5 h-5"></i></button>
+        <button id="day-today" type="button" class="icon-btn" aria-label="Về hôm nay" title="Về hôm nay"><i data-lucide="calendar-check" class="w-5 h-5"></i><span>Về hôm nay</span></button>
       </div>
       <div class="flex flex-wrap gap-2">
         <button id="btn-copy" type="button" class="btn-soft m-ico" aria-label="Chép sang tuần sau" title="Chép sang tuần sau"><i data-lucide="copy" class="w-4 h-4"></i><span>Chép sang tuần sau</span></button>
@@ -301,11 +312,11 @@ place();mq.addEventListener('change',place);
       <label for="dc-program">Chương trình</label>
       <select id="dc-program" class="field">
         <option value="">Chưa gắn chương trình</option>
-        <option value="gs">Global Success</option>
-        <option value="ac12">Ôn thi THPT / ĐGNL</option>
-        <option value="ielts">IELTS</option>
-        <option value="toeic">TOEIC</option>
-        <option value="comm">Speaking</option>
+        <option value="gs">GS</option>
+        <option value="ac12">AC12</option>
+        <option value="ielts">IE</option>
+        <option value="toeic">TO</option>
+        <option value="comm">GT</option>
       </select>
       <label for="ds-status">Trạng thái</label>
       <select id="ds-status" class="field">
@@ -467,7 +478,7 @@ place();mq.addEventListener('change',place);
       const STATUS_TXT = { planned: 'Chưa dạy', done: 'Đã dạy', cancel: 'Hủy', makeup: 'Bù', holiday: 'Nghỉ lễ' };
       const DEF_BLOCKED = ['07:00 - 22:30', '08:00 - 17:00', '08:00 - 17:00', '08:00 - 17:00', '08:00 - 19:00', '20:30 - 22:00', '18:00 - 22:30'];
       const st = { c: null, classes: [], counts: {}, activeStudentCount: 0, unassignedCount: 0, programs: {}, sessions: [], blocked: DEF_BLOCKED.slice(), week: 1, selDay: 0, busy: false, view: 'overview', mats: [], lib: [], libAsg: [], libLoaded: false, libProg: '', libWeek: 'all', libCollapsed: {}, scanAll: [], scanAt: 0, overviewFinance: null };
-      const CLASS_PROGRAM = { gs: 'Global Success', ac12: 'Ôn thi THPT / ĐGNL', ielts: 'IELTS', toeic: 'TOEIC', comm: 'Speaking' };
+      const CLASS_PROGRAM = { gs: 'GS', ac12: 'AC12', ielts: 'IE', toeic: 'TO', comm: 'GT' };
 
       const pad = n => String(n).padStart(2, '0');
       const ymd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
@@ -598,7 +609,7 @@ place();mq.addEventListener('change',place);
         $('week-range').textContent = `${pad(dates[0].getDate())}.${pad(dates[0].getMonth() + 1)}.${dates[0].getFullYear()} – ${pad(dates[6].getDate())}.${pad(dates[6].getMonth() + 1)}.${dates[6].getFullYear()}`;
         headState(); $('grid').dataset.day = String(st.selDay);
 
-        { const d = dates[st.selDay]; $('day-nav-dow').textContent = st.selDay === 6 ? 'Chủ nhật' : 'Thứ ' + ['Hai', 'Ba', 'Tư', 'Năm', 'Sáu', 'Bảy'][st.selDay]; $('day-nav-date').textContent = pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear(); }
+        { const d = dates[st.selDay]; $('day-nav-dow').textContent = st.selDay === 6 ? 'Chủ nhật' : 'Thứ ' + ['Hai', 'Ba', 'Tư', 'Năm', 'Sáu', 'Bảy'][st.selDay]; const away = st.week !== NOW_WEEK || st.selDay !== (new Date().getDay() + 6) % 7; $('day-nav-date').textContent = pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear(); $('day-today').classList.toggle('is-away', away); }
         $('day-tabs').innerHTML = DAY.map((n, i) => `<button type="button" data-day="${i}" aria-pressed="${i === st.selDay}">${i === 6 ? 'CN' : 'T' + (i + 2)} ${pad(dates[i].getDate())}/${pad(dates[i].getMonth() + 1)}</button>`).join('');
         $('grid-head').innerHTML = '<th class="c-name">Lớp</th>' + DAY.map((n, i) =>
           `<th class="dcol d${i}${keys[i] === todayKey ? ' today' : ''}">${n}<div style="font-weight:500;opacity:.8">${pad(dates[i].getDate())}/${pad(dates[i].getMonth() + 1)}</div></th>`).join('');
@@ -685,8 +696,8 @@ place();mq.addEventListener('change',place);
         $('overview-stats').innerHTML = stats.map((x, i) => `<a class="overview-stat overview-stat-${i + 1}" ${x.href ? `href="${x.href}"` : `href="#schedule" data-home-view="schedule"`}><span class="overview-stat-icon"><i data-lucide="${x.icon}"></i></span><span class="overview-stat-label">${x.label}</span><b>${x.value}</b><small>${x.note}</small></a>`).join('');
         const f = st.overviewFinance;
         $('overview-finance').innerHTML = `<div class="overview-section-title"><div><h2>Học phí tháng ${f ? f.month : 'này'}</h2><p>Tổng hợp từ tab Học phí</p></div><a href="tuition.html">Chi tiết <i data-lucide="arrow-right"></i></a></div><div class="overview-money-grid">${[
-          ['Nợ tháng trước|Nợ cũ', f && fmtMoney(f.arrears), 'history'], ['Học phí tháng này|Học phí', f && fmtMoney(f.due), 'wallet'], ['Đã thu', f && fmtMoney(f.paid), 'circle-dollar-sign'], ['Còn lại', f && fmtMoney(f.debt), 'clock-3'], ['Tổng chi', f && fmtMoney(f.expenses), 'receipt']
-        ].map(x => `<div class="overview-money"><i data-lucide="${x[2]}"></i><span>${x[0].split('|').map((t, j, a) => a.length > 1 ? `<span class="${j ? 't-short' : 't-full'}">${t}</span>` : t).join('')}</span><b>${x[1] || '–'}</b></div>`).join('')}</div>`;
+          ['Học phí', f && fmtMoney(f.due), 'wallet'], ['Nợ cũ', f && fmtMoney(f.arrears), 'history'], ['Đã thu', f && fmtMoney(f.paid), 'circle-dollar-sign'], ['Còn lại', f && fmtMoney(f.debt), 'clock-3'], ['Đã chi', f && fmtMoney(f.expenses), 'receipt']
+        ].map(x => `<div class="overview-money"><i data-lucide="${x[2]}"></i><span>${x[0]}</span><b>${x[1] || '–'}</b></div>`).join('')}</div>`;
         const dates = weekDates(st.week), first = dates[0], last = dates[6];
         $('overview-week-label').textContent = pad(first.getDate()) + '/' + pad(first.getMonth() + 1) + ' – ' + pad(last.getDate()) + '/' + pad(last.getMonth() + 1);
         const today = ymd(new Date()), upcoming = st.sessions.filter(s => s.session_date >= today && !['cancel', 'holiday', 'done'].includes(s.status)).sort((a, b) => a.session_date.localeCompare(b.session_date) || a.start_time.localeCompare(b.start_time)).slice(0, 5);
@@ -697,7 +708,7 @@ place();mq.addEventListener('change',place);
       /* ---------- Bài học theo tuần ---------- */
       const isHttp = u => /^https?:\/\/\S+$/i.test(u || '');
       const weekKey = () => ymd(weekDates(st.week)[0]);
-      const PROGRAM = { AC: 'Global Success', IE: 'IELTS', TO: 'TOEIC', GT: 'Speaking' };
+      const PROGRAM = { AC: 'GS', IE: 'IE', TO: 'TO', GT: 'GT' };
       const matClasses = () => st.classes.filter(c => !c.is_archived).sort((a, b) => natural(a.class_code, b.class_code));
       async function loadMats() {
         const r = await st.c.from('week_materials').select('id,week_start,kind,skill,title,url,class_ids,sort_order,session_dates')
@@ -884,12 +895,12 @@ place();mq.addEventListener('change',place);
         const q = $('lib-search').value.trim().toLowerCase(), cid = Number(sel.value) || 0, kind = $('lib-kind').value;
         const selectedWeek = st.libWeek === 'current' ? currentWeek : st.libWeek;
         const base = allItems.filter(m => (st.libWeek === 'all' || toMon(m.week_start) === selectedWeek) && (!q || m.title.toLowerCase().includes(q)) && (!cid || (m.class_ids || []).includes(cid)) && (!kind || m.kind === kind) && (!$('lib-skill').value || m.skill === $('lib-skill').value));
-        const PL = { ielts: 'IELTS', comm: 'Giao tiếp', toeic: 'TOEIC', gs: 'Global Success' }, PS = { ielts: 'IE', comm: 'GT', toeic: 'TO', gs: 'GS' };
+        const PL = { ielts: 'IE', comm: 'GT', toeic: 'TO', gs: 'GS' }, PS = { ielts: 'IE', comm: 'GT', toeic: 'TO', gs: 'GS' };
         const progKey = code => { const c = String(code || '').toUpperCase(); return /^IE/.test(c) ? 'ielts' : /^TO/.test(c) ? 'toeic' : /^GT/.test(c) ? 'comm' : /^(AC|GS)/.test(c) ? 'gs' : ''; };
         const progsOf = m => m.scan ? [m.prog === 'ac12' ? 'gs' : m.prog] : [...new Set((m.class_ids || []).map(id => { const c = st.classes.find(x => x.id === id); return c ? progKey(c.class_code) : ''; }).filter(Boolean))];
         const present = Object.keys(PL);
         if (st.libProg && !present.includes(st.libProg)) st.libProg = '';
-        $('lib-tabs').innerHTML = true ? [['', 'Tất cả', 'Tất cả']].concat(present.map(k => [k, PL[k], PS[k]])).map(t => `<button type="button" class="ptab" role="tab" data-ptab="${t[0]}" aria-label="${esc(t[1])}" aria-pressed="${st.libProg === t[0]}"><span class="pl-full">${t[1]}</span><span class="pl-short">${t[2]}</span></button>`).join('') : '';
+        $('lib-tabs').innerHTML = ([['', 'Tất cả', 'Tất cả']].concat(present.map(k => [k, PL[k], PS[k]])).map(t => `<button type="button" class="ptab" role="tab" data-ptab="${t[0]}" aria-label="${esc(t[1])}" aria-pressed="${st.libProg === t[0]}"><span class="pl-full">${t[1]}</span><span class="pl-short">${t[2]}</span></button>`).join('')) + `<select id="lib-psel" class="ptab-sel" aria-label="Chọn chương trình"${st.libProg ? ' data-on="1"' : ''}><option value="">Chương trình</option>${present.map(k => `<option value="${k}"${st.libProg === k ? ' selected' : ''}>${PL[k]}</option>`).join('')}</select>`;
         placeTabs();
         const list = st.libProg ? base.filter(m => progsOf(m).includes(st.libProg)) : base;
         const byWeek = {}; list.forEach(m => { const k = toMon(m.week_start) || ''; (byWeek[k] = byWeek[k] || []).push(m); });
@@ -929,7 +940,7 @@ place();mq.addEventListener('change',place);
       }
       function quickGroups() {
         const cls = matClasses(), ie = cls.filter(c => /^IE/i.test(c.class_code)).map(c => c.id), out = [{ label: 'Tất cả lớp', ids: cls.map(c => c.id), tone: 'green' }];
-        if (ie.length) out.push({ label: 'IELTS', ids: ie, tone: 'blue' });
+        if (ie.length) out.push({ label: 'IE', ids: ie, tone: 'blue' });
         return out;
       }
       function quickHtml() {
@@ -1046,9 +1057,9 @@ place();mq.addEventListener('change',place);
       const ASG_SKILLS = [['reading', 'Reading'], ['listening', 'Listening'], ['writing', 'Writing'], ['speaking', 'Speaking'], ['grammar', 'Grammar'], ['vocab', 'Vocabulary']];
       function asgGroup(a) {
         const t = (a.assignment_code + ' ' + (a.assignment_name || '')).toLowerCase();
-        if (/ielts/.test(t)) return 'IELTS'; if (/toeic/.test(t)) return 'TOEIC';
-        if (/thpt|đgnl|dgnl|vact/.test(t)) return 'ĐGNL và TN THPT'; if (/\bket\b|a2 key/.test(t)) return 'A2 Key';
-        if (/global success|(^|[^a-z])(gs\d*|ac\d+|unit)([^a-z]|$)/.test(t)) return 'Global Success';
+        if (/ielts/.test(t)) return 'IE'; if (/toeic/.test(t)) return 'TO';
+        if (/thpt|đgnl|dgnl|vact/.test(t)) return 'AC12'; if (/\bket\b|a2 key/.test(t)) return 'A2 Key';
+        if (/global success|(^|[^a-z])(gs\d*|ac\d+|unit)([^a-z]|$)/.test(t)) return 'GS';
         return 'Khác';
       }
       function asgSkill(a) {
@@ -1290,6 +1301,7 @@ place();mq.addEventListener('change',place);
         const goNow = () => { if (st.view === 'lib') { st.libWeek = 'current'; renderLib(); headState(); return; } st.week = NOW_WEEK; st.selDay = Math.max(0, (new Date().getDay() + 6) % 7); refresh(); }; $('btn-today').addEventListener('click', goNow); $('btn-thisweek').addEventListener('click', goNow);
         $('btn-copy').addEventListener('click', copyNextWeek);
         ['search', 'filter-status', 'sort'].forEach(id => $(id).addEventListener(id === 'search' ? 'input' : 'change', render));
+        $('day-nav-label').addEventListener('click', () => $('day-today').click());
         $('day-today').addEventListener('click', () => { st.week = NOW_WEEK; st.selDay = (new Date().getDay() + 6) % 7; refresh(); });
         $('day-prev').addEventListener('click', () => { if (st.selDay > 0) { st.selDay -= 1; render(); } else if (st.week > 1) { st.week -= 1; st.selDay = 6; refresh(); } });
         $('day-next').addEventListener('click', () => { if (st.selDay < 6) { st.selDay += 1; render(); } else { st.week += 1; st.selDay = 0; refresh(); } });
@@ -1341,6 +1353,7 @@ place();mq.addEventListener('change',place);
         $('view-lib').addEventListener('click', e => { const r = e.target.closest('[data-mt-key]'); if (!r) return; const x = (st.mtMap || {})[r.dataset.mtKey]; if (!x) return; $('dmt-title').textContent = x.title + ' · ' + (x.hw ? 'Hạn nộp' : 'Ngày học'); $('dmt-lines').innerHTML = x.lines; $('dmt-acts').innerHTML = x.acts; openDlg('dlg-mt'); icons(); });
         $('dlg-mt').addEventListener('click', e => { if (e.target === $('dlg-mt') || e.target.closest('[data-edit-mat],[data-del-mat],[data-prev-asg],[data-rename-asg],[data-edit-asg]')) closeDlgs(); });
         $('view-lib').addEventListener('click', e => { const d = e.target.closest('[data-del-mat]'); if (d) return removeMat(d.dataset.delMat); const b = e.target.closest('[data-edit-mat]'); if (b) return openMat(b.dataset.editMat); const a = e.target.closest('[data-edit-asg]'); if (a) return openAsg(a.dataset.editAsg); const pv = e.target.closest('[data-prev-asg]'); if (pv) return previewAsg(pv.dataset.prevAsg); const rn = e.target.closest('[data-rename-asg]'); if (rn) return renameAsg(rn.dataset.renameAsg); const sc = e.target.closest('[data-add-scan]'); if (sc) { const it = st.scanAll.find(x => x.path === sc.dataset.addScan); if (it) return openMat(null, it); } const pt = e.target.closest('[data-ptab]'); if (pt) { st.libProg = pt.dataset.ptab; renderLib(); } });
+        $('view-lib').addEventListener('change', e => { if (e.target.id === 'lib-psel') { st.libProg = e.target.value; renderLib(); } });
         ['lib-search', 'lib-class', 'lib-kind', 'lib-skill', 'lib-week-scope'].forEach(id => $(id).addEventListener(id === 'lib-search' ? 'input' : 'change', () => { if (id === 'lib-week-scope') st.libWeek = $('lib-week-scope').value; renderLib(); }));
         $('dlg-mat').querySelector('form').addEventListener('submit', saveMat);
         $('dm-del').addEventListener('click', deleteMat);

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Student List | Danh sách học viên</title>
+  <title>Student List | Học viên</title>
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="manifest" href="manifest.webmanifest">
@@ -38,7 +38,7 @@
 
   <header class="bg-white border-b border-slate-200 sticky top-0 z-30 page-title-header">
     <div class="w-full max-w-none mx-auto px-3 sm:px-5 lg:px-7 py-3 flex items-center justify-between">
-      <h1 class="page-header-title">Danh sách học viên</h1>
+      <h1 class="page-header-title">Học viên</h1>
       <div class="page-header-actions"><a id="btn-teacher" class="icon-btn" href="student.html#teacher" aria-label="Trang giáo viên" title="Trang giáo viên"><i data-lucide="graduation-cap" class="w-5 h-5"></i></a></div>
     </div>
   </header>
@@ -441,7 +441,7 @@
         const [t, m] = await Promise.all([state.client.from('student_targets').select('kind,baseline,target').eq('student_id', s.id), state.client.from('student_scores').select('kind,week_start,score').eq('student_id', s.id).order('week_start')]);
         if (t.error || m.error) { LMS.toast(LMS.friendlyError(t.error || m.error)); return; }
         tg = { s, program, targets: {}, manual: m.data || [] }; (t.data || []).forEach(r => { tg.targets[r.kind] = r; });
-        $('tg-title').textContent = 'Mục tiêu điểm · ' + s.student_name; $('tg-sub').textContent = 'Lớp ' + (cls ? cls.class_name : '') + ' · ' + ({ ielts: 'IELTS', toeic: 'TOEIC', ac12: 'AC12 (ĐGNL và TN THPT)' }[program]);
+        $('tg-title').textContent = 'Mục tiêu điểm · ' + s.student_name; $('tg-sub').textContent = 'Lớp ' + (cls ? cls.class_name : '') + ' · ' + ({ ielts: 'IE', toeic: 'TO', ac12: 'AC12' }[program]);
         $('tg-mk').innerHTML = SCORE.KINDS[program].filter(k => k !== 'overall').map(k => `<option value="${k}">${esc(SCORE.KIND_LABEL[k])}</option>`).join('');
         const n = new Date(); $('tg-mw').value = n.getFullYear() + '-' + String(n.getMonth() + 1).padStart(2, '0') + '-' + String(n.getDate()).padStart(2, '0'); $('tg-ms').value = ''; $('tg-msg').textContent = '';
         renderTargetRows(); renderManual(); $('targets').hidden = false;

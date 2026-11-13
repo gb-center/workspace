@@ -59,14 +59,22 @@
 .att-hl span{width:28px;text-align:center;font-size:.6875rem;font-weight:700;color:#64748b}
 .att-sq{width:28px;height:28px;border:0;background:none;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;border-radius:50%}
 .att-sq svg{width:22px;height:22px;display:block}
+.att-btn{display:inline-flex;align-items:center;gap:5px;height:34px;padding:0 10px;border:0;border-radius:9999px;font-size:.75rem;font-weight:700;white-space:nowrap;cursor:pointer}
+.att-btn.a0{background:#f1f5f9;color:#64748b}.att-btn.a1{background:#fef3c7;color:#92400e}.att-btn.a2{background:#dcfce7;color:#166534}
+.dat-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #f1f5f9}
+.dat-name{flex:1;min-width:0;font-weight:600;font-size:.9375rem;color:#0f172a}
+.dat-b{width:44px;height:44px;border-radius:9999px;border:1.5px solid #cbd5e1;background:#fff;color:#94a3b8;font-size:1.1rem;font-weight:800;cursor:pointer}
+.dat-b.on-p{background:#7dc943;border-color:#7dc943;color:#fff}.dat-b.on-a{background:#f44858;border-color:#f44858;color:#fff}
+.srow-att,.h-acts{display:none}.h-mat{width:34px;height:34px;border:0;background:transparent;color:#0b1f44;display:inline-flex;align-items:center;justify-content:center}.h-acts{align-items:center;gap:4px}
 .att-opt{min-height:56px;border-radius:14px;border:1.5px solid var(--t-line,#cbd5e1);background:#fff;color:var(--t-ink,#0f172a);font-weight:800;font-size:1rem;cursor:pointer}
 #da-present[aria-pressed="true"]{background:#e0f2fe;border-color:#7dd3fc;color:#075985}
 #da-absent[aria-pressed="true"]{background:#ffe4e6;border-color:#fda4af;color:#9f1239}
-.hrow{display:grid;grid-template-columns:84px 56px 120px 136px 1fr;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;background:#fff;border:1px solid #f1f5f9}
+.hrow{display:grid;grid-template-columns:64px 56px 150px 130px 110px minmax(0,1fr);align-items:center;gap:12px;padding:10px 12px;border-radius:10px;background:#fff;border:1px solid #f1f5f9}
 .hrow .h-st{display:block;text-align:center;padding:3px 8px;border-radius:9999px;font-size:.6875rem;font-weight:600}
 @media(max-width:760px){.hrow{grid-template-columns:auto auto 1fr}.hrow .h-st{min-width:8rem}.hrow .h-note{grid-column:1/-1}}
 </style>
   <link rel="stylesheet" href="lms-polish.css">
+  <script src="lms-mode.js"></script>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col relative">
 
@@ -84,10 +92,14 @@
   <!-- NÚT KHÓA BẢO MẬT GIÁO VIÊN -->
 <header class="has-week bg-white border-b border-slate-200 sticky top-0 z-30 page-title-header">
     <div class="w-full max-w-none mx-auto px-3 sm:px-5 lg:px-7 py-3 flex items-center justify-between">
-      <h1 class="page-header-title" id="class-title-header">Đang tải...</h1>
+      <h1 class="page-header-title" id="class-title-header"><span id="class-title-text">Đang tải...</span><button type="button" id="class-state" class="state-text" aria-haspopup="dialog" aria-label="Đổi trạng thái lớp"></button></h1>
       <div class="header-tools page-header-actions flex items-center gap-2">
-      
-      <div class="flex items-center gap-1.5 bg-sky-50 p-1 rounded-xl border border-slate-200">
+      <div id="hdr-actions">
+        <a id="btn-meet" href="https://meet.google.com" target="_blank" rel="noopener" class="hero-btn solid" title="Vào lớp Online" aria-label="Vào lớp Online"><i data-lucide="video" class="w-4 h-4"></i></a>
+        <a id="btn-drive" href="https://drive.google.com" target="_blank" rel="noopener" class="hero-btn ghost" title="Drive bài giảng" aria-label="Drive bài giảng"><i data-lucide="folder" class="w-4 h-4"></i></a>
+        <button type="button" id="edit-links" class="teacher-feature hidden hero-gear" title="Cập nhật link lớp online và Drive" aria-label="Cập nhật link"><i data-lucide="settings" class="w-4 h-4"></i></button>
+      </div>
+      <div id="wk-ctl" class="flex items-center gap-1.5 bg-sky-50 p-1 rounded-xl border border-slate-200">
         <button id="btn-prev-week" class="p-2 hover:bg-white rounded-lg text-slate-600 transition" aria-label="Tuần trước"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
         <div class="text-xs text-slate-700 font-semibold px-2 flex items-center gap-1.5 min-w-[140px] justify-center">
           <i data-lucide="calendar" class="w-3.5 h-3.5 text-sky-600"></i><span id="week-indicator">Đang tải...</span>
@@ -97,37 +109,19 @@
       </div>
     </div>
   </header>
+  <div style="display:none!important"><button type="button" id="edit-meet"></button><button type="button" id="edit-class"></button></div>
 
+
+<script>
+(function(){var h=document.querySelector('body>header');if(!h||document.getElementById('m-weekbar'))return;var bar=document.createElement('div');bar.id='m-weekbar';h.insertAdjacentElement('afterend',bar);
+var mq=matchMedia('(max-width:640px)'),w=document.getElementById('wk-ctl'),acts=document.getElementById('hdr-actions'),home=w&&{p:w.parentNode,n:w.nextSibling};
+function place(){if(!w)return;if(mq.matches){bar.appendChild(w);var cb=document.getElementById('btn-curweek');if(cb)bar.appendChild(cb);if(acts)bar.appendChild(acts);var st=document.getElementById('class-state');if(st&&acts)acts.insertBefore(st,acts.firstChild);bar.hidden=false}else{if(w.parentNode===bar)home.p.insertBefore(w,home.n);var cb2=document.getElementById('btn-curweek');if(cb2)w.insertAdjacentElement('afterend',cb2);if(acts)home.p.insertBefore(acts,w);var st2=document.getElementById('class-state'),h1=document.getElementById('class-title-header');if(st2&&h1)h1.appendChild(st2);bar.hidden=true}}
+var cw=document.createElement('button');cw.id='btn-curweek';cw.type='button';cw.textContent='Tuần này';bar.appendChild(cw);
+place();mq.addEventListener('change',place);
+var cur=document.querySelector('#lms-nav a[aria-current=page]');if(cur&&cur.scrollIntoView)setTimeout(function(){try{cur.scrollIntoView({inline:'center',block:'nearest'})}catch(e){}},0);
+})();
+</script>
   <main class="flex-1 w-full max-w-none mx-auto px-3 sm:px-5 lg:px-7 py-4 sm:py-6 space-y-6">
-    <div class="hero-card rounded-2xl p-6 sm:p-7 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      <div class="flex-1">
-        <div class="flex items-center gap-2">
-          <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-white/20 text-white">Cổng học viên</span>
-          <span id="class-state" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-white/20 text-white"></span>
-        </div>
-        <h2 id="class-display-name" class="text-2xl sm:text-3xl font-bold mt-2 text-white">&nbsp;</h2>
-        <p class="text-xs text-sky-100/90 mt-1">Quản lý lịch học, học liệu và tiến độ học viên theo tuần.</p>
-      </div>
-      <div class="flex flex-wrap items-center gap-3 shrink-0">
-        <div class="flex items-center gap-1">
-          <a id="btn-meet" href="https://meet.google.com" target="_blank" rel="noopener" class="hero-btn solid">
-            <i data-lucide="video" class="w-4 h-4"></i><span>Vào lớp Online</span>
-          </a>
-          <button type="button" id="edit-meet" class="teacher-feature hidden p-2 text-white bg-white/10 hover:bg-white/20 rounded-lg transition" title="Đổi link lớp online (dùng chung)">
-            <i data-lucide="settings" class="w-4 h-4"></i>
-          </button>
-        </div>
-        <div class="flex items-center gap-1">
-          <a id="btn-drive" href="https://drive.google.com" target="_blank" rel="noopener" class="hero-btn ghost">
-            <i data-lucide="folder" class="w-4 h-4"></i><span>Drive bài giảng</span>
-          </a>
-          <button type="button" id="edit-class" class="teacher-feature hidden p-2 text-white bg-white/10 hover:bg-white/20 rounded-lg transition" title="Sửa tên lớp và link Drive">
-            <i data-lucide="settings" class="w-4 h-4"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-
     <div class="panel-overview rounded-2xl p-5 sm:p-6">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 gap-2 mb-4">
         <div><h3 class="font-bold text-slate-900 text-sm flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4 text-sky-600"></i><span>Thời khóa biểu và tình trạng buổi học</span></h3></div>
@@ -141,11 +135,11 @@
 
     <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6">
       <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2 mb-3"><i data-lucide="book-open" class="w-4 h-4 text-sky-600"></i><span>Học liệu và bài tập trong tuần</span></h3>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="p-3.5 rounded-xl panel-soft space-y-3">
           <div class="flex items-center justify-between gap-2">
             <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5"><i data-lucide="presentation" class="w-4 h-4 text-sky-600"></i>Bài học tuần</span>
-            <button type="button" id="add-lesson-link" class="teacher-feature hidden add-link-btn" title="Thêm bài học" aria-label="Thêm bài học"><i data-lucide="plus"></i><span class="add-link-label">Thêm</span></button>
+            <button type="button" id="add-lesson-link" class="teacher-feature hidden add-link-btn" title="Thêm bài học" aria-label="Thêm bài học"><i data-lucide="plus"></i></button>
           </div>
           <div id="lesson-links-list" class="space-y-2"></div>
           <div id="lesson-shared" class="space-y-2"></div>
@@ -153,10 +147,16 @@
         <div class="p-3.5 rounded-xl panel-soft space-y-3">
           <div class="flex items-center justify-between gap-2">
             <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5"><i data-lucide="file-check-2" class="w-4 h-4 text-sky-600"></i>Bài tập (Homework)</span>
-            <button type="button" id="add-hw-link" class="teacher-feature hidden add-link-btn" title="Thêm bài tập" aria-label="Thêm bài tập"><i data-lucide="plus"></i><span class="add-link-label">Thêm</span></button>
+            <button type="button" id="add-hw-link" class="teacher-feature hidden add-link-btn" title="Thêm bài tập" aria-label="Thêm bài tập"><i data-lucide="plus"></i></button>
           </div>
           <div id="hw-links-list" class="space-y-2"></div>
           <div id="hw-shared" class="space-y-2"></div>
+        </div>
+        <div class="p-3.5 rounded-xl panel-soft space-y-3 lp-panel">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5"><i data-lucide="monitor-play" class="w-4 h-4 text-sky-600"></i>Lesson presentation</span>
+          </div>
+          <div id="slide-shared" class="space-y-2"></div>
         </div>
       </div>
       
@@ -165,9 +165,9 @@
     <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 gap-3 mb-4">
         <div><h3 class="font-bold text-slate-900 text-sm flex items-center gap-2"><i data-lucide="users" class="w-4 h-4 text-sky-600"></i><span>Danh sách học sinh</span></h3></div>
-        <div class="teacher-feature hidden items-center gap-2">
-          <button type="button" id="btn-obj" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-semibold rounded-lg flex items-center gap-1" style="min-height:44px"><i data-lucide="target" class="w-3.5 h-3.5"></i><span>Mục tiêu nội dung</span></button>
-          <a href="student-list.html" class="px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-lg flex items-center gap-1"><i data-lucide="users" class="w-3.5 h-3.5"></i><span>Quản lý học viên</span></a>
+        <div class="teacher-feature hidden flex items-center gap-2" style="flex-direction:row">
+          <button type="button" id="btn-obj" class="tb-ic px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-semibold rounded-lg flex items-center gap-1" style="min-height:44px" title="Mục tiêu nội dung" aria-label="Mục tiêu nội dung"><i data-lucide="target" class="w-3.5 h-3.5"></i><span class="t-full">Mục tiêu nội dung</span><span class="t-short">Mục tiêu</span></button>
+          <button type="button" id="btn-addstu" class="tb-ic px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-lg flex items-center gap-1" style="min-height:44px" title="Thêm học viên vào lớp" aria-label="Thêm học viên vào lớp"><i data-lucide="user-plus" class="w-3.5 h-3.5"></i><span>Thêm</span></button>
         </div>
       </div>
       <div class="overflow-x-auto">
@@ -228,6 +228,26 @@
     </div>
   </div>
 
+  <div id="dlg-atts" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="dat-title">
+    <div class="card" style="width:min(400px,100%)">
+      <h2 id="dat-title">Điểm danh</h2>
+      <div class="text-sm text-slate-600" id="dat-info"></div>
+      <div id="dat-list" style="margin-top:10px"></div>
+      <div class="acts"><button type="button" class="btn-primary" data-close>Xong</button></div>
+    </div>
+  </div>
+
+  <div id="dlg-add" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="dad-title">
+    <div class="card" style="width:min(420px,100%)">
+      <h2 id="dad-title">Học viên chưa xếp lớp</h2>
+      <div class="text-sm text-slate-600" id="dad-info"></div>
+      <input id="dad-q" type="search" class="field" placeholder="Tìm tên..." autocomplete="off" style="margin-top:10px">
+      <div id="dad-list" style="margin-top:6px;max-height:50vh;overflow:auto"></div>
+      <div class="err" id="dad-err" role="alert"></div>
+      <div class="acts"><button type="button" class="btn-soft" data-close>Đóng</button></div>
+    </div>
+  </div>
+
   <div id="dlg-links" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="dl-title">
     <form class="card" novalidate>
       <h2 id="dl-title">Học liệu tuần</h2>
@@ -249,6 +269,32 @@
       <div class="err" id="dc-err" role="alert"></div>
       <div class="acts"><button type="submit" class="btn-primary">Lưu</button><button type="button" class="btn-soft" data-close>Hủy</button></div>
     </form>
+  </div>
+
+  <div id="dlg-state" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="dst-title">
+    <section class="card" style="max-width:360px;width:100%">
+      <h2 id="dst-title">Trạng thái lớp</h2>
+      <div id="dst-opts" class="state-opts"><button type="button" data-st="active" aria-pressed="false">Đang hoạt động</button><button type="button" data-st="inactive" aria-pressed="false">Tạm ngưng</button><button type="button" data-st="archived" aria-pressed="false">Lưu trữ</button></div>
+      <div class="acts"><button type="button" class="btn-soft" data-close>Đóng</button></div>
+    </section>
+  </div>
+
+  <div id="dlg-hero" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="dh-title">
+    <form class="card" novalidate>
+      <h2 id="dh-title">Link của lớp</h2>
+      <label for="dh-meet">Link lớp online (dùng chung mọi lớp)</label><input id="dh-meet" type="url" class="field" placeholder="https://meet.google.com/..." autocomplete="off">
+      <label for="dh-drive">Link Drive bài giảng (riêng lớp này)</label><input id="dh-drive" type="url" class="field" placeholder="https://drive.google.com/..." autocomplete="off">
+      <div class="err" id="dh-err" role="alert"></div>
+      <div class="acts"><button type="submit" class="btn-primary">Lưu</button><button type="button" class="btn-soft" data-close>Hủy</button></div>
+    </form>
+  </div>
+
+  <div id="dlg-mat" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="dmt-title">
+    <section class="card" style="max-width:520px;width:100%;max-height:calc(100dvh - 32px);overflow:auto">
+      <h2 id="dmt-title">Học liệu buổi học</h2>
+      <div id="dmt-body" class="space-y-3"></div>
+      <div class="acts"><button type="button" class="btn-soft" data-close>Đóng</button></div>
+    </section>
   </div>
 
   <div id="dlg-meet" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="dm-title">
@@ -285,6 +331,8 @@
     const DAYS = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ nhật'];
     const WEEK_ANCHOR = new Date(2026, 8, 7); // thứ 2 07/09/2026 = tuần 1
     const STATUS_TXT = { planned: 'Chưa cập nhật', done: 'Hoàn thành', cancel: 'Hủy (còn nợ buổi)', makeup: 'Đã học bù', holiday: 'Nghỉ lễ' };
+    const STATUS_IC = { planned: 'clock', done: 'check-circle-2', cancel: 'x-circle', makeup: 'refresh-cw', holiday: 'sun' };
+    const modeHtml = m => `<span class="m-txt">${m === 'online' ? 'Online' : 'Trực tiếp'}</span><i data-lucide="${m === 'online' ? 'video' : 'map-pin'}" class="m-ic w-4 h-4"></i>`;
     const STATUS_CLS = { planned: 'bg-slate-100 text-slate-500', done: 'bg-emerald-50 text-emerald-700', cancel: 'bg-rose-50 text-rose-700', makeup: 'bg-sky-50 text-sky-700', holiday: 'bg-slate-100 text-slate-600' };
     const S = { c: null, cls: null, set: {}, students: [], sessions: [], links: {}, shared: {}, att: {}, offset: 0, busy: false };
 
@@ -330,7 +378,7 @@
       S.meet = (gm.data && typeof gm.data.value === 'string') ? gm.data.value : '';
       S.students = st.data || []; S.set = se.data || {}; S.sessions = ss.data || [];
       S.links = {}; (wl.data || []).forEach(r => { S.links[r.week_start] = { lessons: r.lessons || [], homeworks: r.homeworks || [] }; });
-      S.shared = {}; (wm.data || []).forEach(r => { const w = S.shared[r.week_start] = S.shared[r.week_start] || { lessons: [], homeworks: [] }; if (r.kind === 'slide') return; (r.kind === 'homework' ? w.homeworks : w.lessons).push({ title: r.title, url: r.url }); });
+      S.shared = {}; (wm.data || []).forEach(r => { const w = S.shared[r.week_start] = S.shared[r.week_start] || { lessons: [], homeworks: [], slides: [] }; if (r.kind === 'slide') { (w.slides = w.slides || []).push({ title: r.title, url: r.url }); return; } (r.kind === 'homework' ? w.homeworks : w.lessons).push({ title: r.title, url: r.url }); });
       const ids = (ac.data || []).map(r => r.assignment_id), am = {};
       if (ids.length) {
         const ar = await S.c.from('assignments').select('id,assignment_name,assignment_code,kind,week_start,page_path,is_active').in('id', ids);
@@ -355,9 +403,8 @@
     function renderTitle() {
       const n = S.cls.class_name;
       document.title = 'Lớp ' + n + ' | gblearning';
-      $('class-title-header').textContent = 'Lớp ' + n;
-      $('class-display-name').textContent = n;
-      $('class-state').textContent = { active: 'Đang hoạt động', inactive: 'Tạm ngưng', archived: 'Lưu trữ' }[classState()];
+      $('class-title-text').textContent = 'Lớp ' + n;
+      $('class-state').textContent = { active: 'Đang hoạt động', inactive: 'Tạm ngưng', archived: 'Lưu trữ' }[classState()]; $('class-state').dataset.st = classState();
       $('btn-meet').href = isHttp(S.meet) ? S.meet : 'https://meet.google.com';
       $('btn-drive').href = S.set.drive_url || 'https://drive.google.com';
     }
@@ -390,7 +437,64 @@
       S.meet = v; closeDlgs(); renderTitle(); toast('Đã lưu link lớp online.');
     }
 
+    async function setClassState(state) {
+      let r = await S.c.from('classes').update({ is_active: state === 'active' }).eq('id', S.cls.id);
+      if (!r.error) r = await S.c.from('class_settings').upsert({ class_id: S.cls.id, drive_url: S.set.drive_url || null, is_archived: state === 'archived' });
+      if (r.error) { fail(r.error); renderTitle(); return; }
+      S.cls.is_active = state === 'active'; S.set.is_archived = state === 'archived'; renderTitle(); toast('Đã đổi trạng thái lớp.');
+    }
+    function openHeroDlg() { $('dh-err').textContent = ''; $('dh-meet').value = S.meet || ''; $('dh-drive').value = S.set.drive_url || ''; openDlg('dlg-hero'); }
+    async function saveHeroDlg(e) {
+      e.preventDefault();
+      const m = $('dh-meet').value.trim(), d = $('dh-drive').value.trim();
+      if ((m && !isHttp(m)) || (d && !isHttp(d))) { $('dh-err').textContent = 'Link phải bắt đầu bằng https://'; return; }
+      let r = await S.c.from('app_settings').upsert({ key: 'online_meet_url', value: m });
+      if (!r.error) r = await S.c.from('class_settings').upsert({ class_id: S.cls.id, drive_url: d || null, is_archived: !!S.set.is_archived });
+      if (r.error) { $('dh-err').textContent = LMS.friendlyError(r.error); return; }
+      S.meet = m; S.set.drive_url = d || null; closeDlgs(); renderTitle(); toast('Đã lưu link.');
+    }
+    const monKey = ds => { const d = dateOf(ds), dow = (d.getDay() + 6) % 7; return ymd(new Date(d.getFullYear(), d.getMonth(), d.getDate() - dow)); };
+    function openMat(sid) {
+      const x = S.sessions.find(v => v.id === Number(sid)); if (!x) return;
+      const k = monKey(x.session_date), own = S.links[k] || { lessons: [], homeworks: [] }, shr = (S.shared || {})[k] || { lessons: [], homeworks: [], slides: [] };
+      const sec = (t, ic, h) => `<div class="p-3 rounded-xl panel-soft space-y-2"><div class="text-xs font-bold text-slate-700 flex items-center gap-1.5"><i data-lucide="${ic}" class="w-4 h-4 text-sky-600"></i>${t}</div>${h}</div>`;
+      $('dmt-title').textContent = sessionLabel(x) + ' ' + shortDate(dateOf(x.session_date)) + (x.lesson ? ' · ' + x.lesson : '');
+      $('dmt-body').innerHTML = sec('Bài học', 'presentation', roList([...(own.lessons || []), ...(shr.lessons || [])], 'Bài học')) + sec('Bài tập', 'file-check-2', roList([...(own.homeworks || []), ...(shr.homeworks || [])], 'Bài tập')) + sec('Lesson presentation', 'monitor-play', roList(shr.slides || [], 'Presentation'));
+      icons(); openDlg('dlg-mat');
+    }
     /* ---------- Thời khóa biểu tuần ---------- */
+    function attBtn(s, cls) {
+      const n = S.students.length; if (!n || s.status === 'cancel' || s.status === 'holiday') return '';
+      const p = S.students.filter(st => (S.att[s.id + '|' + st.id] || '') && S.att[s.id + '|' + st.id] !== 'absent').length, m = S.students.filter(st => S.att[s.id + '|' + st.id]).length;
+      return `<button type="button" data-atts="${s.id}" class="${cls} att-btn ${m === 0 ? 'a0' : m < n ? 'a1' : 'a2'}" aria-label="Điểm danh ${sessionLabel(s)}"><i data-lucide="user-check" class="w-4 h-4"></i><span>${p}/${n}</span></button>`;
+    }
+    function renderAttDlg() {
+      const s = S.sessions.find(x => x.id === Number(S.attSid)); if (!s) return;
+      $('dat-info').textContent = sessionLabel(s) + ' · ' + shortDate(dateOf(s.session_date)) + ' · ' + t5(s.start_time) + ' - ' + t5(s.end_time);
+      $('dat-list').innerHTML = S.students.map(st => { const v = S.att[s.id + '|' + st.id] || '';
+        return `<div class="dat-row"><span class="dat-name">${esc(st.student_name)}</span>
+          <button type="button" data-a="${st.id}|present" class="dat-b ${v && v !== 'absent' ? 'on-p' : ''}" aria-label="Có mặt: ${esc(st.student_name)}">✓</button>
+          <button type="button" data-a="${st.id}|absent" class="dat-b ${v === 'absent' ? 'on-a' : ''}" aria-label="Vắng: ${esc(st.student_name)}">✕</button></div>`; }).join('');
+    }
+    async function openAddStu() {
+      $('dad-err').textContent = ''; $('dad-q').value = ''; $('dad-list').innerHTML = '<div class="text-sm text-slate-400 p-3">Đang tải...</div>'; $('dad-info').textContent = '';
+      openDlg('dlg-add');
+      const r = await S.c.from('students').select('id,student_name,student_code').is('class_id', null).eq('is_active', true).order('student_name');
+      if (r.error) { $('dad-list').innerHTML = ''; $('dad-err').textContent = LMS.friendlyError(r.error); return; }
+      S.free = r.data || []; renderAddStu();
+    }
+    function renderAddStu() {
+      const q = $('dad-q').value.trim().toLowerCase(), l = (S.free || []).filter(x => !q || (x.student_name || '').toLowerCase().includes(q));
+      $('dad-info').textContent = (S.free || []).length + ' học viên · bấm + để thêm vào ' + (S.cls.class_name || S.cls.class_code);
+      $('dad-list').innerHTML = l.length ? l.map(x => `<div class="dat-row"><span class="dat-name">${esc(x.student_name)}</span><button type="button" data-add="${x.id}" class="dat-b on-p" style="background:#0b1f44;border-color:#0b1f44" aria-label="Thêm ${esc(x.student_name)}">+</button></div>`).join('') : '<div class="text-sm text-slate-400 p-3">Không có học viên nào chưa xếp lớp.</div>';
+    }
+    async function addStu(id) {
+      const x = (S.free || []).find(v => v.id === Number(id)); if (!x) return;
+      const r = await S.c.from('students').update({ class_id: S.cls.id }).eq('id', x.id);
+      if (r.error) { $('dad-err').textContent = LMS.friendlyError(r.error); return; }
+      S.free = S.free.filter(v => v !== x); S.students.push(x); refresh(); renderAddStu(); toast('Đã thêm ' + x.student_name + ' vào lớp.');
+    }
+    function openAtts(sid) { S.attSid = Number(sid); renderAttDlg(); openDlg('dlg-atts'); }
     function renderSchedule() {
       const dates = weekDates(S.offset), todayKey = ymd(new Date());
       $('week-indicator').textContent = shortDate(dates[0]) + ' – ' + shortDate(dates[6]);
@@ -402,11 +506,12 @@
         return list.map(s => `<div class="srow rounded-xl border border-sky-200 bg-white ${isToday ? 'ring-2 ring-sky-500' : ''}">
           <span class="text-xs font-bold ${isToday ? 'text-sky-700' : 'text-slate-700'}">${label}</span>
           <span class="text-xs text-slate-500">${shortDate(d)}</span>
-          <span class="text-xs font-bold text-sky-700 bg-sky-50 rounded px-2 py-1.5 text-center border border-sky-100">${t5(s.start_time)} - ${t5(s.end_time)}</span>
-          <span class="text-xs font-semibold text-center rounded px-2 py-1.5 ${s.mode === 'online' ? 'bg-violet-50 text-violet-700' : 'bg-slate-100 text-slate-600'}">${s.mode === 'online' ? 'Online' : 'Trực tiếp'}</span>
-          <span class="text-[11px] ${STATUS_CLS[s.status]} px-2 py-1.5 rounded font-semibold text-center">${STATUS_TXT[s.status]}</span>
+          <span class="text-xs font-bold text-sky-700 bg-sky-50 rounded px-2 py-1.5 text-center border border-sky-100">${t5(s.start_time)}<span class="t-end"> - ${t5(s.end_time)}</span></span>
+          <span class="srow-mode text-xs font-semibold text-center rounded px-2 py-1.5 ${s.mode === 'online' ? 'bg-violet-50 text-violet-700' : 'bg-slate-100 text-slate-600'}">${modeHtml(s.mode)}</span>
+          <span class="srow-status text-[11px] ${STATUS_CLS[s.status]} px-2 py-1.5 rounded font-semibold text-center">${STATUS_TXT[s.status]}</span>
           <span class="srow-note text-xs text-slate-600" style="overflow-wrap:anywhere">${s.lesson ? esc(s.lesson) : ''}</span>
-          <button type="button" data-sid="${s.id}" class="flex items-center justify-center border border-slate-200 rounded-lg bg-white text-sky-700" style="width:40px;height:40px" aria-label="Sửa buổi học"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+          <button type="button" data-mat="${s.id}" class="srow-mat" aria-label="Xem học liệu buổi học"><i data-lucide="library" class="w-4 h-4"></i></button>
+          ${attBtn(s, 'srow-att')}<button type="button" data-sid="${s.id}" class="srow-edit flex items-center justify-center border border-slate-200 rounded-lg bg-white text-sky-700" style="width:40px;height:40px" aria-label="Sửa buổi học"><i data-lucide="pencil" class="w-4 h-4"></i></button>
         </div>`).join('');
       }).join('');
     }
@@ -453,10 +558,12 @@
     }
     function renderWeekLinks() {
       const l = S.links[weekKey()] || { lessons: [], homeworks: [] };
-      $('lesson-links-list').innerHTML = roList(l.lessons, 'Bài học'); $('hw-links-list').innerHTML = roList(l.homeworks, 'Bài tập');
       const sh = (S.shared || {})[weekKey()] || { lessons: [], homeworks: [] };
-      const shHtml = list => list.length ? '<p class="text-[11px] text-slate-400 pt-1">Giao từ tab Bài học theo tuần (sửa ở trang Tổng quan)</p>' + list.map(x => `<a class="flex items-center gap-2 rounded-lg bg-white border border-slate-200 px-3 py-2 text-xs text-sky-800 font-semibold" style="min-height:44px;overflow-wrap:anywhere" href="${isHttp(x.url) ? esc(x.url) : '#'}">${esc(x.title)}</a>`).join('') : '';
+      const has = a => (a || []).some(x => x.title || x.url);
+      $('lesson-links-list').innerHTML = (!has(l.lessons) && has(sh.lessons)) ? '' : roList(l.lessons, 'Bài học'); $('hw-links-list').innerHTML = (!has(l.homeworks) && has(sh.homeworks)) ? '' : roList(l.homeworks, 'Bài tập');
+      const shHtml = list => list.length ? '<p class="text-[11px] text-slate-400 pt-1 m-hide-note">Giao từ tab Bài học theo tuần (sửa ở trang Tổng quan)</p>' + list.map(x => `<a class="flex items-center gap-2 rounded-lg bg-white border border-slate-200 px-3 py-2 text-xs text-sky-800 font-semibold" style="min-height:44px;overflow-wrap:anywhere" href="${isHttp(x.url) ? esc(x.url) : '#'}">${esc(x.title)}</a>`).join('') : '';
       $('lesson-shared').innerHTML = shHtml(sh.lessons); $('hw-shared').innerHTML = shHtml(sh.homeworks);
+      const sl = (sh.slides || []); $('slide-shared').innerHTML = sl.length ? sl.map(x => `<a class="flex items-center gap-2 rounded-lg bg-white border border-slate-200 px-3 py-2 text-xs text-sky-800 font-semibold" style="min-height:44px;overflow-wrap:anywhere" href="${isHttp(x.url) ? esc(x.url) : '#'}"><span class="flex-1">${esc(x.title)}</span><i data-lucide="external-link" class="w-4 h-4"></i></a>`).join('') : '<p class="text-[11px] text-slate-400">Chưa có.</p>';
     }
     async function saveLinks(e) {
       e.preventDefault();
@@ -486,7 +593,7 @@
         return `<tr class="hover:bg-slate-50">
           <td class="py-3 px-3 font-semibold text-slate-800"><span class="flex items-center gap-1.5"><i data-lucide="user" class="w-3.5 h-3.5 text-slate-400"></i>${esc(st.student_name)}</span></td>
           <td class="py-3 px-3 text-center"><div class="flex flex-wrap justify-center gap-1.5">${att}</div></td>
-          <td class="py-3 px-3 text-center"><a href="student.html#${encodeURIComponent(st.student_code)}" class="inline-flex items-center gap-1 text-xs text-sky-600 hover:text-sky-700 font-semibold underline">Trang cá nhân <i data-lucide="arrow-up-right" class="w-3 h-3"></i></a></td></tr>`;
+          <td class="py-3 px-3 text-center"><a href="student.html#${encodeURIComponent(st.student_code)}" aria-label="Trang cá nhân ${esc(st.student_name)}" title="Trang cá nhân" class="pp inline-flex items-center gap-1 text-xs text-sky-600 hover:text-sky-700 font-semibold underline"><span class="pp-t">Trang cá nhân</span> <i data-lucide="arrow-up-right" class="w-3 h-3"></i></a></td></tr>`;
       }).join('');
     }
     function openAtt(sid, stid) {
@@ -520,34 +627,38 @@
         const end = new Date(start); end.setDate(start.getDate() + 6);
         if (start > now) continue;
         const key = ymd(start), own = S.links[key] || { lessons: [], homeworks: [] }, shr = (S.shared || {})[key] || { lessons: [], homeworks: [] };
-        const ln = { lessons: [...(own.lessons || []), ...shr.lessons], homeworks: [...(own.homeworks || []), ...shr.homeworks] };
-        const list = byWeek[n] || [], res = [...(ln.lessons || []).map((x, i) => ({ x, k: 'Bài học', f: 'Bài học ' + (i + 1) })), ...(ln.homeworks || []).map((x, i) => ({ x, k: 'Bài tập', f: 'Bài tập ' + (i + 1) }))].filter(r => r.x.url || r.x.title);
+        const ln = { lessons: [...(own.lessons || []), ...shr.lessons], homeworks: [...(own.homeworks || []), ...shr.homeworks], slides: [...(shr.slides || [])] };
+        const list = byWeek[n] || [], res = [...(ln.lessons || []).map((x, i) => ({ x, k: 'Bài học', f: 'Bài học ' + (i + 1) })), ...(ln.homeworks || []).map((x, i) => ({ x, k: 'Bài tập', f: 'Bài tập ' + (i + 1) })), ...(ln.slides || []).map((x, i) => ({ x, k: 'Presentation', f: 'Presentation ' + (i + 1), lp: 1 }))].filter(r => r.x.url || r.x.title);
         if (!list.length && !res.length) continue;
         const rows = list.map(s => `<div class="hrow">
           <span class="text-xs font-semibold text-slate-700">${sessionLabel(s)}</span><span class="text-xs text-slate-400">${shortDate(dateOf(s.session_date))}</span>
-          <span class="text-xs font-semibold text-sky-700">${t5(s.start_time)} - ${t5(s.end_time)}</span>
-          <span class="h-st ${STATUS_CLS[s.status]}">${STATUS_TXT[s.status]}</span>
-          <span class="h-note min-w-0 text-xs" style="overflow-wrap:anywhere">${s.lesson ? `<span class="text-slate-600">${esc(s.lesson)}</span>` : ''}${s.note ? ` <span class="text-slate-400">${esc(s.note)}</span>` : ''}</span></div>`).join('');
-        const resHtml = res.length ? `<div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2">${res.map(r => `<a class="flex items-center gap-2 rounded-lg bg-sky-50/70 px-3 py-2 text-xs text-sky-800 hover:bg-sky-100" href="${isHttp(r.x.url) ? esc(r.x.url) : '#'}"><strong>${r.k}</strong><span style="overflow-wrap:anywhere">${esc(r.x.title || r.f)}</span></a>`).join('')}</div>` : '';
+          <span class="text-xs font-semibold text-sky-700">${t5(s.start_time)}<span class="t-end"> - ${t5(s.end_time)}</span></span>
+          <span class="h-st ${STATUS_CLS[s.status]}" title="${STATUS_TXT[s.status]}"><span class="m-txt">${STATUS_TXT[s.status]}</span><i data-lucide="${STATUS_IC[s.status]}" class="m-ic w-4 h-4"></i></span><span class="h-mode text-xs font-semibold text-center rounded px-2 py-1 ${s.mode === 'online' ? 'bg-violet-50 text-violet-700' : 'bg-slate-100 text-slate-600'}">${modeHtml(s.mode)}</span>
+          <span class="h-note min-w-0 text-xs" style="overflow-wrap:anywhere">${s.lesson ? `<span class="text-slate-600">${esc(s.lesson)}</span>` : ''}${s.note ? ` <span class="text-slate-400">${esc(s.note)}</span>` : ''}</span><span class="h-acts"><button type="button" data-mat="${s.id}" class="h-mat" aria-label="Xem học liệu buổi học"><i data-lucide="library" class="w-4 h-4"></i></button>${attBtn(s, 'h-att')}</span></div>`).join('');
+        const resHtml = res.length ? `<div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2">${res.map(r => `<a class="${r.lp ? 'lp-row ' : ''}flex items-center gap-2 rounded-lg bg-sky-50/70 px-3 py-2 text-xs text-sky-800 hover:bg-sky-100" href="${isHttp(r.x.url) ? esc(r.x.url) : '#'}"><strong>${r.k}</strong><span style="overflow-wrap:anywhere">${esc(r.x.title || r.f)}</span></a>`).join('')}</div>` : '';
         out.push(`<details class="rounded-xl border border-slate-200 bg-slate-50/60 overflow-hidden" ${n === cur ? 'open' : ''}>
-          <summary class="flex cursor-pointer list-none items-center gap-3 px-4 py-3"><span class="text-sm font-bold text-slate-800">Tuần ${pad(n)}</span><span class="text-xs text-slate-500">${shortDate(start)} – ${shortDate(end)}</span>
-          <button type="button" data-week="${Math.round((start - todayMon) / (7 * 864e5))}" class="ml-auto text-xs font-semibold text-sky-700 underline" style="min-height:36px">Mở tuần này</button></summary>
+          <summary class="flex cursor-pointer list-none items-center gap-3 px-4 py-3"><span class="text-sm font-bold text-slate-800">Tuần ${pad(n)}</span><span class="text-xs text-slate-500">${shortDate(start)} – ${shortDate(end)}</span>${list.length ? `<span class="wk-done" title="Số buổi hoàn thành"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>${list.filter(x => x.status === 'done' || x.status === 'makeup').length}/${list.length}<span class="wk-t"> hoàn thành</span></span>` : ''}
+          <button type="button" data-week="${Math.round((start - todayMon) / (7 * 864e5))}" class="ml-auto text-xs font-semibold text-sky-700 underline" style="min-height:36px" title="Mở tuần này" aria-label="Mở tuần này"><span class="wk-open-t">Mở tuần này</span><i data-lucide="corner-down-right" class="wk-open-i w-4 h-4"></i></button></summary>
           <div class="px-4 pb-4 space-y-2">${rows}${resHtml}</div></details>`);
       }
       $('history-week-count').textContent = out.length + ' tuần có dữ liệu';
       box.innerHTML = out.length ? out.join('') : '<div class="rounded-xl border border-dashed border-slate-200 p-5 text-center text-xs text-slate-400">Chưa có lịch sử buổi học hoặc học liệu được lưu cho lớp này.</div>';
     }
 
-    function refresh() { renderSchedule(); renderStudents(); renderHistory(); icons(); }
+    function refresh() { renderSchedule(); renderStudents(); renderHistory(); if (!$('dlg-atts').hidden) renderAttDlg(); icons(); }
     function renderAll() { renderTitle(); renderSchedule(); renderWeekLinks(); renderStudents(); renderHistory(); icons(); }
 
     function bind() {
       $('btn-prev-week').addEventListener('click', () => { S.offset--; renderAll(); });
       $('btn-next-week').addEventListener('click', () => { S.offset++; renderAll(); });
-      $('schedule-grid').addEventListener('click', e => { const b = e.target.closest('button[data-sid]'); if (b) openSessDlg(b.dataset.sid); });
+      $('schedule-grid').addEventListener('click', e => { const q = e.target.closest('button[data-atts]'); if (q) return openAtts(q.dataset.atts); const m = e.target.closest('button[data-mat]'); if (m) return openMat(m.dataset.mat); const b = e.target.closest('button[data-sid]'); if (b) openSessDlg(b.dataset.sid); });
+      $('edit-links').addEventListener('click', openHeroDlg); $('dlg-hero').querySelector('form').addEventListener('submit', saveHeroDlg); $('class-state').addEventListener('click', () => { [...document.querySelectorAll('#dst-opts [data-st]')].forEach(b => b.setAttribute('aria-pressed', String(b.dataset.st === classState()))); openDlg('dlg-state'); }); $('dst-opts').addEventListener('click', e => { const b = e.target.closest('[data-st]'); if (!b) return; closeDlgs(); setClassState(b.dataset.st); });
+      $('dat-list').addEventListener('click', e => { const b = e.target.closest('[data-a]'); if (!b) return; const [st, v] = b.dataset.a.split('|'), cur = S.att[S.attSid + '|' + st] || ''; setAtt(S.attSid, st, (v === 'absent' ? cur === 'absent' : cur && cur !== 'absent') ? null : v); });
+      $('btn-addstu').addEventListener('click', openAddStu); $('dad-q').addEventListener('input', renderAddStu); $('dad-list').addEventListener('click', e => { const b = e.target.closest('[data-add]'); if (b) addStu(b.dataset.add); });
+      $('btn-curweek').addEventListener('click', () => { S.offset = 0; renderAll(); });
       $('student-list-body').addEventListener('click', e => { const b = e.target.closest('[data-att]'); if (b) { const [a, c] = b.dataset.att.split('|'); openAtt(a, c); } });
       ['da-present', 'da-absent', 'da-clear'].forEach(id => $(id).addEventListener('click', e => { const [a, c] = $('da-key').value.split('|'), i = e.currentTarget.id; closeDlgs(); setAtt(a, c, i === 'da-absent' ? 'absent' : i === 'da-present' ? 'present' : null); }));
-      $('session-history-list').addEventListener('click', e => { const b = e.target.closest('[data-week]'); if (!b) return; e.preventDefault(); S.offset = Number(b.dataset.week); renderAll(); $('week-indicator').scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+      $('session-history-list').addEventListener('click', e => { const mt = e.target.closest('button[data-mat]'); if (mt) { e.preventDefault(); return openMat(mt.dataset.mat); } const q = e.target.closest('button[data-atts]'); if (q) { e.preventDefault(); return openAtts(q.dataset.atts); } const b = e.target.closest('[data-week]'); if (!b) return; e.preventDefault(); S.offset = Number(b.dataset.week); renderAll(); $('week-indicator').scrollIntoView({ behavior: 'smooth', block: 'center' }); });
       $('add-lesson-link').addEventListener('click', () => openLinksDlg('lesson'));
       $('add-hw-link').addEventListener('click', () => openLinksDlg('hw'));
       $('dl-add').addEventListener('click', () => { const k = $('dl-kind').value, l = collect('dl-list'); l.push({ title: '', url: '' }); fillLinks('dl-list', l, k); icons(); });
