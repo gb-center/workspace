@@ -1125,3 +1125,22 @@ body:has(#btn-prev-week) a.lp-row,body:has(#btn-prev-week) a.rounded-lg.bg-sky-5
 #lib-list .mt-class:not(.mt-item){background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important}
 #lib-list .mt-sect>h4{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 12px;margin:4px 0 6px;border-radius:999px;background:#F4F5F7;color:#1B1D22;font-size:.8125rem;font-weight:700}
 #lib-list .lib-week-group.is-current .mt-sect>h4{background:#F1E4C0}
+
+/* Học liệu mobile: tiêu đề tuần cho phép xuống dòng, không đè chevron */
+@media(max-width:640px){
+  #lib-list .lib-week-summary{gap:8px;align-items:center}
+  #lib-list .lib-week-summary>span{flex:1 1 0;min-width:0;flex-wrap:wrap;gap:2px 10px!important;white-space:normal!important}
+  #lib-list .lib-week-title{flex-wrap:wrap;white-space:normal!important;row-gap:4px;min-width:0}
+  #lib-list .lib-week-title .lib-now{margin-left:0}
+  #lib-list .lib-week-summary small{white-space:nowrap}
+  #lib-list .lib-week-summary>svg,#lib-list .lib-week-summary>i{flex:0 0 auto}
+}
+@media(max-width:640px){
+  #lib-list .lib-week-summary>i,#lib-list .lib-week-summary>svg{display:none!important}
+  #lib-list .lib-week-summary>span{flex-wrap:nowrap;gap:8px!important;white-space:nowrap!important}
+  #lib-list .lib-week-title{flex-wrap:nowrap;white-space:nowrap!important;gap:8px}
+  #lib-list .lib-week-title .lib-now{flex:none}
+}
+@media(max-width:640px){
+  #lib-list .lib-week-summary>span{flex-direction:column!important;align-items:flex-start!important;gap:2px!important}
+}
