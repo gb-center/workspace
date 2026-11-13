@@ -427,6 +427,13 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
   <div id="dlg-asg" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="da-title">
     <form class="card" novalidate>
       <h2 id="da-title">Giao bài cho nhiều lớp</h2>
+      <div id="da-reg">
+        <label for="da-file">Đăng ký bài mới từ file HTML (file có khối key)</label>
+        <input id="da-file" type="file" accept=".html,text/html" class="field">
+        <label for="da-path">Đường dẫn trên GitHub (để trống = tự đặt)</label>
+        <input id="da-path" class="field" placeholder="vd. ielts/w10/ielts05-listening.html" autocomplete="off">
+        <div id="da-reg-msg" class="text-xs" style="margin:6px 0 10px"></div>
+      </div>
       <div class="row2">
         <div><label for="da-grp">Nhóm lớp</label><select id="da-grp" class="field"></select></div>
         <div><label for="da-skill">Kỹ năng / dạng đề</label><select id="da-skill" class="field"></select></div>
@@ -1124,6 +1131,64 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         if (d.error) { $('da-err').textContent = LMS.friendlyError(d.error); return; }
         closeDlgs(); await refresh('Đã xóa đề.');
       }
+
+      async function registerAsgFile(file) {
+        const msg = $('da-reg-msg'), err = $('da-err'); err.textContent = ''; msg.textContent = '';
+        const fail = t => { msg.style.color = '#be123c'; msg.textContent = t; };
+        let text; try { text = await file.text(); } catch (e) { return fail('Không đọc được file.'); }
+        const dm = text.match(/window\.DATA\s*=\s*(\{[\s\S]*?\})\s*;?\s*<\/script>/);
+        if (!dm) return fail('Không thấy dữ liệu bài (window.DATA) trong file.');
+        let D; try { D = JSON.parse(dm[1]); } catch (e) { return fail('window.DATA trong file không đọc được (JSON lỗi).'); }
+        const km = text.match(/<script[^>]*id=["']gb-key["'][^>]*>([\s\S]*?)<\/script>/);
+        if (!km) return fail('File chưa có khối key (thẻ script có id gb-key).');
+        let K; try { K = JSON.parse(km[1]); } catch (e) { return fail('Khối key không đọc được (JSON lỗi).'); }
+        const code = String(D.code || '').trim(); if (!code) return fail('Bài chưa có mã (code).');
+        const name = String(D.title || code).trim();
+        const isListen = /listening/i.test(code + ' ' + name);
+        const P = D.passages || D.parts || D.sections || [];
+        const fillNums = new Set(); P.forEach(pp => (pp.groups || []).forEach(g => { if (/fill|note|form|sum|blank/i.test(g.kind || '')) (g.items || []).forEach(it => fillNums.add(it[0])); }));
+        const questions = [], parts = [];
+        if (P.length) P.forEach(pp => {
+          const a = pp.range && pp.range[0], b = pp.range && pp.range[1]; if (!a || !b) return;
+          const qids = []; for (let n = a; n <= b; n++) { qids.push('q' + n); questions.push({ id: 'q' + n, text: 'Question ' + n, type: fillNums.has(n) ? 'fill' : 'mcq' }); }
+          parts.push({ id: pp.id, name: (isListen ? 'Part ' : 'Passage ') + pp.id, qids });
+        });
+        else Object.keys(K).forEach(id => questions.push({ id, text: id.replace(/^q/, 'Question '), type: 'fill' }));
+        if (!questions.length) return fail('Không xác định được danh sách câu hỏi.');
+        const ids = new Set(questions.map(q => q.id)), keyIds = Object.keys(K);
+        const missing = questions.filter(q => !(q.id in K)).map(q => q.id.replace('q', ''));
+        const extra = keyIds.filter(k => !ids.has(k));
+        if (missing.length) return fail('Key thiếu câu: ' + missing.join(', ') + '.');
+        if (extra.length) return fail('Key có câu không nằm trong bài: ' + extra.join(', ') + '.');
+        const answer_key = {};
+        for (const q of questions) {
+          const v = K[q.id], o = (v && typeof v === 'object' && !Array.isArray(v)) ? v : { answer: v };
+          const ans = o.answer !== undefined ? o.answer : o.a;
+          if (ans === undefined || ans === null || ans === '' || (Array.isArray(ans) && !ans.length)) return fail('Câu ' + q.id.replace('q', '') + ' chưa có đáp án.');
+          const e = { answer: ans, explanation: o.explanation !== undefined ? o.explanation : (o.e || '') };
+          const g = o.group !== undefined ? o.group : o.g; if (g) e.group = g;
+          answer_key[q.id] = e;
+        }
+        const kind = D.mode === 'teaching' ? 'lesson' : 'homework';
+        const skill = kind === 'homework' ? (isListen ? 'listening' : /reading/i.test(code + ' ' + name) ? 'reading' : /writing/i.test(code + ' ' + name) ? 'writing' : null) : null;
+        const program = /^ielts/i.test(code) ? 'ielts' : /^toeic/i.test(code) ? 'toeic' : null;
+        const folder = program || 'gt', wk = weekNoOf(curMon());
+        const page_path = ($('da-path').value || '').trim().replace(/^\/+/, '') || (folder + '/w' + String(wk).padStart(2, '0') + '/' + file.name);
+        const row = { assignment_code: code, assignment_name: name, kind, skill, program, page_path, questions, parts: parts.length ? parts : null, is_active: true };
+        const ex = await st.c.from('assignments').select('id').eq('assignment_code', code).maybeSingle();
+        if (ex.error) return fail(LMS.friendlyError(ex.error));
+        let id;
+        if (ex.data) { const u = await st.c.from('assignments').update(row).eq('id', ex.data.id); if (u.error) return fail(LMS.friendlyError(u.error)); id = ex.data.id; }
+        else { const i = await st.c.from('assignments').insert(row).select('id').single(); if (i.error) return fail(LMS.friendlyError(i.error)); id = i.data.id; }
+        const k = await st.c.from('assignment_keys').upsert({ assignment_id: id, answer_key }, { onConflict: 'assignment_id' });
+        if (k.error) return fail(LMS.friendlyError(k.error));
+        const clean = text.replace(/<script[^>]*id=["']gb-key["'][^>]*>[\s\S]*?<\/script>[ \t]*\r?\n?/, '');
+        const blob = new Blob([clean], { type: 'text/html' }), url = URL.createObjectURL(blob);
+        await openAsg(code);
+        msg.style.color = '#047857';
+        msg.innerHTML = 'Đã lưu bài <b>' + esc(code) + '</b> (' + questions.length + ' câu' + (parts.length ? ', ' + parts.length + ' phần' : '') + ', ' + (kind === 'lesson' ? 'bài học' : 'bài tập') + ', đường dẫn ' + esc(page_path) + '). Hãy đẩy lên GitHub <b>bản đã gỡ key</b>: <a href="' + url + '" download="' + esc(file.name) + '" style="text-decoration:underline;font-weight:700">Tải bản sạch</a>. Xong chọn lớp, ngày và hạn bên dưới rồi Giao.';
+        $('da-file').value = '';
+      }
       async function openAsg(code) {
         $('da-err').textContent = '';
         const r = await st.c.from('assignments').select('id,assignment_code,assignment_name,week_start,due_at,kind,skill').eq('is_active', true).order('assignment_code');
@@ -1409,6 +1474,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         $('lib-filter-toggle').addEventListener('click', () => { const v = $('view-lib'), o = v.classList.toggle('filters-open'); $('lib-filter-toggle').setAttribute('aria-expanded', String(o)); if (o) $('lib-search').focus(); });
         $('dlg-asg').querySelector('form').addEventListener('submit', saveAsg);
         $('da-code').addEventListener('change', asgPick);
+        $('da-file').addEventListener('change', e => { const f = e.target.files && e.target.files[0]; if (f) registerAsgFile(f); });
         $('da-grp').addEventListener('change', () => { fillAsgSkill(); fillAsgCode(); asgPick(); });
         $('da-skill').addEventListener('change', () => { fillAsgCode(); asgPick(); });
         $('da-del').addEventListener('click', deleteAsg);
