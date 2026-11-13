@@ -519,3 +519,28 @@ html[data-lms-view="lib"] #btn-prev,html[data-lms-view="lib"] #btn-today,html[da
   body.tuition-page>header .page-header-actions input[type=month]{flex:0 0 auto!important;width:128px!important;font-size:.85rem!important;padding-left:2px!important;padding-right:2px!important}
   body.tuition-page>header .page-header-actions input[type=month]::-webkit-calendar-picker-indicator{display:none}
 }
+
+/* Mobile: logo nhỏ, bỏ đăng xuất, thanh tuần/tháng nằm dưới tab */
+#m-weekbar{display:none}
+@media(max-width:640px){
+  #btn-logout{display:none!important}
+  body:has(>#lms-nav)>header::before{width:108px;height:48px}
+  body:has(>#lms-nav)>header>div{flex-wrap:nowrap!important;justify-content:flex-end!important;min-height:48px!important;padding:0 12px 0 130px!important;gap:8px!important}
+  body:has(>#lms-nav)>header .page-header-title,body:has(>#lms-nav)>header.has-week .schedule-page-title{position:static!important;order:2;height:auto;display:block!important;flex:none;font-size:1.05rem!important}
+  body:has(>#lms-nav)>header .page-header-actions,body:has(>#lms-nav)>header .header-tools{order:1;margin:0!important;flex:none}
+  body>#lms-nav{order:2}
+  #m-weekbar{order:3;flex:none;display:flex;align-items:center;gap:4px;margin:8px 10px 0;padding:6px 10px;background:#fff;border:1px solid #e3e8ef;border-radius:14px}
+  #m-weekbar[hidden]{display:none}
+  #m-weekbar .week-navigation{display:contents!important}
+  #m-weekbar .week-current{height:auto!important;min-height:0!important;min-width:0!important;padding:0 6px!important;background:transparent}
+  #m-weekbar .week-range{display:none!important}
+  #m-weekbar .week-current-btn{color:#0b1f44!important;font-weight:800;background:transparent!important}
+  #m-weekbar .icon-btn{color:#0b1f44!important}
+  #m-weekbar .week-thisweek{margin-left:auto}
+  #m-weekbar input[type=month]{flex:0 0 auto;width:128px;font-size:.85rem;border:0;background:transparent;color:#0b1f44;font-weight:700;text-align:center;padding:0 2px;color-scheme:light}
+  #m-weekbar input[type=month]::-webkit-calendar-picker-indicator{display:none}
+  #m-weekbar #thismonth{margin-left:auto}
+  body:has(>#lms-nav)>main{order:4}
+  html[data-lms-view="lib"] #m-weekbar #btn-prev,html[data-lms-view="lib"] #m-weekbar #btn-next,html[data-lms-view="lib"] #m-weekbar #btn-today{display:inline-flex}
+}
+@media(max-width:640px){#m-weekbar input[type=month]{width:150px;font-size:.9rem;padding:0}}

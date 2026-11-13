@@ -142,6 +142,15 @@
       <div class="header-tools flex items-center gap-2"><a id="btn-teacher" class="icon-btn" href="student.html#teacher" aria-label="Trang giáo viên" title="Trang giáo viên"><i data-lucide="graduation-cap" class="w-5 h-5"></i></a><button id="btn-logout" type="button" class="icon-btn" aria-label="Đăng xuất" title="Đăng xuất"><i data-lucide="log-out" class="w-5 h-5"></i></button></div>
     </div>
   </header>
+<script>
+(function(){var h=document.querySelector('body>header');if(!h||document.getElementById('m-weekbar'))return;var bar=document.createElement('div');bar.id='m-weekbar';h.insertAdjacentElement('afterend',bar);
+var mq=matchMedia('(max-width:640px)'),items=[];
+function pick(){var wn=h.querySelector('.week-navigation');if(wn)return[wn];return['prev','month','next','thismonth'].map(function(i){return document.getElementById(i)}).filter(Boolean)}
+function place(){var els=pick();if(mq.matches){if(items.length)return;els.forEach(function(e){items.push({e:e,p:e.parentNode,n:e.nextSibling});bar.appendChild(e)});bar.hidden=!items.length}else{while(items.length){var x=items.pop();x.p.insertBefore(x.e,x.n)}bar.hidden=true}}
+place();mq.addEventListener('change',place);
+})();
+</script>
+
 
   <main class="flex-1 w-full max-w-none mx-auto px-3 sm:px-5 lg:px-7 py-4 sm:py-6 space-y-4">
     <section id="view-overview" class="space-y-5" aria-label="Tổng quan">
@@ -674,7 +683,7 @@
         const f = st.overviewFinance;
         $('overview-finance').innerHTML = `<div class="overview-section-title"><div><h2>Học phí tháng ${f ? f.month : 'này'}</h2><p>Tổng hợp từ tab Học phí</p></div><a href="tuition.html">Chi tiết <i data-lucide="arrow-right"></i></a></div><div class="overview-money-grid">${[
           ['Phải thu', f && fmtMoney(f.due), 'wallet'], ['Đã thu', f && fmtMoney(f.paid), 'circle-dollar-sign'], ['Tổng chi', f && fmtMoney(f.expenses), 'receipt'], ['Còn nợ tháng này', f && fmtMoney(f.debt), 'clock-3'], ['Nợ các tháng trước', f && fmtMoney(f.arrears), 'history']
-        ].map(x => `<div class="overview-money"><i data-lucide="${x[2]}"></i><span>${x[0]}</span><b>${x[1] || '–'}</b></div>`).join('')}</div>`;
+        ].reduce((acc, x, i, all) => i ? acc : (matchMedia('(max-width:720px)').matches ? [0, 1, 3, 4, 2] : [0, 1, 2, 3, 4]).map(k => all[k]), []).map(x => `<div class="overview-money"><i data-lucide="${x[2]}"></i><span>${x[0]}</span><b>${x[1] || '–'}</b></div>`).join('')}</div>`;
         const dates = weekDates(st.week), first = dates[0], last = dates[6];
         $('overview-week-label').textContent = pad(first.getDate()) + '/' + pad(first.getMonth() + 1) + ' – ' + pad(last.getDate()) + '/' + pad(last.getMonth() + 1);
         const today = ymd(new Date()), upcoming = st.sessions.filter(s => s.session_date >= today && !['cancel', 'holiday', 'done'].includes(s.status)).sort((a, b) => a.session_date.localeCompare(b.session_date) || a.start_time.localeCompare(b.start_time)).slice(0, 5);
