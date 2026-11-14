@@ -1331,12 +1331,15 @@ body .student-overview-highlight .g-week-sched,body .student-overview-highlight 
           <a class="hero-btn ghost" href="${esc(isHttp(cls.drive_url) ? cls.drive_url : 'https://drive.google.com')}" target="_blank" rel="noopener"><i data-lucide="folder" class="w-4 h-4"></i><span>Drive</span></a>
         </div></section>`;
 
-      const asgAll = d.assignments || [], asgDone = asgAll.filter(a => a.attempts).length;
+      const selWk = S.materialWeek || mondayKey(now), selWkEnd = (() => { const x = dOf(selWk); x.setDate(x.getDate() + 6); return ymd(x); })(), selMonth = selWkEnd.slice(0, 7);
+      const sessUp = sess.filter(x => x.date <= selWkEnd), doneUp = sessUp.filter(x => x.status === 'done' || x.status === 'makeup').length, absentUp = sessUp.filter(x => x.attendance === 'absent').length;
+      const owedUp = Math.max(0, sessUp.filter(x => x.status === 'cancel').length - sessUp.filter(x => x.status === 'makeup').length);
+      const asgAll = (d.assignments || []).filter(a => (a.week_start ? mondayKey(dOf(a.week_start)) : mondayKey(now)) <= selWk), asgDone = asgAll.filter(a => a.attempts).length;
       const infoHtml = `<section class="card g-info"><h2><i data-lucide="bar-chart-3"></i>Thông tin học tập</h2>
         <div class="stat-grid">
-          <div class="stat s0"><i data-lucide="calendar-check"></i><div><b>${done.length}</b><span>Buổi đã học</span></div></div>
-          <div class="stat s1"><i data-lucide="calendar-x"></i><div><b>${absent}</b><span>Buổi vắng</span></div></div>
-          ${d.tuition_mode === 'session' ? `<div class="stat s2"><i data-lucide="clock"></i><div><b>${sess.filter(x => x.status === 'done' && String(x.date).startsWith(todayKey.slice(0, 7))).length}</b><span>Buổi tháng này</span></div></div>` : `<div class="stat s2"><i data-lucide="clock"></i><div><b>${d.owed || 0}</b><span>Buổi nợ</span></div></div>`}
+          <div class="stat s0"><i data-lucide="calendar-check"></i><div><b>${doneUp}</b><span>Buổi đã học</span></div></div>
+          <div class="stat s1"><i data-lucide="calendar-x"></i><div><b>${absentUp}</b><span>Buổi vắng</span></div></div>
+          ${d.tuition_mode === 'session' ? `<div class="stat s2"><i data-lucide="clock"></i><div><b>${sessUp.filter(x => x.status === 'done' && String(x.date).startsWith(selMonth)).length}</b><span>Buổi tháng này</span></div></div>` : `<div class="stat s2"><i data-lucide="clock"></i><div><b>${owedUp}</b><span>Buổi nợ</span></div></div>`}
           <div class="stat s3"><i data-lucide="clipboard-list"></i><div><b>${asgDone}/${asgAll.length}</b><span>Bài đã làm</span></div></div>
         </div></section>`;
 
@@ -1508,7 +1511,7 @@ body .student-overview-highlight .g-week-sched,body .student-overview-highlight 
         return `<div class="hrow student-history-row">${dayCols(s.date)}<span class="text-xs font-semibold text-sky-700">${s.start} – ${s.end}</span><span class="hr-tags"><span class="tag ${st[1]}">${st[0]}</span>${attTag(s)}</span></div>`; }).join('');
       const histHtml = `<section class="card g-hist" id="student-history"><h2><i data-lucide="history"></i>Lịch sử buổi học</h2><div class="att-strip"><div><b>${done.length}</b><span>Đã học</span></div><div><b class="pos">${attP}</b><span>Có mặt</span></div><div><b class="${attA ? 'neg' : ''}">${attA}</b><span>Vắng</span></div><div><b>${attRate !== null ? attRate + '%' : '–'}</b><span>Chuyên cần</span></div></div><div class="student-history-list">${historyRows || '<div class="text-sm text-slate-500">Chưa có buổi học nào.</div>'}</div>${past.length > S.historyLimit ? `<div class="student-history-more"><button type="button" data-history-more>Xem thêm ${Math.min(10, past.length - S.historyLimit)} buổi</button></div>` : ''}</section>`;
 
-      const tuitionHtml = `<section class="card g-tuition" id="student-tuition"><div class="tuition-head"><h2 class="font-bold flex items-center gap-2"><i data-lucide="wallet"></i>Học phí tháng ${pad(now.getMonth()+1)}/${now.getFullYear()}</h2><span id="tuition-tag"></span></div><div class="text-sm text-slate-500 mt-2" id="tuition-status-text">Đang tải tình trạng…</div></section>`;
+      const tuitionHtml = `<section class="card g-tuition" id="student-tuition" data-m="${selMonth}"><div class="tuition-head"><h2 class="font-bold flex items-center gap-2"><i data-lucide="wallet"></i>Học phí tháng ${selMonth.slice(5, 7)}/${selMonth.slice(0, 4)}</h2><span id="tuition-tag"></span></div><div class="text-sm text-slate-500 mt-2" id="tuition-status-text">Đang tải tình trạng…</div></section>`;
       const tuitionHistoryContent = () => S.tuitionHistory === null
         ? '<div class="text-sm text-slate-500">Đang tải lịch sử học phí…</div>'
         : S.tuitionHistory.length
@@ -1532,7 +1535,7 @@ body .student-overview-highlight .g-week-sched,body .student-overview-highlight 
       const tools = document.querySelector('.student-welcome-tools');
       if (tools) ['btn-home','btn-mode','btn-theme'].forEach(id => { const el = $(id); if (el) tools.appendChild(el); });
       { const th = $('btn-theme'); if (th) th.hidden = T.on; }
-      const curMonth = `${now.getFullYear()}-${pad(now.getMonth()+1)}`, vnd = n => Number(n || 0).toLocaleString('vi-VN') + 'đ';
+      const curMonth = selMonth, vnd = n => Number(n || 0).toLocaleString('vi-VN') + 'đ';
       const amtLines = (old, fee, paidNow, rest, date) => {
         if (!(Number(fee) > 0 || Number(old) > 0)) return '';
         const compact = !!document.querySelector('.student-rail #student-tuition');
@@ -1541,9 +1544,9 @@ body .student-overview-highlight .g-week-sched,body .student-overview-highlight 
         return `<div class="tuition-amts"><span>Tháng cũ</span><b class="${Number(old) > 0 ? 'neg' : ''}">${vnd(old)}</b><span>Tháng này</span><b>${vnd(fee)}</b><span>Đã đóng</span><b class="${Number(paidNow) > 0 ? 'pos' : ''}">${vnd(paidNow)}</b><span>Còn lại</span><b class="${Number(rest) > 0 ? 'neg' : 'pos'}">${vnd(rest)}</b></div><div class="tuition-bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div>${date ? `<div class="tuition-bar-cap"><span>Ngày đóng: ${esc(date)}</span></div>` : ''}`;
       };
       const firstM = sess.map(x => String(x.date || '').slice(0,7)).filter(m => /^\d{4}-\d{2}$/.test(m) && m <= curMonth).sort()[0] || curMonth, monthsAll = [];
-      for (let c = new Date(Number(firstM.slice(0,4)), Number(firstM.slice(5,7)) - 1, 1), e = new Date(now.getFullYear(), now.getMonth(), 1); c <= e && monthsAll.length < 36; c.setMonth(c.getMonth() + 1)) monthsAll.push(`${c.getFullYear()}-${pad(c.getMonth()+1)}`);
+      for (let c = new Date(Number(firstM.slice(0,4)), Number(firstM.slice(5,7)) - 1, 1), e = new Date(Number(curMonth.slice(0,4)), Number(curMonth.slice(5,7)) - 1, 1); c <= e && monthsAll.length < 36; c.setMonth(c.getMonth() + 1)) monthsAll.push(`${c.getFullYear()}-${pad(c.getMonth()+1)}`);
       Promise.all([S.c.rpc('student_tuition_status', { p_student_code: S.code, p_month: curMonth }), Promise.all(monthsAll.map(m => S.c.rpc('student_tuition_amounts', { p_student_code: S.code, p_month: m }).then(x => ({ m, row: Array.isArray(x.data) ? x.data[0] : x.data, err: x.error }))))]).then(([r, ams]) => {
-        const el = $('tuition-status-text'); if (!el || S.data !== d) return;
+        const el = $('tuition-status-text'); if (!el || S.data !== d || ($('student-tuition') || {}).dataset?.m !== curMonth) return;
         const row = Array.isArray(r.data) ? r.data[0] : r.data;
         if (r.error || !row) { el.textContent = 'Chưa có thông tin học phí tháng này.'; return; }
         const date = row.paid_on ? new Date(row.paid_on + 'T00:00:00').toLocaleDateString('vi-VN') : '';
