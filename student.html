@@ -744,7 +744,15 @@
     .student-overview-highlight .g-prog>.goal-pair>.goal .gs{font-size:.74rem;line-height:1.3}
     .student-overview-highlight .g-prog>.goal-pair>.goal:nth-child(1) .gl svg{color:#1B1D22!important}
     .student-overview-highlight .g-prog>.goal-pair>.goal:nth-child(2) .gl svg{color:#b38324!important}
-  </style>
+  
+    /* Week calendar prev/next controls inside the card */
+    .g-week-sched .week-calendar-head .overview-week-controls{gap:2px;margin:0}
+    .g-week-sched .week-calendar-head .overview-week-controls .icon-btn{width:32px;height:32px;color:#1B1D22;background:transparent}
+    .g-week-sched .week-calendar-head .overview-week-controls .icon-btn:disabled{opacity:.3}
+    .g-week-sched .week-calendar-head .overview-week-controls .icon-btn:hover:not(:disabled){background:#F4F5F7}
+    .g-week-sched .week-calendar-head .overview-week-controls .t-thisweek{height:30px;padding:0 8px;color:#1B1D22!important;font-size:.75rem;background:#F4F5F7!important;border-radius:8px}
+    .g-week-sched .week-calendar-head .week-calendar-range{min-width:96px;text-align:center;color:#1B1D22;font-size:.75rem;font-weight:700}
+</style>
 <style id="mobile-fix">
 @media(max-width:780px){
   body.student-dashboard-view .student-shell{grid-template-columns:minmax(0,1fr)!important}
@@ -1233,7 +1241,7 @@ body .student-overview-highlight .g-week-sched,body .student-overview-highlight 
     const fmtDay = k => { const d = dOf(k); return DAY[d.getDay()] + ', ' + pad(d.getDate()) + '/' + pad(d.getMonth() + 1); };
     const isHttp = u => /^https?:\/\//i.test(u || '');
     const sessState = (s, n) => { const k = ymd(n), h = pad(n.getHours()) + ':' + pad(n.getMinutes()); if (s.date < k || (s.date === k && h >= s.end)) return 'past'; if (s.date === k && h >= s.start) return 'live'; return 'soon'; };
-    const S = { c: null, code: '', data: null, a: null, answers: {}, t0: 0, busy: false, materialWeek: '', materialWeeks: [], calendarMonth: '', calendarDate: '', view: 'overview', historyLimit: 10, tuitionHistory: null, tuitionHistoryLoading: false };
+    const S = { c: null, code: '', data: null, a: null, answers: {}, t0: 0, busy: false, materialWeek: '', materialWeeks: [], calendarMonth: '', calendarDate: '', calWeek: '', view: 'overview', historyLimit: 10, tuitionHistory: null, tuitionHistoryLoading: false };
 
     function mondayKey(d) { const dow = d.getDay() === 0 ? 6 : d.getDay() - 1; return ymd(new Date(d.getFullYear(), d.getMonth(), d.getDate() - dow)); }
     function errText(e) {
@@ -1310,13 +1318,14 @@ body .student-overview-highlight .g-week-sched,body .student-overview-highlight 
       const sessionDetails = daySessions => daySessions.length ? daySessions.map(s => { const st = STATUS[s.status] || STATUS.planned; const lesson = String(s.lesson || '').trim(); return `<div class="month-session"><div class="month-session-top"><strong class="text-xs text-slate-700">${s.start} – ${s.end}</strong>${lesson ? `<span class="text-xs text-slate-600" style="overflow-wrap:anywhere">${esc(lesson)}</span>` : ''}</div><div class="month-session-meta"><span class="tag ${st[1]}">${st[0]}</span>${attTag(s)}${s.mode === 'online' ? (joinOpen(s) ? joinBtn('row') : '<span class="tag bg-sky-50 text-sky-700 inline-flex items-center gap-1"><i data-lucide="video" class="w-3.5 h-3.5"></i><span>Meet</span></span>') : '<span class="tag bg-slate-100 text-slate-600">Trực tiếp</span>'}</div></div>`; }).join('') : '<div class="text-sm text-slate-500">Ngày này không có buổi học.</div>';
       const monthDetails = sessionDetails(selectedSessions);
       const schedHtml = `<section class="card g-sched" id="student-calendar"><div class="month-head"><div class="month-caption">Lịch học tháng</div><div class="month-controls"><button type="button" class="month-nav" data-calendar-step="-1" aria-label="Tháng trước"><i data-lucide="chevron-left" class="w-5 h-5"></i></button><span class="month-title">${new Intl.DateTimeFormat('vi-VN', { month: 'long', year: 'numeric' }).format(firstDay)}</span><button type="button" class="month-nav" data-calendar-step="1" aria-label="Tháng sau"><i data-lucide="chevron-right" class="w-5 h-5"></i></button></div></div><div class="month-calendar" role="grid" aria-label="Lịch học tháng ${pad(calMonth)}/${calYear}">${['T2','T3','T4','T5','T6','T7','CN'].map(x => `<div class="month-weekday" role="columnheader">${x}</div>`).join('')}${calendarDays}</div><div class="month-detail"><div class="text-xs font-bold text-slate-700 mb-2">${fmtDay(S.calendarDate)}</div>${monthDetails}</div></section>`;
-      const weekStartKey = mondayKey(now), weekStartDate = dOf(weekStartKey), weekDays = Array.from({length:7}, (_, i) => { const date = new Date(weekStartDate); date.setDate(date.getDate() + i); return ymd(date); });
+      const curWeekKey = mondayKey(now), weekStartKey = S.calWeek || curWeekKey, weekStartDate = dOf(weekStartKey), weekDays = Array.from({length:7}, (_, i) => { const date = new Date(weekStartDate); date.setDate(date.getDate() + i); return ymd(date); });
       const weekSessionsByDay = {}; sess.filter(s => weekDays[0] <= s.date && s.date <= weekDays[6] && !['cancel','holiday'].includes(s.status)).forEach(s => (weekSessionsByDay[s.date] = weekSessionsByDay[s.date] || []).push(s));
       Object.values(weekSessionsByDay).forEach(a => a.sort((x, y) => x.start.localeCompare(y.start)));
-      const weekSelectedDate = weekDays.includes(S.calendarDate) ? S.calendarDate : todayKey;
+      const weekSelectedDate = weekDays.includes(S.calendarDate) ? S.calendarDate : (weekDays.includes(todayKey) ? todayKey : (weekDays.find(k => (weekSessionsByDay[k] || []).length) || weekDays[0]));
       const weekCalendarDays = weekDays.map((key, i) => { const date = dOf(key), has = (weekSessionsByDay[key] || []).length > 0, selected = key === weekSelectedDate, today = key === todayKey; return `<button type="button" class="week-calendar-day${has ? ' has-session' : ''}${today ? ' today' : ''}${selected ? ' selected' : ''}" data-calendar-day="${key}" aria-label="${fmtDay(key)}${has ? ', có buổi học' : ''}" title="${fmtDay(key)}"><span>${['T2','T3','T4','T5','T6','T7','CN'][i]}</span><b>${pad(date.getDate())}</b></button>`; }).join('');
       const weekEndDate = dOf(weekDays[6]), weekRange = `${pad(weekStartDate.getDate())}.${pad(weekStartDate.getMonth()+1)} – ${pad(weekEndDate.getDate())}.${pad(weekEndDate.getMonth()+1)}.${weekEndDate.getFullYear()}`;
-      const weekSchedHtml = `<section class="card g-week-sched"><div class="week-calendar-head"><span class="week-calendar-title"><i data-lucide="calendar-days"></i>Lịch tuần này</span><span class="week-calendar-range">${weekRange}</span></div><div class="week-calendar" role="grid" aria-label="Lịch học tuần này">${weekCalendarDays}</div><div class="month-detail"><div class="text-xs font-bold text-slate-700 mb-2">${fmtDay(weekSelectedDate)}</div>${sessionDetails(weekSessionsByDay[weekSelectedDate] || [])}</div></section>`;
+      const sessKeys = sess.map(x => mondayKey(dOf(x.date))).concat(curWeekKey), minWk = sessKeys.reduce((a, b) => a < b ? a : b), maxWk = sessKeys.reduce((a, b) => a > b ? a : b), isCurWk = weekStartKey === curWeekKey;
+      const weekSchedHtml = `<section class="card g-week-sched"><div class="week-calendar-head"><span class="week-calendar-title"><i data-lucide="calendar-days"></i>${isCurWk ? 'Lịch tuần này' : 'Lịch tuần'}</span><span class="overview-week-controls" style="margin:0"><button type="button" class="icon-btn" data-cal-week="-1" aria-label="Tuần trước" ${weekStartKey <= minWk ? 'disabled' : ''}><i data-lucide="chevron-left" class="w-4 h-4"></i></button><span class="week-calendar-range">${weekRange}</span><button type="button" class="icon-btn" data-cal-week="1" aria-label="Tuần sau" ${weekStartKey >= maxWk ? 'disabled' : ''}><i data-lucide="chevron-right" class="w-4 h-4"></i></button>${isCurWk ? '' : '<button type="button" class="t-thisweek" data-cal-week="0" aria-label="Về tuần hiện tại">Tuần này</button>'}</span></div><div class="week-calendar" role="grid" aria-label="Lịch học tuần này">${weekCalendarDays}</div><div class="month-detail"><div class="text-xs font-bold text-slate-700 mb-2">${fmtDay(weekSelectedDate)}</div>${sessionDetails(weekSessionsByDay[weekSelectedDate] || [])}</div></section>`;
 
       const asg = d.assignments || [];
       const resBtn = a => (a.kind === 'homework' && a.attempts) ? `<button type="button" class="icon-btn" data-res="${esc(a.code)}" aria-label="Kết quả" title="Kết quả"><i data-lucide="clipboard-check" class="w-4 h-4"></i></button>` : '';
@@ -1906,7 +1915,7 @@ body .student-overview-highlight .g-week-sched,body .student-overview-highlight 
       const nextCode = (parts[0] || '').trim();
       T.on = false;
       if (nextCode === 'teacher' || nextCode === '0000') { S.code = ''; S.data = null; return renderTeacher(parts[1]); }
-      if (S.code && nextCode && S.code !== nextCode) { S.data = null; S.view = 'overview'; S.historyLimit = 10; S.tuitionHistory = null; S.tuitionHistoryLoading = false; S.materialWeek = ''; S.materialWeeks = []; S.calendarMonth = ''; S.calendarDate = ''; }
+      if (S.code && nextCode && S.code !== nextCode) { S.data = null; S.view = 'overview'; S.historyLimit = 10; S.tuitionHistory = null; S.tuitionHistoryLoading = false; S.materialWeek = ''; S.materialWeeks = []; S.calendarMonth = ''; S.calendarDate = ''; S.calWeek = ''; }
       S.code = nextCode;
       if (!S.code) return showError('Thiếu mã học viên. Mở lại link giáo viên đã gửi.');
       try {
@@ -1966,6 +1975,8 @@ body .student-overview-highlight .g-week-sched,body .student-overview-highlight 
         const step = e.target.closest('[data-material-week-step]');
         if (step) { const i = S.materialWeeks.indexOf(S.materialWeek), next = i + Number(step.dataset.materialWeekStep); if (S.materialWeeks[next]) { S.materialWeek = S.materialWeeks[next]; renderHome(); } return; }
         if (e.target.closest('[data-material-week-current]')) { S.materialWeek = mondayKey(new Date()); renderHome(); return; }
+        const cw = e.target.closest('[data-cal-week]');
+        if (cw && !cw.disabled) { const st = Number(cw.dataset.calWeek), base = S.calWeek || mondayKey(new Date()); if (st === 0) S.calWeek = ''; else { const x = dOf(base); x.setDate(x.getDate() + 7 * st); S.calWeek = ymd(x); } renderHome(); return; }
         const calStep = e.target.closest('[data-calendar-step]');
         if (calStep) { const [y,m] = S.calendarMonth.split('-').map(Number), next = new Date(y, m - 1 + Number(calStep.dataset.calendarStep), 1); S.calendarMonth = `${next.getFullYear()}-${pad(next.getMonth()+1)}`; S.calendarDate = ymd(next); renderHome(); return; }
         const calDay = e.target.closest('[data-calendar-day]');
