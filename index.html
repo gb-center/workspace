@@ -709,7 +709,8 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         const f = st.overviewFinance;
         $('overview-finance').innerHTML = `<div class="overview-section-title"><div><h2>Học phí tháng ${f ? f.month : 'này'}</h2><p>Tổng hợp từ tab Học phí</p></div><a href="tuition.html">Chi tiết <i data-lucide="arrow-right"></i></a></div><div class="overview-money-grid">${[
           ['Học phí', f && fmtMoney(f.due), 'wallet'], ['Nợ cũ', f && fmtMoney(f.arrears), 'history'], ['Đã thu', f && fmtMoney(f.paid), 'circle-dollar-sign'], ['Còn lại', f && fmtMoney(f.debt), 'clock-3'], ['Đã chi', f && fmtMoney(f.expenses), 'receipt']
-        ].map(x => `<div class="overview-money"><i data-lucide="${x[2]}"></i><span>${x[0]}</span><b>${x[1] || '–'}</b></div>`).join('')}</div>`;
+        ].map(x => `<div class="overview-money"><i data-lucide="${x[2]}"></i><span>${x[0]}</span>${x[1] ? `<b class="money-hidden" role="button" tabindex="0" data-money="${x[1]}" aria-label="Bấm để hiện số tiền"><i data-lucide="eye-off"></i></b>` : '<b>–</b>'}</div>`).join('')}</div>`;
+        if (!window.__moneyToggle) { window.__moneyToggle = true; const tg = e => { const b = e.target.closest('.overview-money > b[data-money]'); if (!b) return; if (e.type === 'keydown' && e.key !== 'Enter' && e.key !== ' ') return; e.preventDefault(); const hide = !b.classList.contains('money-hidden'); b.classList.toggle('money-hidden', hide); b.innerHTML = hide ? '<i data-lucide="eye-off"></i>' : b.dataset.money; b.setAttribute('aria-label', hide ? 'Bấm để hiện số tiền' : 'Bấm để ẩn số tiền'); if (hide) icons(); }; document.addEventListener('click', tg); document.addEventListener('keydown', tg); }
         const dates = weekDates(st.week), first = dates[0], last = dates[6];
         $('overview-week-label').textContent = pad(first.getDate()) + '/' + pad(first.getMonth() + 1) + ' – ' + pad(last.getDate()) + '/' + pad(last.getMonth() + 1);
         const today = ymd(new Date()), upcoming = st.sessions.filter(s => s.session_date >= today && !['cancel', 'holiday', 'done'].includes(s.status)).sort((a, b) => a.session_date.localeCompare(b.session_date) || a.start_time.localeCompare(b.start_time)).slice(0, 5);
@@ -1151,7 +1152,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         if (P.length) P.forEach(pp => {
           const a = pp.range && pp.range[0], b = pp.range && pp.range[1]; if (!a || !b) return;
           const qids = []; for (let n = a; n <= b; n++) { qids.push('q' + n); questions.push({ id: 'q' + n, text: 'Question ' + n, type: fillNums.has(n) ? 'fill' : 'mcq' }); }
-          parts.push({ id: pp.id, name: (isListen ? 'Part ' : 'Passage ') + pp.id, qids });
+          parts.push({ id: pp.id, name: pp.label || ((isListen ? 'Part ' : 'Passage ') + pp.id), qids });
         });
         else Object.keys(K).forEach(id => questions.push({ id, text: id.replace(/^q/, 'Question '), type: 'fill' }));
         if (!questions.length) return fail('Không xác định được danh sách câu hỏi.');
@@ -1170,8 +1171,8 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
           answer_key[q.id] = e;
         }
         const kind = D.mode === 'teaching' ? 'lesson' : 'homework';
-        const skill = kind === 'homework' ? (isListen ? 'listening' : /reading/i.test(code + ' ' + name) ? 'reading' : /writing/i.test(code + ' ' + name) ? 'writing' : null) : null;
-        const program = /^ielts/i.test(code) ? 'ielts' : /^toeic/i.test(code) ? 'toeic' : null;
+        const tn = code + ' ' + name, skill = kind === 'homework' ? (/thpt/i.test(tn) ? 'thpt' : /đgnl|dgnl|vact/i.test(tn) ? 'dgnl' : isListen ? 'listening' : /reading/i.test(tn) ? 'reading' : /writing/i.test(tn) ? 'writing' : null) : null;
+        const program = /^ielts/i.test(code) ? 'ielts' : /^toeic/i.test(code) ? 'toeic' : (/^ac12/i.test(code) || /thpt|đgnl|dgnl|vact/i.test(tn)) ? 'ac12' : null;
         const folder = program || 'gt', wk = weekNoOf(curMon());
         const page_path = ($('da-path').value || '').trim().replace(/^\/+/, '') || (folder + '/w' + String(wk).padStart(2, '0') + '/' + file.name);
         const row = { assignment_code: code, assignment_name: name, kind, skill, program, page_path, questions, parts: parts.length ? parts : null, is_active: true };
