@@ -784,6 +784,55 @@
     .g-week-sched .week-calendar-head .overview-week-controls .t-thisweek.on{background:#F6EBC8!important;color:#7a5a12!important}
     /* Day cells: tall capsule, both ends fully rounded (beats the earlier circle rules) */
     .student-rail .week-calendar-day.week-calendar-day,.student-rail .week-calendar-day.selected,.student-overview-highlight .week-calendar-day.week-calendar-day,.student-overview-highlight .week-calendar-day.selected,.g-week-sched .week-calendar-day.week-calendar-day,.g-week-sched .week-calendar-day.selected{width:42px!important;height:64px!important;min-height:64px!important;aspect-ratio:auto!important;border-radius:21px!important;padding:0!important;gap:4px;justify-content:center}
+    /* Tablet: keep the desktop 3-column layout but compact every card */
+    .student-overview-view .student-materials>.card{height:auto!important;min-height:196px!important}
+    .asg-meta{grid-template-columns:repeat(auto-fit,minmax(72px,1fr))}
+    @media(min-width:781px) and (max-width:1050px){
+      body.student-dashboard-view .student-overview-content{grid-template-rows:auto auto auto!important}
+      body.student-dashboard-view .student-overview-highlight{height:auto!important;min-height:0!important;max-height:none!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;display:grid!important;grid-template-areas:"week week" "tuition progress"!important;grid-template-rows:auto auto!important;gap:10px!important}
+      body.student-dashboard-view .student-overview-highlight .g-week-sched{height:auto!important;min-height:0!important;max-height:none!important;padding:14px!important}
+      body.student-dashboard-view .student-overview-highlight .g-tuition,body.student-dashboard-view .student-overview-highlight .g-prog{height:280px!important;min-height:280px!important;max-height:280px!important;padding:14px!important}
+      body.student-dashboard-view .student-overview-view .student-materials{grid-template-columns:minmax(0,1fr)!important}
+    }
+    @media(min-width:781px) and (max-width:1279px){
+      body.student-dashboard-view .student-overview-highlight .g-tuition .tuition-head,body.student-dashboard-view .student-overview-highlight .g-prog .prog-head{height:auto!important;flex-wrap:wrap!important;gap:6px!important}
+    }
+    @media(min-width:1051px) and (max-width:1279px){
+      body.student-dashboard-view .student-overview-highlight{height:auto!important;max-height:none!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-template-areas:"week tuition progress"!important;grid-template-rows:auto!important;gap:10px!important}
+      body.student-dashboard-view .student-overview-highlight .g-week-sched,body.student-dashboard-view .student-overview-highlight .g-tuition,body.student-dashboard-view .student-overview-highlight .g-prog{height:280px!important;min-height:280px!important;max-height:280px!important;padding:12px!important}
+      body.student-dashboard-view .g-week-sched .week-calendar-head{flex-wrap:wrap!important;row-gap:6px;margin-bottom:8px!important}
+      body.student-dashboard-view .g-week-sched .week-calendar-head .overview-week-controls{width:100%;justify-content:space-between}
+      body.student-dashboard-view .g-week-sched .week-calendar{gap:2px!important}
+      body.student-dashboard-view .week-calendar-day.week-calendar-day{width:min(34px,100%)!important;height:54px!important;min-height:54px!important;border-radius:17px!important;gap:3px!important}
+      body.student-dashboard-view .week-calendar-day span{font-size:.625rem!important}
+      body.student-dashboard-view .week-calendar-day b{font-size:.8125rem!important}
+      body.student-dashboard-view .g-week-sched .month-detail{padding:8px 10px!important;margin-top:8px!important;max-height:96px!important}
+      body.student-dashboard-view .g-tuition .tuition-amts{font-size:.8125rem}
+      body.student-dashboard-view .g-week-sched .week-calendar-head{height:auto!important;min-height:0!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:6px!important}
+      body.student-dashboard-view .g-week-sched .week-calendar-head .week-calendar-title{align-self:flex-start}
+      body.student-dashboard-view .g-tuition .tuition-head,body.student-dashboard-view .g-prog .prog-head{height:auto!important;min-height:0!important;flex:none!important;margin-bottom:8px!important}
+      body.student-dashboard-view .g-tuition .tuition-head{flex-wrap:wrap!important;gap:6px!important}
+      body.student-dashboard-view .g-tuition .tuition-head h2{font-size:.8125rem!important;padding:6px 10px!important;max-width:100%!important}
+      body.student-dashboard-view .g-tuition .tuition-head .tag{font-size:.6875rem!important;padding:2px 8px!important}
+      body.student-dashboard-view .g-prog .prog-head{flex-wrap:wrap!important;gap:6px!important}
+      body.student-dashboard-view .g-prog .prog-head h2{font-size:.8125rem!important;padding:6px 10px!important}
+      body.student-dashboard-view .g-prog .prog-head .tag,body.student-dashboard-view .g-prog .prog-head [class*=chip]{font-size:.625rem!important;padding:2px 8px!important}
+      body.student-dashboard-view .student-overview-view .card{padding:14px!important}
+    }
+    .student-rail .week-calendar-day.week-calendar-day,.student-rail .week-calendar-day.selected,.student-overview-highlight .week-calendar-day.week-calendar-day,.student-overview-highlight .week-calendar-day.selected,.g-week-sched .week-calendar-day.week-calendar-day,.g-week-sched .week-calendar-day.selected{width:min(42px,100%)!important}
+    /* One calendar look everywhere (overview, schedule tab, teacher view, mobile): capsule days, gold today, beige selected, dot for sessions */
+    body.student-dashboard-view .week-calendar-day.week-calendar-day,body.student-dashboard-view .t-rail .week-calendar-day.week-calendar-day,body.student-dashboard-view .m-week .week-calendar-day.week-calendar-day{position:relative;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:4px!important;width:min(42px,100%)!important;height:64px!important;min-height:64px!important;aspect-ratio:auto!important;padding:0 0 4px!important;margin:0 auto;border:0!important;border-radius:21px!important;background:transparent!important;color:#1B1D22;box-shadow:none!important;opacity:1!important}
+    body.student-dashboard-view .week-calendar-day.week-calendar-day.selected,body.student-dashboard-view .t-rail .week-calendar-day.week-calendar-day.selected{background:#f8f1df!important;color:#1B1D22!important;border-radius:21px!important}
+    body.student-dashboard-view .week-calendar-day.selected b,body.student-dashboard-view .week-calendar-day.selected span,body.student-dashboard-view .t-rail .week-calendar-day.selected b,body.student-dashboard-view .t-rail .week-calendar-day.selected span{color:#1B1D22!important}
+    body.student-dashboard-view .week-calendar-day.today b,body.student-dashboard-view .t-rail .week-calendar-day.today b{color:#a8781c!important;font-weight:850}
+    body.student-dashboard-view .week-calendar-day.week-calendar-day::after,body.student-dashboard-view .t-rail .week-calendar-day.week-calendar-day::after,body.student-dashboard-view .week-calendar-day.selected::after{content:""!important;display:block!important;position:static!important;flex:none;width:5px;height:5px;margin:0!important;border-radius:50%;background:transparent!important;transform:none!important}
+    body.student-dashboard-view .week-calendar-day.has-session::after,body.student-dashboard-view .t-rail .week-calendar-day.has-session::after,body.student-dashboard-view .week-calendar-day.has-session.selected::after{background:#b38324!important}
+    body.student-dashboard-view .g-sched .month-day.month-day{position:relative;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:min(40px,100%)!important;height:50px!important;min-height:50px!important;aspect-ratio:auto!important;padding:0 0 3px!important;border:0!important;border-radius:20px!important;background:transparent!important;box-shadow:none!important;color:#1B1D22;justify-self:center}
+    body.student-dashboard-view .g-sched .month-day.selected{background:#f8f1df!important;color:#1B1D22!important}
+    body.student-dashboard-view .g-sched .month-day.today b,body.student-dashboard-view .g-sched .month-day.today:not(.selected){color:#a8781c!important;font-weight:850}
+    body.student-dashboard-view .g-sched .month-day.outside{color:#c3cad4!important}
+    body.student-dashboard-view .g-sched .month-day.month-day::after{content:""!important;display:block!important;position:static!important;flex:none;width:4px;height:4px;margin:0!important;border-radius:50%;background:transparent!important;transform:none!important}
+    body.student-dashboard-view .g-sched .month-day.has-session::after,body.student-dashboard-view .g-sched .month-day.has-session.selected::after{background:#b38324!important}
 </style>
 <style id="mobile-fix">
 @media(max-width:780px){
@@ -1325,7 +1374,7 @@ body .student-overview-highlight .g-week-sched,body .student-overview-highlight 
       const heroHtml = `<section class="card hero-card g-hero" style="color:#fff">
         <div class="hero-lab"><i data-lucide="calendar-days" class="w-4 h-4"></i>Buổi học tiếp theo</div>
         <div class="hero-next-time"><div class="text-xl font-extrabold">${next ? fmtDay(next.date) : 'Chưa có lịch'}</div>
-        <div class="text-sm mt-2" style="opacity:.9;display:flex;align-items:center;gap:6px">${next ? '<i data-lucide="clock" class="w-4 h-4"></i>' + next.start + ' – ' + next.end : ''}</div></div>
+        <div class="text-sm mt-2" style="opacity:.9;display:flex;align-items:center;gap:6px">${next ? '<i data-lucide="clock" class="w-4 h-4"></i>' + next.start : ''}</div></div>
         <div class="hero-actions">
           ${next ? (next.mode === 'online' ? (joinOpen(next) ? joinBtn('solid') : `<span class="hero-btn ghost" title="Link mở trước 15 phút" style="opacity:.9;white-space:nowrap"><i data-lucide="video" class="w-4 h-4"></i><span>Meet</span></span>`) : `<span class="hero-btn ghost" style="opacity:.9"><i data-lucide="map-pin" class="w-4 h-4"></i><span>Học trực tiếp</span></span>`) : ''}
           <a class="hero-btn ghost" href="${esc(isHttp(cls.drive_url) ? cls.drive_url : 'https://drive.google.com')}" target="_blank" rel="noopener"><i data-lucide="folder" class="w-4 h-4"></i><span>Drive</span></a>
@@ -1348,9 +1397,9 @@ body .student-overview-highlight .g-week-sched,body .student-overview-highlight 
       const monthSessions = sess.filter(s => s.date.startsWith(monthKey) && !['cancel', 'holiday'].includes(s.status));
       const sessionsByDay = {}; monthSessions.forEach(s => (sessionsByDay[s.date] = sessionsByDay[s.date] || []).push(s));
       Object.values(sessionsByDay).forEach(a => a.sort((x, y) => x.start.localeCompare(y.start)));
-      const calendarDays = Array.from({ length: 42 }, (_, i) => { const date = new Date(gridStart); date.setDate(gridStart.getDate() + i); const key = ymd(date), daySessions = sessionsByDay[key] || [], inMonth = date.getMonth() === calMonth - 1, selected = key === S.calendarDate, today = key === todayKey; const tip = daySessions.map(s => `${s.start}–${s.end}${s.lesson ? ' · ' + s.lesson : ''}`).join(' | '); return `<button type="button" class="month-day${inMonth ? '' : ' outside'}${daySessions.length ? ' has-session' : ''}${today ? ' today' : ''}${selected ? ' selected' : ''}" data-calendar-day="${key}" ${!inMonth ? 'disabled' : ''} aria-label="${key}${daySessions.length ? ', có buổi học' : ''}" title="${esc(tip || key)}">${date.getDate()}</button>`; }).join('');
+      const calendarDays = Array.from({ length: 42 }, (_, i) => { const date = new Date(gridStart); date.setDate(gridStart.getDate() + i); const key = ymd(date), daySessions = sessionsByDay[key] || [], inMonth = date.getMonth() === calMonth - 1, selected = key === S.calendarDate, today = key === todayKey; const tip = daySessions.map(s => `${s.start}${s.lesson ? ' · ' + s.lesson : ''}`).join(' | '); return `<button type="button" class="month-day${inMonth ? '' : ' outside'}${daySessions.length ? ' has-session' : ''}${today ? ' today' : ''}${selected ? ' selected' : ''}" data-calendar-day="${key}" ${!inMonth ? 'disabled' : ''} aria-label="${key}${daySessions.length ? ', có buổi học' : ''}" title="${esc(tip || key)}">${date.getDate()}</button>`; }).join('');
       const selectedSessions = sessionsByDay[S.calendarDate] || [];
-      const sessionDetails = daySessions => daySessions.length ? daySessions.map(s => { const st = STATUS[s.status] || STATUS.planned; const lesson = String(s.lesson || '').trim(); return `<div class="month-session"><div class="month-session-top"><strong class="text-xs text-slate-700">${s.start} – ${s.end}</strong>${lesson ? `<span class="text-xs text-slate-600" style="overflow-wrap:anywhere">${esc(lesson)}</span>` : ''}</div><div class="month-session-meta"><span class="tag ${st[1]}">${st[0]}</span>${attTag(s)}${s.mode === 'online' ? (joinOpen(s) ? joinBtn('row') : '<span class="tag bg-sky-50 text-sky-700 inline-flex items-center gap-1"><i data-lucide="video" class="w-3.5 h-3.5"></i><span>Meet</span></span>') : '<span class="tag bg-slate-100 text-slate-600">Trực tiếp</span>'}</div></div>`; }).join('') : '<div class="text-sm text-slate-500">Ngày này không có buổi học.</div>';
+      const sessionDetails = daySessions => daySessions.length ? daySessions.map(s => { const st = STATUS[s.status] || STATUS.planned; const lesson = String(s.lesson || '').trim(); return `<div class="month-session"><div class="month-session-top"><strong class="text-xs text-slate-700">${s.start}</strong>${lesson ? `<span class="text-xs text-slate-600" style="overflow-wrap:anywhere">${esc(lesson)}</span>` : ''}</div><div class="month-session-meta"><span class="tag ${st[1]}">${st[0]}</span>${attTag(s)}${s.mode === 'online' ? (joinOpen(s) ? joinBtn('row') : '<span class="tag bg-sky-50 text-sky-700 inline-flex items-center gap-1"><i data-lucide="video" class="w-3.5 h-3.5"></i><span>Meet</span></span>') : '<span class="tag bg-slate-100 text-slate-600">Trực tiếp</span>'}</div></div>`; }).join('') : '<div class="text-sm text-slate-500">Ngày này không có buổi học.</div>';
       const monthDetails = sessionDetails(selectedSessions);
       const schedHtml = `<section class="card g-sched" id="student-calendar"><div class="month-head"><div class="month-caption">Lịch học tháng</div><div class="month-controls"><button type="button" class="month-nav" data-calendar-step="-1" aria-label="Tháng trước"><i data-lucide="chevron-left" class="w-5 h-5"></i></button><span class="month-title">${new Intl.DateTimeFormat('vi-VN', { month: 'long', year: 'numeric' }).format(firstDay)}</span><button type="button" class="month-nav" data-calendar-step="1" aria-label="Tháng sau"><i data-lucide="chevron-right" class="w-5 h-5"></i></button></div></div><div class="month-calendar" role="grid" aria-label="Lịch học tháng ${pad(calMonth)}/${calYear}">${['T2','T3','T4','T5','T6','T7','CN'].map(x => `<div class="month-weekday" role="columnheader">${x}</div>`).join('')}${calendarDays}</div><div class="month-detail"><div class="text-xs font-bold text-slate-700 mb-2">${fmtDay(S.calendarDate)}</div>${monthDetails}</div></section>`;
       const curWeekKey = mondayKey(now), weekStartKey = S.calWeek || curWeekKey, weekStartDate = dOf(weekStartKey), weekDays = Array.from({length:7}, (_, i) => { const date = new Date(weekStartDate); date.setDate(date.getDate() + i); return ymd(date); });
@@ -1508,7 +1557,7 @@ body .student-overview-highlight .g-week-sched,body .student-overview-highlight 
 
       /* Lịch sử buổi học: thu gọn mặc định, buổi mới nhất trước, không có buổi tương lai */
       const historyRows = past.slice(0, S.historyLimit).map(s => { const st = STATUS[s.status] || STATUS.planned;
-        return `<div class="hrow student-history-row">${dayCols(s.date)}<span class="text-xs font-semibold text-sky-700">${s.start} – ${s.end}</span><span class="hr-tags"><span class="tag ${st[1]}">${st[0]}</span>${attTag(s)}</span></div>`; }).join('');
+        return `<div class="hrow student-history-row">${dayCols(s.date)}<span class="text-xs font-semibold text-sky-700">${s.start}</span><span class="hr-tags"><span class="tag ${st[1]}">${st[0]}</span>${attTag(s)}</span></div>`; }).join('');
       const histHtml = `<section class="card g-hist" id="student-history"><h2><i data-lucide="history"></i>Lịch sử buổi học</h2><div class="att-strip"><div><b>${done.length}</b><span>Đã học</span></div><div><b class="pos">${attP}</b><span>Có mặt</span></div><div><b class="${attA ? 'neg' : ''}">${attA}</b><span>Vắng</span></div><div><b>${attRate !== null ? attRate + '%' : '–'}</b><span>Chuyên cần</span></div></div><div class="student-history-list">${historyRows || '<div class="text-sm text-slate-500">Chưa có buổi học nào.</div>'}</div>${past.length > S.historyLimit ? `<div class="student-history-more"><button type="button" data-history-more>Xem thêm ${Math.min(10, past.length - S.historyLimit)} buổi</button></div>` : ''}</section>`;
 
       const tuitionHtml = `<section class="card g-tuition" id="student-tuition" data-m="${selMonth}"><div class="tuition-head"><h2 class="font-bold flex items-center gap-2"><i data-lucide="wallet"></i>Học phí tháng ${selMonth.slice(5, 7)}/${selMonth.slice(0, 4)}</h2><span id="tuition-tag"></span></div><div class="text-sm text-slate-500 mt-2" id="tuition-status-text">Đang tải tình trạng…</div></section>`;
@@ -1797,7 +1846,7 @@ body .student-overview-highlight .g-week-sched,body .student-overview-highlight 
           const ms = T.mats.filter(m => (m.kind === kind || (kind === 'lesson' && m.kind === 'slide')) && matFor(m, id, s.session_date));
           const asg = kind === 'homework' ? T.asg.filter(x => x.class_id === id && x.assignments) : [];
           const empty = !ms.length && !asg.length;
-          return `<div class="t-class${empty ? ' is-empty' : ''}"><div class="t-class-name"><b>${esc(cl.class_name || cl.class_code || '')}</b><span>${hhmm(s.start_time)} – ${hhmm(s.end_time)}</span></div><div>${empty ? '<p class="t-none">Chưa có.</p>' : ms.map(m => tMat(m, id, false)).join('') + asg.map(tAsg).join('')}</div></div>`;
+          return `<div class="t-class${empty ? ' is-empty' : ''}"><div class="t-class-name"><b>${esc(cl.class_name || cl.class_code || '')}</b><span>${hhmm(s.start_time)}</span></div><div>${empty ? '<p class="t-none">Chưa có.</p>' : ms.map(m => tMat(m, id, false)).join('') + asg.map(tAsg).join('')}</div></div>`;
         }).join('');
         return `<section class="card t-dayc${d === tdy ? ' is-today' : ''}" data-dkey="${key}"><div class="t-dayc-head" aria-expanded="${!closed}"><h2><i data-lucide="calendar-days"></i>${d === tdy ? 'Hôm nay - ' : ''}${fmtDay(d)}</h2><span class="tag bg-slate-100 text-slate-600">${day.length} lớp</span></div><div class="t-dayc-body" ${closed ? 'hidden' : ''}>${rows}</div></section>`;
       }).join('');
@@ -1808,12 +1857,12 @@ body .student-overview-highlight .g-week-sched,body .student-overview-highlight 
         const cid = s.class_id, cl = s.classes || {}, nL = T.mats.filter(m => m.kind === 'lesson' && matFor(m, cid, s.session_date)).length;
         const nH = T.mats.filter(m => m.kind === 'homework' && matFor(m, cid, s.session_date)).length + T.asg.filter(x => x.class_id === cid && x.assignments).length;
         const chk = (label, c) => `<div class="t-chk"><span>${label}</span><span class="tag ${c ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${c ? c + ' tài liệu' : 'Chưa có'}</span></div>`;
-        return `<div class="t-pick"><div class="t-next"><b>${esc(cl.class_name || cl.class_code || '')}</b><span>${fmtDay(s.session_date)} · ${hhmm(s.start_time)} – ${hhmm(s.end_time)}</span><span class="t-when">${esc((STATUS[s.status] || [s.status])[0])} · ${s.mode === 'online' ? 'Online' : 'Trực tiếp'} · ${(T.stu[cid] || []).length} học viên</span></div>${chk('Bài học', nL)}${chk('Bài tập', nH)}</div>`;
+        return `<div class="t-pick"><div class="t-next"><b>${esc(cl.class_name || cl.class_code || '')}</b><span>${fmtDay(s.session_date)} · ${hhmm(s.start_time)}</span><span class="t-when">${esc((STATUS[s.status] || [s.status])[0])} · ${s.mode === 'online' ? 'Online' : 'Trực tiếp'} · ${(T.stu[cid] || []).length} học viên</span></div>${chk('Bài học', nL)}${chk('Bài tập', nH)}</div>`;
       };
       return `<section class="card"><div class="t-card-head"><h2><i data-lucide="info"></i>Thông tin buổi học</h2><button type="button" class="t-ic" data-t="pick-clear" aria-label="Xem lớp sắp tới" title="Lớp sắp tới"><i data-lucide="bell"></i></button></div>${list.map(one).join('')}<button type="button" class="t-btn" data-t="pick-open" data-key="${T.pick}">Xem buổi học</button></section>`;
     }
     function tPickModal(key) {
-      const list = T.sess.filter(x => x.session_date === T.date && hhmm(x.start_time) + ' – ' + hhmm(x.end_time) === key); if (!list.length) return;
+      const list = T.sess.filter(x => x.session_date === T.date && hhmm(x.start_time) === key); if (!list.length) return;
       const keep = T.pick; T.pick = key; let card = tPickCard(list); T.pick = keep;
       card = card.replace(/^<section class="card">/, '').replace(/<\/section>$/, '').replace(/<div class="t-card-head">[\s\S]*?<\/button><\/div>/, '');
       const o = document.createElement('div'); o.className = 't-modal';
@@ -1823,7 +1872,7 @@ body .student-overview-highlight .g-week-sched,body .student-overview-highlight 
       document.addEventListener('keydown', kd);
       o.addEventListener('click', e => {
         if (e.target === o || e.target.closest('[data-x]')) return close();
-        if (e.target.closest('[data-t="pick-open"]')) { close(); T.view = 'day'; T.slotOpen.add(key); T.sess.filter(x => x.session_date === T.date && hhmm(x.start_time) + ' – ' + hhmm(x.end_time) === key).forEach(x => T.open.add(x.id)); drawTeacher(); window.scrollTo(0, 0); }
+        if (e.target.closest('[data-t="pick-open"]')) { close(); T.view = 'day'; T.slotOpen.add(key); T.sess.filter(x => x.session_date === T.date && hhmm(x.start_time) === key).forEach(x => T.open.add(x.id)); drawTeacher(); window.scrollTo(0, 0); }
       });
     }
     function tNextCard() {
@@ -1832,7 +1881,7 @@ body .student-overview-highlight .g-week-sched,body .student-overview-highlight 
       const mins = Math.round((start - now) / 60000), days = Math.round((dOf(s.session_date) - dOf(ymd(now))) / 864e5);
       const when = mins <= 0 ? 'Đang diễn ra' : days === 0 ? 'Hôm nay, còn ' + (mins >= 60 ? Math.floor(mins / 60) + ' giờ ' + (mins % 60 ? mins % 60 + ' phút' : '') : mins + ' phút') : days === 1 ? 'Ngày mai' : 'Còn ' + days + ' ngày';
       const chk = (label, c) => `<div class="t-chk"><span>${label}</span><span class="tag ${c ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${c ? c + ' tài liệu' : 'Chưa có'}</span></div>`;
-      return `<section class="card"><h2><i data-lucide="bell"></i>Lớp sắp tới</h2><div class="t-next"><b>${esc(cl.class_name || cl.class_code || '')}</b><span>${fmtDay(s.session_date)} · ${hhmm(s.start_time)} – ${hhmm(s.end_time)}</span><span class="t-when">${esc(when)}</span></div>${chk('Bài học', n.lessons)}${chk('Bài tập', n.hw)}<button type="button" class="t-btn" data-t="day" data-date="${s.session_date}">Xem buổi học</button></section>`;
+      return `<section class="card"><h2><i data-lucide="bell"></i>Lớp sắp tới</h2><div class="t-next"><b>${esc(cl.class_name || cl.class_code || '')}</b><span>${fmtDay(s.session_date)} · ${hhmm(s.start_time)}</span><span class="t-when">${esc(when)}</span></div>${chk('Bài học', n.lessons)}${chk('Bài tập', n.hw)}<button type="button" class="t-btn" data-t="day" data-date="${s.session_date}">Xem buổi học</button></section>`;
     }
     function drawTeacher() {
       const y = window.scrollY, today = ymd(new Date());
@@ -1847,7 +1896,7 @@ body .student-overview-highlight .g-week-sched,body .student-overview-highlight 
       const titles = { day: 'Lịch dạy', lessons: 'Bài học tuần', submissions: 'Bài nộp', rail: 'Tổng quan' };
       const nav = (k, label, icon, cls = '') => `<button type="button" class="${T.view === k ? 'active' : ''} ${cls}" data-t="view" data-view="${k}" ${T.view === k ? 'aria-current="page"' : ''}><i data-lucide="${icon}"></i><span>${label}</span></button>`;
       const cal = days.map((k, i) => `<button type="button" class="week-calendar-day${cnt(k) ? ' has-session' : ''}${k === today ? ' today' : ''}${k === T.date ? ' selected' : ''}${T.next && T.next.s && T.next.s.session_date === k ? ' next-day' : ''}" data-t="day" data-date="${k}" aria-label="${fmtDay(k)}, ${cnt(k)} lớp" title="${fmtDay(k)} · ${cnt(k)} lớp"><span>${['T2','T3','T4','T5','T6','T7','CN'][i]}</span><b>${pad(dOf(k).getDate())}</b></button>`).join('');
-      const slots = []; list.forEach(x => { const key = hhmm(x.start_time) + ' – ' + hhmm(x.end_time); let g = slots.find(z => z.key === key); if (!g) { g = { key, all: [] }; slots.push(g); } g.all.push(x); });
+      const slots = []; list.forEach(x => { const key = hhmm(x.start_time); let g = slots.find(z => z.key === key); if (!g) { g = { key, all: [] }; slots.push(g); } g.all.push(x); });
       const tt = slots.length ? `<div class="t-tt-title">${fmtDay(T.date)}</div>${slots.map(g => `<button type="button" class="t-tt-slot${g.all.every(x => x.status === 'done') ? ' done' : ''}${T.pick === g.key ? ' picked' : ''}" data-t="pick" data-key="${g.key}" aria-pressed="${T.pick === g.key}">${g.key}<span class="t-tt-cls">${g.all.map(x => esc((x.classes && (x.classes.class_name || x.classes.class_code)) || '')).join(' · ')}</span></button>`).join('')}` : `<div class="text-sm text-slate-500">${fmtDay(T.date)}: không có buổi học.</div>`;
       const done = T.sess.filter(s => s.status === 'done').length, left = T.sess.filter(s => s.status === 'planned' || s.status === 'makeup').length;
       const body = T.view === 'rail' ? '' : T.view === 'lessons' ? tWeekList('lesson') : T.view === 'submissions' ? tSubView()
@@ -1903,7 +1952,7 @@ body .student-overview-highlight .g-week-sched,body .student-overview-highlight 
           if (k === 'toggle') tToggle(b.dataset.sid);
           else if (k === 'pick') { if (matchMedia('(max-width:780px)').matches) tPickModal(b.dataset.key); else { T.pick = T.pick === b.dataset.key ? null : b.dataset.key; drawTeacher(); } }
           else if (k === 'pick-clear') { T.pick = null; drawTeacher(); }
-          else if (k === 'pick-open') { T.view = 'day'; T.slotOpen.add(b.dataset.key); T.sess.filter(x => x.session_date === T.date && hhmm(x.start_time) + ' – ' + hhmm(x.end_time) === b.dataset.key).forEach(x => T.open.add(x.id)); drawTeacher(); window.scrollTo(0, 0); }
+          else if (k === 'pick-open') { T.view = 'day'; T.slotOpen.add(b.dataset.key); T.sess.filter(x => x.session_date === T.date && hhmm(x.start_time) === b.dataset.key).forEach(x => T.open.add(x.id)); drawTeacher(); window.scrollTo(0, 0); }
           else if (k === 'roster') tRoster(Number(b.dataset.cid), Number(b.dataset.sid));
           else if (k === 'view') { T.view = b.dataset.view; if (T.view === 'submissions') { drawTeacher(); await loadSubs(); } drawTeacher(); window.scrollTo(0, 0); }
           else if (k === 'sub-refresh') { await loadSubs(); drawTeacher(); LMS.toast('Đã tải lại bài nộp'); }
