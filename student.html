@@ -782,6 +782,8 @@
     /* Day cells: vertical pill instead of circle; light-yellow current-week button */
     .student-rail .week-calendar-day,.g-week-sched .week-calendar-day{aspect-ratio:auto!important;width:min(44px,100%)!important;min-height:60px!important;height:auto!important;border-radius:9999px!important;padding:6px 2px!important;justify-content:center;gap:3px}
     .g-week-sched .week-calendar-head .overview-week-controls .t-thisweek.on{background:#F6EBC8!important;color:#7a5a12!important}
+    /* Day cells: tall capsule, both ends fully rounded (beats the earlier circle rules) */
+    .student-rail .week-calendar-day.week-calendar-day,.student-rail .week-calendar-day.selected,.student-overview-highlight .week-calendar-day.week-calendar-day,.student-overview-highlight .week-calendar-day.selected,.g-week-sched .week-calendar-day.week-calendar-day,.g-week-sched .week-calendar-day.selected{width:42px!important;height:64px!important;min-height:64px!important;aspect-ratio:auto!important;border-radius:21px!important;padding:0!important;gap:4px;justify-content:center}
 </style>
 <style id="mobile-fix">
 @media(max-width:780px){
